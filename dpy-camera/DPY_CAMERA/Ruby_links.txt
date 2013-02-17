@@ -1,0 +1,27 @@
+RUBI TUTORIALS ---> 
+http://www.ruby-doc.org/docs/Tutorial/
+http://www.ruby-doc.org/docs/ProgrammingRuby/
+http://pine.fm/LearnToProgram/
+--> http://pine.fm/LearnToProgram/?Chapter=07  <-- qk metod za obhojdane na array i dr qki raboti za array
+
+
+
+
+http://www.scribd.com/doc/14180166/Advanced-Ruby-Scripting-for-SketchUp
+
+https://developers.google.com/sketchup/docs/tutorial_attrreporting?hl=bg-BG
+
+http://sketchupapi.blogspot.com/
+
+https://developers.google.com/sketchup/docs/tutorial_geometry?hl=bg-BG
+
+
+API DOCUMENTATION --> https://developers.google.com/sketchup/docs/
+
+http://www.ruby-doc.org/stdlib-1.9.3/libdoc/curses/rdoc/index.html
+http://www.ruby-doc.org/stdlib-1.9.3/libdoc/curses/rdoc/Curses/Window.html
+http://forums.sketchucation.com/viewtopic.php?f=180&t=29999&p=263503&hilit=set+cursor+position#p263503
+http://msdn.microsoft.com/en-us/library/ms648394(v=vs.85)
+http://forums.sketchucation.com/viewtopic.php?f=323&t=42732&p=383201&hilit=win32ole#p383201
+
+http://www.rubytips.org/2008/05/13/accessing-windows-api-from-ruby-using-win32api-library/
