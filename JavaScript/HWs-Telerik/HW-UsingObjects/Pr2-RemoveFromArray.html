@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Remove elements</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <input type="text" id="numberInput" />
+    <label for="numberInput">Input the integer value of elements to be removed</label>
+    <br />
+    <input type="text" id="array" />
+    <label for="array">Input integer sequance elements divided with commas</label>
+
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = readInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) readInput(); }
+
+        function readInput() {
+            var inputArray = jsConsole.read('#array');
+            var myArray = inputArray.split(",");
+
+            for (var i = 0; i < myArray.length; i++) myArray[i] = parseInt(myArray[i]);
+            var value = jsConsole.readInteger('#numberInput');
+            if (isNaN(value)) {
+                jsConsole.writeLine("Wrong integer input!");
+                return;
+            }
+
+            Array.prototype.print = function () { jsConsole.writeLine(this.join(", ")); };
+            Array.prototype.remove = function (value) {
+                var result = new Array();
+                for (var i = 0; i < this.length; i++) if (this[i] != value) result.push(this[i]);
+                return result;
+            }
+
+            jsConsole.writeLine("At the begining we have the array:");
+            myArray.print();
+            myArray = myArray.remove(value);
+            jsConsole.writeLine("After removing elements with value  " + value + " we have:");
+            myArray.print();
+            jsConsole.writeLine("");
+            
+        }
+
+        
+    </script>
+</body>
+</html>

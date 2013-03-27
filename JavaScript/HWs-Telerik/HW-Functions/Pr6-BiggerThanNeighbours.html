@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>BiggerThanNeighbours</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <input type="text" id="numberInput" />
+    <label for="numberInput">Input an index from array</label>
+    <br />
+    <input type="text" id="array" />
+    <label for="array">Input integer sequance elements divided with commas</label>
+
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = readInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) readInput(); }
+
+        function readInput() {
+            var inputArray = jsConsole.read('#array');
+            var myArray = inputArray.split(",");
+
+            for (var i = 0; i < myArray.length; i++) myArray[i] = parseInt(myArray[i]);
+            var index = jsConsole.readInteger('#numberInput');
+            if (isNaN(index)) {
+                jsConsole.writeLine("Wrong integer input!");
+                return;
+            }
+            if (index < 0 || index >= myArray.length) {
+                jsConsole.writeLine("Index out of range!");
+                return;
+            }
+            jsConsole.writeLine("Number is bigger than neighbours: " +
+                isBiggerThanNeighbours(index, myArray));
+        }
+
+        function isBiggerThanNeighbours(index, array) {
+            if (index > 0 && array[index] <= array[index - 1]) return false;
+            if (index < array.length - 1 && array[index] <= array[index + 1]) return false;
+            return true;
+        }
+    </script>
+</body>
+</html>

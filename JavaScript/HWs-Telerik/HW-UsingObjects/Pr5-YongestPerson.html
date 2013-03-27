@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Yongest person</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+
+        var people = new Array();
+        getRandomPersons(people, 20);
+        jsConsole.writeLine("We have the following people. <br />");
+        for (var index in people) jsConsole.writeLine(people[index]);
+        people.sort(function (a, b) { return a.age - b.age; });
+        jsConsole.writeLine("<br /><br />Sorting them by age we get:<br />");
+        for (var index in people) jsConsole.writeLine(people[index]);
+
+        jsConsole.writeLine("<br />=> the youngest is: " +
+             people[0].firstName + " " + people[0].familyName);
+
+        function Person(firstName, familyName, age) {
+            return {
+                firstName: firstName,
+                familyName: familyName,
+                age: age,
+                toString: function () { return "(" + firstName + ", " + familyName + ", " + age + ")"; }
+            }
+        }
+        
+        function getRandomPersons(array, n){
+            var firstNames = ["Ivancho", "Mariycho", "Petkancho", "Stoyancho"];
+            var lastNames = ["Ivanchov", "Mariychov", "Petkanchov", "Stoyanchov"];
+            for(var i = 0; i < n; i++){
+                array.push(
+                new Person(
+                    firstNames[Random(firstNames.length)],
+                    lastNames[Random(lastNames.length)],
+                    Random(60) + 1));
+            }
+        }
+
+        function Random(n){
+            return parseInt(n*Math.random());
+        }
+    </script>
+</body>
+</html>

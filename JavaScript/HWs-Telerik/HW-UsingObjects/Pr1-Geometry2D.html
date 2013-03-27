@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>2dGeometry</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        function Point(x, y) {
+            return {
+                x: x,
+                y: y,
+                plus: function (other) { return Point(this.x + other.x, this.y + other.y); },
+                minus: function (other) { return Point(this.x - other.x, this.y - other.y); },
+                toString: function () { return "(" + this.x + ";" + this.y + ")"; }
+            }
+        }
+
+        function LineSegment(startPoint, endPoint) {
+            return {
+                start: startPoint,
+                end: endPoint,
+                vector: endPoint.minus(startPoint),
+                length: function () {
+                    return Math.sqrt(this.vector.x * this.vector.x + this.vector.y * this.vector.y);
+                },
+                toString: function () {
+                    return "LineSegment{" +
+                    "start=" + startPoint.toString() + ";" +
+                    "end=" + endPoint.toString() + ";" +
+                    "length=" + this.length() + "}";
+                }
+            }
+        }
+
+        var A = Point(0, 0);
+        var B = Point(0, 3);
+        var C = Point(4, 0);
+        doesLinesMakeTriangle(LineSegment(A, B), LineSegment(A, C), LineSegment(B, C));
+        jsConsole.writeLine("");
+
+        var a = LineSegment(Point(0, 0), Point(1, 1));
+        var b = LineSegment(Point(0, 0), Point(2, 2));
+        var c = LineSegment(Point(0, 0), Point(3, 3));
+        doesLinesMakeTriangle(a, b, c);
+        jsConsole.writeLine("");
+
+        a = LineSegment(Point(0, 0), Point(0, 1));
+        b = LineSegment(Point(0, 1), Point(0, 2));
+        c = LineSegment(Point(0, 2), Point(0, 0));
+        doesLinesMakeTriangle(a, b, c);
+        jsConsole.writeLine("");
+
+        function doesLinesMakeTriangle(a, b, c) {
+            var result = triangleInequalations(a.length(), b.length(), c.length());
+            jsConsole.writeLine("We have the following line segments:");
+            jsConsole.writeLine(a);
+            jsConsole.writeLine(b);
+            jsConsole.writeLine(c);
+            jsConsole.writeLine("Can this lengths form a triangle -> " + (result ? "Yes!" : "No!"));
+        }
+
+        function triangleInequalations(a, b, c) {
+            return (a + b > c) && (a + c > b) && (b + c > a);
+        }
+
+    </script>
+</body>
+</html>

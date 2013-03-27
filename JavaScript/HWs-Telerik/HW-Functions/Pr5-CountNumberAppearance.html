@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>CountNumberAppearance</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <input type="text" id="numberInput" />
+    <label for="numberInput">Input integer to count appearances in sequance</label>
+    <br />
+    <input type="text" id="array" />
+    <label for="array">Input integer sequance elements divided with commas</label>
+
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = readInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) readInput(); }
+
+        function readInput() {
+            var inputArray = jsConsole.read('#array');
+            var myArray = inputArray.split(",");
+
+            for (var i = 0; i < myArray.length; i++) myArray[i] = parseInt(myArray[i]);
+            var inputNumber = jsConsole.readInteger('#numberInput');
+            jsConsole.writeLine("Number of appearances: " +
+                countNumberInArray(inputNumber, myArray));
+        }
+
+        function countNumberInArray(number, array) {
+            var n = array.length;
+            var count = 0;
+            for (var i = 0; i < n; i++) if (array[i] == number) count++;
+            return count;
+        }
+    </script>
+</body>
+</html>

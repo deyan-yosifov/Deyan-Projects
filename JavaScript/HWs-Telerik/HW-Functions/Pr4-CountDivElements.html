@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>CountDivs</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body> 
+    <div>Press the buttons to count div elements!</div>
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = countDivs;
+        document.onkeydown = function (e) { if (e.keyCode == 13) countDivs(); }
+
+        function countDivs() {
+            var divs = document.getElementsByTagName('div');
+            jsConsole.writeLine("Div elements count: " + divs.length);
+        }
+                
+    </script>
+</body>
+</html>

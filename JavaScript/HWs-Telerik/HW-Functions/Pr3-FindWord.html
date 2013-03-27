@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>FindWords</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>    
+    <input type="text" id="input" />
+    <label for="input">Input Word To Search</label>
+    <br />
+    <label for="text">Input Text</label>
+    <br />
+    <textarea id="text"></textarea>   
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = findWords;
+        //document.onkeydown = function (e) { if (e.keyCode == 13) findWords(); }
+
+        function findWords() {
+            var input = jsConsole.read('#input');
+            var text = jsConsole.read('#text');
+            jsConsole.writeLine("Searching word '"+input+"' in text:");
+            jsConsole.writeLine(text);
+
+            jsConsole.writeLine("Case sensitive matches:");
+            printWordMatches(input, text);
+
+            jsConsole.writeLine("Case insensitive matches:");
+            printWordMatches(input, text, true);
+        }
+
+        function printWordMatches(word, text, isCaseInsensitive) {
+            isCaseInsensitive = isCaseInsensitive || false;
+            var flags = "g";
+            if (isCaseInsensitive) flags += "i";
+            var pattern = new RegExp('\\b(' + word + ')\\b', flags);
+            var matches = text.match(pattern);
+			if(matches == null){
+				jsConsole.writeLine("No matches!!!");
+				return;
+			}
+            jsConsole.writeLine(matches.join(", "));
+        }
+                
+    </script>
+</body>
+</html>

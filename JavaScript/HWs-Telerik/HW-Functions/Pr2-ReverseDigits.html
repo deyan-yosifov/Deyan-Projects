@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Reverse digits</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <input type="text" id="number" />
+    <label for="number">Input integer number</label>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script type="text/javascript" src="js-console.js"></script>
+    <script type="text/javascript">
+        var button = document.getElementById('numberButton');
+        button.onclick = reverseDigits;
+        document.onkeydown = function (e) { if (e.keyCode == 13) reverseDigits(); }
+
+        function reverseDigits() {
+            var input = jsConsole.readInteger('#number');
+            if(input.toString() == "NaN") { jsConsole.writeLine("Wrong input!"); return;}
+            jsConsole.write("The reversed number of " + input + "  is: ");
+            if (input < 0) jsConsole.write("-");
+            input = Math.abs(input).toString();
+            var length = input.length;
+            var multiplier = 1;
+            var result = 0;
+            for (var i = 0; i < length; i++) {
+                result += parseInt(input[i]) * multiplier;
+                multiplier *= 10;
+            }
+            jsConsole.writeLine(result);
+        }
+    </script>
+</body>
+</html>

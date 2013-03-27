@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Check Property Existance</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+
+        var A = new Point(1, 1);
+        jsConsole.writeLine("Point A: " + A);
+        jsConsole.writeLine("A has properties:");
+        jsConsole.writeLine("x -> " + checkForProperty(A, "x"));
+        jsConsole.writeLine("y -> " + checkForProperty(A, "y"));
+        jsConsole.writeLine("z -> " + checkForProperty(A, "z"));
+        jsConsole.writeLine("length -> " + checkForProperty(A, "length"));
+        jsConsole.writeLine("minus -> " + checkForProperty(A, "minus"));
+        jsConsole.writeLine("plus -> " + checkForProperty(A, "plus"));
+        jsConsole.writeLine("toString -> " + checkForProperty(A, "toString"));
+        jsConsole.writeLine("prototype -> " + checkForProperty(A, "prototype"));
+
+        function checkForProperty(obj, property) {
+            return obj[property] ? true : false;
+        }
+
+        function Point(x, y) {
+            return {
+                x: x,
+                y: y,
+                plus: function (other) { return Point(this.x + other.x, this.y + other.y); },
+                minus: function (other) { return Point(this.x - other.x, this.y - other.y); },
+                toString: function () { return "(" + this.x + ";" + this.y + ")"; }
+            }
+        }
+
+        function LineSegment(startPoint, endPoint) {
+            return {
+                start: startPoint,
+                end: endPoint,
+                vector: endPoint.minus(startPoint),
+                length: function () {
+                    return Math.sqrt(this.vector.x * this.vector.x + this.vector.y * this.vector.y);
+                },
+                toString: function () {
+                    return "LineSegment{" +
+                    "start=" + startPoint.toString() + ";" +
+                    "end=" + endPoint.toString() + ";" +
+                    "length=" + this.length() + "}";
+                }
+            }
+        }     
+
+    </script>
+</body>
+</html>

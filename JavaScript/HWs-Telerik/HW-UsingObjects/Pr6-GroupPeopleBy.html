@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Group people by...</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+
+        var people = new Array();
+        getRandomPersons(people, 20);
+        jsConsole.writeLine("We have the following people. <br />");
+        for (var index in people) jsConsole.writeLine(people[index]);
+
+        groupAndPrintGroups(people, "firstName");
+        jsConsole.writeLine("");
+        groupAndPrintGroups(people, "familyName");
+        jsConsole.writeLine("");
+        groupAndPrintGroups(people, "age");
+
+        function groupAndPrintGroups(collection, criteria) {
+            jsConsole.writeLine("<br />Grouped by " + criteria + ":");
+            var groups = groupBy(collection, criteria);
+            for (var group in groups) {
+                jsConsole.writeLine(group);
+                for(var individ in groups[group])
+                    jsConsole.writeLine(groups[group][individ]);
+            }
+        }
+
+        function groupBy(array, property) {
+            var result = {};
+            for (var i = 0; i < array.length; i++) {
+                if(result[array[i][property]]){
+                    result[array[i][property]].push(array[i]);
+                }
+                else{
+                    result[array[i][property]] = new Array();
+                    result[array[i][property]].push(array[i]);
+                }
+            }
+            return result;
+        }
+
+        function Person(firstName, familyName, age) {
+            return {
+                firstName: firstName,
+                familyName: familyName,
+                age: age,
+                toString: function () { return "(" + firstName + ", " + familyName + ", " + age + ")"; }
+            }
+        }
+
+        function getRandomPersons(array, n) {
+            var firstNames = ["Ivancho", "Mariycho", "Petkancho", "Stoyancho"];
+            var lastNames = ["Ivanchov", "Mariychov", "Petkanchov", "Stoyanchov"];
+            for (var i = 0; i < n; i++) {
+                array.push(
+                new Person(
+                    firstNames[Random(firstNames.length)],
+                    lastNames[Random(lastNames.length)],
+                    Random(60) + 1));
+            }
+        }
+
+        function Random(n) {
+            return parseInt(n * Math.random());
+        }
+    </script>
+</body>
+</html>
