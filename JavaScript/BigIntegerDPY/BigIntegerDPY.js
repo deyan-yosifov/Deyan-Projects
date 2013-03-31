@@ -113,7 +113,8 @@ function BigInteger(numOrnumDigits, minusSignIfFirstIsNumberDigits) {
 				}
 				else{
 					var index = this.digits.length - 1;
-					while(!minusSign){
+					while (!minusSign) {
+					    if (index < 0) return BigInteger();
 						if(this.digits[index] > other.digits[index]){
 							a = this;
 							b = other;

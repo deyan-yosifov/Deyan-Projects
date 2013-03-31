@@ -133,7 +133,8 @@ function BigInteger(numOrnumDigits, minusSignIfFirstIsNumberDigits) {
 				}
 				else{
 					var index = this.digits.length - 1;
-					while(!minusSign){
+					while (!minusSign) {
+					    if (index < 0) return BigInteger();
 						if(this.digits[index] > other.digits[index]){
 							a = this;
 							b = other;
@@ -160,10 +161,10 @@ function BigInteger(numOrnumDigits, minusSignIfFirstIsNumberDigits) {
 						while(digits[index + stepsBack] == 0){
 							digits[index + stepsBack] = 9;
 							stepsBack++;
-							//if(index + stepsBack >= a.digits.length){
-							//	alert("Warning! Endless loop!");
-							//	throw new Error("Endless loop while seaching for positive digit!");
-							//}
+							if(index + stepsBack >= a.digits.length){
+								alert("Warning! Endless loop!");
+								throw new Error("Endless loop while seaching for positive digit!");
+							}
 						}
 						digits[index + stepsBack]--;
 					}
