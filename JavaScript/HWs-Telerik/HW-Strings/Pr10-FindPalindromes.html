@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Find palindromes</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input some text containing palindromes:</label>
+    <br />
+    <textarea id="input"></textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            //var input = jsConsole.read('#input');
+            var input = document.getElementById("input").value;
+            jsConsole.writeLine("And extracting palindromes we get: ");
+            jsConsole.writeLine(extractPalindromes(input) + "<br />");
+        }
+
+        function extractPalindromes(text) {
+            var matches = new String(text).match(/\b\w+?\b/g) || [];
+            var count = matches.length;
+            if (count == 0) return "No palindromes found!";
+            var palindromes = [];
+            for (var i = 0; i < count; i++) addIfPalindrome(palindromes, matches[i]);
+            if (palindromes.length == 0) return "No palindromes found!";
+            return palindromes.join(", ");
+        }
+
+        function addIfPalindrome(palindromes, word) {
+            var count = word.length;
+            if (count == 1) {
+                palindromes.push(word);
+                return;
+            }
+            for (var i = 0; i < count / 2; i++) if (word[i] != word[count - 1 - i]) return;
+            palindromes.push(word);
+        }
+    </script>
+</body>
+</html>

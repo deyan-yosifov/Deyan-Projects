@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Brackets Check</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input brackets expression here:</label>
+    <input type="text" id="input" />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            var input = jsConsole.read('#input');
+            jsConsole.writeLine("brackets are" + (checkBrackets(input) ? " " : " NOT ") + "placed correctly!");
+        }
+
+        function checkBrackets(text) {
+            var balance = 0;
+            for (var i = 0; i < text.length; i++) {
+                if (text[i] == '(') balance++;
+                else if (text[i] == ')') balance--;
+                if (balance < 0) return false;
+            }
+            if (balance != 0) return false;
+            return true;
+        }
+    </script>
+</body>
+</html>

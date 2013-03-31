@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>String Format</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="list-item-template" style="display:none;">
+     <strong>-{name}-</strong> <span>-{age}-</span>
+    </div>
+
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script src="htmlEscapings.js" type="text/javascript"></script>
+    <script>
+        (function getUnorderedListTemplate() {
+            var template = new String(document.getElementById("list-item-template").innerHTML);
+            jsConsole.writeLine("At the beginning we have the template:");
+            jsConsole.writeLine(template.htmlEscape());
+            var people = [Person("Pesho", 23), Person("Gosho"), Person(), Person("Bai Ivan", 63)];
+            jsConsole.writeLine("We have the list of people:");
+            jsConsole.writeLine(people.join(", "));
+
+            var ul = createUL(template, people);
+            jsConsole.writeLine("<br />Applying the template we get:");
+            jsConsole.writeLine(ul.htmlEscape());
+            jsConsole.writeLine("<br />Which looks like:");
+            jsConsole.writeLine(ul);
+
+            function createUL(template, listItemsArray) {
+                var result = "<ul>";
+                for (i = 0; i < listItemsArray.length; i++)
+                    result += createListItem(template, listItemsArray[i]);
+                result += "</ul>";
+                return result;
+            }
+
+            function createListItem(template, itemInfo) {
+                var result = "<li>";
+                result += new String(template).replace(new RegExp("-\\{(\\w+?)\\}-", "g"), function (all, prop) {
+                    return itemInfo[prop];
+                });
+                result += "</li>";
+                return result;
+            }
+
+            function Person(name, age) {
+                return {
+                    name: name || "UnKnownName",
+                    age: age || "UnKnownAge",
+                    toString: function () { return "(" + this.name + "; " + this.age + ")"; }
+                }
+            }
+        }).call();
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>String Format</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input <strong>formated string on the first row</strong> and on <strong>each next row</strong> input <strong>arg0, arg1, ...</strong> used for the formating</label>
+    <br />
+    <textarea id="input"></textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script src="htmlEscapings.js" type="text/javascript"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+
+        function handleInput() {
+            var input = document.getElementById("input").value.split("\n");
+            //If there is only 1 row in input no need to use stringFormat
+            if (input.length == 1) {
+                jsConsole.writeLine("Text has no arguments to format!");
+                jsConsole.writeLine(input[0]);
+                return;
+            }
+            var text = new String(input[0]);
+            var args = input.slice(1);
+            jsConsole.writeLine("After formating we get: ");
+            //printing result if indices are correct or alerts the index exception message
+            try {
+                jsConsole.writeLine(stringFormat(text, args).htmlEscape() + "<br />");
+                console.log(stringFormat(text, args));
+            }
+            catch (e) {
+                alert(e);
+            }
+        }
+
+        //format string with zero-based indexed arguments
+        //ex.
+        //I am {0}formated string, which is{1} {2}valid!
+        function stringFormat(text, argsArray) {
+            if (arguments.length == 1 && (arguments[0] instanceof String)) return arguments[0];
+            if (!(arguments[0] instanceof String) || !(arguments[1] instanceof Array) || (arguments.length > 2))
+                throw new Error("Invalid arguments -> the first must be String and the second Array!");
+            
+            return text.replace(new RegExp("\\{([0-9]+?)\\}", "g"), function (all, num) {
+                var index = parseInt(num);
+                if (index < argsArray.length) return argsArray[index];
+                throw new Error("Invalid index " + index + " in formated string!");
+            });
+        }
+    </script>
+</body>
+</html>

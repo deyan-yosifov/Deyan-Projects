@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>RefactorAnchoreTags</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input some HTML with anchor tags:</label>
+    <br />
+    <textarea id="input"></textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            //var input = jsConsole.read('#input');
+            var input = document.getElementById("input").value;
+            jsConsole.writeLine("Refactoring anchor tags: ");
+            jsConsole.writeLine(refactorAnchorTags(input) + "<br />");
+        }
+
+        function refactorAnchorTags(text) {
+            return new String(text).replace(/<a href="(.*?)">/g, function (all, address) {
+                return "[URL=" + address + "]";
+            }).replace(/<\/a>/g, "[/URL]");
+        }
+    </script>
+</body>
+</html>

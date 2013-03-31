@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ParseURL</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input valid url:</label>
+    <br />
+    <textarea id="input"></textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            //var input = jsConsole.read('#input');
+            var input = document.getElementById("input").value;
+            jsConsole.writeLine("Parsing the URL: ");
+            try {
+                jsConsole.writeLine(parseURL(input) + "<br />");
+            }
+            catch (e) {
+                alert(e.Message);
+            }
+        }
+
+        function parseURL(text) {
+            var url = {};
+            var protocolAdress = text.split("://");
+            if (protocolAdress.length == 1) {
+                throw { Message: "Unable to parse url: invalid protocol!" };
+            }
+            url["protocol"] = protocolAdress[0];
+            var serverEndIndex = protocolAdress[1].indexOf('/');
+            if (serverEndIndex != -1) {
+                url["server"] = protocolAdress[1].substring(0, serverEndIndex);
+                url["resource"] = protocolAdress[1].substring(serverEndIndex, protocolAdress[1].length) || "";
+            }
+            else {
+                url["server"] = protocolAdress[1] || "";
+                url["resource"] = "";
+            }
+            
+            url.toString = function () {
+                return "{protocol: " + this.protocol + ", server: " + this.server + ", resource: " +
+                    this.resource + "}";
+            }
+            return url;
+        }
+    </script>
+</body>
+</html>

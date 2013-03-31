@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ExtractEmails</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input text with some e-mails in it:</label>
+    <br />
+    <textarea id="input"></textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            //var input = jsConsole.read('#input');
+            var input = document.getElementById("input").value;
+            jsConsole.writeLine("Extracting e-mails we get: ");
+            jsConsole.writeLine(extractEmails(input) + "<br />");
+        }
+
+        function extractEmails(text) {
+            return (new String(text).match(/\b(\w|-|\.)+?@(\w)+?\.([a-z]{2,4})\b/g) || [""]).join(", ");
+        }
+    </script>
+</body>
+</html>

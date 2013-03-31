@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Reverse string</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input something here:</label>
+    <input type="text" id="input" />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            var input = jsConsole.read('#input');
+            jsConsole.write("Reversed string: ");
+            jsConsole.writeLine(reverseString(input));
+        }
+
+        function reverseString(text) {
+            return text.split("").reverse().join("");
+        }
+    </script>
+</body>
+</html>

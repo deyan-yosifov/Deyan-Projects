@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>HTML Content</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input some HTML</label>
+    <br />
+    <textarea id="input"></textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        function handleInput() {
+            //var input = jsConsole.read('#input');
+            var input = document.getElementById("input").value;
+            jsConsole.writeLine("Extracting between tags content: ");
+            jsConsole.writeLine(extractHtmlContent(input) + "<br />");
+            console.log(extractHtmlContent(input));
+        }
+
+        function extractHtmlContent(text) {
+            return new String(text).replace(new RegExp("<((.|\\s)*?)>","g"),"");
+        }
+    </script>
+</body>
+</html>

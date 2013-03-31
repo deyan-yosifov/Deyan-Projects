@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Casing tags</title>
+    <link href="js-console.css" rel="stylesheet" />
+</head>
+<body>
+    <label for="input">Input some text here with tags &lt;upcase&gt; &lt;lowcase&gt; and &lt;mixcase&gt; in it:</label>
+    <br />
+    <textarea id="input">We are &lt;mixcase&gt;living&lt;/mixcase&gt; in a &lt;upcase&gt;yellow submarine&lt;/upcase&gt;. We &lt;mixcase&gt;don't&lt;/mixcase&gt; have &lt;lowcase&gt;anything&lt;/lowcase&gt; else.
+</textarea>
+    <br />
+    <button id="numberButton">Click me when ready!</button>
+    <div id="console"></div>
+    <script src="js-console.js"></script>
+    <script>
+        var button = document.getElementById('numberButton');
+        button.onclick = handleInput;
+        document.onkeydown = function (e) { if (e.keyCode == 13) handleInput(); }
+
+        String.prototype.htmlUnEscape = function () {
+            var escapedStr = String(this).replace(/&amp;/g, '&');
+            escapedStr = escapedStr.replace(/&lt;/g, '<');
+            escapedStr = escapedStr.replace(/&gt;/g, '>');
+            escapedStr = escapedStr.replace(/&quot;/g, '"');
+            escapedStr = escapedStr.replace(/&#39/g, "'");
+            return escapedStr;
+        }
+
+        function handleInput() {
+            //var input = jsConsole.read('#input');
+            var input = document.getElementById("input").value;
+            jsConsole.writeLine("Changing the casing leads to: ");
+            jsConsole.writeLine(applyCasingTags(input.htmlUnEscape()) + "<br />");
+        }
+
+        //apply changes to text with all known tag names (upcase, mixcase, lowcase)
+        function applyCasingTags(text) {
+            var text = new String(text);
+            var count = text.length;
+            var outerTag = { status: "" };
+            var result = "";
+            var char;
+            var endTagIndex = 0;
+            var moveIndexer = 0;
+            var tagName = "";
+            for (i = 0; i < count; i++) {
+                char = text[i];
+                //potentially found known tag
+                if (char == "<") {
+                    endTagIndex = text.indexOf(">", i);
+                    tagName = text.substring(i + 1, endTagIndex);
+                    console.log(tagName);
+                    moveIndexer = checkTag(outerTag, tagName);
+                    i += moveIndexer;
+                }
+                //not a tag start (apply current outerTag transformations if there is such tag)
+                else {
+                    switch (outerTag.status) {
+                        case "mixcase":
+                            if (Math.random() < 0.5) {
+                                result += char.toUpperCase();
+                            }
+                            else {
+                                result += char.toLowerCase();
+                            }
+                            break;
+                        case "upcase":
+                            result += char.toUpperCase();
+                            break;
+                        case "lowcase":
+                            result += char.toLowerCase();
+                            break;
+                        case "":
+                            result += char;
+                            break;
+                        default:
+                            alert("wrong value of outerTag: " + outerTag.status);
+                            break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        //Check if the tag is known, apply changes to current outerTagStatus and return tagName length
+        function checkTag(outerTagStatus, currentTag) {
+            var currentTag = currentTag || "";
+            var status = outerTagStatus.status;
+            var tagNameLength = 0;
+            switch (currentTag) {
+                case "mixcase":
+                    if (status == "") outerTagStatus.status = "mixcase";
+                    tagNameLength = 8;
+                    break;
+                case "lowcase":
+                    if (status == "") outerTagStatus.status = "lowcase";
+                    tagNameLength = 8;
+                    break;
+                case "upcase":
+                    if (status == "") outerTagStatus.status = "upcase";
+                    tagNameLength = 7;
+                    break;
+                case "/mixcase":
+                    if (status == "mixcase") outerTagStatus.status = "";
+                    tagNameLength = 9;
+                    break;
+                case "/lowcase":
+                    if (status == "lowcase") outerTagStatus.status = "";
+                    tagNameLength = 9;
+                    break;
+                case "/upcase":
+                    if (status == "upcase") outerTagStatus.status = "";
+                    tagNameLength = 8;
+                    break;
+                default:
+                    tagNameLength = 0;
+                    break;
+            }
+            return tagNameLength;
+        }
+    </script>
+</body>
+</html>
