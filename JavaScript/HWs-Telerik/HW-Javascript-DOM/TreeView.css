@@ -1,0 +1,27 @@
+﻿.treeNode {
+    padding:10px;
+    padding-left:20px;
+    border:none;
+    cursor:pointer;
+}
+
+    .treeNode span {
+        display:inline-block;
+        padding:5px;
+        margin:0px;
+        font-weight:bold;
+        background:#04addb;
+        color:white;
+    }
+
+    .treeNode.closed > .treeNode {
+        display:none;
+    }
+
+.treeNode {
+    background: url(images/arrow-opened.png) no-repeat 0 15px;
+}
+
+    .treeNode.closed {
+        background: url(images/arrow-closed.png) no-repeat 0 15px;
+    }

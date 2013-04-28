@@ -1,0 +1,51 @@
+﻿div.problem
+        {
+            min-height:200px;
+            border:2px solid orange;
+            border-radius:20px;
+            margin:10px;
+            padding:10px;
+            position:relative;
+            background:#eee;
+        }
+        button
+        {
+            padding:10px;
+            color:white;
+            font-weight:bold;
+            background:green;
+            border: 2px solid black;
+            border-radius:10px;  
+            position:absolute;
+            bottom:10px;
+            left:10px;
+        }
+        button:hover
+        {
+            cursor:pointer;
+            background:darkgreen;   
+        }
+        label
+        {
+            font-weight:bold;
+        }
+        div#tagCloud
+        {
+            border:2px solid green;
+            display:inline-block;
+            margin:0;
+            padding:20px;
+            margin-left:50px;
+            width:200px; 
+            border-radius:20px;  
+        }
+        div#tagCloud > a
+        {
+            padding:5px;
+            color:Black;
+            text-decoration:none;
+        }
+        div#tagCloud > a:hover
+        {
+            text-decoration:underline;
+        }

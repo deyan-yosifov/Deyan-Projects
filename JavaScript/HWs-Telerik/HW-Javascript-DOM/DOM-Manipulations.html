@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>HW-DOM-Manipulations</title>
+    <link href="homework.css" rel="stylesheet" />
+    <link href="TreeView.css" rel="stylesheet" />
+    <script src="shims/querySelector.js" type="text/javascript"></script>
+    <script src="Pr1-randomDivGenerator.js" type="text/javascript"></script>
+    <script src="Pr2-RotatingDivsGenerator.js" type="text/javascript"></script>
+    <script src="Pr3-querySelectorShim.js" type="text/javascript"></script>
+    <script src="Pr4-ColoringTextArea.js" type="text/javascript"></script>
+    <script src="Pr5-TagCloud.js" type="text/javascript"></script>
+    <script src="Pr6-TreeView.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="problem">
+        <button onclick="generateRandomDivs(this.parentNode, 10);">Pr1 - Generate random divs</button>
+    </div>
+
+    <div class="problem">
+        <button onclick="generateRotatingDivs(this.parentNode, 10);">Pr2 - Generate rotating divs</button>
+    </div>
+
+    <div class="problem">
+        <label for="inputQuery">Input some querySelector code here!</label><textarea id="inputQuery" rows="5" cols="20">var collection = document.querySelectorAll('div'); for(var i=0; i < collection.length; i++) {collection[i].style.background=getRandomRGB();} "Total number of divs: " + collection.length;</textarea>
+        <label for="outputQuery" style="margin-left:20px;">Eval({your-code}) outputs here!</label><textarea id="outputQuery" rows="5" cols="20"></textarea>
+        <button onclick="testQuerySelector(this.parentNode);">Pr3 - Test querySelector shim for older browsers</button>
+    </div>
+
+    <div class="problem">
+        <textarea id="colorableTextarea" rows="3" cols="21">Sample text</textarea>
+        <br />
+        <input type="color" id="fontColor" value="#ffffff"/><label for="fontColor"> -- Font color</label>
+        <br />
+        <input type="color" id="backColor" value="#ff0000" /><label for="backColor"> -- Background color</label>
+        <button onclick="changeTextareaColors(document.getElementById('colorableTextarea'),document.getElementById('fontColor'),document.getElementById('backColor'));">Pr4 - Test input type="color"</button>
+    </div>
+
+    <div class="problem">
+        <textarea id="tagWords" cols="30" rows="6">java javascript css javascript csharp javascript css ruby sketchup html css ruby script css tag tag tag tag tag tag tag</textarea>
+        <div id="tagCloud"></div>
+        <button onclick="generateTagCloud(document.getElementById('tagCloud'), document.getElementById('tagWords').value.split(' '), 10, 30);">Pr5 - Generate tag cloud</button>
+    </div>
+
+    <div class="problem">
+        <div id="treeContainer"></div>
+        <button onclick="placeHtmlTree(document.getElementById('treeContainer'));" style="position:static;display:block;">Pr6 - Generate tree view</button>
+    </div>
+</body>
+</html>
