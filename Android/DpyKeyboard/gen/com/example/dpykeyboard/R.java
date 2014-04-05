@@ -1387,10 +1387,11 @@ containing a value of this type.
         public static final int Widget_AppCompat_Spinner_DropDown_ActionBar=0x7f0c0022;
     }
     public static final class xml {
-        public static final int method=0x7f050000;
-        public static final int qwerty=0x7f050001;
-        public static final int symbols=0x7f050002;
-        public static final int symbols_shift=0x7f050003;
+        public static final int bg_phonetics_small=0x7f050000;
+        public static final int method=0x7f050001;
+        public static final int qwerty=0x7f050002;
+        public static final int symbols=0x7f050003;
+        public static final int symbols_shift=0x7f050004;
     }
     public static final class styleable {
         /**  ============================================ 

@@ -16,6 +16,7 @@
 
 package com.example.dpykeyboard;
 
+import android.content.res.Configuration;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -82,22 +83,38 @@ public class SoftKeyboard extends InputMethodService
         mWordSeparators = getResources().getString(R.string.word_separators);
     }
     
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    DpyHelper.Log("Soft: onConfigurationChanged");
+
+    if(SoftKeyboard.DEBUG) {
+	    /* now let's wait until the debugger attaches */
+	    android.os.Debug.waitForDebugger();
+    }
+   
+    super.onConfigurationChanged(newConfig);
+   
+    /* do something useful... */
+           
+    }
+    
     /**
      * This is the point where you can do all of your UI initialization.  It
      * is called after creation and any configuration change.
      */
     @Override public void onInitializeInterface() {
+        DpyHelper.Log("Soft: onInitializeInterface");
         if (mQwertyKeyboard != null) {
             // Configuration changes can happen after the keyboard gets recreated,
             // so we need to be able to re-build the keyboards if the available
             // space has changed.
-            int displayWidth = getMaxWidth();
-            if (displayWidth == mLastDisplayWidth) return;
-            mLastDisplayWidth = displayWidth;
+            int displayWidth = this.getMaxWidth();
+            if (displayWidth == this.mLastDisplayWidth) return;
+            this.mLastDisplayWidth = displayWidth;
         }
-        mQwertyKeyboard = new LatinKeyboard(this, R.xml.qwerty);
-        mSymbolsKeyboard = new LatinKeyboard(this, R.xml.symbols);
-        mSymbolsShiftedKeyboard = new LatinKeyboard(this, R.xml.symbols_shift);
+        this.mQwertyKeyboard = new LatinKeyboard(this, R.xml.qwerty);
+        this.mSymbolsKeyboard = new LatinKeyboard(this, R.xml.symbols);
+        this.mSymbolsShiftedKeyboard = new LatinKeyboard(this, R.xml.symbols_shift);
     }
     
     /**
@@ -107,11 +124,12 @@ public class SoftKeyboard extends InputMethodService
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        mInputView = (KeyboardView) getLayoutInflater().inflate(
+        DpyHelper.Log("Soft: onCreateInputView");
+        this.mInputView = (KeyboardView) getLayoutInflater().inflate(
                 R.layout.input, null);
-        mInputView.setOnKeyboardActionListener(this);
-        mInputView.setKeyboard(mQwertyKeyboard);
-        return mInputView;
+        this.mInputView.setOnKeyboardActionListener(this);
+        this.mInputView.setKeyboard(mQwertyKeyboard);
+        return this.mInputView;
     }
 
     /**
@@ -119,9 +137,10 @@ public class SoftKeyboard extends InputMethodService
      * be generated, like {@link #onCreateInputView}.
      */
     @Override public View onCreateCandidatesView() {
-        mCandidateView = new CandidateView(this);
-        mCandidateView.setService(this);
-        return mCandidateView;
+    	return super.onCreateCandidatesView();
+//        this.mCandidateView = new CandidateView(this);
+//        this.mCandidateView.setService(this);
+//        return this.mCandidateView;
     }
 
     /**
@@ -484,6 +503,7 @@ public class SoftKeyboard extends InputMethodService
     // Implementation of KeyboardViewListener
 
     public void onKey(int primaryCode, int[] keyCodes) {
+    	Log.v("DEYAN: ", "key pressed"+primaryCode);
         if (isWordSeparator(primaryCode)) {
             // Handle separator
             if (mComposing.length() > 0) {
@@ -559,13 +579,13 @@ public class SoftKeyboard extends InputMethodService
     }
     
     private void handleBackspace() {
-        final int length = mComposing.length();
+        final int length = this.mComposing.length();
         if (length > 1) {
-            mComposing.delete(length - 1, length);
-            getCurrentInputConnection().setComposingText(mComposing, 1);
+            this.mComposing.delete(length - 1, length);
+            getCurrentInputConnection().setComposingText(this.mComposing, 1);
             updateCandidates();
         } else if (length > 0) {
-            mComposing.setLength(0);
+            this.mComposing.setLength(0);
             getCurrentInputConnection().commitText("", 0);
             updateCandidates();
         } else {

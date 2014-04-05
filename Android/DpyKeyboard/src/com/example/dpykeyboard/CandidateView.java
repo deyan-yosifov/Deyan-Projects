@@ -71,9 +71,9 @@ public class CandidateView extends View {
      */
     public CandidateView(Context context) {
         super(context);
-        mSelectionHighlight = context.getResources().getDrawable(
+        this.mSelectionHighlight = context.getResources().getDrawable(
                 android.R.drawable.list_selector_background);
-        mSelectionHighlight.setState(new int[] {
+        this.mSelectionHighlight.setState(new int[] {
                 android.R.attr.state_enabled,
                 android.R.attr.state_focused,
                 android.R.attr.state_window_focused,
@@ -84,18 +84,18 @@ public class CandidateView extends View {
         
         setBackgroundColor(r.getColor(R.color.candidate_background));
         
-        mColorNormal = r.getColor(R.color.candidate_normal);
-        mColorRecommended = r.getColor(R.color.candidate_recommended);
-        mColorOther = r.getColor(R.color.candidate_other);
-        mVerticalPadding = r.getDimensionPixelSize(R.dimen.candidate_vertical_padding);
+        this.mColorNormal = r.getColor(R.color.candidate_normal);
+        this.mColorRecommended = r.getColor(R.color.candidate_recommended);
+        this.mColorOther = r.getColor(R.color.candidate_other);
+        this.mVerticalPadding = r.getDimensionPixelSize(R.dimen.candidate_vertical_padding);
         
-        mPaint = new Paint();
-        mPaint.setColor(mColorNormal);
-        mPaint.setAntiAlias(true);
-        mPaint.setTextSize(r.getDimensionPixelSize(R.dimen.candidate_font_height));
-        mPaint.setStrokeWidth(0);
+        this.mPaint = new Paint();
+        this.mPaint.setColor(mColorNormal);
+        this.mPaint.setAntiAlias(true);
+        this.mPaint.setTextSize(r.getDimensionPixelSize(R.dimen.candidate_font_height));
+        this.mPaint.setStrokeWidth(0);
         
-        mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+        this.mGestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2,
                     float distanceX, float distanceY) {
@@ -125,12 +125,12 @@ public class CandidateView extends View {
      * @param listener
      */
     public void setService(SoftKeyboard listener) {
-        mService = listener;
+        this.mService = listener;
     }
     
     @Override
     public int computeHorizontalScrollRange() {
-        return mTotalWidth;
+        return this.mTotalWidth;
     }
 
     @Override
@@ -140,8 +140,8 @@ public class CandidateView extends View {
         // Get the desired height of the icon menu view (last row of items does
         // not have a divider below)
         Rect padding = new Rect();
-        mSelectionHighlight.getPadding(padding);
-        final int desiredHeight = ((int)mPaint.getTextSize()) + mVerticalPadding
+        this.mSelectionHighlight.getPadding(padding);
+        final int desiredHeight = ((int)mPaint.getTextSize()) + this.mVerticalPadding
                 + padding.top + padding.bottom;
         
         // Maximum possible width and desired height
@@ -242,9 +242,9 @@ public class CandidateView extends View {
         if (suggestions != null) {
             mSuggestions = new ArrayList<String>(suggestions);
         }
-        mTypedWordValid = typedWordValid;
+        this.mTypedWordValid = typedWordValid;
         scrollTo(0, 0);
-        mTargetScrollX = 0;
+        this.mTargetScrollX = 0;
         // Compute the total width
         onDraw(null);
         invalidate();
