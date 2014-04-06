@@ -3,6 +3,7 @@
  */
 package com.example.dpykeyboard;
 
+import android.content.res.Configuration;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.KeyboardView;
 import android.view.KeyEvent;
@@ -13,8 +14,9 @@ import android.view.inputmethod.InputMethodSubtype;
 public class BgKeyboardService extends InputMethodService 
 		implements KeyboardView.OnKeyboardActionListener {
 
+	private static final boolean DEBUG = true;
 	private KeyboardView inputView;
-	private BgKeyboard bgPhoneticsSmallKeyboard;    
+	private BgKeyboard bgPhoneticsKeyboard;    
     private BgKeyboard currentKeyboard;
 	private int lastDisplayWidth;
 	
@@ -31,6 +33,21 @@ public class BgKeyboardService extends InputMethodService
 		// TODO Auto-generated method stub
 		return super.onCreateCandidatesView();
 	}
+	
+	@Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    DpyHelper.Log("BgKeyboard: onConfigurationChanged");
+
+    if(BgKeyboardService.DEBUG) {
+	    /* now let's wait until the debugger attaches */
+	    android.os.Debug.waitForDebugger();
+    }
+   
+    super.onConfigurationChanged(newConfig);
+   
+    /* do something useful... */
+           
+    }
 
 	@Override
 	public View onCreateInputView() {
@@ -38,7 +55,7 @@ public class BgKeyboardService extends InputMethodService
 		
 		this.inputView = (KeyboardView) getLayoutInflater().inflate(R.layout.input, null);
         this.inputView.setOnKeyboardActionListener(this);
-        this.inputView.setKeyboard(this.bgPhoneticsSmallKeyboard);
+        this.inputView.setKeyboard(this.bgPhoneticsKeyboard);
         return this.inputView;
 	}
 	
@@ -58,7 +75,8 @@ public class BgKeyboardService extends InputMethodService
             this.lastDisplayWidth = displayWidth;
         }
         
-        this.bgPhoneticsSmallKeyboard = new BgKeyboard(this, R.xml.bg_phonetics_small);
+        this.bgPhoneticsKeyboard = new BgKeyboard(this, R.xml.bg_phonetics);
+        this.currentKeyboard = this.bgPhoneticsKeyboard;
     }
 
 	@Override
@@ -71,16 +89,35 @@ public class BgKeyboardService extends InputMethodService
 	@Override
 	public void onStartInput(EditorInfo attribute, boolean restarting) {
 		DpyHelper.Log("onStartInput");
+		this.setCurrentKeyboard(this.bgPhoneticsKeyboard);
 		// TODO Auto-generated method stub
 		super.onStartInput(attribute, restarting);
+	}
+	
+	private void setCurrentKeyboard(BgKeyboard keyboard){
+		if(this.currentKeyboard == keyboard){
+			return;
+		}
+		
+		this.currentKeyboard = keyboard;
+		this.inputView.setKeyboard(this.currentKeyboard);
 	}
 
 	@Override
 	public void onKey(int primaryCode, int[] keyCodes) {
 		DpyHelper.Log("onKey; primaryCode: " + primaryCode);
-		getCurrentInputConnection().commitText(
-                String.valueOf((char) primaryCode), 1);
+		String textToCommit = "";
 		
+		if(primaryCode == BgKeyboard.SHIFT_KEY_CODE){
+			this.currentKeyboard.changeShiftState();
+			this.inputView.invalidateAllKeys();
+		} else if(primaryCode > 0){
+			textToCommit = String.valueOf((char)primaryCode);
+		}
+		
+		if(textToCommit.length() > 0){
+			this.getCurrentInputConnection().commitText(textToCommit, textToCommit.length());
+		}
 	}
 
 	@Override
