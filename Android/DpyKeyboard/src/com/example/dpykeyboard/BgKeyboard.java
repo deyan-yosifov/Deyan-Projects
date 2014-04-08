@@ -5,9 +5,11 @@ import java.util.List;
 
 import com.example.dpykeyboard.BgKeyboard.BgKey;
 
+import android.R.color;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.graphics.Color;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.Keyboard.Key;
 import android.inputmethodservice.Keyboard.Row;
@@ -17,7 +19,7 @@ public class BgKeyboard extends Keyboard {
 	public static final int SHIFT_KEY_CODE = -1;
 	public static final int ENTER_KEY_CODE = 10;
 	private boolean isShiftOn = false;
-	private List<Key> alphabetKeys;
+	private List<BgKey> alphabetKeys;
 	
 	public BgKeyboard(Context context, int xmlLayoutResId) {
 		super(context, xmlLayoutResId);
@@ -48,14 +50,13 @@ public class BgKeyboard extends Keyboard {
         return key;
     }
 	
-	private void tryAddAlphabetKey(Key key){
-		CharSequence label = key.label;
-		if(label != null && label.length() == 1 && Character.isLetter(label.charAt(0))){
+	private void tryAddAlphabetKey(BgKey key){
+		if(key.hasOneCharacterLabel()){
 			if(this.alphabetKeys == null){
-				this.alphabetKeys = new ArrayList<Key>();
+				this.alphabetKeys = new ArrayList<BgKey>();
 			}
 			this.alphabetKeys.add(key);
-			DpyHelper.Log("after add to alphabets: " + label);
+			DpyHelper.Log("after add to alphabets: " + key.label);
 		}
 	}
 	
@@ -68,9 +69,10 @@ public class BgKeyboard extends Keyboard {
 		this.setShifted(this.isShiftOn);
 		
 		for(int index = 0; index < this.alphabetKeys.size(); index++){
-			Key key = this.alphabetKeys.get(index);
+			BgKey key = this.alphabetKeys.get(index);
 			char letter = key.label.charAt(0);
 			key.codes[0] = this.isShiftOn ? Character.toUpperCase(letter) : Character.toLowerCase(letter);	
+			key.setIconLabel(String.valueOf((char)key.codes[0]));
 		}
 	}
 	
@@ -78,6 +80,10 @@ public class BgKeyboard extends Keyboard {
         
         public BgKey(Resources res, Keyboard.Row parent, int x, int y, XmlResourceParser parser) {
             super(res, parent, x, y, parser);
+            
+            if(this.hasOneCharacterLabel()){
+            	this.setIconLabel(this.label.toString());
+            }
         }
         
         /**
@@ -90,10 +96,18 @@ public class BgKeyboard extends Keyboard {
             return super.isInside(x, y);
         }
         
+        public void setIconLabel(String text){
+        	this.icon = new TextDrawable(text, 60f, Color.BLACK, Color.WHITE);
+        }
+        
         public boolean isStartingWithCode(int keyCode){
         	return this.codes != null && 
         			this.codes.length > 0 &&
         			this.codes[0] == keyCode;
+        }
+        
+        public boolean hasOneCharacterLabel(){
+        	return this.label != null && this.label.length() == 1 && Character.isLetter(this.label.charAt(0));
         }
     }
 

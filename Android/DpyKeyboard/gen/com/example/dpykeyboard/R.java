@@ -1389,9 +1389,10 @@ containing a value of this type.
     public static final class xml {
         public static final int bg_phonetics=0x7f050000;
         public static final int method=0x7f050001;
-        public static final int qwerty=0x7f050002;
-        public static final int symbols=0x7f050003;
-        public static final int symbols_shift=0x7f050004;
+        public static final int popupview=0x7f050002;
+        public static final int qwerty=0x7f050003;
+        public static final int symbols=0x7f050004;
+        public static final int symbols_shift=0x7f050005;
     }
     public static final class styleable {
         /**  ============================================ 

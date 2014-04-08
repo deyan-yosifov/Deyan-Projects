@@ -55,7 +55,7 @@ public class BgKeyboardService extends InputMethodService
 		
 		this.inputView = (KeyboardView) getLayoutInflater().inflate(R.layout.input, null);
         this.inputView.setOnKeyboardActionListener(this);
-        this.inputView.setKeyboard(this.bgPhoneticsKeyboard);
+        this.inputView.setKeyboard(this.currentKeyboard);
         return this.inputView;
 	}
 	
@@ -71,6 +71,7 @@ public class BgKeyboardService extends InputMethodService
             // so we need to be able to re-build the keyboards if the available
             // space has changed.
             int displayWidth = this.getMaxWidth();
+            DpyHelper.Log("onInitializeInterface displayWidth" + displayWidth);
             if (displayWidth == this.lastDisplayWidth) return;
             this.lastDisplayWidth = displayWidth;
         }
