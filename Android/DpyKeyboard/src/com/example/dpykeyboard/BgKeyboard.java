@@ -56,7 +56,7 @@ public class BgKeyboard extends Keyboard {
 				this.alphabetKeys = new ArrayList<BgKey>();
 			}
 			this.alphabetKeys.add(key);
-			DpyHelper.Log("after add to alphabets: " + key.label);
+			DpyHelper.myLog("after add to alphabets: " + key.label);
 		}
 	}
 	

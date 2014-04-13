@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         -->
-        
+        <!-- SoftKeyboard -->
         <service android:name="BgKeyboardService"
                 android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>

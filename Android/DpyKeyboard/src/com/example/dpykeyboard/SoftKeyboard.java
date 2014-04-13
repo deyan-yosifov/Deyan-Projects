@@ -85,7 +85,7 @@ public class SoftKeyboard extends InputMethodService
     
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-    DpyHelper.Log("Soft: onConfigurationChanged");
+    DpyHelper.otherLog("onConfigurationChanged");
 
     if(SoftKeyboard.DEBUG) {
 	    /* now let's wait until the debugger attaches */
@@ -103,7 +103,7 @@ public class SoftKeyboard extends InputMethodService
      * is called after creation and any configuration change.
      */
     @Override public void onInitializeInterface() {
-        DpyHelper.Log("Soft: onInitializeInterface");
+        DpyHelper.otherLog("onInitializeInterface");
         if (mQwertyKeyboard != null) {
             // Configuration changes can happen after the keyboard gets recreated,
             // so we need to be able to re-build the keyboards if the available
@@ -124,7 +124,7 @@ public class SoftKeyboard extends InputMethodService
      * a configuration change.
      */
     @Override public View onCreateInputView() {
-        DpyHelper.Log("Soft: onCreateInputView");
+        DpyHelper.otherLog("onCreateInputView");
         this.mInputView = (KeyboardView) getLayoutInflater().inflate(
                 R.layout.input, null);
         this.mInputView.setOnKeyboardActionListener(this);
@@ -151,7 +151,7 @@ public class SoftKeyboard extends InputMethodService
      */
     @Override public void onStartInput(EditorInfo attribute, boolean restarting) {
         super.onStartInput(attribute, restarting);
-        
+        DpyHelper.otherLog("onStartInput");
         // Reset our state.  We want to do this even if restarting, because
         // the underlying state of the text editor could have changed in any way.
         mComposing.setLength(0);
@@ -242,7 +242,7 @@ public class SoftKeyboard extends InputMethodService
      */
     @Override public void onFinishInput() {
         super.onFinishInput();
-        
+        DpyHelper.otherLog("onFinishInput");
         // Clear current composing text and candidates.
         mComposing.setLength(0);
         updateCandidates();
@@ -261,6 +261,7 @@ public class SoftKeyboard extends InputMethodService
     
     @Override public void onStartInputView(EditorInfo attribute, boolean restarting) {
         super.onStartInputView(attribute, restarting);
+        DpyHelper.otherLog("onStartInputView");
         // Apply the selected keyboard to the input view.
         mInputView.setKeyboard(mCurKeyboard);
         mInputView.closing();
@@ -274,7 +275,7 @@ public class SoftKeyboard extends InputMethodService
             int candidatesStart, int candidatesEnd) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd,
                 candidatesStart, candidatesEnd);
-        
+        DpyHelper.otherLog("onUpdateSelection");
         // If the current selection in the text view changes, we should
         // clear whatever candidate text we have.
         if (mComposing.length() > 0 && (newSelStart != candidatesEnd
@@ -354,6 +355,7 @@ public class SoftKeyboard extends InputMethodService
      * continue to the app.
      */
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        DpyHelper.otherLog("onKeyDown: " + keyCode);
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 // The InputMethodService already takes care of the back
@@ -421,6 +423,7 @@ public class SoftKeyboard extends InputMethodService
      * continue to the app.
      */
     @Override public boolean onKeyUp(int keyCode, KeyEvent event) {
+        DpyHelper.otherLog("onKeyUp: " + keyCode);
         // If we want to do transformations on text being entered with a hard
         // keyboard, we need to process the up events to update the meta key
         // state we are tracking.
@@ -503,7 +506,7 @@ public class SoftKeyboard extends InputMethodService
     // Implementation of KeyboardViewListener
 
     public void onKey(int primaryCode, int[] keyCodes) {
-    	Log.v("DEYAN: ", "key pressed"+primaryCode);
+        DpyHelper.otherLog("onKey primaryCode: " + primaryCode);
         if (isWordSeparator(primaryCode)) {
             // Handle separator
             if (mComposing.length() > 0) {
@@ -538,6 +541,7 @@ public class SoftKeyboard extends InputMethodService
     }
 
     public void onText(CharSequence text) {
+        DpyHelper.otherLog("onText: " + text.toString());
         InputConnection ic = getCurrentInputConnection();
         if (ic == null) return;
         ic.beginBatchEdit();
@@ -679,25 +683,31 @@ public class SoftKeyboard extends InputMethodService
     }
     
     public void swipeRight() {
+    	DpyHelper.otherLog("swipeRight");
         if (mCompletionOn) {
             pickDefaultCandidate();
         }
     }
     
     public void swipeLeft() {
+    	DpyHelper.otherLog("swipeLeft");
         handleBackspace();
     }
 
     public void swipeDown() {
+    	DpyHelper.otherLog("swipeDown");
         handleClose();
     }
 
     public void swipeUp() {
+    	DpyHelper.otherLog("swipeUp");
     }
     
     public void onPress(int primaryCode) {
+    	DpyHelper.otherLog("onPress: " + primaryCode);
     }
     
     public void onRelease(int primaryCode) {
+    	DpyHelper.otherLog("onRelease: " + primaryCode);
     }
 }

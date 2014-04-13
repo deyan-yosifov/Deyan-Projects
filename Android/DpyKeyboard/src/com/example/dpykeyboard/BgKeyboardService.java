@@ -5,10 +5,14 @@ package com.example.dpykeyboard;
 
 import android.content.res.Configuration;
 import android.inputmethodservice.InputMethodService;
+import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.ExtractedTextRequest;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodSubtype;
 
 public class BgKeyboardService extends InputMethodService 
@@ -19,6 +23,8 @@ public class BgKeyboardService extends InputMethodService
 	private BgKeyboard bgPhoneticsKeyboard;    
     private BgKeyboard currentKeyboard;
 	private int lastDisplayWidth;
+	private int lastSelectionStart;
+	private int lastSelectionEnd;
 	
 	/**
 	 * Constructor
@@ -29,14 +35,14 @@ public class BgKeyboardService extends InputMethodService
 
 	@Override
 	public View onCreateCandidatesView() {
-		DpyHelper.Log("onCreateCandidatesView");
+		DpyHelper.myLog("onCreateCandidatesView");
 		// TODO Auto-generated method stub
 		return super.onCreateCandidatesView();
 	}
 	
 	@Override
     public void onConfigurationChanged(Configuration newConfig) {
-    DpyHelper.Log("BgKeyboard: onConfigurationChanged");
+    DpyHelper.myLog("BgKeyboard: onConfigurationChanged");
 
     if(BgKeyboardService.DEBUG) {
 	    /* now let's wait until the debugger attaches */
@@ -47,11 +53,11 @@ public class BgKeyboardService extends InputMethodService
    
     /* do something useful... */
            
-    }
+    }	
 
 	@Override
 	public View onCreateInputView() {
-		DpyHelper.Log("onCreateInputView");
+		DpyHelper.myLog("onCreateInputView");
 		
 		this.inputView = (KeyboardView) getLayoutInflater().inflate(R.layout.input, null);
         this.inputView.setOnKeyboardActionListener(this);
@@ -64,14 +70,14 @@ public class BgKeyboardService extends InputMethodService
      * is called after creation and any configuration change.
      */
     @Override public void onInitializeInterface() {
-    	DpyHelper.Log("onInitializeInterface");
+    	DpyHelper.myLog("onInitializeInterface");
     	
         if (this.currentKeyboard != null) {
             // Configuration changes can happen after the keyboard gets recreated,
             // so we need to be able to re-build the keyboards if the available
             // space has changed.
             int displayWidth = this.getMaxWidth();
-            DpyHelper.Log("onInitializeInterface displayWidth" + displayWidth);
+            DpyHelper.myLog("onInitializeInterface displayWidth" + displayWidth);
             if (displayWidth == this.lastDisplayWidth) return;
             this.lastDisplayWidth = displayWidth;
         }
@@ -82,14 +88,17 @@ public class BgKeyboardService extends InputMethodService
 
 	@Override
 	public void onFinishInput() {
-		DpyHelper.Log("onFinishInput");
+		DpyHelper.myLog("onFinishInput");
 		// TODO Auto-generated method stub
 		super.onFinishInput();
+        if (this.inputView != null) {
+        	this.inputView.closing();
+        }
 	}
 	
 	@Override
 	public void onStartInput(EditorInfo attribute, boolean restarting) {
-		DpyHelper.Log("onStartInput");
+		DpyHelper.myLog("onStartInput");
 		this.setCurrentKeyboard(this.bgPhoneticsKeyboard);
 		// TODO Auto-generated method stub
 		super.onStartInput(attribute, restarting);
@@ -106,59 +115,133 @@ public class BgKeyboardService extends InputMethodService
 
 	@Override
 	public void onKey(int primaryCode, int[] keyCodes) {
-		DpyHelper.Log("onKey; primaryCode: " + primaryCode);
+		DpyHelper.myLog("onKey; primaryCode: " + primaryCode);
 		String textToCommit = "";
 		
 		if(primaryCode == BgKeyboard.SHIFT_KEY_CODE){
-			this.currentKeyboard.changeShiftState();
-			this.inputView.invalidateAllKeys();
-		} else if(primaryCode > 0){
+			this.handleShift();
+		}else if(primaryCode == BgKeyboard.ENTER_KEY_CODE){
+			this.handleEnter();
+		}else if (primaryCode == Keyboard.KEYCODE_DELETE) {
+            handleBackspace();
+        } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {
+            this.handleClose();
+            return;
+        } else if(primaryCode > 0){
 			textToCommit = String.valueOf((char)primaryCode);
 		}
 		
 		if(textToCommit.length() > 0){
 			this.getCurrentInputConnection().commitText(textToCommit, textToCommit.length());
 		}
+	}	
+
+	@Override
+	public void onUpdateExtractedText(int token, ExtractedText text) {	
+		DpyHelper.myLog("onUpdateExtractedText(" + token + ", " + text + ")");
+		// TODO Auto-generated method stub
+		super.onUpdateExtractedText(token, text);
 	}
+	
+	
+	
+	/**
+     * Deal with the editor reporting movement of its cursor.
+     */
+    @Override public void onUpdateSelection(int oldSelStart, int oldSelEnd,
+            int newSelStart, int newSelEnd,
+            int candidatesStart, int candidatesEnd) {
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd,
+                candidatesStart, candidatesEnd);
+
+        DpyHelper.myLog("onUpdateSelection " + oldSelStart + " " + oldSelEnd + " "
+        		+ newSelStart + " " + newSelEnd + " "
+        		+ candidatesStart + " " + candidatesEnd + " ");
+        
+        this.lastSelectionStart = newSelStart;
+        this.lastSelectionEnd = newSelEnd;
+//		InputConnection connection = this.getCurrentInputConnection();		
+//        connection.setSelection(newSelStart, newSelEnd);
+    }
+	
+	private void handleEnter(){
+		this.keyDownUp(KeyEvent.KEYCODE_ENTER);
+	}
+	
+	private void handleBackspace(){
+		InputConnection connection = this.getCurrentInputConnection();	
+		
+		connection.beginBatchEdit();		
+		
+		int lastSelectionLength= this.lastSelectionEnd - this.lastSelectionStart;
+		int before = lastSelectionLength == 0 ? 1 : 0;
+		int after = lastSelectionLength;		
+		connection.setSelection(this.lastSelectionStart, this.lastSelectionStart);
+		connection.deleteSurroundingText(before, after);
+		
+		connection.endBatchEdit();	
+
+		DpyHelper.myLog("deleteSurroundingText(" + before + ", " + after + ")");
+	}
+	
+	
+	
+	
+	private void handleClose(){
+        requestHideSelf(0);
+        this.inputView.closing();
+	}
+	
+	private void handleShift(){
+		this.currentKeyboard.changeShiftState();
+		this.inputView.invalidateAllKeys();
+	}
+	
+	private void keyDownUp(int keyEventCode) {
+        getCurrentInputConnection().sendKeyEvent(
+                new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
+        getCurrentInputConnection().sendKeyEvent(
+                new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
+    }
 
 	@Override
 	public void onPress(int primaryCode) {
-		DpyHelper.Log("onPress; primaryCode: " + primaryCode);		
+		DpyHelper.myLog("onPress; primaryCode: " + primaryCode);		
 	}
 
 	@Override
 	public void onRelease(int primaryCode) {
-		DpyHelper.Log("onRelease; primaryCode: " + primaryCode);	
+		DpyHelper.myLog("onRelease; primaryCode: " + primaryCode);	
 		
 	}
 
 	@Override
 	public void onText(CharSequence text) {
-		DpyHelper.Log("onText; text: " + text);	
+		DpyHelper.myLog("onText; text: " + text);	
 		
 	}
 
 	@Override
 	public void swipeDown() {
-		DpyHelper.Log("swipeDown");	
+		DpyHelper.myLog("swipeDown");	
 		
 	}
 
 	@Override
 	public void swipeLeft() {
-		DpyHelper.Log("swipeLeft");	
+		DpyHelper.myLog("swipeLeft");	
 		
 	}
 
 	@Override
 	public void swipeRight() {
-		DpyHelper.Log("swipeRight");	
+		DpyHelper.myLog("swipeRight");	
 		
 	}
 
 	@Override
 	public void swipeUp() {
-		DpyHelper.Log("swipeUp");			
+		DpyHelper.myLog("swipeUp");			
 	}
 
 }
