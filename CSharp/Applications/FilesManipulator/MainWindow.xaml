@@ -1,0 +1,45 @@
+﻿<Window x:Class="FilesManipulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Files Manipulator" Height="350" Width="525">
+    <Grid> 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <ToolBarTray Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <ToolBar> 
+                <Button VerticalAlignment="Center" Command="{Binding ChooseSelectedFolderCommand}" Content="Choose folder" />
+                <TextBox IsReadOnly="True" Text="{Binding SelectedFolder}" MinWidth="100" />
+            </ToolBar>
+        </ToolBarTray>
+        <ToolBarTray Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Orientation="Vertical">
+            <ToolBar Band="0">
+                <Button VerticalAlignment="Center" Content="Change file names" Command="{Binding ChangeFileNamesCommand}" Padding="5" BorderBrush="LightBlue" BorderThickness="2" Background="Blue" Foreground="White" />
+                <Separator />
+                <TextBlock Text="Manipulate subfolders" />
+                <CheckBox IsChecked="{Binding ShouldManipulateSubFolders}" BorderBrush="Black" Width="10" Height="10" Margin="5" />
+                <Separator />
+                <TextBlock Text="Insert field info:" />
+                <TextBox Text="{Binding InsertFieldInfo}" MinWidth="100" MaxWidth="150" />
+                <TextBlock Text="Insert field type" />
+                <ComboBox MinWidth="100" />
+                <Button Content="Insert field before" Command="{Binding InsertFieldBeforeCommand}" />
+                <Button Content="Insert field after" Command="{Binding InsertFieldAfterCommand}" />
+                <Button Content="Delete field" Command="{Binding DeleteFieldCommand}" />
+                <Separator />
+            </ToolBar>
+        </ToolBarTray>
+        <ListBox Grid.Row="1" Grid.Column="1">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal" IsItemsHost="True" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+    </Grid>
+</Window>
