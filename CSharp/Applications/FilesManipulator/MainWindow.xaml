@@ -1,8 +1,12 @@
 ﻿<Window x:Class="FilesManipulator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Files Manipulator" Height="350" Width="525">
-    <Grid> 
+        xmlns:viewModels="clr-namespace:FilesManipulator.ViewModels"
+        Title="Files Manipulator" Height="350" Width="700">
+    <Window.Resources>
+        <viewModels:FileManipulatorViewModel x:Key="viewModel" />
+    </Window.Resources>
+    <Grid DataContext="{StaticResource viewModel}"> 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
@@ -22,10 +26,10 @@
                 <Button VerticalAlignment="Center" Content="Change file names" Command="{Binding ChangeFileNamesCommand}" Padding="5" BorderBrush="LightBlue" BorderThickness="2" Background="Blue" Foreground="White" />
                 <Separator />
                 <TextBlock Text="Manipulate subfolders" />
-                <CheckBox IsChecked="{Binding ShouldManipulateSubFolders}" BorderBrush="Black" Width="10" Height="10" Margin="5" />
+                <CheckBox IsChecked="{Binding ShouldManipulateSubFolders, Mode=TwoWay}" BorderBrush="Black" Width="10" Height="10" Margin="5" />
                 <Separator />
                 <TextBlock Text="Insert field info:" />
-                <TextBox Text="{Binding InsertFieldInfo}" MinWidth="100" MaxWidth="150" />
+                <TextBox Text="{Binding InsertFieldInfo, Mode=TwoWay}" MinWidth="100" MaxWidth="150" />
                 <TextBlock Text="Insert field type" />
                 <ComboBox MinWidth="100" />
                 <Button Content="Insert field before" Command="{Binding InsertFieldBeforeCommand}" />

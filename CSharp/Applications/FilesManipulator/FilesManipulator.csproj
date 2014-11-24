@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -53,9 +54,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\FolderCounter.cs" />
+    <Compile Include="Models\FileNameField.cs" />
+    <Compile Include="Models\FolderFilesCounterField.cs" />
+    <Compile Include="Models\FolderNameField.cs" />
+    <Compile Include="Models\FileExtensionField.cs" />
     <Compile Include="Models\ITextFieldModel.cs" />
+    <Compile Include="Models\TextField.cs" />
     <Compile Include="Models\TextFieldModelBase.cs" />
+    <Compile Include="Models\TotalFilesCounterField.cs" />
     <Compile Include="ViewModels\FileManipulatorViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
