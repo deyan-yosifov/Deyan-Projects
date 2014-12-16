@@ -6,7 +6,7 @@ class DpyVrmlHelperTool
 	end
    
 	def onSetCursor	
-		UI.set_cursor(@@cursor2)
+		UI.set_cursor(@@cursor)
 	end
 	
 	def activate
@@ -31,9 +31,19 @@ class DpyVrmlHelperTool
 	end
 	
    def onLButtonDown(flags, x, y, view)
-		ph = view.pick_helper
-		ph.do_pick x,y
-		best = ph.best_picked
+		#ph = view.pick_helper
+		#ph.do_pick x,y
+		#best = ph.best_picked		
+		
+		inputPoint = view.inputpoint x,y
+		
+		vertex = inputPoint.vertex
+		
+		if(!vertex.nil?) then		
+			UI.messagebox ("picked vertex: " + vertex.to_s)
+		else
+			UI.messagebox ("picked NOT vertex: " + inputPoint.to_s)
+		end
    end
 end #end class DpyVrmlHelperTool
 
@@ -44,12 +54,12 @@ toolbar = UI::Toolbar.new "DPY_VRML_HELPER_TOOLBAR"
 DPY_VRML_HELPER_COMMAND = UI::Command.new("DPY_VRML_HELPER_COMMAND") { 
 
      Sketchup.active_model.start_operation 'DPY_VRML_HELPER_COMMAND', true     
-	 Sketchup.active_model.select_tool DPYmoveCAMERAtool.new
+	 Sketchup.active_model.select_tool DpyVrmlHelperTool.new
      Sketchup.active_model.commit_operation
 
  }
-DPY_CAMERA.small_icon = File.join("DPY_VRML_HELPER_TOOL", "DPY_CAMERA_small.jpg")
-DPY_CAMERA.large_icon = File.join("DPY_VRML_HELPER_TOOL", "DPY_CAMERA_large.jpg")
+DPY_VRML_HELPER_COMMAND.small_icon = File.join("DPY_VRML_HELPER_TOOL", "DPY_VRML_HELPER_BUTTON_small.jpg")
+DPY_VRML_HELPER_COMMAND.large_icon = File.join("DPY_VRML_HELPER_TOOL", "DPY_VRML_HELPER_BUTTON_large.jpg")
 
 toolbar = toolbar.add_item DPY_VRML_HELPER_COMMAND
 toolbar.show
