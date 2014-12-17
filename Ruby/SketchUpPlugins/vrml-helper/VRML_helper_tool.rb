@@ -204,6 +204,15 @@ class DpyVrmlHelperTool
 		return header + pointsText + firstPointText + footer
 	end
 	
+	def getInchNumberText(coordinateNumber)
+		number = coordinateNumber.to_inch
+		
+		numAbs = number.abs		
+		if(numAbs < 1E-6) then number = 0.0 end
+		
+		return number.to_s
+	end
+	
 	def getNumberText(coordinateNumber)
 		number = coordinateNumber.to_m
 		
@@ -263,7 +272,7 @@ class DpyVrmlHelperTool
 			
 			if(currentVertex == v0) then
 				nextVertex = v1
-			elsif(currentEdgeIndex == v1) then
+			elsif(currentVertex == v1) then
 				nextVertex = v0
 			else
 				spineCoordinatesText += "CANNOT FIND MATCHING VERTICES IN EDGEINDEX = " + currentEdgeIndex.to_s
@@ -304,7 +313,7 @@ class DpyVrmlHelperTool
 	def getExportedOrientationText(orientation)
 		unity = orientation.normalize
 		
-		return getNumberText(unity[0]) + " " + getNumberText(unity[1]) + " " + getNumberText(unity[2]) + " 0.0"
+		return getInchNumberText(unity[0]) + " " + getInchNumberText(unity[1]) + " " + getInchNumberText(unity[2]) + " 0.0"
 	end
 	
 	def showMessage		
