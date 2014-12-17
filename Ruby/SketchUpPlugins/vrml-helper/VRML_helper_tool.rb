@@ -244,12 +244,12 @@ class DpyVrmlHelperTool
 		
 		kk = (edgeVector.dot entity.normal) > 0 ? entity.normal : entity.normal.reverse
 		
+		horizontal = Geom::Point3d.new (1,0,0)
+		ii = nula.vector_to horizontal
 		
-		if(isZero(kk[0]) && isZero(kk[1])) then
-			ii = Geom::Vector3d.new 1,0,0
-		else
+		if(!(isZero(kk[0]) && isZero(kk[1]))) then
 			ii = Geom::Vector3d.new kk[1],-kk[0],0
-		end
+		end		
 		
 		ii.normalize!
 		jj = kk.cross ii
@@ -276,30 +276,27 @@ class DpyVrmlHelperTool
 		textOffset = '				'
 		spineCoordinatesText = ''
 		orientationCoordinatesText = ''
-		
 		currentVertex = @selectedVertex
 		nextVertex = nil
 		edges = @selectedEdges
-		endEdgeIndex = edges.length - 1
-		currentEdgeIndex = 0
-		previousOrientation = nil;
+		previousOrientation = nil
 		
 		edges.each { |edge|
 			spineCoordinatesText = spineCoordinatesText + textOffset + getExportedVertexText(currentVertex) + ',
-'		
+'
 			v0 = edge.vertices[0]
 			v1 = edge.vertices[1]
-			
 			if(currentVertex == v0) then
 				nextVertex = v1
 			elsif(currentVertex == v1) then
 				nextVertex = v0
 			else
-				spineCoordinatesText += "CANNOT FIND MATCHING VERTICES IN EDGEINDEX = " + currentEdgeIndex.to_s
+				alert("CANNOT FIND MATCHING VERTICES IN EDGE INDEX")
+				spineCoordinatesText += "CANNOT FIND MATCHING VERTICES IN EDGE"
 				break
 			end
-			
 			currentOrientation = currentVertex.position.vector_to nextVertex.position
+			actualOrientation = nil
 			actualOrientation = nil
 			
 			if(previousOrientation.nil?) then
@@ -313,7 +310,6 @@ class DpyVrmlHelperTool
 									
 			previousOrientation = currentOrientation
 			currentVertex = nextVertex
-			currentEdgeIndex += 1
 		}		
 
 		spineCoordinatesText = spineCoordinatesText + textOffset + getExportedVertexText(currentVertex) + '
