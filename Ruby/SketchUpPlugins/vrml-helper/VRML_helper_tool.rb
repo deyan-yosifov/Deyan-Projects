@@ -6,10 +6,9 @@ class DpyVrmlHelperTool
 		
 		@states = ["Select face to extrude", "Pick extrude start point", "Select extrude path", "Save extrude VRML code"]
 		@stateIndex = 0
-		@canMoveToNextState = false
 		@selectedFace = nil
 		@selectedVertex = nil
-		@selectedEdges = Array.new
+		@selectedEdges = Array.new		
 	end
    
 	def onSetCursor	
@@ -29,7 +28,17 @@ class DpyVrmlHelperTool
 	end
 	
 	def onCancel(reason, view)
-		#Nothing here
+		if(@stateIndex == 0) then #"Select face to extrude"
+			@selectedFace = nil
+		end
+		if(@stateIndex == 1) then #"Pick extrude start point"
+			@selectedVertex = nil
+		end
+		if(@stateIndex == 2) then #"Select extrude path"
+			@selectedEdges = Array.new
+		end
+				
+		clearSelection()
 	end
 	
 	def onUserText(text, view)
@@ -42,15 +51,21 @@ class DpyVrmlHelperTool
 			ph.do_pick x,y
 			entity = ph.best_picked
 			
-			if(entity.typename == "Face") then
-				alert("picked a face")
+			if(!entity.nil? && entity.typename == "Face") then
+				@selectedFace = entity
+				selectNew(entity)
+			else			
+				alert("Face not picked!")
 			end
 		end
 		if(@stateIndex == 1) then #"Pick extrude start point"
 			inputPoint = view.inputpoint x,y		
 			vertex = inputPoint.vertex
 			if(!vertex.nil?) then
-				alert("picked vertex")
+				@selectedVertex = vertex
+				alert("picked vertex: " + vertex.position.to_s)
+			else			
+				alert("Vertex not picked!")
 			end
 		end
 		if(@stateIndex == 2) then #"Select extrude path"
@@ -58,15 +73,18 @@ class DpyVrmlHelperTool
 			ph.do_pick x,y
 			entity = ph.best_picked
 			
-			if(entity.typename == "Edge") then
-				alert("picked a edge")
+			if(!entity.nil? && entity.typename == "Edge") then
+				@selectedEdges.push(entity)
+				select(entity)
+			else			
+				alert("Edge not picked!")
 			end
 		end
 		if(@stateIndex == 3) then #"Save extrude VRML code"
-			path = UI.savepanel ("Saveni ne6to", nil, "vrml_extrude_export.txt")
+			path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
 			if(!path.nil?) then
 				file = File.new(path, "w")
-				file.print pr
+				file.print getVrmlExportContent()
 				file.close
 			end
 		end
@@ -75,36 +93,57 @@ class DpyVrmlHelperTool
 	def onKeyDown(key, repeat, flags, view)   
 		#ENTER key == 13
 		if (key == 13) then
-			if(@stateIndex == 0) then #"Select face to extrude"
-				ph = view.pick_helper
-				ph.do_pick x,y
-				entity = ph.best_picked
-				
-				if(entity.typename == "Face") then
-					alert("picked a face")
-				end
-			end
-			if(@stateIndex == 1) then #"Pick extrude start point"
-				
-			end
-			if(@stateIndex == 2) then #"Select extrude path"
-				
+			if(@stateIndex < 3) then #"Select face, vertex and edges"
+			 tryMoveToNextState()
 			end
 			if(@stateIndex == 3) then #"Save extrude VRML code"
-				
+				path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
+				if(!path.nil?) then
+					file = File.new(path, "w")
+					file.print getVrmlExportContent()
+					file.close
+				end
 			end
-		end	 
-	  
+		end	 	  
 	end
    
-	def moveToNextState
-		if(canMoveToNextState) then
-			@stateIndex++
-			if @stateIndex >= @states.length then @stateIndex = 0 end
-			showMessage
+	def tryMoveToNextState
+		alert("try move start")
+				
+		if(canMoveToNextState()) then
+			@stateIndex = @stateIndex + 1
+			statesCount = @states.length
+			if @stateIndex >= @statesCount then
+				@stateIndex = 0 
+			end
+			
+			showMessage()
+			clearSelection()
 		else
 			alert("Cannot move to next state before making the correct selection!")
 		end
+		
+		alert("try move end")
+	end
+	
+	def canMoveToNextState		
+		canMoveVar = true
+	
+		if(@stateIndex == 0) then #"Select face to extrude"
+			canMoveVar = !@selectedFace.nil?
+		end
+		if(@stateIndex == 1) then  #"Pick extrude start point"
+			canMoveVar = !@selectedVertex.nil?
+		end
+		if(@stateIndex == 2) then #"Select extrude path"
+			canMoveVar = @selectedEdges.length > 0
+		end
+		
+		canMoveVar
+	end
+	
+	def getVrmlExportContent
+		return "sample vrml"
 	end
 	
 	def showMessage		
@@ -114,6 +153,19 @@ class DpyVrmlHelperTool
 	
 	def alert(text)
 		UI.messagebox (text)
+	end
+	
+	def select(entity)
+		Sketchup.active_model.selection.add(entity)
+	end
+	
+	def selectNew(entity)
+		clearSelection()
+		select(entity)
+	end
+	
+	def clearSelection
+		Sketchup.active_model.selection.clear()
 	end
 end #end class DpyVrmlHelperTool
 
