@@ -106,6 +106,9 @@ class DpyVrmlHelperTool
 	end
 	
 	def exportVrml
+		alert(getVrmlExportContent)		
+		return
+		
 		path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
 		
 		if(!path.nil?) then
@@ -149,7 +152,94 @@ class DpyVrmlHelperTool
 	end
 	
 	def getVrmlExportContent
-		return "sample vrml"
+		header = '	Shape{
+		appearance Appearance {
+			material Material {
+				diffuseColor 1.0 0.5 1.0
+			}
+		}		
+		geometry Extrusion {
+'
+
+		crossSection = getCrossSection()
+		splineAndOrientations = getSplineAndOrientations()
+
+		footer = '		}
+	}'
+				
+		return header + crossSection + splineAndOrientations + footer
+	end
+	
+	def getCrossSection
+		header = '			crossSection [
+'
+
+		matrica = getFaceTransformMatrix()
+		entity = @selectedFace
+		vnum = entity.vertices.length
+		vcur = 1
+		pointsText = '';
+		textOffset = "				"
+		firstPointText = ""
+		
+		entity.vertices.each { |vrah|      
+			newvrah = vrah.position
+			newvrah.transform! matrica
+			pointsText = pointsText + textOffset + getNumberText(newvrah[0]) + " " + getNumberText(newvrah[1])
+			
+			if(vcur == 1) then 
+				firstPointText = firstPointText + pointsText + '
+'
+			end
+			
+			pointsText = pointsText + ',
+'			
+			vcur+=1
+		}
+		
+		footer = '
+		]
+'
+
+		return header + pointsText + firstPointText + footer
+	end
+	
+	def getNumberText(coordinateNumber)
+		number = coordinateNumber.to_m
+		
+		numAbs = number.abs		
+		if(numAbs < 1E-6) then number = 0.0 end
+		
+		return number.to_s
+	end
+	
+	def getFaceTransformMatrix
+		entity = @selectedFace
+		nula = Geom::Point3d.new (0,0,0)
+		ppp = Geom::Point3d.linear_combination 1.0, nula, 1.0, @selectedVertex.position
+		
+		v0 = entity.vertices[0].position
+		v1 = entity.vertices[1].position
+		kk = entity.normal
+		jj = v0.vector_to v1
+		jj.normalize!
+		ii = jj.cross kk
+		ppp = Geom::Point3d.linear_combination 1.0, nula, 1.0, v0
+
+	   #######                       	#x	#y	#z 	##
+		matrica = Geom::Transformation.new ([ii[0],	ii[1],	ii[2],	0,  	# i'
+										jj[0],	jj[1],	jj[2],	0,  	# j'
+										kk[0],	kk[1],	kk[2],	0,  	# k'
+										ppp[0],	ppp[1],	ppp[2],	1]) 	# translation
+		
+		matrica.invert!
+		
+		return matrica
+	end
+	
+	def getSplineAndOrientations
+		return 'splines and orientations
+'
 	end
 	
 	def showMessage		
