@@ -3,6 +3,13 @@ class DpyVrmlHelperTool
 	def initialize 
 		cursorPath = Sketchup.find_support_file ("DpyCursor.png", "Plugins/DPY_VRML_HELPER_TOOL/")
 		@@cursor = UI.create_cursor(cursorPath, 5, 5)	
+		
+		@states = ["Select face to extrude", "Pick extrude start point", "Select extrude path", "Save extrude VRML code"]
+		@stateIndex = 0
+		@canMoveToNextState = false
+		@selectedFace = nil
+		@selectedVertex = nil
+		@selectedEdges = Array.new
 	end
    
 	def onSetCursor	
@@ -10,8 +17,7 @@ class DpyVrmlHelperTool
 	end
 	
 	def activate
-		@msg = "Select extrude face!"
-		Sketchup::set_status_text(@msg) 
+		showMessage
 	end
 	
 	def draw(view)
@@ -30,21 +36,85 @@ class DpyVrmlHelperTool
 		#Nothing here
 	end
 	
-   def onLButtonDown(flags, x, y, view)
-		#ph = view.pick_helper
-		#ph.do_pick x,y
-		#best = ph.best_picked		
-		
-		inputPoint = view.inputpoint x,y
-		
-		vertex = inputPoint.vertex
-		
-		if(!vertex.nil?) then		
-			UI.messagebox ("picked vertex: " + vertex.to_s)
-		else
-			UI.messagebox ("picked NOT vertex: " + inputPoint.to_s)
+	def onLButtonDown(flags, x, y, view)
+		if(@stateIndex == 0) then #"Select face to extrude"
+			ph = view.pick_helper
+			ph.do_pick x,y
+			entity = ph.best_picked
+			
+			if(entity.typename == "Face") then
+				alert("picked a face")
+			end
 		end
-   end
+		if(@stateIndex == 1) then #"Pick extrude start point"
+			inputPoint = view.inputpoint x,y		
+			vertex = inputPoint.vertex
+			if(!vertex.nil?) then
+				alert("picked vertex")
+			end
+		end
+		if(@stateIndex == 2) then #"Select extrude path"
+			ph = view.pick_helper
+			ph.do_pick x,y
+			entity = ph.best_picked
+			
+			if(entity.typename == "Edge") then
+				alert("picked a edge")
+			end
+		end
+		if(@stateIndex == 3) then #"Save extrude VRML code"
+			path = UI.savepanel ("Saveni ne6to", nil, "vrml_extrude_export.txt")
+			if(!path.nil?) then
+				file = File.new(path, "w")
+				file.print pr
+				file.close
+			end
+		end
+	end
+
+	def onKeyDown(key, repeat, flags, view)   
+		#ENTER key == 13
+		if (key == 13) then
+			if(@stateIndex == 0) then #"Select face to extrude"
+				ph = view.pick_helper
+				ph.do_pick x,y
+				entity = ph.best_picked
+				
+				if(entity.typename == "Face") then
+					alert("picked a face")
+				end
+			end
+			if(@stateIndex == 1) then #"Pick extrude start point"
+				
+			end
+			if(@stateIndex == 2) then #"Select extrude path"
+				
+			end
+			if(@stateIndex == 3) then #"Save extrude VRML code"
+				
+			end
+		end	 
+	  
+	end
+   
+	def moveToNextState
+		if(canMoveToNextState) then
+			@stateIndex++
+			if @stateIndex >= @states.length then @stateIndex = 0 end
+			showMessage
+		else
+			alert("Cannot move to next state before making the correct selection!")
+		end
+	end
+	
+	def showMessage		
+		@msg = @states[@stateIndex].to_s
+		Sketchup::set_status_text(@msg) 
+	end
+	
+	def alert(text)
+		UI.messagebox (text)
+	end
 end #end class DpyVrmlHelperTool
 
 ######Adding tool in toolbar
