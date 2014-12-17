@@ -106,8 +106,8 @@ class DpyVrmlHelperTool
 	end
 	
 	def exportVrml
-		alert(getVrmlExportContent)		
-		return
+		#alert(getVrmlExportContent)		
+		#return
 		
 		path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
 		
@@ -206,34 +206,54 @@ class DpyVrmlHelperTool
 	
 	def getInchNumberText(coordinateNumber)
 		number = coordinateNumber.to_inch
-		
-		numAbs = number.abs		
-		if(numAbs < 1E-6) then number = 0.0 end
+			
+		if(isZero(number)) then number = 0.0 end
 		
 		return number.to_s
 	end
 	
 	def getNumberText(coordinateNumber)
 		number = coordinateNumber.to_m
-		
-		numAbs = number.abs		
-		if(numAbs < 1E-6) then number = 0.0 end
+			
+		if(isZero(number)) then number = 0.0 end
 		
 		return number.to_s
+	end
+	
+	def isZero(number)
+		numAbs = number.abs		
+		
+		return numAbs < 1E-6
 	end
 	
 	def getFaceTransformMatrix
 		entity = @selectedFace
 		nula = Geom::Point3d.new (0,0,0)
-		ppp = Geom::Point3d.linear_combination 1.0, nula, 1.0, @selectedVertex.position
 		
-		v0 = entity.vertices[0].position
-		v1 = entity.vertices[1].position
-		kk = entity.normal
-		jj = v0.vector_to v1
-		jj.normalize!
-		ii = jj.cross kk
-		ppp = Geom::Point3d.linear_combination 1.0, nula, 1.0, v0
+		firstEdge = @selectedEdges[0]
+		startVertex = @selectedVertex
+		nextVertex = nil
+		
+		if(startVertex == firstEdge.vertices[0]) then
+			nextVertex = firstEdge.vertices[1]
+		else
+			nextVertex = firstEdge.vertices[0]
+		end
+		
+		edgeVector = startVertex.position.vector_to nextVertex.position
+		
+		kk = (edgeVector.dot entity.normal) > 0 ? entity.normal : entity.normal.reverse
+		
+		
+		if(isZero(kk[0]) && isZero(kk[1])) then
+			ii = Geom::Vector3d.new 1,0,0
+		else
+			ii = Geom::Vector3d.new kk[1],-kk[0],0
+		end
+		
+		ii.normalize!
+		jj = kk.cross ii
+		ppp = Geom::Point3d.linear_combination 1.0, nula, 1.0, startVertex.position
 
 	   #######                       	#x	#y	#z 	##
 		matrica = Geom::Transformation.new ([ii[0],	ii[1],	ii[2],	0,  	# i'
