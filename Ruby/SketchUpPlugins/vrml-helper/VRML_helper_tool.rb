@@ -4,11 +4,15 @@ class DpyVrmlHelperTool
 		cursorPath = Sketchup.find_support_file ("DpyCursor.png", "Plugins/DPY_VRML_HELPER_TOOL/")
 		@@cursor = UI.create_cursor(cursorPath, 5, 5)	
 		
-		@states = ["Select face to extrude", "Pick extrude start point", "Select extrude path", "Save extrude VRML code"]
+		@states = ["Select face to extrude and press ENTER to continue", "Pick extrude start point and press ENTER to continue", "Select extrude path and press ENTER to continue", "Save extrude VRML code or press ESCAPE to start from the beginning"]
+		initStates()
+	end
+	
+	def initStates
 		@stateIndex = 0
 		@selectedFace = nil
 		@selectedVertex = nil
-		@selectedEdges = Array.new		
+		@selectedEdges = Array.new	
 	end
    
 	def onSetCursor	
@@ -16,7 +20,8 @@ class DpyVrmlHelperTool
 	end
 	
 	def activate
-		showMessage
+		initStates()
+		showMessage()
 	end
 	
 	def draw(view)
@@ -37,7 +42,10 @@ class DpyVrmlHelperTool
 		if(@stateIndex == 2) then #"Select extrude path"
 			@selectedEdges = Array.new
 		end
-				
+		if(@stateIndex == 3) then #"Save extrude VRML code"
+			activate()
+		end	
+		
 		clearSelection()
 	end
 	
@@ -81,12 +89,7 @@ class DpyVrmlHelperTool
 			end
 		end
 		if(@stateIndex == 3) then #"Save extrude VRML code"
-			path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
-			if(!path.nil?) then
-				file = File.new(path, "w")
-				file.print getVrmlExportContent()
-				file.close
-			end
+			alert("press escape to start new export")
 		end
 	end
 
@@ -97,23 +100,26 @@ class DpyVrmlHelperTool
 			 tryMoveToNextState()
 			end
 			if(@stateIndex == 3) then #"Save extrude VRML code"
-				path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
-				if(!path.nil?) then
-					file = File.new(path, "w")
-					file.print getVrmlExportContent()
-					file.close
-				end
+				exportVrml()
 			end
 		end	 	  
 	end
+	
+	def exportVrml
+		path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
+		
+		if(!path.nil?) then
+			file = File.new(path, "w")
+			file.print getVrmlExportContent()
+			file.close
+		end
+	end
    
 	def tryMoveToNextState
-		alert("try move start")
-				
 		if(canMoveToNextState()) then
 			@stateIndex = @stateIndex + 1
 			statesCount = @states.length
-			if @stateIndex >= @statesCount then
+			if @stateIndex >= statesCount then
 				@stateIndex = 0 
 			end
 			
@@ -122,8 +128,6 @@ class DpyVrmlHelperTool
 		else
 			alert("Cannot move to next state before making the correct selection!")
 		end
-		
-		alert("try move end")
 	end
 	
 	def canMoveToNextState		
