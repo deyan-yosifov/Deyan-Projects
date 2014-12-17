@@ -162,12 +162,12 @@ class DpyVrmlHelperTool
 '
 
 		crossSection = getCrossSection()
-		splineAndOrientations = getSplineAndOrientations()
+		spineAndOrientations = getSpineAndOrientations()
 
 		footer = '		}
 	}'
 				
-		return header + crossSection + splineAndOrientations + footer
+		return header + crossSection + spineAndOrientations + footer
 	end
 	
 	def getCrossSection
@@ -237,9 +237,74 @@ class DpyVrmlHelperTool
 		return matrica
 	end
 	
-	def getSplineAndOrientations
-		return 'splines and orientations
+	def getSpineAndOrientations
+		headerSpine = '			spine [
 '
+		footer = '			]
+'
+		headerOrientation = '			orientation [
+'
+		textOffset = '				'
+		spineCoordinatesText = ''
+		orientationCoordinatesText = ''
+		
+		currentVertex = @selectedVertex
+		nextVertex = nil
+		edges = @selectedEdges
+		endEdgeIndex = edges.length - 1
+		currentEdgeIndex = 0
+		previousOrientation = nil;
+		
+		edges.each { |edge|
+			spineCoordinatesText = spineCoordinatesText + textOffset + getExportedVertexText(currentVertex) + ',
+'		
+			v0 = edge.vertices[0]
+			v1 = edge.vertices[1]
+			
+			if(currentVertex == v0) then
+				nextVertex = v1
+			elsif(currentEdgeIndex == v1) then
+				nextVertex = v0
+			else
+				spineCoordinatesText += "CANNOT FIND MATCHING VERTICES IN EDGEINDEX = " + currentEdgeIndex.to_s
+				break
+			end
+			
+			currentOrientation = currentVertex.position.vector_to nextVertex.position
+			actualOrientation = nil
+			
+			if(previousOrientation.nil?) then
+				actualOrientation = currentOrientation
+			else
+				actualOrientation = previousOrientation + currentOrientation
+			end
+			
+			orientationCoordinatesText = orientationCoordinatesText + textOffset + getExportedOrientationText(actualOrientation) + ',
+'
+									
+			previousOrientation = currentOrientation
+			currentVertex = nextVertex
+			currentEdgeIndex += 1
+		}		
+
+		spineCoordinatesText = spineCoordinatesText + textOffset + getExportedVertexText(currentVertex) + '
+'			
+		orientationCoordinatesText = orientationCoordinatesText + textOffset + getExportedOrientationText(previousOrientation) + '
+'
+		
+		return headerSpine + spineCoordinatesText + footer + headerOrientation + orientationCoordinatesText + footer
+	end
+	
+	def getExportedVertexText(vertex)
+		pos = vertex.position
+		
+		return getNumberText(pos[0]) + " " + getNumberText(pos[1]) + " " + getNumberText(pos[2])
+	end
+	
+	def getExportedOrientationText(orientation)
+		unity = orientation.normalize
+		
+		return getNumberText(unity[0]) + " " + getNumberText(unity[1]) + " " + getNumberText(unity[2]) + " 0.0"
 	end
 	
 	def showMessage		
