@@ -112,6 +112,8 @@ class DpyVrmlHelperTool
 			file = File.new(path, "w")
 			file.print getVrmlExportContent()
 			file.close
+			
+			alert("File successfully exported!")
 		end
 	end
    
