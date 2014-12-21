@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,9 +41,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormatProvider\Shapes\Extrusion.cs" />
+    <Compile Include="FormatProvider\Exporter.cs" />
+    <Compile Include="FormatProvider\VrmlFormatProvider.cs" />
     <Compile Include="Geometries\Face.cs" />
     <Compile Include="Geometries\Polyline.cs" />
+    <Compile Include="Model\Orientation.cs" />
+    <Compile Include="Model\Shapes\IShape.cs" />
+    <Compile Include="Model\Viewpoint.cs" />
+    <Compile Include="Model\VrmlDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
