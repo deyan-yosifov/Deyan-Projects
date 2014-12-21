@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VrmlSceneCreator.Geometries;
+using Vrml.Geometries;
 
-namespace VrmlSceneCreator.VRML
+namespace Vrml.FormatProvider.Shapes
 {
     public class Extrusion
     {

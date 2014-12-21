@@ -5,17 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace VrmlSceneCreator.Geometries
+namespace Vrml.Geometries
 {
-    public static class Face
+    public class Polyline
     {
         private readonly List<Point> points;
-        private readonly Point normalVector;
 
-        public Face(IEnumerable<Point> points, Point normalVector)
+        public Polyline(IEnumerable<Point> points)
         {
             this.points = new List<Point>(points);
-            this.normalVector = normalVector;
         }
 
         public IEnumerable<Point> Points
@@ -23,14 +21,6 @@ namespace VrmlSceneCreator.Geometries
             get
             {
                 return this.points;
-            }
-        }
-
-        public Point NormalVector
-        {
-            get
-            {
-                return this.normalVector;
             }
         }
     }
