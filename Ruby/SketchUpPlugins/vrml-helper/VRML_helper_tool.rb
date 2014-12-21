@@ -1,10 +1,14 @@
+VRML_HELPER_COMMAND_NAME = "DPY_VRML_HELPER_COMMAND"
+FACE_AND_SPINE_EXPORTER_COMMAND_NAME = "DPY_FACE_AND_SPINE_EXPORTER_COMMAND"
+
 class DpyVrmlHelperTool
 
-	def initialize 
+	def initialize(commandName)
 		cursorPath = Sketchup.find_support_file ("DpyCursor.png", "Plugins/DPY_VRML_HELPER_TOOL/")
 		@@cursor = UI.create_cursor(cursorPath, 5, 5)	
 		
 		@states = ["Select face to extrude and press ENTER to continue", "Pick extrude start point and press ENTER to continue", "Select extrude path and press ENTER to continue", "Save extrude VRML code or press ESCAPE to start from the beginning"]
+		@commandName = commandName
 		initStates()
 	end
 	
@@ -102,6 +106,8 @@ class DpyVrmlHelperTool
 			if(@stateIndex == 3) then #"Save extrude VRML code"
 				exportVrml()
 			end
+		else
+			alert(@commandName)
 		end	 	  
 	end
 	
@@ -245,14 +251,23 @@ class DpyVrmlHelperTool
 		kk = (edgeVector.dot entity.normal) > 0 ? entity.normal : entity.normal.reverse
 		
 		horizontal = Geom::Point3d.new (1,0,0)
-		ii = nula.vector_to horizontal
+		ii = nula.vector_to horizontal		
+		isKVertical = (isZero(kk[0]) && isZero(kk[1]))
 		
-		if(!(isZero(kk[0]) && isZero(kk[1]))) then
+		if(isKVertical) then			
+			if(kk[2] < 0) then ii.reverse! end		
+		else
 			ii = Geom::Vector3d.new kk[1],-kk[0],0
+			ii.normalize!
 		end		
-		
-		ii.normalize!
+				
 		jj = kk.cross ii
+		
+		if(!isKVertical && (jj[2] < 0)) then
+			ii.reverse!
+			jj.reverse!
+		end
+		
 		ppp = Geom::Point3d.linear_combination 1.0, nula, 1.0, startVertex.position
 
 	   #######                       	#x	#y	#z 	##
@@ -359,11 +374,12 @@ end #end class DpyVrmlHelperTool
 toolbar = UI::Toolbar.new "DPY_VRML_HELPER_TOOLBAR"
 
 ######Adding command in the toolbar
-DPY_VRML_HELPER_COMMAND = UI::Command.new("DPY_VRML_HELPER_COMMAND") { 
+DPY_VRML_HELPER_COMMAND = UI::Command.new(VRML_HELPER_COMMAND_NAME) { 
+	toolInstance = DpyVrmlHelperTool.new FACE_AND_SPINE_EXPORTER_COMMAND_NAME
 
-     Sketchup.active_model.start_operation 'DPY_VRML_HELPER_COMMAND', true     
-	 Sketchup.active_model.select_tool DpyVrmlHelperTool.new
-     Sketchup.active_model.commit_operation
+	Sketchup.active_model.start_operation VRML_HELPER_COMMAND_NAME, true     
+	Sketchup.active_model.select_tool toolInstance
+	Sketchup.active_model.commit_operation
 
  }
 DPY_VRML_HELPER_COMMAND.small_icon = File.join("DPY_VRML_HELPER_TOOL", "DPY_VRML_HELPER_BUTTON_small.jpg")
