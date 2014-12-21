@@ -107,23 +107,101 @@ class DpyVrmlHelperTool
 				exportVrml()
 			end
 		else
-			alert(@commandName)
+			#alert(@commandName)
 		end	 	  
 	end
 	
 	def exportVrml
-		#alert(getVrmlExportContent)		
+		exportContent = nil
+		
+		if(@commandName == VRML_HELPER_COMMAND_NAME) then
+			exportContent = getVrmlExportContent()
+		elsif(@commandName == FACE_AND_SPINE_EXPORTER_COMMAND_NAME) then
+			exportContent = getFaceAndSpineExportContent()
+		end	
+		#alert(exportContent)		
 		#return
 		
 		path = UI.savepanel ("Save VRML", nil, "vrml_extrude_export.txt")
 		
 		if(!path.nil?) then
 			file = File.new(path, "w")
-			file.print getVrmlExportContent()
+			file.print exportContent
 			file.close
 			
 			alert("File successfully exported!")
 		end
+	end
+	
+	def getFaceAndSpineExportContent
+		section = getSectionPoints()
+		sectionNormal = getSectionNormalPoint()
+		spine = getSpinePoints()
+		
+		return section + sectionNormal + spine
+	end
+	
+	def getSectionPoints
+		entity = @selectedFace
+		text = ''		
+		text = text + "face
+"		
+		entity.vertices.each { |vrah|     
+			text = text + exportPosition(vrah.position)
+		}
+		
+		text
+	end
+	
+	def getSectionNormalPoint
+		text = ''		
+		text = text + "normal
+"
+		text = text + exportVector(@selectedFace.normal)
+		
+		return text
+	end
+	
+	def getSpinePoints			
+		text = ''
+		text = text + 'spine
+'	
+		currentVertex = @selectedVertex
+		nextVertex = nil
+		edges = @selectedEdges
+		
+		text = text + exportPosition(currentVertex.position)
+		
+		edges.each { |edge|
+			v0 = edge.vertices[0]
+			v1 = edge.vertices[1]
+			if(currentVertex == v0) then
+				nextVertex = v1
+			elsif(currentVertex == v1) then
+				nextVertex = v0
+			else
+				alert("CANNOT FIND MATCHING VERTICES IN EDGE INDEX")
+				text += "CANNOT FIND MATCHING VERTICES IN EDGE"
+				break
+			end
+			
+			text = text + exportPosition(nextVertex.position)	
+			currentVertex = nextVertex
+		}
+		
+		return text
+	end
+	
+	def exportPosition(position)		
+		separator = " "
+		return getNumberText(position[0]) + separator + getNumberText(position[1]) + separator + getNumberText(position[2]) + "
+"
+	end
+	
+	def exportVector(vector)		
+		separator = " "
+		return getInchNumberText(vector[0]) + separator + getInchNumberText(vector[1]) + separator + getInchNumberText(vector[2]) + "
+"
 	end
    
 	def tryMoveToNextState
@@ -375,6 +453,7 @@ toolbar = UI::Toolbar.new "DPY_VRML_HELPER_TOOLBAR"
 
 ######Adding command in the toolbar
 DPY_VRML_HELPER_COMMAND = UI::Command.new(VRML_HELPER_COMMAND_NAME) { 
+	#toolInstance = DpyVrmlHelperTool.new VRML_HELPER_COMMAND_NAME
 	toolInstance = DpyVrmlHelperTool.new FACE_AND_SPINE_EXPORTER_COMMAND_NAME
 
 	Sketchup.active_model.start_operation VRML_HELPER_COMMAND_NAME, true     
