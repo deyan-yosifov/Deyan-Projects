@@ -5,21 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Media3D;
+using Vrml.Core;
 
 namespace Vrml.Geometries
 {
     public class Face
     {
-        private readonly List<Point3D> points;
-        private readonly Vector3D normalVector;
+        private readonly Collection<Point3D> points;
+        private Vector3D? normalVector;
 
-        public Face(IEnumerable<Point3D> points, Vector3D normalVector)
+        public Face()
         {
-            this.points = new List<Point3D>(points);
-            this.normalVector = normalVector;
+            this.points = new Collection<Point3D>();
         }
 
-        public IEnumerable<Point3D> Points
+        public Collection<Point3D> Points
         {
             get
             {
@@ -31,7 +31,18 @@ namespace Vrml.Geometries
         {
             get
             {
-                return this.normalVector;
+                if (this.normalVector.HasValue)
+                {
+                    return this.normalVector.Value;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            set
+            {
+                this.normalVector = value;
             }
         }
     }

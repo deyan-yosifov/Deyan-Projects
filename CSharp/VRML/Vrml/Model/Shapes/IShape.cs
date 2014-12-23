@@ -4,8 +4,9 @@ using Vrml.FormatProvider;
 
 namespace Vrml.Model.Shapes
 {
-    public interface IShape
+    public interface IShape : IVrmlElement
     {
-        Color? DiffuseColor { get; set; }
+        Appearance Appearance { get; set; }
+        string Comment { get; set; }
     }
 }

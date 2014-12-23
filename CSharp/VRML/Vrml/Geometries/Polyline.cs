@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Media3D;
+using Vrml.Core;
 
 namespace Vrml.Geometries
 {
     public class Polyline
     {
-        private readonly List<Point3D> points;
+        private readonly Collection<Point3D> points;
 
-        public Polyline(IEnumerable<Point3D> points)
+        public Polyline()
         {
-            this.points = new List<Point3D>(points);
+            this.points = new Collection<Point3D>();
         }
 
-        public IEnumerable<Point3D> Points
+        public Collection<Point3D> Points
         {
             get
             {

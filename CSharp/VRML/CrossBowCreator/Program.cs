@@ -30,6 +30,7 @@ namespace CrossBowCreator
                 provider.Export(document, fileStream);
             }
 
+            Process.Start(Directory.GetCurrentDirectory());
             Process.Start(ExportFileName);
         }
 
@@ -38,6 +39,7 @@ namespace CrossBowCreator
             VrmlDocument document = new VrmlDocument();
             document.Title = "Cross Bow by Deyan Yosifov";
             document.Viewpoint = new Viewpoint() { Position = new Point3D(0, 1, 2.5) };
+            document.NavigationInfo = new NavigationInfo();
 
             return document;
         }

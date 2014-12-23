@@ -26,7 +26,5 @@ namespace Vrml.FormatProvider
                 writer.Flush();
             }
         }
-
-
     }
 }
