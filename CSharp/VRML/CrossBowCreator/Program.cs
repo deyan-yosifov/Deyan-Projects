@@ -66,7 +66,7 @@ namespace CrossBowCreator
             foreach (KeyValuePair<string, string> resource in commentToExtrusionGeometryResource)
             {
                 ExtrusionGeometry arrowAboveBody = ExtrusionImporter.ImportFromText(resource.Value);
-                //transform.Children.Add(new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key });       
+                transform.Children.Add(new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key });       
                 transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
             }                   
 
