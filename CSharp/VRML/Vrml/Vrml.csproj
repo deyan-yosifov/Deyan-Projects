@@ -45,6 +45,7 @@
     <Compile Include="FormatProvider\ElementWriters\AppearanceWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ElementWriterBase.cs" />
     <Compile Include="FormatProvider\ElementWriters\ExtrusionWriter.cs" />
+    <Compile Include="FormatProvider\ElementWriters\IndexedLineSetWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\NavigationInfoWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ShapeWriterBase.cs" />
     <Compile Include="FormatProvider\ElementWriters\TransformationWriter.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Model\NavigationInfo.cs" />
     <Compile Include="Model\Orientation.cs" />
     <Compile Include="Model\Shapes\Extrusion.cs" />
+    <Compile Include="Model\Shapes\IndexedLineSet.cs" />
     <Compile Include="Model\Shapes\IShape.cs" />
     <Compile Include="Model\Shapes\Appearance.cs" />
     <Compile Include="Model\Shapes\ShapeBase.cs" />

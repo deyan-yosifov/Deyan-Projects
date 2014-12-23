@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vrml.Core;
-using Vrml.Model.Shapes;
 
 namespace Vrml.Model
 {
     public class Transformation : IVrmlElement
     {
-        private readonly Collection<IShape> children;
+        private readonly Collection<IVrmlElement> children;
 
         public Transformation()
         {
-            this.children = new Collection<IShape>();
+            this.children = new Collection<IVrmlElement>();
         }
 
         public string Name { get; set; }
 
-        public Collection<IShape> Children
+        public Collection<IVrmlElement> Children
         {
             get
             {
                 return this.children;
             }
         }
-        
     }
 }

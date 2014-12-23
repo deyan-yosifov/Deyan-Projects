@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Vrml.Core;
 using Vrml.Model;
@@ -104,6 +105,12 @@ namespace Vrml.FormatProvider
         {
             this.Write(orientation.Vector);
             this.Write(string.Format(" {0}", orientation.Angle));
+        }
+
+        public void Write(Color color)
+        {
+            double scale = 1 / 255.0;
+            this.Write(string.Format("{0} {1} {2}", color.R * scale, color.G * scale, color.B * scale));
         }
 
         public void WriteLine(Point point)

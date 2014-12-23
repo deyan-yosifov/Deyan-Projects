@@ -19,6 +19,7 @@ namespace Vrml.FormatProvider.ElementWriters
             RegisterElementWriter(typeof(Transformation), new TransformationWriter());
             RegisterElementWriter(typeof(Extrusion), new ExtrusionWriter());
             RegisterElementWriter(typeof(Appearance), new AppearanceWriter());
+            RegisterElementWriter(typeof(IndexedLineSet), new IndexedLineSetWriter());
         }
 
         public static void Write(IVrmlElement element, Writer writer)

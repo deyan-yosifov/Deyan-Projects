@@ -17,6 +17,13 @@ namespace CrossBowCreator
     class Program
     {
         private const string ExportFileName = "CrossBow-DeyanYosifov-M24906.wrl";
+        private static readonly Dictionary<string, string> commentToExtrusionGeometryResource;
+
+        static Program()
+        {
+            commentToExtrusionGeometryResource = new Dictionary<string, string>();
+            RegisterResources();
+        }
 
         static void Main(string[] args)
         {
@@ -41,18 +48,58 @@ namespace CrossBowCreator
         {
             VrmlDocument document = new VrmlDocument();
             document.Title = "Cross Bow by Deyan Yosifov";
+            document.Background = Colors.AliceBlue;
             document.Viewpoint = new Viewpoint() { Position = new Point3D(0, 1, 2.5) };
             document.NavigationInfo = new NavigationInfo();
 
             Transformation transform = new Transformation();
             document.Transformations.Add(transform);
             transform.Name = "CrossBow";
-            Appearance appearance = new Appearance() { DiffuseColor = Colors.Purple };
-            
-            ExtrusionGeometry arrowAboveBody = ExtrusionImporter.ImportFromText(ResourceDictionary.ArrowAboveBody);
-            transform.Children.Add(new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = "Arrow above body" });            
+            Appearance appearance = new Appearance() { DiffuseColor = Colors.Gray };
+            Appearance redAppearance = new Appearance() { DiffuseColor = Colors.Red };
+
+            foreach (KeyValuePair<string, string> resource in commentToExtrusionGeometryResource)
+            {
+                ExtrusionGeometry arrowAboveBody = ExtrusionImporter.ImportFromText(resource.Value);
+                //transform.Children.Add(new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key });       
+                transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
+            }
+                   
 
             return document;
+        }
+
+        private static void RegisterResources()
+        {
+            commentToExtrusionGeometryResource[Constants.ArrowAboveBody] = ResourceDictionary.ArrowAboveBody;
+            commentToExtrusionGeometryResource[Constants.ArrowHead] = ResourceDictionary.ArrowHead;
+            commentToExtrusionGeometryResource[Constants.BigArc] = ResourceDictionary.BigArc;
+            commentToExtrusionGeometryResource[Constants.Body] = ResourceDictionary.Body;
+            commentToExtrusionGeometryResource[Constants.BottomCylinder] = ResourceDictionary.BottomCylinder;
+            commentToExtrusionGeometryResource[Constants.FrontTorus] = ResourceDictionary.FrontTorus;
+            commentToExtrusionGeometryResource[Constants.LeftCylinder] = ResourceDictionary.LeftCylinder;
+            commentToExtrusionGeometryResource[Constants.LowerFrontTriangle] = ResourceDictionary.LowerFrontTriangle;
+            commentToExtrusionGeometryResource[Constants.RightCylinder] = ResourceDictionary.RightCylinder;
+            commentToExtrusionGeometryResource[Constants.UpperFrontTriangle] = ResourceDictionary.UpperFrontTriangle;
+        }
+
+        private static string GetResource(string key)
+        {
+            return commentToExtrusionGeometryResource[key];
+        }
+
+        private static class Constants
+        {
+            public const string ArrowAboveBody = "Arrow above body";
+            public const string ArrowHead = "Arrow head";
+            public const string BigArc = "Big arc";
+            public const string Body = "Body";
+            public const string BottomCylinder = "Bottom cylinder";
+            public const string FrontTorus = "Front torus";
+            public const string LeftCylinder = "Left cylinder";
+            public const string LowerFrontTriangle = "Lower front triangle";
+            public const string RightCylinder = "Right cylinder";
+            public const string UpperFrontTriangle = "Upper front triangle";
         }
     }
 }

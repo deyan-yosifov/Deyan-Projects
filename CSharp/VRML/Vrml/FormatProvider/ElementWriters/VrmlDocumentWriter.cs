@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Windows.Media;
 using Vrml.Model;
+using Vrml.Model.Shapes;
 
 namespace Vrml.FormatProvider.ElementWriters
 {
@@ -12,12 +14,12 @@ namespace Vrml.FormatProvider.ElementWriters
 
             if (document.Title != null)
             {
-                writer.WriteLine("WorldInfo {0}", Writer.LeftBracket);
-                writer.MoveIn();
-                writer.WriteLine("title \"{0}\"", document.Title);
-                writer.MoveOut();
-                writer.WriteLine(Writer.RightBracket);
-                writer.WriteLine();
+                WriteTitle(document.Title, writer);
+            }
+
+            if (document.Background.HasValue)
+            {
+                WriteBackground(document.Background.Value, writer);
             }
 
             Writers.Write(document.Viewpoint, writer);
@@ -37,6 +39,32 @@ namespace Vrml.FormatProvider.ElementWriters
             {
                 this.Write(document, writer);
             }
+        }
+
+        private static void WriteTitle(string title, Writer writer)
+        {
+            writer.WriteLine("WorldInfo {0}", Writer.LeftBracket);
+            writer.MoveIn();
+            writer.WriteLine("title \"{0}\"", title);
+            writer.MoveOut();
+            writer.WriteLine(Writer.RightBracket);
+            writer.WriteLine();
+        }
+
+        private static void WriteBackground(Color color, Writer writer)
+        {
+            writer.WriteLine("Background {0}", Writer.LeftBracket);
+
+            writer.MoveIn();
+            writer.WriteOffset();
+            writer.Write("skyColor [ ");
+            writer.Write(color);
+            writer.Write(" ]");
+            writer.WriteLine();
+            writer.MoveOut();
+
+            writer.WriteLine(Writer.RightBracket);
+            writer.WriteLine();
         }
     }
 }

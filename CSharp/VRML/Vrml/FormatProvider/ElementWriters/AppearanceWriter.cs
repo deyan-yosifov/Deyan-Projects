@@ -17,8 +17,10 @@ namespace Vrml.FormatProvider.ElementWriters
                 writer.MoveIn();
 
                 Color color = appearance.DiffuseColor.Value;
-                double scale = 1 / 255.0;
-                writer.WriteLine("diffuseColor {0} {1} {2}", color.R * scale, color.G * scale, color.B * scale);
+                writer.WriteOffset();
+                writer.Write("diffuseColor ");
+                writer.Write(color);
+                writer.WriteLine();
 
                 writer.MoveOut();
                 writer.WriteLine(Writer.RightBracket);
