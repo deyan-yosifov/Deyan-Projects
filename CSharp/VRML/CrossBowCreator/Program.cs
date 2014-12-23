@@ -49,7 +49,12 @@ namespace CrossBowCreator
             VrmlDocument document = new VrmlDocument();
             document.Title = "Cross Bow by Deyan Yosifov";
             document.Background = Colors.AliceBlue;
-            document.Viewpoint = new Viewpoint() { Position = new Point3D(0, 1, 2.5) };
+
+            //Point3D viewPosition = new Point3D(1.41, 2.87, 2.52);
+            Point3D viewPosition = new Point3D(0.2, 0.8, 2);
+            Vector3D viewDirection = new Vector3D(1, 0, 0);
+            viewDirection.Normalize();
+            document.Viewpoint = new Viewpoint() { Position = viewPosition, Orientation = new Orientation(viewDirection, 0)};
             document.NavigationInfo = new NavigationInfo();
 
             Transformation transform = new Transformation();
@@ -63,8 +68,7 @@ namespace CrossBowCreator
                 ExtrusionGeometry arrowAboveBody = ExtrusionImporter.ImportFromText(resource.Value);
                 //transform.Children.Add(new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key });       
                 transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
-            }
-                   
+            }                   
 
             return document;
         }
