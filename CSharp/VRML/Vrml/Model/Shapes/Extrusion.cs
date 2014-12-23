@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -27,13 +28,16 @@ namespace Vrml.Model.Shapes
         {
             Matrix3D matrix = GetFaceMatrix(geometry);
 
-            foreach (Point3D point in geometry.Face.Points)
+            // The points are taken reversed otherwise the faces oposite normals directions.
+            Point3D firstPoint = geometry.Face.Points[0];
+            Point3D firstPlanar = Point3D.Multiply(firstPoint, matrix);
+            this.CrossSection.Add(new Point(firstPlanar.X, firstPlanar.Y));
+
+            foreach (Point3D point in geometry.Face.Points.Reverse())
             {
                 Point3D planarPoint = Point3D.Multiply(point, matrix);
                 this.CrossSection.Add(new Point(planarPoint.X, planarPoint.Y));
             }
-
-            this.CrossSection.Add(this.CrossSection[0]);
 
             foreach (Point3D point in geometry.Polyline.Points)
             {
@@ -76,15 +80,9 @@ namespace Vrml.Model.Shapes
         private static Matrix3D GetFaceMatrix(ExtrusionGeometry geometry)
         {
             Vector3D k = geometry.Face.NormalVector;
-            //k = KReverseOnZDirection(k);
 
             bool isKVertical = IsZero(k.X) && IsZero(k.Y);
             Vector3D j = new Vector3D(-1, 0, 0);
-
-            if (isKVertical && k.Z < 0)
-            {
-                //j = Vector3D.Multiply(-1, j);
-            }
 
             if(!isKVertical)
             {
@@ -100,14 +98,6 @@ namespace Vrml.Model.Shapes
             }
 
             Point3D center = geometry.Polyline.Points[0];
-
-            //Matrix3D matrix = new Matrix3D()
-            //{
-            //    M11 = i.X, M12 = i.Y, M13 = i.Z, M14 = 0,
-            //    M21 = j.X, M22 = j.Y, M23 = j.Z, M24 = 0,
-            //    M31 = k.X, M32 = k.Y, M33 = k.Z, M34 = 0,
-            //    OffsetX = center.X, OffsetY = center.Y, OffsetZ = center.Z, M44 = 1
-            //};
 
             Matrix3D matrix = new Matrix3D()
             {
@@ -141,16 +131,6 @@ namespace Vrml.Model.Shapes
                 i = Vector3D.Multiply(-1, i);
                 j = Vector3D.Multiply(-1, j);
             }
-        }
-
-        private static Vector3D KReverseOnZDirection(Vector3D k)
-        {
-            if (k.Z < 0)
-            {
-                k = Vector3D.Multiply(-1, k);
-            }
-
-            return k;
         }
 
         private static bool IsZero(double value)

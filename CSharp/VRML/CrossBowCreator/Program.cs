@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Vrml.FormatProvider;
@@ -66,8 +67,14 @@ namespace CrossBowCreator
             foreach (KeyValuePair<string, string> resource in commentToExtrusionGeometryResource)
             {
                 ExtrusionGeometry arrowAboveBody = ExtrusionImporter.ImportFromText(resource.Value);
-                transform.Children.Add(new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key });       
-                transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
+                Extrusion extrusion = new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key };
+                if (resource.Key == Constants.ArrowHead)
+                {
+                    extrusion.Scale.Add(new Size(1, 1));
+                    extrusion.Scale.Add(new Size(0.1, 0.1));
+                }
+                transform.Children.Add(extrusion);       
+                //transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
             }                   
 
             return document;
