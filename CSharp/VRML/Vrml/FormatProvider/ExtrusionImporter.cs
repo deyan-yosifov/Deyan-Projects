@@ -14,20 +14,30 @@ namespace Vrml.FormatProvider
         }
 
         private ImportState state;
-        private Face face;
-        private Polyline polyline;
+        private ExtrusionGeometry extrusion;
 
-        public Extrusion Import(Stream fileStream)
+        public static ExtrusionGeometry ImportFromText(string text)
         {
-            using (fileStream)
+            return new ExtrusionImporter().Import(text);
+        }
+
+        private Face Face
+        {
+            get
             {
-                StreamReader reader = new StreamReader(fileStream);
-                string text = reader.ReadToEnd();
-                return this.Import(text);
+                return this.extrusion.Face;
             }
         }
-        
-        public Extrusion Import(string text)
+
+        private Polyline Polyline
+        {
+            get
+            {
+                return this.extrusion.Polyline;
+            }
+        }
+
+        public ExtrusionGeometry Import(string text)
         {
             this.Initialize();
 
@@ -43,14 +53,13 @@ namespace Vrml.FormatProvider
                 }
             }
 
-            return new Extrusion(this.face, this.polyline);
+            return this.extrusion;
         }
 
         private void Initialize()
         {
             this.state = ImportState.Invalid;
-            this.face = new Face();
-            this.polyline = new Polyline();
+            this.extrusion = new ExtrusionGeometry();
         }
 
         private void ParsePoint(string line)
@@ -65,13 +74,13 @@ namespace Vrml.FormatProvider
             switch (this.state)
             {
                 case ImportState.Face:
-                    this.face.Points.Add(point);
+                    this.Face.Points.Add(point);
                     break;
                 case ImportState.Normal:
-                    this.face.NormalVector = new Vector3D(point.X, point.Y, point.Z);
+                    this.Face.NormalVector = new Vector3D(point.X, point.Y, point.Z);
                     break;
                 case ImportState.Spine:
-                    this.polyline.Points.Add(point);
+                    this.Polyline.Points.Add(point);
                     break;
                 default:
                     throw new NotSupportedException(string.Format("Invalid parse state {0}!", this.state.ToString()));

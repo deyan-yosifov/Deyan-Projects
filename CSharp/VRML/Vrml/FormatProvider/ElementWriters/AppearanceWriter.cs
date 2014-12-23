@@ -26,7 +26,6 @@ namespace Vrml.FormatProvider.ElementWriters
 
             writer.MoveOut();
             writer.WriteLine(Writer.RightBracket);
-            writer.WriteLine();
         }
 
         public override void Write<T>(T element, Writer writer)

@@ -56,6 +56,7 @@
     <Compile Include="FormatProvider\ExtrusionImporter.cs" />
     <Compile Include="FormatProvider\VrmlFormatProvider.cs" />
     <Compile Include="FormatProvider\Writer.cs" />
+    <Compile Include="Geometries\ExtrusionGeometry.cs" />
     <Compile Include="Geometries\Face.cs" />
     <Compile Include="Geometries\Polyline.cs" />
     <Compile Include="Model\IVrmlElement.cs" />

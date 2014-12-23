@@ -45,27 +45,56 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceDictionary.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResourceDictionary.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ArrowAboveBody.txt" />
-    <Resource Include="Resources\ArrowHead.txt" />
-    <Resource Include="Resources\BigArc.txt" />
-    <Resource Include="Resources\Body.txt" />
-    <Resource Include="Resources\BottomCylinder.txt" />
-    <Resource Include="Resources\FrontTorus.txt" />
-    <Resource Include="Resources\LeftCylinder.txt" />
-    <Resource Include="Resources\LowerFrontTriangle.txt" />
-    <Resource Include="Resources\RightCylinder.txt" />
-    <Resource Include="Resources\UpperFrontTriangle.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vrml\Vrml.csproj">
       <Project>{a9da8e2b-c357-41e5-a7ed-fc3d9ddae07a}</Project>
       <Name>Vrml</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ResourceDictionary.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourceDictionary.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ArrowAboveBody.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ArrowHead.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BigArc.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Body.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BottomCylinder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FrontTorus.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LeftCylinder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LowerFrontTriangle.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RightCylinder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UpperFrontTriangle.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

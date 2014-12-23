@@ -22,8 +22,8 @@ namespace Vrml.Model.Shapes
             this.scale = new Collection<Size>();
         }
 
-        public Extrusion(Face sectionPoints, Polyline spinePoints)
-            : base()
+        public Extrusion(ExtrusionGeometry geometry)
+            : this()
         {
             // TODO:
         }

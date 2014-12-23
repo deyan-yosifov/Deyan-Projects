@@ -35,7 +35,6 @@ namespace Vrml.FormatProvider.ElementWriters
 
             writer.MoveOut();
             writer.WriteLine(Writer.RightBracket);
-            writer.WriteLine();
         }
 
         public override void WriteGeometry(IShape element, Writer writer)
