@@ -3,7 +3,7 @@ using System.Windows.Media.Media3D;
 
 namespace Vrml.Model
 {
-    public class Orientation
+    public class Orientation : IVrmlSimpleType
     {
         private readonly Vector3D vector;
         private readonly double angle;
@@ -11,6 +11,7 @@ namespace Vrml.Model
         public Orientation(Vector3D vector, double angle)
         {
             this.vector = vector;
+            this.vector.Normalize();
             this.angle = angle;
         }
 
@@ -27,6 +28,14 @@ namespace Vrml.Model
             get
             {
                 return this.angle;
+            }
+        }
+
+        public string VrmlText
+        {
+            get
+            {
+                return string.Format("{0} {1} {2} {3}", this.Vector.X, this.Vector.Y, this.Vector.Z, this.Angle);
             }
         }
     }

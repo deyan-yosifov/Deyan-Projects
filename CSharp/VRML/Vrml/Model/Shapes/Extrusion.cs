@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Vrml.Core;
 using Vrml.Geometries;
@@ -11,14 +10,14 @@ namespace Vrml.Model.Shapes
     public class Extrusion : ShapeBase
     {
         private readonly Collection<Point> crossSection;
-        private readonly Collection<Point3D> spine;
+        private readonly Collection<Position> spine;
         private readonly Collection<Orientation> orientation;
         private readonly Collection<Size> scale;
 
         public Extrusion()
         {
             this.crossSection = new Collection<Point>();
-            this.spine = new Collection<Point3D>();
+            this.spine = new Collection<Position>();
             this.orientation = new Collection<Orientation>();
             this.scale = new Collection<Size>();
         }
@@ -41,7 +40,7 @@ namespace Vrml.Model.Shapes
 
             foreach (Point3D point in geometry.Polyline.Points)
             {
-                this.Spine.Add(point);
+                this.Spine.Add(new Position(point));
             }
         }
 
@@ -53,7 +52,7 @@ namespace Vrml.Model.Shapes
             }
         }
 
-        public Collection<Point3D> Spine
+        public Collection<Position> Spine
         {
             get
             {

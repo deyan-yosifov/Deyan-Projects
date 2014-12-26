@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Windows.Media;
 using Vrml.Model;
-using Vrml.Model.Shapes;
+using Vrml.Model.Animations;
 
 namespace Vrml.FormatProvider.ElementWriters
 {
-    internal class VrmlDocumentWriter : ElementWriterBase
+    internal static class VrmlDocumentWriter
     {
-        public void Write(VrmlDocument document, Writer writer)
+        public static void Write(VrmlDocument document, Writer writer)
         {
             writer.WriteLine(@"#VRML V2.0 utf8");
             writer.WriteLine();
@@ -17,27 +16,19 @@ namespace Vrml.FormatProvider.ElementWriters
                 WriteTitle(document.Title, writer);
             }
 
-            if (document.Background.HasValue)
+            if (document.Background != null)
             {
-                WriteBackground(document.Background.Value, writer);
+                WriteBackground(document.Background, writer);
             }
 
-            Writers.Write(document.Viewpoint, writer);
-            Writers.Write(document.NavigationInfo, writer);
-
-            foreach (Transformation transformation in document.Transformations)
+            foreach (IVrmlElement element in document.Elements)
             {
-                Writers.Write(transformation, writer);
+                Writers.Write(element, writer);
             }
-        }
 
-        public override void Write<T>(T element, Writer writer)
-        {
-            VrmlDocument document = element as VrmlDocument;
-
-            if (document != null)
+            foreach (Route route in document.Routes)
             {
-                this.Write(document, writer);
+                writer.Writeline(route);
             }
         }
 
@@ -51,7 +42,7 @@ namespace Vrml.FormatProvider.ElementWriters
             writer.WriteLine();
         }
 
-        private static void WriteBackground(Color color, Writer writer)
+        private static void WriteBackground(VrmlColor color, Writer writer)
         {
             writer.WriteLine("Background {0}", Writer.LeftBracket);
 

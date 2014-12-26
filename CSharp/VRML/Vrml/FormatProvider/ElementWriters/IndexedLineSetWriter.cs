@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Vrml.Core;
 using Vrml.Model.Shapes;
 
 namespace Vrml.FormatProvider.ElementWriters
@@ -11,6 +8,8 @@ namespace Vrml.FormatProvider.ElementWriters
     {
         public void WriteGeometry(IndexedLineSet lineSet, Writer writer)
         {
+            Guard.ThrowExceptionIfNull(lineSet, "lineSet");
+
             writer.WriteLine("geometry IndexedLineSet {0}", Writer.LeftBracket);
             writer.MoveIn();
 
@@ -37,11 +36,7 @@ namespace Vrml.FormatProvider.ElementWriters
         public override void WriteGeometry(IShape element, Writer writer)
         {
             IndexedLineSet lineSet = element as IndexedLineSet;
-
-            if (lineSet != null)
-            {
-                this.WriteGeometry(lineSet, writer);
-            }
+            this.WriteGeometry(lineSet, writer);
         }
     }
 }

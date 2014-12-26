@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Vrml.Core;
 using Vrml.Model;
+using Vrml.Model.Animations;
 
 namespace Vrml.FormatProvider
 {
@@ -81,14 +82,9 @@ namespace Vrml.FormatProvider
             this.Write(this.Offset);
         }
 
-        public void Write(Point3D point)
+        public void Write(double number)
         {
-            this.Write("{0} {1} {2}", point.X, point.Y, point.Z);
-        }
-
-        public void Write(Vector3D vector)
-        {
-            this.Write("{0} {1} {2}", vector.X, vector.Y, vector.Z);
+            this.Write(number.ToString());
         }
 
         public void Write(Point point)
@@ -101,51 +97,28 @@ namespace Vrml.FormatProvider
             this.Write("{0} {1}", size.Width, size.Height);
         }
 
-        public void Write(Orientation orientation)
+        public void Write(IVrmlSimpleType simpleType)
         {
-            this.Write(orientation.Vector);
-            this.Write(string.Format(" {0}", orientation.Angle));
+            this.Write(simpleType.VrmlText);
         }
 
-        public void Write(Color color)
+        public void Writeline(Route route)
         {
-            double scale = 1 / 255.0;
-            this.Write(string.Format("{0} {1} {2}", color.R * scale, color.G * scale, color.B * scale));
+            this.WriteLine("ROUTE {0}.{1} TO {2}.{3}",
+                route.ElementOut.DefinitionName,
+                route.EventOut,
+                route.ElementIn.DefinitionName,
+                route.EventIn);
         }
 
-        public void WriteLine(Point point)
+        public void WriteArrayCollection(IEnumerable<IVrmlSimpleType> simpleTypes, string collectionName)
         {
-            this.WriteOffset();
-            this.Write(point);
-            this.WriteLine();
+            this.WriteArrayCollection(new Collection<IVrmlSimpleType>(simpleTypes), collectionName, (simpleType, wr) => { wr.Write(simpleType); });
         }
 
-        public void WriteLine(Point3D point)
+        public void WriteArrayCollection(IEnumerable<double> numbers, string collectionName)
         {
-            this.WriteOffset();
-            this.Write(point);
-            this.WriteLine();
-        }
-
-        public void WriteLine(Vector3D vector)
-        {
-            this.WriteOffset();
-            this.Write(vector);
-            this.WriteLine();
-        }
-
-        public void WriteLine(Orientation orientation)
-        {
-            this.WriteOffset();
-            this.Write(orientation);
-            this.WriteLine();
-        }
-
-        public void WriteLine(Size size)
-        {
-            this.WriteOffset();
-            this.Write(size);
-            this.WriteLine();
+            this.WriteArrayCollection(new Collection<double>(numbers), collectionName, (num, wr) => { wr.Write(num); });
         }
 
         public void WriteArrayCollection<T>(Collection<T> collection, string collectionName, Action<T, Writer> writeElement)

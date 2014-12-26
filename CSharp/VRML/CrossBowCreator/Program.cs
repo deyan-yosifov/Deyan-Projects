@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -49,26 +47,28 @@ namespace CrossBowCreator
         {
             VrmlDocument document = new VrmlDocument();
             document.Title = "Cross Bow by Deyan Yosifov";
-            document.Background = Colors.AliceBlue;
+            document.Background = new VrmlColor(Colors.AliceBlue);
 
             //Point3D viewPosition = new Point3D(1.41, 2.87, 2.52);
-            Point3D viewPosition = new Point3D(0.2, 0.8, 2);
-            Vector3D viewDirection = new Vector3D(1, 0, 0);
-            viewDirection.Normalize();
-            document.Viewpoint = new Viewpoint() { Position = viewPosition, Orientation = new Orientation(viewDirection, 0)};
-            document.NavigationInfo = new NavigationInfo();
+            document.Elements.Add(new Viewpoint("Entry view") 
+            {
+                Position = new Position(0.2, 0.8, 2),
+                Orientation = new Orientation(new Vector3D(1, 0, 0), 0)
+            });
+
+            document.Elements.Add(new NavigationInfo());
 
             Transformation transform = new Transformation();
-            document.Transformations.Add(transform);
-            transform.Name = "CrossBow";
-            Appearance appearance = new Appearance() { DiffuseColor = Colors.Gray };
-            Appearance redAppearance = new Appearance() { DiffuseColor = Colors.Red };
+            document.Elements.Add(transform);
+            transform.DefinitionName = "CrossBow";
+            Appearance appearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Gray) };
+            Appearance redAppearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Red) };
 
             foreach (KeyValuePair<string, string> resource in commentToExtrusionGeometryResource)
             {
                 ExtrusionGeometry arrowAboveBody = ExtrusionImporter.ImportFromText(resource.Value);
                 Extrusion extrusion = new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key };
-                if (resource.Key == Constants.ArrowHead)
+                if (resource.Key == ResourceNames.ArrowHead)
                 {
                     extrusion.Scale.Add(new Size(1, 1));
                     extrusion.Scale.Add(new Size(0.1, 0.1));
@@ -82,24 +82,19 @@ namespace CrossBowCreator
 
         private static void RegisterResources()
         {
-            commentToExtrusionGeometryResource[Constants.ArrowAboveBody] = ResourceDictionary.ArrowAboveBody;
-            commentToExtrusionGeometryResource[Constants.ArrowHead] = ResourceDictionary.ArrowHead;
-            commentToExtrusionGeometryResource[Constants.BigArc] = ResourceDictionary.BigArc;
-            commentToExtrusionGeometryResource[Constants.Body] = ResourceDictionary.Body;
-            commentToExtrusionGeometryResource[Constants.BottomCylinder] = ResourceDictionary.BottomCylinder;
-            commentToExtrusionGeometryResource[Constants.FrontTorus] = ResourceDictionary.FrontTorus;
-            commentToExtrusionGeometryResource[Constants.LeftCylinder] = ResourceDictionary.LeftCylinder;
-            commentToExtrusionGeometryResource[Constants.LowerFrontTriangle] = ResourceDictionary.LowerFrontTriangle;
-            commentToExtrusionGeometryResource[Constants.RightCylinder] = ResourceDictionary.RightCylinder;
-            commentToExtrusionGeometryResource[Constants.UpperFrontTriangle] = ResourceDictionary.UpperFrontTriangle;
+            commentToExtrusionGeometryResource[ResourceNames.ArrowAboveBody] = ResourceDictionary.ArrowAboveBody;
+            commentToExtrusionGeometryResource[ResourceNames.ArrowHead] = ResourceDictionary.ArrowHead;
+            commentToExtrusionGeometryResource[ResourceNames.BigArc] = ResourceDictionary.BigArc;
+            commentToExtrusionGeometryResource[ResourceNames.Body] = ResourceDictionary.Body;
+            commentToExtrusionGeometryResource[ResourceNames.BottomCylinder] = ResourceDictionary.BottomCylinder;
+            commentToExtrusionGeometryResource[ResourceNames.FrontTorus] = ResourceDictionary.FrontTorus;
+            commentToExtrusionGeometryResource[ResourceNames.LeftCylinder] = ResourceDictionary.LeftCylinder;
+            commentToExtrusionGeometryResource[ResourceNames.LowerFrontTriangle] = ResourceDictionary.LowerFrontTriangle;
+            commentToExtrusionGeometryResource[ResourceNames.RightCylinder] = ResourceDictionary.RightCylinder;
+            commentToExtrusionGeometryResource[ResourceNames.UpperFrontTriangle] = ResourceDictionary.UpperFrontTriangle;
         }
 
-        private static string GetResource(string key)
-        {
-            return commentToExtrusionGeometryResource[key];
-        }
-
-        private static class Constants
+        private static class ResourceNames
         {
             public const string ArrowAboveBody = "Arrow above body";
             public const string ArrowHead = "Arrow head";

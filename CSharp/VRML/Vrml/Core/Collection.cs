@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Vrml.Core
 {
@@ -13,6 +11,11 @@ namespace Vrml.Core
         public Collection()
         {
             this.list = new List<T>();
+        }
+
+        public Collection(IEnumerable<T> elements)
+        {
+            this.list = new List<T>(elements);
         }
 
         public IEnumerable<T> Items

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Media.Media3D;
 using Vrml.Core;
 using Vrml.Model.Shapes;
 
@@ -10,6 +8,8 @@ namespace Vrml.FormatProvider.ElementWriters
     {
         public void WriteGeometry(Extrusion extrusion, Writer writer)
         {
+            Guard.ThrowExceptionIfNull(extrusion, "extrusion");
+
             writer.WriteLine("geometry Extrusion {0}", Writer.LeftBracket);
             writer.MoveIn();
 
@@ -40,11 +40,7 @@ namespace Vrml.FormatProvider.ElementWriters
         public override void WriteGeometry(IShape element, Writer writer)
         {
             Extrusion extrusion = element as Extrusion;
-
-            if (extrusion != null)
-            {
-                this.WriteGeometry(extrusion, writer);
-            }
+            this.WriteGeometry(extrusion, writer);
         }
     }
 }

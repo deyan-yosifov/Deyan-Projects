@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vrml.Model;
+using Vrml.Model.Animations;
 using Vrml.Model.Shapes;
 
 namespace Vrml.FormatProvider.ElementWriters
 {
     internal static class Writers
     {
-        private static Dictionary<Type, ElementWriterBase> writers;
+        private static readonly Dictionary<Type, ElementWriterBase> writers;
 
         static Writers()
         {
             writers = new Dictionary<Type, ElementWriterBase>();
 
-            RegisterElementWriter(typeof(VrmlDocument), new VrmlDocumentWriter());
+            InterpolatorWriter interpolatorWriter = new InterpolatorWriter();
+
             RegisterElementWriter(typeof(Viewpoint), new ViewpointWriter());
             RegisterElementWriter(typeof(NavigationInfo), new NavigationInfoWriter());
             RegisterElementWriter(typeof(Transformation), new TransformationWriter());
             RegisterElementWriter(typeof(Extrusion), new ExtrusionWriter());
             RegisterElementWriter(typeof(Appearance), new AppearanceWriter());
             RegisterElementWriter(typeof(IndexedLineSet), new IndexedLineSetWriter());
+            RegisterElementWriter(typeof(OrientationInterpolator), interpolatorWriter);
+            RegisterElementWriter(typeof(PositionInterpolator), interpolatorWriter);
+            RegisterElementWriter(typeof(TimeSensor), new TimeSensorWriter());
         }
 
         public static void Write(IVrmlElement element, Writer writer)

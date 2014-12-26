@@ -1,4 +1,5 @@
 ﻿using System;
+using Vrml.Core;
 using Vrml.Model.Shapes;
 
 namespace Vrml.FormatProvider.ElementWriters
@@ -7,13 +8,7 @@ namespace Vrml.FormatProvider.ElementWriters
     {
         public void Write(IShape shape, Writer writer)
         {
-            if (shape.Comment != null)
-            {
-                writer.WriteLine("# {0}", shape.Comment);
-            }
-
-            writer.WriteLine("Shape{0}", Writer.LeftBracket);
-            writer.MoveIn();
+            Guard.ThrowExceptionIfNull(shape, "shape");
 
             if (shape.Appearance != null)
             {
@@ -21,22 +16,14 @@ namespace Vrml.FormatProvider.ElementWriters
             }
 
             WriteGeometry(shape, writer);
-
-            writer.MoveOut();
-            writer.WriteLine(Writer.RightBracket);
-            writer.WriteLine();
         }
 
         public abstract void WriteGeometry(IShape element, Writer writer);
 
-        public override void Write<T>(T element, Writer writer)
+        public override void WriteOverride<T>(T element, Writer writer)
         {
             IShape shape = element as IShape;
-
-            if (shape != null)
-            {
-                this.Write(shape, writer);
-            }
+            this.Write(shape, writer);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Vrml.Core;
 using Vrml.Model;
 
 namespace Vrml.FormatProvider.ElementWriters
@@ -7,14 +8,13 @@ namespace Vrml.FormatProvider.ElementWriters
     {
         public void Write(Viewpoint viewpoint, Writer writer)
         {
-            writer.WriteLine("Viewpoint {0}", Writer.LeftBracket);
-            writer.MoveIn();
+            Guard.ThrowExceptionIfNull(viewpoint, "viewpoint");
 
-            if (viewpoint.Position.HasValue)
+            if (viewpoint.Position != null)
             {
                 writer.WriteOffset();
                 writer.Write("position ");
-                writer.Write(viewpoint.Position.Value);
+                writer.Write(viewpoint.Position);
                 writer.WriteLine();
             }
 
@@ -26,21 +26,13 @@ namespace Vrml.FormatProvider.ElementWriters
                 writer.WriteLine();
             }
 
-            writer.WriteLine("description \"Entry view\"");
-            writer.MoveOut();
-
-            writer.WriteLine(Writer.RightBracket);
-            writer.WriteLine();
+            writer.WriteLine(string.Format("description \"{0}\"", viewpoint.Description));
         }
 
-        public override void Write<T>(T element, Writer writer)
+        public override void WriteOverride<T>(T element, Writer writer)
         {
             Viewpoint viewpoint = element as Viewpoint;
-
-            if (viewpoint != null)
-            {
-                this.Write(viewpoint, writer);
-            }
+            this.Write(viewpoint, writer);
         }
     }
 }

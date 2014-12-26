@@ -1,15 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vrml.Model;
 
 namespace Vrml.FormatProvider.ElementWriters
 {
     internal abstract class ElementWriterBase
     {
-        public abstract void Write<T>(T element, Writer writer) where T: IVrmlElement;
-        
+        public void Write<T>(T element, Writer writer) 
+            where T : IVrmlElement
+        {
+            if (element.Comment != null)
+            {
+                writer.WriteLine("# {0}", element.Comment);
+            }
+
+            if (element.DefinitionName != null)
+            {
+                writer.Write("DEF {0} ", element.DefinitionName);
+            }
+
+            writer.WriteLine("{0}{1}", element.Name, Writer.LeftBracket);
+            writer.MoveIn();
+
+            this.WriteOverride(element, writer);
+
+            writer.MoveOut();
+            writer.WriteLine(Writer.RightBracket);
+            writer.WriteLine();
+        }
+
+        public abstract void WriteOverride<T>(T element, Writer writer) where T: IVrmlElement;        
     }
 }

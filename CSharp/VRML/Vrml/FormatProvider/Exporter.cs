@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 using Vrml.FormatProvider.ElementWriters;
 using Vrml.Model;
 
@@ -40,7 +35,7 @@ namespace Vrml.FormatProvider
         {
             this.Initialize();
 
-            Writers.Write(this.Document, this.writer);
+            VrmlDocumentWriter.Write(this.Document, this.Writer);
 
             return this.writer.ToString();
         }

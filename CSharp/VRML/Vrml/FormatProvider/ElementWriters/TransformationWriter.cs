@@ -1,4 +1,5 @@
 ﻿using System;
+using Vrml.Core;
 using Vrml.Model;
 using Vrml.Model.Shapes;
 
@@ -8,12 +9,7 @@ namespace Vrml.FormatProvider.ElementWriters
     {
         public void Write(Transformation transformation, Writer writer)
         {
-            if (transformation.Name != null)
-            {
-                writer.Write("DEF {0} ", transformation.Name);
-            }
-
-            writer.WriteLine("Transform {0}", Writer.LeftBracket);
+            Guard.ThrowExceptionIfNull(transformation, "transformation");
 
             if (!transformation.Children.IsEmpty)
             {
@@ -28,19 +24,12 @@ namespace Vrml.FormatProvider.ElementWriters
                 writer.MoveOut();
                 writer.WriteLine("]");
             }
-
-            writer.WriteLine(Writer.RightBracket);
-            writer.WriteLine();
         }
 
-        public override void Write<T>(T element, Writer writer)
+        public override void WriteOverride<T>(T element, Writer writer)
         {
             Transformation transformation = element as Transformation;
-
-            if (transformation != null)
-            {
-                this.Write(transformation, writer);
-            }
+            this.Write(transformation, writer);
         }
     }
 }

@@ -12,13 +12,22 @@ namespace Vrml.Model
             this.children = new Collection<IVrmlElement>();
         }
 
-        public string Name { get; set; }
+        public string Comment { get; set; }
+        public string DefinitionName { get; set; }
 
         public Collection<IVrmlElement> Children
         {
             get
             {
                 return this.children;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return ElementNames.Transform;
             }
         }
     }

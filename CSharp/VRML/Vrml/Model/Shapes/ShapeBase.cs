@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Windows.Media;
 
 namespace Vrml.Model.Shapes
 {
-    public class ShapeBase : IShape
+    public abstract class ShapeBase : IShape
     {
-        public Appearance Appearance
-        {
-            get;
-            set;
-        }
+        public string DefinitionName { get; set; }
 
-        public string Comment
+        public Appearance Appearance { get; set; }
+
+        public string Comment { get; set; }
+
+        public string Name
         {
-            get;
-            set;
+            get
+            {
+                return ElementNames.Shape;
+            }
         }
     }
 }

@@ -42,12 +42,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Collection.cs" />
+    <Compile Include="Core\Guard.cs" />
     <Compile Include="FormatProvider\ElementWriters\AppearanceWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ElementWriterBase.cs" />
     <Compile Include="FormatProvider\ElementWriters\ExtrusionWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\IndexedLineSetWriter.cs" />
+    <Compile Include="FormatProvider\ElementWriters\InterpolatorWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\NavigationInfoWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ShapeWriterBase.cs" />
+    <Compile Include="FormatProvider\ElementWriters\TimeSensorWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\TransformationWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ViewpointWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\VrmlDocumentWriter.cs" />
@@ -60,9 +63,18 @@
     <Compile Include="Geometries\ExtrusionGeometry.cs" />
     <Compile Include="Geometries\Face.cs" />
     <Compile Include="Geometries\Polyline.cs" />
+    <Compile Include="Model\Animations\Route.cs" />
+    <Compile Include="Model\ElementNames.cs" />
+    <Compile Include="Model\Animations\OrientationInterpolator.cs" />
+    <Compile Include="Model\Animations\PositionInterpolator.cs" />
+    <Compile Include="Model\Animations\TimeSensor.cs" />
+    <Compile Include="Model\VrmlColor.cs" />
+    <Compile Include="Model\Animations\Interpolator.cs" />
     <Compile Include="Model\IVrmlElement.cs" />
+    <Compile Include="Model\IVrmlSimpleType.cs" />
     <Compile Include="Model\NavigationInfo.cs" />
     <Compile Include="Model\Orientation.cs" />
+    <Compile Include="Model\Position.cs" />
     <Compile Include="Model\Shapes\Extrusion.cs" />
     <Compile Include="Model\Shapes\IndexedLineSet.cs" />
     <Compile Include="Model\Shapes\IShape.cs" />

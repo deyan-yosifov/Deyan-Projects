@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Vrml.Model
 {
     public class NavigationInfo : IVrmlElement
     {
+        public string Name
+        {
+            get
+            {
+                return ElementNames.NavigationInfo;
+            }
+        }
+
+        public string Comment { get; set; }
+        public string DefinitionName { get; set; }
     }
 }

@@ -1,31 +1,36 @@
 ﻿using System;
-using System.Text;
-using System.Windows.Media;
 using Vrml.Core;
-using Vrml.FormatProvider;
-using Vrml.Model.Shapes;
+using Vrml.Model.Animations;
 
 namespace Vrml.Model
 {
-    public class VrmlDocument : IVrmlElement
+    public class VrmlDocument
     {
-        private readonly Collection<Transformation> transformations;
+        private readonly Collection<IVrmlElement> elements;
+        private readonly Collection<Route> routes;
 
         public VrmlDocument()
         {
-            this.transformations = new Collection<Transformation>();
+            this.elements = new Collection<IVrmlElement>();
+            this.routes = new Collection<Route>();
         }
 
         public string Title { get; set; }
-        public Color? Background { get; set; }
-        public Viewpoint Viewpoint { get; set; }
-        public NavigationInfo NavigationInfo { get; set; }
+        public VrmlColor Background { get; set; }
 
-        public Collection<Transformation> Transformations
+        public Collection<IVrmlElement> Elements
         {
             get
             {
-                return this.transformations;
+                return this.elements;
+            }
+        }
+
+        public Collection<Route> Routes
+        {
+            get
+            {
+                return this.routes;
             }
         }
 

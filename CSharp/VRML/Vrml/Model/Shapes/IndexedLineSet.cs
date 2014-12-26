@@ -8,12 +8,12 @@ namespace Vrml.Model.Shapes
     public class IndexedLineSet : ShapeBase
     {
         public const int SplitPolylineIndex = -1;
-        private readonly Collection<Point3D> points;
+        private readonly Collection<Position> points;
         private readonly Collection<int> indexes;
 
         public IndexedLineSet()
         {
-            this.points = new Collection<Point3D>();
+            this.points = new Collection<Position>();
             this.indexes = new Collection<int>();
         }
 
@@ -24,7 +24,7 @@ namespace Vrml.Model.Shapes
 
             foreach (Point3D point in extrusion.Face.Points)
             {
-                this.Points.Add(point);
+                this.Points.Add(new Position(point));
                 this.Indexes.Add(index++);
             }
 
@@ -33,12 +33,12 @@ namespace Vrml.Model.Shapes
 
             foreach (Point3D point in extrusion.Polyline.Points)
             {
-                this.Points.Add(point);
+                this.Points.Add(new Position(point));
                 this.Indexes.Add(index++);
             }
         }
 
-        public Collection<Point3D> Points
+        public Collection<Position> Points
         {
             get
             {
