@@ -20,6 +20,7 @@ namespace Vrml.FormatProvider.ElementWriters
             RegisterElementWriter(typeof(NavigationInfo), new NavigationInfoWriter());
             RegisterElementWriter(typeof(Transformation), new TransformationWriter());
             RegisterElementWriter(typeof(Extrusion), new ExtrusionWriter());
+            RegisterElementWriter(typeof(Sphere), new SphereWriter());
             RegisterElementWriter(typeof(Appearance), new AppearanceWriter());
             RegisterElementWriter(typeof(IndexedLineSet), new IndexedLineSetWriter());
             RegisterElementWriter(typeof(OrientationInterpolator), interpolatorWriter);

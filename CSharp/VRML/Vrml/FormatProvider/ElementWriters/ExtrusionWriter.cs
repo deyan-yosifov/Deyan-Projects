@@ -33,6 +33,11 @@ namespace Vrml.FormatProvider.ElementWriters
                 writer.WriteArrayCollection(extrusion.Scale, "scale", (size, wr) => { wr.Write(size); });
             }
 
+            if (extrusion.CreaseAngle.HasValue)
+            {
+                writer.WriteLine("creaseAngle {0}", extrusion.CreaseAngle.Value);
+            }
+
             writer.MoveOut();
             writer.WriteLine(Writer.RightBracket);
         }

@@ -76,6 +76,8 @@ namespace Vrml.Model.Shapes
             }
         }
 
+        public double? CreaseAngle { get; set; }
+
         private static Matrix3D GetFaceMatrix(ExtrusionGeometry geometry)
         {
             Vector3D k = geometry.Face.NormalVector;

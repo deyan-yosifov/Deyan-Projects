@@ -50,6 +50,7 @@
     <Compile Include="FormatProvider\ElementWriters\InterpolatorWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\NavigationInfoWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ShapeWriterBase.cs" />
+    <Compile Include="FormatProvider\ElementWriters\SphereWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\TimeSensorWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\TransformationWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ViewpointWriter.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Model\Animations\PositionInterpolator.cs" />
     <Compile Include="Model\Animations\TimeSensor.cs" />
     <Compile Include="Model\Position2D.cs" />
+    <Compile Include="Model\Shapes\Sphere.cs" />
     <Compile Include="Model\VrmlColor.cs" />
     <Compile Include="Model\Animations\Interpolator.cs" />
     <Compile Include="Model\IVrmlElement.cs" />
