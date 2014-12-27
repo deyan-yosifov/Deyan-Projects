@@ -59,6 +59,11 @@ namespace Vrml.Core
             this.list.Add(item);
         }
 
+        public void Add(IEnumerable<T> items)
+        {
+            this.list.AddRange(items);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return this.list.GetEnumerator();

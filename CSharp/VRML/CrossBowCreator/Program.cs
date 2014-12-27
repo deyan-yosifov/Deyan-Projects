@@ -9,6 +9,7 @@ using System.Windows.Media.Media3D;
 using Vrml.FormatProvider;
 using Vrml.Geometries;
 using Vrml.Model;
+using Vrml.Model.Animations;
 using Vrml.Model.Shapes;
 
 namespace CrossBowCreator
@@ -49,18 +50,28 @@ namespace CrossBowCreator
             document.Title = "Cross Bow by Deyan Yosifov";
             document.Background = new VrmlColor(Colors.AliceBlue);
 
-            //Point3D viewPosition = new Point3D(1.41, 2.87, 2.52);
             document.Elements.Add(new Viewpoint("Entry view") 
             {
                 Position = new Position(0.2, 0.8, 2),
                 Orientation = new Orientation(new Vector3D(1, 0, 0), 0)
             });
-
             document.Elements.Add(new NavigationInfo());
 
-            Transformation transform = new Transformation();
-            document.Elements.Add(transform);
-            transform.DefinitionName = "CrossBow";
+            Transformation animationTransform = new Transformation()
+            {
+                DefinitionName = "AnimationTransform"
+            };
+
+            Transformation crossBowTransform = new Transformation()
+            {
+                Comment = "The Cross bow figure",
+                DefinitionName = "CrossBow",
+                Rotation = new Orientation(new Vector3D(0,1,0), Math.PI / 4)
+            };
+
+            animationTransform.Children.Add(crossBowTransform);
+            document.Elements.Add(animationTransform);
+
             Appearance appearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Gray) };
             Appearance redAppearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Red) };
 
@@ -70,12 +81,40 @@ namespace CrossBowCreator
                 Extrusion extrusion = new Extrusion(arrowAboveBody) { Appearance = appearance, Comment = resource.Key };
                 if (resource.Key == ResourceNames.ArrowHead)
                 {
-                    extrusion.Scale.Add(new Size(1, 1));
-                    extrusion.Scale.Add(new Size(0.1, 0.1));
+                    extrusion.Scale.Add(new Position2D(1, 1));
+                    extrusion.Scale.Add(new Position2D(0.1, 0.1));
                 }
-                transform.Children.Add(extrusion);       
+                crossBowTransform.Children.Add(extrusion);       
                 //transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
-            }                   
+            }
+
+            TimeSensor timer = new TimeSensor()
+            {
+                DefinitionName = "AnimationTimer",
+                CycleInterval = 10,
+                Loop = true,
+                StartTime = 1,
+                StopTime = 0
+            };
+            document.Elements.Add(timer);
+
+            OrientationInterpolator orientationInterpolator = new OrientationInterpolator()
+            {
+                DefinitionName = "AnimationOrientation",
+            };
+            orientationInterpolator.KeyValues.Add(new KeyValuePair<double, Orientation>[]
+            {
+                new KeyValuePair<double, Orientation>(0, new Orientation(new Vector3D(0, 0, 1), 0)),
+                new KeyValuePair<double, Orientation>(0.5, new Orientation(new Vector3D(0, 0, 1), Math.PI)),
+                new KeyValuePair<double, Orientation>(1, new Orientation(new Vector3D(0, 0, 1), 2 * Math.PI)),
+            });
+            document.Elements.Add(orientationInterpolator);
+
+            document.Routes.Add(new Route[]
+            {
+                new Route(timer, TimeSensor.EventsOut.FractionChanged, orientationInterpolator, OrientationInterpolator.EventsIn.SetFraction),
+                new Route(orientationInterpolator, OrientationInterpolator.EventsOut.ValueChanged, animationTransform, Transformation.EventsIn.SetRotation),
+            });
 
             return document;
         }

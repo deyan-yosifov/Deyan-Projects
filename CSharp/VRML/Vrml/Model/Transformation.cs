@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Media.Media3D;
 using Vrml.Core;
 
 namespace Vrml.Model
@@ -14,6 +15,11 @@ namespace Vrml.Model
 
         public string Comment { get; set; }
         public string DefinitionName { get; set; }
+        public Position Center { get; set; }
+        public Orientation Rotation { get; set; }
+        public Position Scale { get; set; }
+        public Position ScaleOrientation { get; set; }
+        public Position Translation { get; set; }
 
         public Collection<IVrmlElement> Children
         {
@@ -29,6 +35,15 @@ namespace Vrml.Model
             {
                 return ElementNames.Transform;
             }
+        }
+
+        public static class EventsIn
+        {
+            public const string SetRotation = "set_rotation";
+            public const string SetScale = "set_scale";
+            public const string SetTranslation = "set_translation";
+            public const string SetCenter = "set_center";
+            public const string SetScaleOrientation = "set_scaleOrientation";
         }
     }
 }

@@ -9,17 +9,17 @@ namespace Vrml.Model.Shapes
 {
     public class Extrusion : ShapeBase
     {
-        private readonly Collection<Point> crossSection;
+        private readonly Collection<Position2D> crossSection;
         private readonly Collection<Position> spine;
         private readonly Collection<Orientation> orientation;
-        private readonly Collection<Size> scale;
+        private readonly Collection<Position2D> scale;
 
         public Extrusion()
         {
-            this.crossSection = new Collection<Point>();
+            this.crossSection = new Collection<Position2D>();
             this.spine = new Collection<Position>();
             this.orientation = new Collection<Orientation>();
-            this.scale = new Collection<Size>();
+            this.scale = new Collection<Position2D>();
         }
 
         public Extrusion(ExtrusionGeometry geometry)
@@ -30,12 +30,12 @@ namespace Vrml.Model.Shapes
             // The points are taken reversed otherwise the faces oposite normals directions.
             Point3D firstPoint = geometry.Face.Points[0];
             Point3D firstPlanar = Point3D.Multiply(firstPoint, matrix);
-            this.CrossSection.Add(new Point(firstPlanar.X, firstPlanar.Y));
+            this.CrossSection.Add(new Position2D(firstPlanar.X, firstPlanar.Y));
 
             foreach (Point3D point in geometry.Face.Points.Reverse())
             {
                 Point3D planarPoint = Point3D.Multiply(point, matrix);
-                this.CrossSection.Add(new Point(planarPoint.X, planarPoint.Y));
+                this.CrossSection.Add(new Position2D(planarPoint.X, planarPoint.Y));
             }
 
             foreach (Point3D point in geometry.Polyline.Points)
@@ -44,7 +44,7 @@ namespace Vrml.Model.Shapes
             }
         }
 
-        public Collection<Point> CrossSection
+        public Collection<Position2D> CrossSection
         {
             get
             {
@@ -68,7 +68,7 @@ namespace Vrml.Model.Shapes
             }
         }
 
-        public Collection<Size> Scale
+        public Collection<Position2D> Scale
         {
             get
             {

@@ -11,12 +11,18 @@ namespace Vrml.FormatProvider.ElementWriters
         {
             Guard.ThrowExceptionIfNull(transformation, "transformation");
 
+            writer.TryWriteLine("center", transformation.Center);
+            writer.TryWriteLine("rotation", transformation.Rotation);
+            writer.TryWriteLine("scale", transformation.Scale);
+            writer.TryWriteLine("scaleOrientation", transformation.ScaleOrientation);
+            writer.TryWriteLine("translation", transformation.Translation);
+
             if (!transformation.Children.IsEmpty)
             {
                 writer.WriteLine("children[");
                 writer.MoveIn();
 
-                foreach (IShape child in transformation.Children)
+                foreach (IVrmlElement child in transformation.Children)
                 {
                     Writers.Write(child, writer);
                 }

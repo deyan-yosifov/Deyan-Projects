@@ -68,6 +68,7 @@
     <Compile Include="Model\Animations\OrientationInterpolator.cs" />
     <Compile Include="Model\Animations\PositionInterpolator.cs" />
     <Compile Include="Model\Animations\TimeSensor.cs" />
+    <Compile Include="Model\Position2D.cs" />
     <Compile Include="Model\VrmlColor.cs" />
     <Compile Include="Model\Animations\Interpolator.cs" />
     <Compile Include="Model\IVrmlElement.cs" />

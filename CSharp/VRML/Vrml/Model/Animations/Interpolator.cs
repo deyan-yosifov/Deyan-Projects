@@ -49,5 +49,15 @@ namespace Vrml.Model.Animations
                 }
             }
         }
+
+        public static class EventsIn
+        {
+            public const string SetFraction = "set_fraction";
+        }
+
+        public static class EventsOut
+        {
+            public const string ValueChanged = "value_changed";
+        }
     }
 }

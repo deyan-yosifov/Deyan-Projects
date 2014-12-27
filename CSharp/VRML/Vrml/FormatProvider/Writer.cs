@@ -87,22 +87,22 @@ namespace Vrml.FormatProvider
             this.Write(number.ToString());
         }
 
-        public void Write(Point point)
-        {
-            this.Write("{0} {1}", point.X, point.Y);
-        }
-
-        public void Write(Size size)
-        {
-            this.Write("{0} {1}", size.Width, size.Height);
-        }
-
         public void Write(IVrmlSimpleType simpleType)
         {
             this.Write(simpleType.VrmlText);
         }
 
-        public void Writeline(Route route)
+        public void TryWriteLine(string name, IVrmlSimpleType simpleType)
+        {
+            if (simpleType != null)
+            {
+                this.Write("{0} ", name);
+                this.Write(simpleType);
+                this.WriteLine();
+            }
+        }
+
+        public void WriteLine(Route route)
         {
             this.WriteLine("ROUTE {0}.{1} TO {2}.{3}",
                 route.ElementOut.DefinitionName,

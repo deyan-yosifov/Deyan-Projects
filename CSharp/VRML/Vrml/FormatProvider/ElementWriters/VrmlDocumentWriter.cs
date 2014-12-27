@@ -28,7 +28,7 @@ namespace Vrml.FormatProvider.ElementWriters
 
             foreach (Route route in document.Routes)
             {
-                writer.Writeline(route);
+                writer.WriteLine(route);
             }
         }
 
