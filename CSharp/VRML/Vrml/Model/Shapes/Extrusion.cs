@@ -83,32 +83,27 @@ namespace Vrml.Model.Shapes
             Vector3D k = geometry.Face.NormalVector;
 
             bool isKVertical = IsZero(k.X) && IsZero(k.Y);
-            Vector3D j = new Vector3D(-1, 0, 0);
+            Vector3D i = new Vector3D(1, 0, 0);
 
             if(!isKVertical)
             {
-                j = new Vector3D(-k.Y, k.X, 0);
-                j.Normalize();
+                i = new Vector3D(-k.Y, k.X, 0);
+                i.Normalize();
             }
 
-            Vector3D i = Vector3D.CrossProduct(j, k);
-
-            if (!isKVertical)
-            {
-                IJReverseOnZDirection(ref i, ref j);
-            }
+            Vector3D j = Vector3D.CrossProduct(k, i);
 
             Point3D center = geometry.Polyline.Points[0];
 
             Matrix3D matrix = new Matrix3D()
             {
-                M11 = -j.X,
-                M12 = -j.Y,
-                M13 = -j.Z,
+                M11 = i.X,
+                M12 = i.Y,
+                M13 = i.Z,
                 M14 = 0,
-                M21 = i.X,
-                M22 = i.Y,
-                M23 = i.Z,
+                M21 = j.X,
+                M22 = j.Y,
+                M23 = j.Z,
                 M24 = 0,
                 M31 = k.X,
                 M32 = k.Y,
@@ -123,15 +118,6 @@ namespace Vrml.Model.Shapes
             matrix.Invert();
 
             return matrix;
-        }
-
-        private static void IJReverseOnZDirection(ref Vector3D i, ref Vector3D j)
-        {
-            if (i.Z < 0)
-            {
-                i = Vector3D.Multiply(-1, i);
-                j = Vector3D.Multiply(-1, j);
-            }
         }
 
         private static bool IsZero(double value)
