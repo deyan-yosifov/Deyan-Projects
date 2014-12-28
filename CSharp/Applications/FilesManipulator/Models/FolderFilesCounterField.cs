@@ -10,6 +10,7 @@ namespace FilesManipulator.Models
         private const int InitialCount = 1;
         private string lastDirectory;
         private int count;
+        private int maxNumberInFolderDigitsCount;
 
         public FolderFilesCounterField()
         {
@@ -29,18 +30,21 @@ namespace FilesManipulator.Models
         public override string ResultText
         {
             get
-            {         
-                return this.count.ToString();
+            {
+                string result = this.count.ToString().PadLeft(this.maxNumberInFolderDigitsCount, '0');
+
+                return result;
             }
         }
 
         public override void OnBeforeFileManipulated(FileInfo fileInfo)
         {
-            if (fileInfo != TextFieldModelBase.currentFile)
+            if (fileInfo != base.currentFile)
             {
                 if (this.lastDirectory != fileInfo.DirectoryName)
                 {
                     this.lastDirectory = fileInfo.DirectoryName;
+                    this.maxNumberInFolderDigitsCount = Directory.GetFiles(this.lastDirectory).Length.ToString().Length;
                     this.count = FolderFilesCounterField.InitialCount;
                 }
                 else

@@ -5,7 +5,7 @@ namespace FilesManipulator.Models
 {
     public abstract class TextFieldModelBase : ITextFieldModel
     {
-        protected static FileInfo currentFile;
+        protected FileInfo currentFile;
 
         public abstract string Name { get; }
 
@@ -26,12 +26,12 @@ namespace FilesManipulator.Models
 
         public virtual void OnManipulationStart()
         {
-            TextFieldModelBase.currentFile = null;
+            this.currentFile = null;
         }
 
         public virtual void OnBeforeFileManipulated(FileInfo fileInfo)
         {
-            TextFieldModelBase.currentFile = fileInfo;
+            this.currentFile = fileInfo;
         }
     }
 }

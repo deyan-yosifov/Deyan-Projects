@@ -29,7 +29,7 @@ namespace FilesManipulator.Models
 
         public override void OnBeforeFileManipulated(FileInfo fileInfo)
         {
-            if (fileInfo != TextFieldModelBase.currentFile)
+            if (fileInfo != base.currentFile)
             {
                 TotalFilesCounterField.count++;
             }

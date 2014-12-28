@@ -13,6 +13,7 @@ namespace FilesManipulator.ViewModels
 {
     public class FileManipulatorViewModel : ViewModelBase
     {
+        private readonly Dictionary<Type, ITextFieldModel> registeredFieldTypes;
         private readonly ObservableCollection<ITextFieldModel> fieldTypes;
         private readonly ObservableCollection<ITextFieldModel> selectedTextFields;
         private ITextFieldModel selectedFieldType;
@@ -28,7 +29,7 @@ namespace FilesManipulator.ViewModels
 
         public FileManipulatorViewModel()
         {
-            this.shouldManipulateSubFolders = true;
+            this.registeredFieldTypes = new Dictionary<Type, ITextFieldModel>();
             this.fieldTypes = new ObservableCollection<ITextFieldModel>();
             this.selectedTextFields = new ObservableCollection<ITextFieldModel>();
             this.selectedFolder = Directory.GetCurrentDirectory();
@@ -38,7 +39,9 @@ namespace FilesManipulator.ViewModels
             this.insertFieldAfterCommand = new DelegateCommand(this.InsertFieldAfter);
             this.deleteFieldCommand = new DelegateCommand(this.DeleteField);
 
-            this.InitializeFieldTypes();
+            this.RegisterFieldTypes();
+            this.GenerateDefaultFieldPattern();
+            this.InitializeDefaultSelectedOptions();
         }
 
         public ObservableCollection<ITextFieldModel> FieldTypes
@@ -180,7 +183,12 @@ namespace FilesManipulator.ViewModels
         private StringBuilder builder = new StringBuilder();
         private void ChangeFileNames(object parameter)
         {
-            builder.Clear();
+            this.builder.Clear();
+
+            this.DoOnSelectedTextFields((field) =>
+                {
+                    field.OnManipulationStart();
+                });
             DirectoryInfo directory = new DirectoryInfo(this.SelectedFolder);
             this.ChangeFileNamesInDirectory(directory);
             MessageBox.Show(builder.ToString());
@@ -190,7 +198,15 @@ namespace FilesManipulator.ViewModels
         {
             foreach (FileInfo file in directory.GetFiles())
             {
-                builder.AppendLine(file.FullName);
+                StringBuilder newFileName = new StringBuilder();
+                this.DoOnSelectedTextFields((field) =>
+                    {
+                        field.OnBeforeFileManipulated(file);
+                        newFileName.Append(field.ResultText);
+                    });
+
+                builder.AppendLine(string.Format("{0} -> {1}", file.FullName, newFileName.ToString()));
+                // TODO: Try rename file here if not such file exists
             }
 
             if (this.ShouldManipulateSubFolders)
@@ -199,6 +215,14 @@ namespace FilesManipulator.ViewModels
                 {
                     this.ChangeFileNamesInDirectory(subfolder);
                 }
+            }
+        }
+
+        private void DoOnSelectedTextFields(Action<ITextFieldModel> action)
+        {
+            foreach (ITextFieldModel field in this.SelectedTextFields)
+            {
+                action(field);
             }
         }
 
@@ -271,16 +295,54 @@ namespace FilesManipulator.ViewModels
             return instance;
         }
 
-        private void InitializeFieldTypes()
+        private void RegisterFieldTypes()
         {
-            this.FieldTypes.Add(new FolderNameField());
-            this.FieldTypes.Add(new FileNameField());
-            this.FieldTypes.Add(new FileExtensionField());
-            this.FieldTypes.Add(new FolderFilesCounterField());
-            this.FieldTypes.Add(new TotalFilesCounterField());
-            this.FieldTypes.Add(new TextField());
+            this.RegisterFieldType(new FolderNameField());
+            this.RegisterFieldType(new FileNameField());
+            this.RegisterFieldType(new FileExtensionField());
+            this.RegisterFieldType(new FolderFilesCounterField());
+            this.RegisterFieldType(new TotalFilesCounterField());
+            this.RegisterFieldType(new TextField());
+        }
 
+        private void RegisterFieldType(ITextFieldModel field)
+        {
+            Type type = field.GetType();
+            this.registeredFieldTypes.Add(type, field);
+            this.FieldTypes.Add(field);
+        }
+
+        private ITextFieldModel GetRegisteredField(Type type)
+        {
+            return this.registeredFieldTypes[type];
+        }
+
+        private void SelectFieldType(Type type)
+        {
+            this.SelectedFieldType = this.GetRegisteredField(type);
+        }
+
+        private void GenerateDefaultFieldPattern()
+        {
+            this.SelectFieldType(typeof(FolderNameField));
+            this.InsertFieldAfter(null);
+
+            this.InsertFieldInfo = "-";
+            this.SelectFieldType(typeof(TextField));
+            this.InsertFieldAfter(null);
+
+            this.SelectFieldType(typeof(FolderFilesCounterField));
+            this.InsertFieldAfter(null);
+
+            this.SelectFieldType(typeof(FileExtensionField));
+            this.InsertFieldAfter(null);
+        }
+
+        private void InitializeDefaultSelectedOptions()
+        {
+            this.InsertFieldInfo = string.Empty;
             this.SelectedFieldType = this.FieldTypes[0];
+            this.ShouldManipulateSubFolders = true;
         }
     }
 }
