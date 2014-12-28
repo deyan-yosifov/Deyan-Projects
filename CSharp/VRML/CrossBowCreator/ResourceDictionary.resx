@@ -118,11 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="ArrowAboveBody" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\ArrowAboveBody.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  <data name="ArrowBaseAboveBody" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ArrowBaseAboveBody.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
-  <data name="ArrowHead" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\ArrowHead.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  <data name="ArrowCylinder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ArrowCylinder.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
   <data name="BigArc" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\BigArc.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>

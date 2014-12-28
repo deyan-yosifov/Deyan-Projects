@@ -96,6 +96,7 @@ namespace Vrml.FormatProvider
         {
             if (simpleType != null)
             {
+                this.WriteOffset();
                 this.Write("{0} ", name);
                 this.Write(simpleType);
                 this.WriteLine();

@@ -16,8 +16,8 @@ namespace CrossBowCreator
     {
         private static class ResourceNames
         {
-            public const string ArrowAboveBody = "Arrow above body";
-            public const string ArrowHead = "Arrow head";
+            public const string ArrowBaseAboveBody = "Arrow base above body";
+            public const string ArrowCylinder = "Arrow cylinder";
             public const string BigArc = "Big arc";
             public const string Body = "Body";
             public const string BottomCylinder = "Bottom cylinder";
@@ -118,9 +118,9 @@ namespace CrossBowCreator
                 ExtrusionGeometry extrusionGeometry = ExtrusionImporter.ImportFromText(resource.Value);
                 Extrusion extrusion = new Extrusion(extrusionGeometry) { Appearance = appearance, Comment = resource.Key };
 
-                if (resource.Key == ResourceNames.ArrowHead)
+                if (resource.Key == ResourceNames.ArrowCylinder)
                 {
-                    this.TaperArrowHead(extrusion);
+                    this.TaperArrowCylinder(extrusion);
                 }
                 else if (resource.Key == ResourceNames.UpperFrontTriangle)
                 {
@@ -147,6 +147,8 @@ namespace CrossBowCreator
                 resourceName == ResourceNames.LeftCylinder ||
                 resourceName == ResourceNames.RightCylinder ||
                 resourceName == ResourceNames.BottomCylinder ||
+                resourceName == ResourceNames.ArrowCylinder ||
+                resourceName == ResourceNames.ArrowBaseAboveBody ||
                 resourceName == ResourceNames.BigArc)
             {
                 extrusion.CreaseAngle = Math.PI / 4;
@@ -193,16 +195,17 @@ namespace CrossBowCreator
             return center;
         }
 
-        private void TaperArrowHead(Extrusion arrowHead)
+        private void TaperArrowCylinder(Extrusion arrowCylinder)
         {
-            arrowHead.Scale.Add(new Position2D(1, 1));
-            arrowHead.Scale.Add(new Position2D(0.1, 0.1));
+            arrowCylinder.Scale.Add(new Position2D(1, 1));
+            arrowCylinder.Scale.Add(new Position2D(1, 1));
+            arrowCylinder.Scale.Add(new Position2D(0.1, 0.1));
         }
 
         private static void RegisterResources()
         {
-            commentToExtrusionGeometryResource[ResourceNames.ArrowAboveBody] = ResourceDictionary.ArrowAboveBody;
-            commentToExtrusionGeometryResource[ResourceNames.ArrowHead] = ResourceDictionary.ArrowHead;
+            commentToExtrusionGeometryResource[ResourceNames.ArrowBaseAboveBody] = ResourceDictionary.ArrowBaseAboveBody;
+            commentToExtrusionGeometryResource[ResourceNames.ArrowCylinder] = ResourceDictionary.ArrowCylinder;
             commentToExtrusionGeometryResource[ResourceNames.BigArc] = ResourceDictionary.BigArc;
             commentToExtrusionGeometryResource[ResourceNames.Body] = ResourceDictionary.Body;
             commentToExtrusionGeometryResource[ResourceNames.BottomCylinder] = ResourceDictionary.BottomCylinder;

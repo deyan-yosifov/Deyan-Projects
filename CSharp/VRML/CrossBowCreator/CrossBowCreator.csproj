@@ -68,12 +68,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ArrowAboveBody.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ArrowHead.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\BigArc.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +90,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\UpperFrontTriangle.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ArrowBaseAboveBody.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ArrowCylinder.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
