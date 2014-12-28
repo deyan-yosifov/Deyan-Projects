@@ -30,14 +30,6 @@ namespace FilesManipulator.Models
             }
         }
 
-        public override bool IsCreateTextDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         public override void OnCreate(string text)
         {
             this.text = text;

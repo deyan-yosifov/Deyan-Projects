@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModels="clr-namespace:FilesManipulator.ViewModels"
-        Title="Files Manipulator" Height="350" Width="700">
+        Title="Files Manipulator" Height="550" Width="1000">
     <Window.Resources>
         <viewModels:FileManipulatorViewModel x:Key="viewModel" />
     </Window.Resources>
@@ -31,19 +31,26 @@
                 <TextBlock Text="Insert field info:" />
                 <TextBox Text="{Binding InsertFieldInfo, Mode=TwoWay}" MinWidth="100" MaxWidth="150" />
                 <TextBlock Text="Insert field type" />
-                <ComboBox MinWidth="100" />
+                <ComboBox MinWidth="100" SelectedItem="{Binding SelectedFieldType}" ItemsSource="{Binding FieldTypes}" DisplayMemberPath="Name" />
                 <Button Content="Insert field before" Command="{Binding InsertFieldBeforeCommand}" />
                 <Button Content="Insert field after" Command="{Binding InsertFieldAfterCommand}" />
                 <Button Content="Delete field" Command="{Binding DeleteFieldCommand}" />
                 <Separator />
             </ToolBar>
         </ToolBarTray>
-        <ListBox Grid.Row="1" Grid.Column="1">
+        <ListBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SelectedTextFields}" SelectedItem="{Binding SelectedTextField}">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel Orientation="Horizontal" IsItemsHost="True" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Black" BorderThickness="3" Margin="1">
+                        <TextBlock Text="{Binding ResultName}" Padding="5" Background="AliceBlue" />
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
     </Grid>
 </Window>

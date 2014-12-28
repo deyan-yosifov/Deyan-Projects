@@ -16,7 +16,7 @@ namespace FilesManipulator.Models
         {
             get
             {
-                return base.lastFile.DirectoryName;
+                return TextFieldModelBase.currentFile.DirectoryName;
             }
         }
     }

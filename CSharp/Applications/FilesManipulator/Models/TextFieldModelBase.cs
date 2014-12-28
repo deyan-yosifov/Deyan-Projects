@@ -5,7 +5,7 @@ namespace FilesManipulator.Models
 {
     public abstract class TextFieldModelBase : ITextFieldModel
     {
-        protected FileInfo lastFile;
+        protected static FileInfo currentFile;
 
         public abstract string Name { get; }
 
@@ -19,14 +19,6 @@ namespace FilesManipulator.Models
             }
         }
 
-        public virtual bool IsCreateTextDependent
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public virtual void OnCreate(string text)
         {
             // Do nothing.
@@ -34,12 +26,12 @@ namespace FilesManipulator.Models
 
         public virtual void OnManipulationStart()
         {
-            this.lastFile = null;
+            TextFieldModelBase.currentFile = null;
         }
 
-        public virtual void OnFileManipulated(FileInfo fileInfo)
+        public virtual void OnBeforeFileManipulated(FileInfo fileInfo)
         {
-            this.lastFile = fileInfo;
+            TextFieldModelBase.currentFile = fileInfo;
         }
     }
 }

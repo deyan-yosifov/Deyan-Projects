@@ -17,7 +17,7 @@ namespace FilesManipulator.Models
         {
             get
             {
-                return Path.GetExtension(base.lastFile.Name);
+                return Path.GetExtension(TextFieldModelBase.currentFile.Name);
             }
         }
     }

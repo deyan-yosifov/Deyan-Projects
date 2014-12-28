@@ -7,8 +7,8 @@ namespace FilesManipulator.Models
 {
     public class TotalFilesCounterField : TextFieldModelBase
     {
-        private const int InitialCount = 0;
-        private int count;
+        private const int InitialCount = 1;
+        private static int count;
 
         public override string Name
         {
@@ -23,13 +23,23 @@ namespace FilesManipulator.Models
         {
             get
             {
-                return (this.count++).ToString();
+                return TotalFilesCounterField.count.ToString();
             }
+        }
+
+        public override void OnBeforeFileManipulated(FileInfo fileInfo)
+        {
+            if (fileInfo != TextFieldModelBase.currentFile)
+            {
+                TotalFilesCounterField.count++;
+            }
+
+            base.OnBeforeFileManipulated(fileInfo);
         }
 
         public override void OnManipulationStart()
         {
-            this.count = TotalFilesCounterField.InitialCount;
+            TotalFilesCounterField.count = TotalFilesCounterField.InitialCount;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace FilesManipulator.Models
 {
     public class FolderFilesCounterField : TextFieldModelBase
     {
-        private const int InitialCount = 0;
+        private const int InitialCount = 1;
         private string lastDirectory;
         private int count;
 
@@ -29,19 +29,27 @@ namespace FilesManipulator.Models
         public override string ResultText
         {
             get
+            {         
+                return this.count.ToString();
+            }
+        }
+
+        public override void OnBeforeFileManipulated(FileInfo fileInfo)
+        {
+            if (fileInfo != TextFieldModelBase.currentFile)
             {
-                if (this.lastDirectory != base.lastFile.DirectoryName)
+                if (this.lastDirectory != fileInfo.DirectoryName)
                 {
-                    this.lastDirectory = base.lastFile.DirectoryName;
+                    this.lastDirectory = fileInfo.DirectoryName;
                     this.count = FolderFilesCounterField.InitialCount;
                 }
                 else
                 {
                     this.count++;
                 }
-
-                return this.count.ToString();
             }
+
+            base.OnBeforeFileManipulated(fileInfo);
         }
 
         public override void OnManipulationStart()

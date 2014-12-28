@@ -12,9 +12,8 @@ namespace FilesManipulator.Models
         string Name { get; }
         string ResultName { get; }
         string ResultText { get; }
-        bool IsCreateTextDependent { get; }
         void OnCreate(string text);
         void OnManipulationStart();
-        void OnFileManipulated(FileInfo fileInfo);
+        void OnBeforeFileManipulated(FileInfo fileInfo);
     }
 }

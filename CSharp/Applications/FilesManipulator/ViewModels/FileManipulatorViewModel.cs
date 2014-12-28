@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -27,6 +28,7 @@ namespace FilesManipulator.ViewModels
 
         public FileManipulatorViewModel()
         {
+            this.shouldManipulateSubFolders = true;
             this.fieldTypes = new ObservableCollection<ITextFieldModel>();
             this.selectedTextFields = new ObservableCollection<ITextFieldModel>();
             this.selectedFolder = Directory.GetCurrentDirectory();
@@ -139,7 +141,7 @@ namespace FilesManipulator.ViewModels
             }
         }
 
-        private ICommand InsertFieldBeforeCommand
+        public ICommand InsertFieldBeforeCommand
         {
             get
             {
@@ -151,7 +153,7 @@ namespace FilesManipulator.ViewModels
             }
         }
 
-        private ICommand InsertFieldAfterCommand
+        public ICommand InsertFieldAfterCommand
         {
             get
             {
@@ -163,7 +165,7 @@ namespace FilesManipulator.ViewModels
             }
         }
 
-        private ICommand DeleteFieldCommand
+        public ICommand DeleteFieldCommand
         {
             get
             {
@@ -175,9 +177,29 @@ namespace FilesManipulator.ViewModels
             }
         }
 
+        private StringBuilder builder = new StringBuilder();
         private void ChangeFileNames(object parameter)
         {
-            throw new NotImplementedException();
+            builder.Clear();
+            DirectoryInfo directory = new DirectoryInfo(this.SelectedFolder);
+            this.ChangeFileNamesInDirectory(directory);
+            MessageBox.Show(builder.ToString());
+        }
+
+        private void ChangeFileNamesInDirectory(DirectoryInfo directory)
+        {
+            foreach (FileInfo file in directory.GetFiles())
+            {
+                builder.AppendLine(file.FullName);
+            }
+
+            if (this.ShouldManipulateSubFolders)
+            {
+                foreach (DirectoryInfo subfolder in directory.GetDirectories())
+                {
+                    this.ChangeFileNamesInDirectory(subfolder);
+                }
+            }
         }
 
         private void ChooseSelectedFolder(object parameter)
@@ -206,7 +228,19 @@ namespace FilesManipulator.ViewModels
 
             if (selectedField != null)
             {
-                this.SelectedTextFields.Remove(selectedFieldType);
+                int index = this.SelectedTextFields.IndexOf(selectedField);
+                this.SelectedTextFields.Remove(selectedField);
+
+                int count = this.SelectedTextFields.Count;
+
+                if (index < count)
+                {
+                    this.SelectedTextField = this.SelectedTextFields[index];
+                }
+                else if (count > 0)
+                {
+                    this.SelectedTextField = this.SelectedTextFields[count - 1];
+                }
             }
         }
 
@@ -225,6 +259,8 @@ namespace FilesManipulator.ViewModels
             {
                 this.SelectedTextFields.Add(instance);
             }
+
+            this.SelectedTextField = instance;
         }
 
         private ITextFieldModel CreateTextFieldInstance()
@@ -243,6 +279,8 @@ namespace FilesManipulator.ViewModels
             this.FieldTypes.Add(new FolderFilesCounterField());
             this.FieldTypes.Add(new TotalFilesCounterField());
             this.FieldTypes.Add(new TextField());
+
+            this.SelectedFieldType = this.FieldTypes[0];
         }
     }
 }
