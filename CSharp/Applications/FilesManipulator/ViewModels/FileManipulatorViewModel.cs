@@ -26,6 +26,7 @@ namespace FilesManipulator.ViewModels
         private ICommand insertFieldBeforeCommand;
         private ICommand insertFieldAfterCommand;
         private ICommand deleteFieldCommand;
+        private StringBuilder messageBuilder;
 
         public FileManipulatorViewModel()
         {
@@ -38,6 +39,7 @@ namespace FilesManipulator.ViewModels
             this.insertFieldBeforeCommand = new DelegateCommand(this.InsertFieldBefore);
             this.insertFieldAfterCommand = new DelegateCommand(this.InsertFieldAfter);
             this.deleteFieldCommand = new DelegateCommand(this.DeleteField);
+            this.messageBuilder = new StringBuilder();
 
             this.RegisterFieldTypes();
             this.GenerateDefaultFieldPattern();
@@ -180,10 +182,9 @@ namespace FilesManipulator.ViewModels
             }
         }
 
-        private StringBuilder builder = new StringBuilder();
         private void ChangeFileNames(object parameter)
         {
-            this.builder.Clear();
+            this.messageBuilder.Clear();
 
             this.DoOnSelectedTextFields((field) =>
                 {
@@ -191,7 +192,7 @@ namespace FilesManipulator.ViewModels
                 });
             DirectoryInfo directory = new DirectoryInfo(this.SelectedFolder);
             this.ChangeFileNamesInDirectory(directory);
-            MessageBox.Show(builder.ToString());
+            MessageBox.Show(messageBuilder.ToString());
         }
 
         private void ChangeFileNamesInDirectory(DirectoryInfo directory)
@@ -205,8 +206,7 @@ namespace FilesManipulator.ViewModels
                         newFileName.Append(field.ResultText);
                     });
 
-                builder.AppendLine(string.Format("{0} -> {1}", file.FullName, newFileName.ToString()));
-                // TODO: Try rename file here if not such file exists
+                this.RenameFile(file, newFileName.ToString());
             }
 
             if (this.ShouldManipulateSubFolders)
@@ -215,6 +215,28 @@ namespace FilesManipulator.ViewModels
                 {
                     this.ChangeFileNamesInDirectory(subfolder);
                 }
+            }
+        }
+
+        private void RenameFile(FileInfo file, string newFileName)
+        {
+            try
+            {
+                string fullName = Path.Combine(file.DirectoryName, newFileName);
+
+                if (!File.Exists(fullName))
+                {
+                    file.MoveTo(fullName);
+                    this.messageBuilder.AppendLine(string.Format("{0} -> {1}", file.FullName, newFileName.ToString()));
+                }
+                else
+                {
+                    throw new InvalidOperationException(string.Format("File already exists: {0}", fullName));
+                }
+            }
+            catch(Exception exception)
+            {
+                this.messageBuilder.AppendLine(string.Format("SOME ERROR HAPPENED: {0}", exception.Message));
             }
         }
 
