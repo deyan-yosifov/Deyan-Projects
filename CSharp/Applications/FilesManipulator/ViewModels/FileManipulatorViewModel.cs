@@ -252,6 +252,11 @@ namespace FilesManipulator.ViewModels
         {
             FolderBrowserDialog folderDialog = new FolderBrowserDialog();
 
+            if (Directory.Exists(this.SelectedFolder))
+            {
+                folderDialog.SelectedPath = this.SelectedFolder;
+            }
+
             if (folderDialog.ShowDialog() == DialogResult.OK)
             {
                 this.SelectedFolder = folderDialog.SelectedPath;
