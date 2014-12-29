@@ -28,11 +28,13 @@ namespace CrossBowCreator
             public const string UpperFrontTriangle = "Upper front triangle";
         }
 
-        private static readonly Dictionary<string, string> commentToExtrusionGeometryResource;
+        private static readonly Appearance crossBowAppearance;
+        private static readonly Dictionary<string, string> resourceNameToResourceData;
 
         static CrossBowDocument()
         {
-            commentToExtrusionGeometryResource = new Dictionary<string, string>();
+            crossBowAppearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Gray) };
+            resourceNameToResourceData = new Dictionary<string, string>();
             CrossBowDocument.RegisterResources();
         }
 
@@ -110,35 +112,127 @@ namespace CrossBowCreator
                 Comment = "The Cross bow figure",
                 DefinitionName = "CrossBow",
             };
-
-            Appearance appearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Gray) };
             
-            foreach (KeyValuePair<string, string> resource in commentToExtrusionGeometryResource)
+            foreach (KeyValuePair<string, string> resource in CrossBowDocument.resourceNameToResourceData)
             {
-                ExtrusionGeometry extrusionGeometry = ExtrusionImporter.ImportFromText(resource.Value);
-                Extrusion extrusion = new Extrusion(extrusionGeometry) { Appearance = appearance, Comment = resource.Key };
+                ExtrusionGeometry extrusionGeometry = this.ImportExtrusionGeometry(resource.Key, resource.Value);
 
-                if (resource.Key == ResourceNames.ArrowCylinder)
-                {
-                    this.TaperArrowCylinder(extrusion);
-                }
-                else if (resource.Key == ResourceNames.UpperFrontTriangle)
-                {
-                    crossBowTransform.Center = this.CalculateCrossBowCenter(extrusionGeometry);
-                }
-                else if (resource.Key == ResourceNames.BigArc)
-                {
-                    crossBowTransform.Children.Add(this.GetSphereEndings(extrusion, appearance));
-                }
-
-                this.TrySmooten(extrusion, resource.Key);
-
-                crossBowTransform.Children.Add(extrusion);
-                //Appearance redAppearance = new Appearance() { DiffuseColor = new VrmlColor(Colors.Red) };
-                //transform.Children.Add(new IndexedLineSet(arrowAboveBody) { Appearance = redAppearance, Comment = resource.Key });   
+                this.AddGeometryToCrossBow(resource.Key, extrusionGeometry, crossBowTransform);
             }
 
             return crossBowTransform;
+        }
+
+        private ExtrusionGeometry ImportExtrusionGeometry(string resourceName, string resourceData)
+        {
+            ExtrusionGeometry extrusionGeometry = ExtrusionImporter.ImportFromText(resourceData);
+
+            if (resourceName == ResourceNames.BigArc)
+            {
+                extrusionGeometry = this.CreateArcWithMorePoints(extrusionGeometry, 23);
+            }
+
+            return extrusionGeometry;
+        }
+
+        private ExtrusionGeometry CreateArcWithMorePoints(ExtrusionGeometry oldArc, int pointsCount)
+        {
+            ExtrusionGeometry arc = new ExtrusionGeometry();
+            arc.Face.NormalVector = oldArc.Face.NormalVector;
+            arc.Face.Points.Add(oldArc.Face.Points);
+
+            arc.Polyline.Points.Add(this.CreateArcPoints(oldArc.Polyline, pointsCount));
+
+            return arc;
+        }
+
+        private IEnumerable<Point3D> CreateArcPoints(Polyline oldArc, int pointsCount)
+        {
+            Matrix3D matrix = this.GetArcPointsRotationMatrix(oldArc, pointsCount);
+
+            Point3D currentPoint = oldArc.Points[0];
+            yield return currentPoint;
+
+            for (int i = 0; i < pointsCount - 2; i++)
+            {
+                currentPoint = matrix.Transform(currentPoint);
+                yield return currentPoint;
+            }
+
+            currentPoint = oldArc.Points[oldArc.Points.Count - 1];
+            yield return currentPoint;
+        }
+
+        private Matrix3D GetArcPointsRotationMatrix(Polyline oldArc, int pointsCount)
+        {
+            Point3D zero = new Point3D();
+            Point3D p0 = oldArc.Points[0];
+            Point3D p1 = oldArc.Points[1];
+            Point3D pn = oldArc.Points[oldArc.Points.Count - 1];
+
+            Vector3D k = Vector3D.CrossProduct(p1 - p0, pn - p0);
+            k.Normalize();
+            bool isKVertical = IsZero(k.X) && IsZero(k.Y);
+
+            if (!isKVertical)
+            {
+                throw new NotImplementedException("Only horizonal arcs recalculations are implemented");
+            }
+
+            Vector3D tNormal = Vector3D.CrossProduct(pn - p0, k);
+            Vector3D vNormal = Vector3D.CrossProduct(p0 - p1, k);
+            Vector3D bVector = (p1 - pn) * (0.5);
+
+            Point b = new Point(bVector.X, bVector.Y);
+            Matrix a = new Matrix(tNormal.X, tNormal.Y, vNormal.X, vNormal.Y, 0, 0);
+            a.Invert();
+            Point tv = Point.Multiply(b, a);
+            double t = tv.X;
+            Point3D middle0n = Point3D.Add(zero, (Vector3D.Add(p0 - zero, pn - zero) * 0.5));
+
+            Point3D center = Point3D.Add(middle0n, Vector3D.Multiply(t, tNormal));
+
+            double totalAngle = Vector3D.AngleBetween(p0 - center, pn - center);
+            double angle = totalAngle / (pointsCount - 1);
+            Matrix3D matrix = new Matrix3D();
+            matrix.RotateAt(new Quaternion(k, angle), center);
+
+            return matrix;
+        }
+
+        private static bool IsZero(double number)
+        {
+            return Math.Abs(number) < 1E-6;
+        }
+
+        private static void SetAppearance(IShape shape)
+        {
+            shape.Appearance = CrossBowDocument.crossBowAppearance;
+        }
+
+        private void AddGeometryToCrossBow(string resourceName, ExtrusionGeometry geometry, Transformation crossBow)
+        {
+            Extrusion extrusion = new Extrusion(geometry) { Comment = resourceName };
+            CrossBowDocument.SetAppearance(extrusion);
+
+            if (resourceName == ResourceNames.ArrowCylinder)
+            {
+                this.TaperArrowCylinder(extrusion);
+            }
+            else if (resourceName == ResourceNames.UpperFrontTriangle)
+            {
+                crossBow.Center = this.CalculateCrossBowCenter(geometry);
+            }
+            else if (resourceName == ResourceNames.BigArc)
+            {
+                crossBow.Children.Add(this.GetSphereEndings(extrusion));
+            }
+
+            this.TrySmooten(extrusion, resourceName);
+
+            crossBow.Children.Add(extrusion);
+
+            //crossBow.Children.Add(new IndexedLineSet(geometry) { Comment = resourceName }); 
         }
 
         private void TrySmooten(Extrusion extrusion, string resourceName)
@@ -155,27 +249,25 @@ namespace CrossBowCreator
             }
         }
 
-        private IEnumerable<IVrmlElement> GetSphereEndings(Extrusion arc, Appearance appearance)
+        private IEnumerable<IVrmlElement> GetSphereEndings(Extrusion arc)
         {
             Point point = arc.CrossSection.First().Point;
             double radius = Math.Sqrt(point.X * point.X + point.Y * point.Y);
 
             Position startPosition = arc.Spine.First();
-            yield return this.CreateSphere(startPosition, radius, appearance);
+            yield return this.CreateSphere(startPosition, radius);
 
             Position endPosition = arc.Spine.Last();
-            yield return this.CreateSphere(endPosition, radius, appearance);
+            yield return this.CreateSphere(endPosition, radius);
         }
 
-        private IVrmlElement CreateSphere(Position startPosition, double radius, Appearance appearance)
+        private IVrmlElement CreateSphere(Position startPosition, double radius)
         {
             Transformation transform = new Transformation();
             transform.Translation = startPosition;
-            transform.Children.Add(new Sphere() 
-            {
-                Radius = radius,
-                Appearance = appearance
-            });
+            Sphere sphere = new Sphere() { Radius = radius };
+            CrossBowDocument.SetAppearance(sphere);
+            transform.Children.Add(sphere);
 
             return transform;
         }
@@ -204,16 +296,16 @@ namespace CrossBowCreator
 
         private static void RegisterResources()
         {
-            commentToExtrusionGeometryResource[ResourceNames.ArrowBaseAboveBody] = ResourceDictionary.ArrowBaseAboveBody;
-            commentToExtrusionGeometryResource[ResourceNames.ArrowCylinder] = ResourceDictionary.ArrowCylinder;
-            commentToExtrusionGeometryResource[ResourceNames.BigArc] = ResourceDictionary.BigArc;
-            commentToExtrusionGeometryResource[ResourceNames.Body] = ResourceDictionary.Body;
-            commentToExtrusionGeometryResource[ResourceNames.BottomCylinder] = ResourceDictionary.BottomCylinder;
-            commentToExtrusionGeometryResource[ResourceNames.FrontTorus] = ResourceDictionary.FrontTorus;
-            commentToExtrusionGeometryResource[ResourceNames.LeftCylinder] = ResourceDictionary.LeftCylinder;
-            commentToExtrusionGeometryResource[ResourceNames.LowerFrontTriangle] = ResourceDictionary.LowerFrontTriangle;
-            commentToExtrusionGeometryResource[ResourceNames.RightCylinder] = ResourceDictionary.RightCylinder;
-            commentToExtrusionGeometryResource[ResourceNames.UpperFrontTriangle] = ResourceDictionary.UpperFrontTriangle;
+            resourceNameToResourceData[ResourceNames.ArrowBaseAboveBody] = ResourceDictionary.ArrowBaseAboveBody;
+            resourceNameToResourceData[ResourceNames.ArrowCylinder] = ResourceDictionary.ArrowCylinder;
+            resourceNameToResourceData[ResourceNames.BigArc] = ResourceDictionary.BigArc;
+            resourceNameToResourceData[ResourceNames.Body] = ResourceDictionary.Body;
+            resourceNameToResourceData[ResourceNames.BottomCylinder] = ResourceDictionary.BottomCylinder;
+            resourceNameToResourceData[ResourceNames.FrontTorus] = ResourceDictionary.FrontTorus;
+            resourceNameToResourceData[ResourceNames.LeftCylinder] = ResourceDictionary.LeftCylinder;
+            resourceNameToResourceData[ResourceNames.LowerFrontTriangle] = ResourceDictionary.LowerFrontTriangle;
+            resourceNameToResourceData[ResourceNames.RightCylinder] = ResourceDictionary.RightCylinder;
+            resourceNameToResourceData[ResourceNames.UpperFrontTriangle] = ResourceDictionary.UpperFrontTriangle;
         }           
     }
 }
