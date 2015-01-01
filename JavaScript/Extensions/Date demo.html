@@ -1,0 +1,22 @@
+<h1>Logging all days in a single year using javascript</h1>
+
+<script src="DateExtensions.js"></script>
+<script>
+var year = 2015;
+var date = new Date(year, 0, 1);
+var done = false;
+var month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+ 
+while (!done) {
+  // show whatever markup you want for each day
+  document.write(month_names[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' --- ' + date + '<br />');
+ 
+  // go to the next day
+  date = date.getNextDate();
+ 
+  // end the loop if it is another year
+  if (date.getFullYear() > year) {
+    done = true;
+  }
+}
+</script>
