@@ -1,31 +1,3 @@
-/**
- * Retrieves all the rows in the active spreadsheet that contain data and logs the
- * values for each row.
- * For more information on using the Spreadsheet API, see
- * https://developers.google.com/apps-script/service_spreadsheet
- */
-function testCode() {
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var rows = sheet.getDataRange();
-  var numRows = rows.getNumRows();
-  var values = rows.getValues();
-
-  var text = "";
-  
-  for (var i = 0; i <= numRows - 1; i++) {
-    var row = values[i];
-    text += row + " row data\n";
-    //Logger.log(row);
-  }
-  
-  var ui = SpreadsheetApp.getUi();
-  
-  var result = ui.alert(
-     'See rows data!',
-      text,
-      ui.ButtonSet.YES_NO);
-};
-
 function logObjectProperties(instance)
 {  
   for(var property in instance) {
@@ -36,6 +8,35 @@ function logObjectProperties(instance)
 function logAsJSON(instance)
 {  
   Logger.log(JSON.stringify(instance));
+};
+
+function promptDate()
+{
+  var ui = SpreadsheetApp.getUi();
+  
+  var result = ui.prompt(
+     'Choose some date!',
+    "Sample date format: 31-1-2015",
+      ui.ButtonSet.OK_CANCEL);  
+  
+  if(result.getSelectedButton() == ui.Button.OK){
+    var text = result.getResponseText();
+    var nums = text.split("-");
+    var day = parseInt(nums[0]);
+    var month = parseInt(nums[1]);
+    var year = parseInt(nums[2]);
+    var date = new Date(year, month - 1, day);
+    return date;
+  }
+  else{
+    return false;
+  }
+};
+
+function alert(text)
+{  
+  var ui = SpreadsheetApp.getUi();
+  ui.alert(text);
 };
 
 var reportSheet = null;
@@ -101,9 +102,18 @@ function getRangeText(rStart, cStart, rEnd, cEnd)
   return range;
 };
 
-function generateSheet() {  
+function generateSheet() {      
   reportSheet = SpreadsheetApp.getActiveSheet();
-  var cellValue = null;
+  var cellValue = null;  
+  var date = promptDate();
+  
+  if(!date)
+  {
+    alert("Date not selected!");
+    return;
+  }
+  
+  setCellValue(getRangeText("header", "resultTotal"), date);
   
   setCellValue(getRangeText("header", "value"), "Стойност в лв.");
   setCellValue(getRangeText("header", "description"), "Описание на приход/разход");
@@ -131,10 +141,6 @@ function generateSheet() {
 function onOpen() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var entries = [
-    {
-      name : "Test code",
-      functionName : "testCode"
-    },
     {
       name : "Generate sheet",
       functionName : "generateSheet"
