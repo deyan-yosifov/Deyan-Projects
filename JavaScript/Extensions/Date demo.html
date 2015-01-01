@@ -9,7 +9,7 @@ var month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July
  
 while (!done) {
   // show whatever markup you want for each day
-  document.write(month_names[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' --- ' + date + '<br />');
+  document.write(month_names[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' ' + date.getDay() + ' --- ' + date + '<br />');
  
   // go to the next day
   date = date.getNextDate();

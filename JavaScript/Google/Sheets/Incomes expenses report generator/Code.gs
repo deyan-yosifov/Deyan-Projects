@@ -1,3 +1,62 @@
+var oneHourMilliseconds = 60 * 60 * 1000;
+var oneDayMilliseconds = 24 * oneHourMilliseconds;
+var monthNames = ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'];
+
+function getNextDate(date) {
+  var nextDate = new Date(date.getTime() + oneDayMilliseconds);
+  
+  if (nextDate.getHours() != date.getHours()) {
+    // This is done because of daylight savings!
+    nextDate = new Date(nextDate.getTime() + (nextDate.getHours() - date.getHours()) * oneHourMilliseconds);
+  }
+  
+  return nextDate;
+};
+
+function getWeeksInMonth(date){
+  var month = date.getMonth();
+  var weeks = [];
+  var startDate = new Date(date.getFullYear(), month, 1);
+  var currentDate = startDate;
+  var nextDate = getNextDate(currentDate);
+  
+  while(nextDate.getMonth() == month)
+  {
+    if(nextDate.getDay() == 1){
+      weeks.push({
+        start: startDate,
+        end: currentDate,
+      });
+      
+      startDate = nextDate;      
+    }
+    
+    currentDate = nextDate;
+    nextDate = getNextDate(currentDate);
+  }
+  
+  weeks.push({
+    start: startDate,
+    end: currentDate,
+  });
+    
+  return weeks;
+};
+
+function getWeekIndex(date){
+  var weeks = getWeeksInMonth(date);
+  var dateNum = date.getDate();
+  
+  for(var i = 0; i < weeks.length; i+=1){
+    var week = weeks[i];    
+    if(week.start.getDate() <= dateNum && dateNum <= week.end.getDate()){
+     return  i;
+    }
+  }
+  
+  throw {"message": "Calculations error! Cannot find week index!"};
+};
+
 function logObjectProperties(instance)
 {  
   for(var property in instance) {
@@ -114,6 +173,7 @@ function generateSheet() {
   }
   
   setCellValue(getRangeText("header", "resultTotal"), date);
+  setCellValue(getRangeText("header", "resultDeyan"), getNextDate(date));
   
   setCellValue(getRangeText("header", "value"), "Стойност в лв.");
   setCellValue(getRangeText("header", "description"), "Описание на приход/разход");
