@@ -38,9 +38,85 @@ function logAsJSON(instance)
   Logger.log(JSON.stringify(instance));
 };
 
+var reportSheet = null;
+
+var reportConstants = {
+  regex: {
+    deyan: '"*Деян*"',    
+    radostina: '"*Радостина*"',
+    personalExpense: '"*Личен разход*"',
+    mutualExpense: '"*Общ разход*"',
+  },
+  rows: {    
+    header: "1",
+    start: "2",
+    end: "1000",
+  },
+  columns: {
+    value: "A",
+    description: "B",
+    ownerName: "C",
+    type: "D",
+    deyanHelper: "E",
+    radostinaHelper: "F",
+    resultHeaders: "H",
+    resultTotal: "I",
+    resultDeyan: "J",
+    resultRadostina: "K"
+  },
+};
+
+function guardVariables()
+{
+  if(!reportSheet)
+  {
+    throw { "message" : "You should set active sheet as report sheet first!" };
+  }
+};
+
+function setCellValue(range, value)
+{
+  guardVariables();
+  reportSheet.getRange(range).setValue(value);
+};
+
+function getRangeText(rStart, cStart, rEnd, cEnd)
+{
+  rStart = reportConstants.rows[rStart] || rStart;
+  cStart = reportConstants.columns[cStart] || cStart;
+  
+  var range = "";
+  
+  if(arguments.length > 2)
+  {
+    rEnd = reportConstants.rows[rEnd] || rEnd;
+    cEnd = reportConstants.columns[cEnd] || cEnd;
+    range += cStart + rStart + ":" + cEnd + rEnd;
+  }
+  else
+  {
+    range += cStart + rStart;
+  }  
+  
+  return range;
+};
+
 function generateSheet() {  
-  var sheet = SpreadsheetApp.getActiveSheet();
-  logObjectProperties(sheet);
+  reportSheet = SpreadsheetApp.getActiveSheet();
+  var cellValue = null;
+  
+  setCellValue(getRangeText("header", "value"), "Стойност в лв.");
+  setCellValue(getRangeText("header", "description"), "Описание на приход/разход");
+  setCellValue(getRangeText("header", "ownerName"), "Кой?");
+  setCellValue(getRangeText("header", "type"), "Вид приход/разход");
+  setCellValue(getRangeText("header", "deyanHelper"), "Деян");
+  setCellValue(getRangeText("header", "radostinaHelper"), "Радостина");
+  
+  cellValue = '=SUMIF(' + getRangeText('start','ownerName') + ', ' + reportConstants.regex.deyan + ', ' + getRangeText('start','value') + ')';
+  setCellValue(getRangeText("start", "deyanHelper", "end", "deyanHelper"), cellValue);
+  
+  cellValue = '=SUMIF(' + getRangeText('start','ownerName') + ', ' + reportConstants.regex.radostina + ', ' + getRangeText('start','value') + ')';
+  setCellValue(getRangeText("start", "radostinaHelper", "end", "radostinaHelper"), cellValue);
   
 };
 
