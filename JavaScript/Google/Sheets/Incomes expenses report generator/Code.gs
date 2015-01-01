@@ -4,7 +4,7 @@
  * For more information on using the Spreadsheet API, see
  * https://developers.google.com/apps-script/service_spreadsheet
  */
-function readRows() {
+function testCode() {
   var sheet = SpreadsheetApp.getActiveSheet();
   var rows = sheet.getDataRange();
   var numRows = rows.getNumRows();
@@ -26,9 +26,27 @@ function readRows() {
       ui.ButtonSet.YES_NO);
 };
 
+function logObjectProperties(instance)
+{  
+  for(var property in instance) {
+    Logger.log(property);
+  }
+};
+
+function logAsJSON(instance)
+{  
+  Logger.log(JSON.stringify(instance));
+};
+
+function generateSheet() {  
+  var sheet = SpreadsheetApp.getActiveSheet();
+  logObjectProperties(sheet);
+  
+};
+
 /**
  * Adds a custom menu to the active spreadsheet, containing a single menu item
- * for invoking the readRows() function specified above.
+ * for invoking the testCode() function specified above.
  * The onOpen() function, when defined, is automatically invoked whenever the
  * spreadsheet is opened.
  * For more information on using the Spreadsheet API, see
@@ -36,9 +54,15 @@ function readRows() {
  */
 function onOpen() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var entries = [{
-    name : "Read Data",
-    functionName : "readRows"
-  }];
-  spreadsheet.addMenu("Incomes expenses generator", entries);
+  var entries = [
+    {
+      name : "Test code",
+      functionName : "testCode"
+    },
+    {
+      name : "Generate sheet",
+      functionName : "generateSheet"
+    },
+  ];
+  spreadsheet.addMenu("Incomes/Expenses", entries);
 };
