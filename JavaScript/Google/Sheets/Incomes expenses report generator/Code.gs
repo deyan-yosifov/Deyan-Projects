@@ -128,7 +128,8 @@ var reportConstants = {
     resultHeaders: "H",
     resultTotal: "I",
     resultDeyan: "J",
-    resultRadostina: "K"
+    resultRadostina: "K",    
+    autoResizables: [1, 2, 4, 8, 9]
   },
 };
 
@@ -140,10 +141,25 @@ function guardVariables()
   }
 };
 
-function setCellValue(range, value)
+function setCellValue(range, value, json)
 {
   guardVariables();
-  reportSheet.getRange(range).setValue(value);
+  var cellRange = reportSheet.getRange(range);
+  cellRange.setValue(value);
+  
+  if(json){
+    if(json.fontWeight){
+      cellRange.setFontWeight(json.fontWeight);
+    }
+    
+    if(json.fontSize){
+      cellRange.setFontSize(json.fontSize);
+    }
+    
+    if(json.numberFormat){
+      cellRange.setNumberFormat(json.numberFormat);
+    }
+  }
 };
 
 function getRangeText(rStart, cStart, rEnd, cEnd, isAbsolute)
@@ -181,15 +197,19 @@ function generateStatisticTable(json){
   var radiRange = getRangeText(valuesStart, "radostinaHelper", valuesEnd, "radostinaHelper");
   var personalExpense = reportConstants.regex.personalExpense;
   var mutualExpense = reportConstants.regex.mutualExpense;
+    
+  var bold = { fontWeight: "bold" };
+  var percentFormat = { numberFormat: "0.00%" };
+  var boldIf = (shouldAddCostsEqualizations ? bold : null);
   
   if(tableHeader){
-   setCellValue(getRangeText(tableStartRow-1, "resultHeaders"), tableHeader);
+   setCellValue(getRangeText(tableStartRow-1, "resultHeaders"), tableHeader, bold);
   }
   
   var cellValue = null;
   
   var currentRow = tableStartRow;
-  setCellValue(getRangeText(currentRow, "resultHeaders"), "Баланс");
+  setCellValue(getRangeText(currentRow, "resultHeaders"), "Баланс", boldIf);
   cellValue = "=SUM(" + getRangeText(currentRow + 1, "resultTotal", currentRow + 2, "resultTotal") + ")";
   setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
   cellValue = "=SUM(" + getRangeText(currentRow + 1, "resultDeyan", currentRow + 2, "resultDeyan") + ")";
@@ -198,7 +218,7 @@ function generateStatisticTable(json){
   setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
   
   currentRow++;
-  setCellValue(getRangeText(currentRow, "resultHeaders"), "Приходи");
+  setCellValue(getRangeText(currentRow, "resultHeaders"), "Приходи", boldIf);
   cellValue = "=SUMIF(" + valueRange + ',">0")';
   setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
   cellValue = "=SUMIF(" + deyanRange + ',">0")';
@@ -207,12 +227,15 @@ function generateStatisticTable(json){
   setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
     
   currentRow++;
-  setCellValue(getRangeText(currentRow, "resultHeaders"), "Разходи");
+  var equalizationRow = tableStartRow + 9;
+  setCellValue(getRangeText(currentRow, "resultHeaders"), "Разходи", boldIf);
   cellValue = "=SUMIF(" + valueRange + ',"<0")';
   setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
   cellValue = "=SUMIF(" + deyanRange + ',"<0")';
+  cellValue += (shouldAddCostsEqualizations ? ("+" + getRangeText(equalizationRow, "resultDeyan")) : "");
   setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
   cellValue = "=SUMIF(" + radiRange + ',"<0")';
+  cellValue += (shouldAddCostsEqualizations ? ("+" + getRangeText(equalizationRow, "resultRadostina")) : "");
   setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
   
   currentRow+=2;
@@ -239,21 +262,21 @@ function generateStatisticTable(json){
   var totalIncomesRange = getRangeText(incomesRow, "resultTotal", null, null, true);
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Процент приход");  
   cellValue = "=" + totalIncomesRange + "/" + totalIncomesRange;
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, percentFormat);
   cellValue = "=" + getRangeText(incomesRow, "resultDeyan", null, null, true) + "/" + totalIncomesRange;
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, percentFormat);
   cellValue = "=" + getRangeText(incomesRow, "resultRadostina", null, null, true) + "/" + totalIncomesRange;
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, percentFormat);
   
   currentRow++;
   var totalMutualExpensesRange = getRangeText(mutualExpensesRow, "resultTotal");
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Процент общ разход");  
   cellValue = "=" + totalMutualExpensesRange + "/" + totalMutualExpensesRange;
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, percentFormat);
   cellValue = "=" + getRangeText(mutualExpensesRow, "resultDeyan") + "/" + totalMutualExpensesRange;
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, percentFormat);
   cellValue = "=" + getRangeText(mutualExpensesRow, "resultRadostina") + "/" + totalMutualExpensesRange;
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, percentFormat);
   
   if(shouldAddCostsEqualizations){
     currentRow++;
@@ -269,8 +292,8 @@ function generateStatisticTable(json){
 function generateSheet() {      
   reportSheet = SpreadsheetApp.getActiveSheet();
   var cellValue = null;  
-  var date = promptDate();
-//  var date = parseDate("2-1-2015");
+//  var date = promptDate();
+  var date = parseDate("2-1-2015");
   
   if(!date)
   {
@@ -278,15 +301,17 @@ function generateSheet() {
     return;
   }
     
-  setCellValue(getRangeText("header", "value"), "Стойност в лв.");
-  setCellValue(getRangeText("header", "description"), "Описание на приход/разход");
-  setCellValue(getRangeText("header", "ownerName"), "Кой?");
-  setCellValue(getRangeText("header", "type"), "Вид приход/разход");
+  var bold = { fontWeight: "bold" };
+  var bigBold = { fontWeight: "bold", fontSize: 12 };
+  setCellValue(getRangeText("header", "value"), "Стойност в лв.", bold);
+  setCellValue(getRangeText("header", "description"), "Описание на приход/разход", bold);
+  setCellValue(getRangeText("header", "ownerName"), "Кой?", bold);
+  setCellValue(getRangeText("header", "type"), "Вид приход/разход", bold);
   setCellValue(getRangeText("header", "deyanHelper"), "Деян");
   setCellValue(getRangeText("header", "radostinaHelper"), "Радостина");
-  setCellValue(getRangeText("header", "resultTotal"), "Общи резултати");
-  setCellValue(getRangeText("header", "resultDeyan"), "Деян");
-  setCellValue(getRangeText("header", "resultRadostina"), "Радостина");
+  setCellValue(getRangeText("header", "resultTotal"), "Общи резултати", bigBold);
+  setCellValue(getRangeText("header", "resultDeyan"), "Деян", bigBold);
+  setCellValue(getRangeText("header", "resultRadostina"), "Радостина", bigBold);
   
   cellValue = '=SUMIF(' + getRangeText('start','ownerName') + ', ' + reportConstants.regex.deyan + ', ' + getRangeText('start','value') + ')';
   setCellValue(getRangeText("start", "deyanHelper", "end", "deyanHelper"), cellValue);
@@ -306,8 +331,8 @@ function generateSheet() {
     tableHeader: tableHeader,
     shouldAddCostsEqualizations: true,
   });
-  
-  valuesStart = (parseInt(valuesEnd) - 1) + "";
+    
+  var valueBeforeValuesEnd = (parseInt(valuesEnd) - 1) + "";
   var weeks = getWeeksInMonth(date);
   var monthAndYear = monthNames[date.getMonth()] + " " + date.getFullYear();
   
@@ -323,7 +348,19 @@ function generateSheet() {
       tableHeader: tableHeader,
       shouldAddCostsEqualizations: false,
     });
+    
+    valuesStart = valueBeforeValuesEnd;
   }  
+  
+  var resizeColumns = reportConstants.columns.autoResizables;
+  
+  for(var i = 0; i < resizeColumns.length; i+=1){
+    var columnIndex = resizeColumns[i];
+    reportSheet.autoResizeColumn(columnIndex);
+  }
+  
+  reportSheet.setFrozenRows(1);  
+  reportSheet.setName(monthAndYear);
 };
 
 /**
