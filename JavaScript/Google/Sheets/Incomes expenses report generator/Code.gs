@@ -43,20 +43,6 @@ function getWeeksInMonth(date){
   return weeks;
 };
 
-function getWeekIndex(date){
-  var weeks = getWeeksInMonth(date);
-  var dateNum = date.getDate();
-  
-  for(var i = 0; i < weeks.length; i+=1){
-    var week = weeks[i];    
-    if(week.start.getDate() <= dateNum && dateNum <= week.end.getDate()){
-     return  i;
-    }
-  }
-  
-  throw {"message": "Calculations error! Cannot find week index!"};
-};
-
 function logObjectProperties(instance)
 {  
   for(var property in instance) {
@@ -69,13 +55,23 @@ function logAsJSON(instance)
   Logger.log(JSON.stringify(instance));
 };
 
+function parseDate(text){
+  var nums = text.split("-");
+  var day = parseInt(nums[0]);
+  var month = parseInt(nums[1]);
+  var year = parseInt(nums[2]);
+  var date = new Date(year, month - 1, day);
+  
+  return date;
+};
+
 function promptDate()
 {
   var ui = SpreadsheetApp.getUi();
   
   var result = ui.prompt(
-     'Choose some date!',
-    "Sample date format: 31-1-2015",
+     'Избери дата!',
+    "Примерен формат за датата: 31-1-2015",
       ui.ButtonSet.OK_CANCEL);  
   
   if(result.getSelectedButton() == ui.Button.OK){
@@ -87,15 +83,33 @@ function promptDate()
   }
 };
 
-function parseDate(text){
-  var nums = text.split("-");
-  var day = parseInt(nums[0]);
-  var month = parseInt(nums[1]);
-  var year = parseInt(nums[2]);
-  var date = new Date(year, month - 1, day);
+function parseWeekTableInfo(text){
+  var vals = text.split(" ");
+  var range = vals[1].split(":");
   
-  return date;
+  return {
+    date: parseDate(vals[0]),
+    fromValues: parseInt(range[0]),
+    toValues: parseInt(range[1]),                           
+  };
 };
+
+function promptWeekTableRange(){
+  var ui = SpreadsheetApp.getUi();
+  
+  var result = ui.prompt(
+     'Избери дата от седмицата и диапозон на данните в седмицата!',
+    "Примерен формат за датата и диапазона: 31-1-2015 9:23",
+      ui.ButtonSet.OK_CANCEL);  
+  
+  if(result.getSelectedButton() == ui.Button.OK){
+    var text = result.getResponseText();
+    return parseWeekTableInfo(text);
+  }
+  else{
+    return false;
+  }
+}
 
 function alert(text)
 {  
@@ -182,6 +196,10 @@ function getRangeText(rStart, cStart, rEnd, cEnd, isAbsolute)
   }  
   
   return range;
+};
+
+function getMonthAndYear(date){
+  return monthNames[date.getMonth()] + " " + date.getFullYear();
 };
 
 function generateStatisticTable(json){
@@ -289,15 +307,36 @@ function generateStatisticTable(json){
   }  
 };
 
-function generateSheet() {      
+function generateWeekTable(week, weekIndex, valuesStart, valuesEnd){
+    var tableStart = parseInt(reportConstants.rows.start) + ((weekIndex + 1) * reportConstants.tablesRowOffset);
+    var tableHeader = week.start.getDate() + "-" + week.end.getDate() + " " + getMonthAndYear(week.start);
+    
+    generateStatisticTable({
+      valuesStart: valuesStart,
+      valuesEnd: valuesEnd,
+      tableStartRow: tableStart,
+      tableHeader: tableHeader,
+      shouldAddCostsEqualizations: false,
+    });
+}
+
+function useActiveSheet(){  
   reportSheet = SpreadsheetApp.getActiveSheet();
+};
+
+function generateMonthReportSheet() {
+  useActiveSheet();
   var cellValue = null;  
-//  var date = promptDate();
-  var date = parseDate("2-1-2015");
+  var date = promptDate();
+//  var date = parseDate("2-1-2015");
   
   if(!date)
   {
-    alert("Date not selected!");
+    return;
+  } 
+  else if(date.getFullYear() < 2000)
+  {
+    alert("Invalid date input: " + date);
     return;
   }
     
@@ -334,21 +373,10 @@ function generateSheet() {
     
   var valueBeforeValuesEnd = (parseInt(valuesEnd) - 1) + "";
   var weeks = getWeeksInMonth(date);
-  var monthAndYear = monthNames[date.getMonth()] + " " + date.getFullYear();
   
   for(var i = 0; i < weeks.length; i++){
-    var week = weeks[i];
-    tableStart += reportConstants.tablesRowOffset;
-    tableHeader = week.start.getDate() + "-" + week.end.getDate() + " " + monthAndYear;
-    
-    generateStatisticTable({
-      valuesStart: valuesStart,
-      valuesEnd: valuesEnd,
-      tableStartRow: tableStart,
-      tableHeader: tableHeader,
-      shouldAddCostsEqualizations: false,
-    });
-    
+    var week = weeks[i];    
+    generateWeekTable(week, i, valuesStart, valuesEnd);    
     valuesStart = valueBeforeValuesEnd;
   }  
   
@@ -360,7 +388,49 @@ function generateSheet() {
   }
   
   reportSheet.setFrozenRows(1);  
-  reportSheet.setName(monthAndYear);
+  reportSheet.setName(getMonthAndYear(date));
+};
+
+
+function getWeekAndWeekIndex(date){
+  var weeks = getWeeksInMonth(date);
+  var dateNum = date.getDate();
+  
+  for(var i = 0; i < weeks.length; i+=1){
+    var week = weeks[i];    
+    if(week.start.getDate() <= dateNum && dateNum <= week.end.getDate()){
+      return  {
+        weekIndex: i,
+        week: week
+      };
+    }
+  }
+  
+  throw {"message": "Calculations error! Cannot find week index!"};
+};
+
+function generateWeekStatisticsTable() {
+  useActiveSheet();
+  
+  var weekTableInfo = promptWeekTableRange();
+  //var weekTableInfo = parseWeekTableInfo("31-1-2015 9:23");
+  
+  if(!weekTableInfo){
+    return;
+  }
+  
+  var date = weekTableInfo.date;
+  var valuesStart = weekTableInfo.fromValues;
+  var valuesEnd = weekTableInfo.toValues;
+  
+  if(weekTableInfo.date.getFullYear() < 2000){
+    alert("Invalid date input: " + weekTableInfo.date);
+    return;
+  }
+  
+  var weekInfo = getWeekAndWeekIndex(date);
+  
+  generateWeekTable(weekInfo.week, weekInfo.weekIndex, valuesStart, valuesEnd);  
 };
 
 /**
@@ -375,9 +445,13 @@ function onOpen() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var entries = [
     {
-      name : "Generate sheet",
-      functionName : "generateSheet"
+      name : "Генерирай месечен репорт",
+      functionName : "generateMonthReportSheet"
+    },
+    {
+      name : "Генерирай таблица за седмична статистика",
+      functionName : "generateWeekStatisticsTable"
     },
   ];
-  spreadsheet.addMenu("Incomes/Expenses", entries);
+  spreadsheet.addMenu("Месечни приходи/разходи", entries);
 };
