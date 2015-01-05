@@ -218,6 +218,7 @@ function generateStatisticTable(json){
     
   var bold = { fontWeight: "bold" };
   var percentFormat = { numberFormat: "0.00%" };
+  var decimalFormat = { numberFormat: "#,##0.00" };
   var boldIf = (shouldAddCostsEqualizations ? bold : null);
   
   if(tableHeader){
@@ -229,51 +230,51 @@ function generateStatisticTable(json){
   var currentRow = tableStartRow;
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Баланс", boldIf);
   cellValue = "=SUM(" + getRangeText(currentRow + 1, "resultTotal", currentRow + 2, "resultTotal") + ")";
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUM(" + getRangeText(currentRow + 1, "resultDeyan", currentRow + 2, "resultDeyan") + ")";
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, decimalFormat);
   cellValue = "=SUM(" + getRangeText(currentRow + 1, "resultRadostina", currentRow + 2, "resultRadostina") + ")";
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
   
   currentRow++;
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Приходи", boldIf);
   cellValue = "=SUMIF(" + valueRange + ',">0")';
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + deyanRange + ',">0")';
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + radiRange + ',">0")';
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
     
   currentRow++;
   var equalizationRow = tableStartRow + 9;
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Разходи", boldIf);
   cellValue = "=SUMIF(" + valueRange + ',"<0")';
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + deyanRange + ',"<0")';
   cellValue += (shouldAddCostsEqualizations ? ("+" + getRangeText(equalizationRow, "resultDeyan")) : "");
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + radiRange + ',"<0")';
   cellValue += (shouldAddCostsEqualizations ? ("+" + getRangeText(equalizationRow, "resultRadostina")) : "");
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
   
   currentRow+=2;
   var mutualExpensesRow = currentRow;
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Общ разход");
   cellValue = "=SUMIF(" + typeRange + ", " + mutualExpense + ", " + valueRange + ')';
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + typeRange + ", " + mutualExpense + ", " + deyanRange + ')';
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + typeRange + ", " + mutualExpense + ", " + radiRange + ')';
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
   
   currentRow++;
   setCellValue(getRangeText(currentRow, "resultHeaders"), "Личен разход");
   cellValue = "=SUMIF(" + typeRange + ", " + personalExpense + ", " + valueRange + ')';
-  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + typeRange + ", " + personalExpense + ", " + deyanRange + ')';
-  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + typeRange + ", " + personalExpense + ", " + radiRange + ')';
-  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+  setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
   
   currentRow+=2;
   var incomesRow = 3;
@@ -301,9 +302,9 @@ function generateStatisticTable(json){
     var totalAbsEnding = ")*ABS(" + totalMutualExpensesRange + ")";
     setCellValue(getRangeText(currentRow, "resultHeaders"), "Изравняване на разходи");  
     cellValue = "=(" + getRangeText(currentRow-1, "resultDeyan") + "-" + getRangeText(currentRow-2, "resultDeyan") + totalAbsEnding;
-    setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue);
+    setCellValue(getRangeText(currentRow, "resultDeyan"), cellValue, decimalFormat);
     cellValue = "=(" + getRangeText(currentRow-1, "resultRadostina") + "-" + getRangeText(currentRow-2, "resultRadostina") + totalAbsEnding;
-    setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue);
+    setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
   }  
 };
 
