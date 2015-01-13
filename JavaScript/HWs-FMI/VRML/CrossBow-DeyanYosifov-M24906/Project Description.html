@@ -7,7 +7,21 @@
 	<script type="text/javascript" src="Resources/simpleGallery.js"></script>
 	<style type="text/css">
 		h1, h2, h3, h4, h5, h6, .center { text-align: center; }
-		p { text-align: justify; }
+		p, li { 
+			text-align: justify;			
+			font-family: Arial, Sans-serif; 
+			font-size:12pt
+		}
+		li{
+			margin-bottom: 10px;
+		}
+		a{
+			color: #0000ff;
+			text-decoration: none;
+		}
+		a:hover{
+			font-weight:bold;
+		}				
 	</style>
 </head>
 <body>
@@ -19,7 +33,7 @@
 	Заданието на проекта е да се моделира и анимира със средствата на <a target="_blank" href="http://tecfa.unige.ch/guides/vrml/vrml97/spec/">VRML</a> 
 	следната фигурка от <a target="_blank" href="http://shop.lego.com/en-US/Pick-A-Brick-ByTheme">сайта на лего</a>:
 	</p>
-	<h4>Cross bow</h4>
+	<h4>Cross Bow - ID 4617248</h4>
 	<div id="CrossBowImages" />
 	<script type="text/javascript">	
 		var images = [];
@@ -33,6 +47,61 @@
 		new simpleGallery(document.getElementById("CrossBowImages"), images);
 	</script>
 	
+	<h2>Проектно решение</h2>
+	<p>
+	За да генерирам по-лесно крайния VRML файл следвах следните стъпки:
+	</p>
+	<ol>
+		<li>
+		Условно разделих желаната геометрия на 12 части, които бих могъл да измоделирам лесно с езика VRML. Тези части ще бъдат съответно 10 екструзии и 2 сфери.
+		</li>
+		<li>
+		Първоначално построих желаната геометрия в <a target="_blank" href="http://www.sketchup.com/">Google Sketch Up</a>.
+		Крайният резултат може да бъде свален от този линк към <a target="_blank" href="Resources/Cross Bow.skp">Cross Bow.skp</a>
+		</li>
+		<li>
+		След това написах един plug-in за Sketch up. С негова помощ, селектирайки лице и линия, експортвам 3д координатите на точките за face и spine за всеки един 
+		<a target="_blank" href="http://tecfa.unige.ch/guides/vrml/vrml97/spec/part1/nodesRef.html#Extrusion">Extrusion VRML обект</a>.
+		Кодът на въпросния плъгин може да бъде видян на този <a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/tree/master/Ruby/SketchUpPlugins/vrml-helper"> линк към vrml helper Sketch Up Plugin</a>.
+		Експортнатите файлове на всяка една от 10те екструзии от геометрията на арбалета могат да се видят на този
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/blob/master/CSharp/VRML/CrossBowCreator/Resources">линк към геометриите в моето Github repository</a>.
+		</li>
+		<li>
+		За да не се налага при всяка малка корекция, която правя, да пренаписвам целия VRML ръчно написах една малка C# библиотека, която позволява лесното създаване на целия VRML. 
+		Именно тази библиотека е и мястото, където правя сметките за превръщането на 3д коодинатите на лицата на екструзиите в 2д координати, както е спецификацията за задаване на VRML extrusion crossSection.
+		Тези изчисления се намират в класа Extrusion, който може да бъде видян на този 
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/blob/master/CSharp/VRML/Vrml/Model/Shapes/Extrusion.cs">линк към Extrusion.cs в моето Github repository</a>.
+		Целия проект на може да бъде видян на този 
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/tree/master/CSharp/VRML/Vrml">линк към VRML библиотеката в моето Github repository</a>.
+		</li>
+		<li>
+		Последната стъпка от генерирането на VRML съдържанието беше да направя един отделен C# проект, който да използва моята VRML библиотека. Този проект може да бъде видян на следния
+		<a href="https://github.com/deyan-yosifov/Deyan-Projects/tree/master/CSharp/VRML/CrossBowCreator">линк към CrossBowCreator проекта</a>, чиято основна цел е да генерира конкретното съдържание на геометрията на арбалета,
+		използвайки 
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/tree/master/CSharp/VRML/Vrml">моята VRML библиотека</a>
+		и 
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/blob/master/CSharp/VRML/CrossBowCreator/Resources">експортнатите екструзии</a>
+		от 
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/tree/master/Ruby/SketchUpPlugins/vrml-helper">моят Sketch Up Ruby plugin</a>.
+		При стартиране на това конзолно приложение се стартира Main метода във файла
+		<a target="_blank" href="https://github.com/deyan-yosifov/Deyan-Projects/blob/master/CSharp/VRML/CrossBowCreator/Program.cs">Program.cs</a>, 
+		който в обши линии създава една инстанция на CrossBowDocument класа, експортва файл с име 
+		<a target="_blank" href="Resources/CrossBow-DeyanYosifov-M24906.wrl">CrossBow-DeyanYosifov-M24906.wrl</a>
+		файл и го отваря веднага след експорта.
+		Така бързо и лесно могат да се правят промени по кода и да се проверява крайния резултат.
+		</li>
+	</ol>
 	
+	<h2>Краен резултат</h2>
+	<p>
+	За да видите успешно крайния резултат по-долу трябва да имате инсталиран <a target="_blank" href="http://ci.fmi.uni-sofia.bg/VladimirDimitrov/VRML/cortvrml.exe">Cortona Plug-in</a> и да използвате Internet Explorer.
+	Повече информация за този плъгин и за това как се използва VRML може да намерите и на <a target="_blank" href="http://ci.fmi.uni-sofia.bg/VladimirDimitrov/VRML/vrml.htm">сайта на проф. Владимир Димитров</a>.
+	</p>
+	<div style="width:500px; margin:auto;">
+		<embed src="Resources/CrossBow-DeyanYosifov-M24906.wrl" height="500" width="500">
+	</div>
+	<p>
+	Мисля, че се получи сравнително добре :). Самият VRML файл може да го свалите и локално ползвайки този <a target="_blank" href="Resources/CrossBow-DeyanYosifov-M24906.wrl">линк към CrossBow-DeyanYosifov-M24906.wrl</a>.
+	</p>
 </body>
 </html>
