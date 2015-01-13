@@ -3,22 +3,36 @@
 <head>
 	<meta charset="utf-8"/>
 	<title>Проект по VRML на Деян Йосифов, студент във ФМИ, номер M24906</title>
+	<link rel="stylesheet" href="Resources/simpleGallery.css" />
+	<script type="text/javascript" src="Resources/simpleGallery.js"></script>
 	<style type="text/css">
 		h1, h2, h3, h4, h5, h6, .center { text-align: center; }
-		p { text-align: center; }
+		p { text-align: justify; }
 	</style>
-	<script type="text/javascript">
-	
-	</script>
 </head>
 <body>
-	<p class="center"><image src="images/FMI-logo.jpg" /></p>
+	<p class="center"><image src="Images/fmi-logo.png" width="477" height="74" /></p>
 	<h1>Проект по VRML на Деян Йосифов</h1>
 		
 	<h2>Задание</h2>
 	<p>
-	Заданието на проекта е да се измоделира и анимира със средствата на <a href="http://tecfa.unige.ch/guides/vrml/vrml97/spec/">VRML</a> следната лего фигурка:
+	Заданието на проекта е да се моделира и анимира със средствата на <a target="_blank" href="http://tecfa.unige.ch/guides/vrml/vrml97/spec/">VRML</a> 
+	следната фигурка от <a target="_blank" href="http://shop.lego.com/en-US/Pick-A-Brick-ByTheme">сайта на лего</a>:
 	</p>
-	<div />
+	<h4>Cross bow</h4>
+	<div id="CrossBowImages" />
+	<script type="text/javascript">	
+		var images = [];
+		for(var i = 1; i <= 8; i+=1){
+			images.push({
+				src: "Images/Assignment - Cross Bow - ID 4617248/" + i + ".png",
+				width: 312,
+				height: 244,
+			});
+		}
+		new simpleGallery(document.getElementById("CrossBowImages"), images);
+	</script>
+	
+	
 </body>
 </html>

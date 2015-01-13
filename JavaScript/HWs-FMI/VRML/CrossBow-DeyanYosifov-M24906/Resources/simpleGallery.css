@@ -1,0 +1,22 @@
+.simpleGallery, .simpleGallery img, .simpleGallery a{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.simpleGallery{
+	margin: auto;
+}
+
+.simpleGallery a{
+	display: inline-block;
+	background: #cccccc;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.simpleGallery a:hover{
+	background: #999999;
+	cursor: pointer;
+}
