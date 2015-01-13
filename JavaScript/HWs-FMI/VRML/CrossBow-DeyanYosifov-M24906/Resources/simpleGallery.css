@@ -12,6 +12,7 @@
 .simpleGallery a{
 	display: inline-block;
 	background: #cccccc;
+	color: black;
 	font-weight: bold;
 	font-size: 20px;
 }
