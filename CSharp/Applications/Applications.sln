@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesManipulator", "FilesManipulator\FilesManipulator.csproj", "{DEDA2259-2F01-4358-A84A-18A472237EB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "Controls\Controls.csproj", "{2284D4FB-BC90-46DB-AF31-BE77A991A39E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{198384A8-5D6A-4BE5-9830-00248AF8E91E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +17,14 @@ Global
 		{DEDA2259-2F01-4358-A84A-18A472237EB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEDA2259-2F01-4358-A84A-18A472237EB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEDA2259-2F01-4358-A84A-18A472237EB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2284D4FB-BC90-46DB-AF31-BE77A991A39E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2284D4FB-BC90-46DB-AF31-BE77A991A39E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2284D4FB-BC90-46DB-AF31-BE77A991A39E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2284D4FB-BC90-46DB-AF31-BE77A991A39E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{198384A8-5D6A-4BE5-9830-00248AF8E91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{198384A8-5D6A-4BE5-9830-00248AF8E91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{198384A8-5D6A-4BE5-9830-00248AF8E91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{198384A8-5D6A-4BE5-9830-00248AF8E91E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

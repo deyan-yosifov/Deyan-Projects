@@ -1,0 +1,9 @@
+﻿<Window x:Class="TestApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <ToolBar>
+        <Button Click="BrowseFolderWithDeyo_Click" Content="Browse folder with Deyo" />
+        <Button Click="BrowseFolderWithWinForms_Click"  Content="Browse folder with WinForms" />
+    </ToolBar>
+</Window>
