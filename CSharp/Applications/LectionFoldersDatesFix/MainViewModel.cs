@@ -136,7 +136,9 @@ namespace LectionFoldersDatesFix
                         {
                             try
                             {
-                                Directory.Move(directory, newFolderName);
+                                string oldDirectory = Path.Combine(this.SelectedFolder, directory);
+                                string newDirectory = Path.Combine(this.SelectedFolder, newFolderName);
+                                Directory.Move(oldDirectory, newDirectory);
                                 successCount++;
                             }
                             catch
