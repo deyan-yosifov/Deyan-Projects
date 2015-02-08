@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vrml", "Vrml\Vrml.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossBowCreator", "CrossBowCreator\CrossBowCreator.csproj", "{8E4F91A4-F1BE-4DDD-85AE-A18C183617B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VrmlSceneCreator", "VrmlSceneCreator\VrmlSceneCreator.csproj", "{2DDD9E3E-FE01-47BD-BF72-0A565B38ABD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{8E4F91A4-F1BE-4DDD-85AE-A18C183617B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E4F91A4-F1BE-4DDD-85AE-A18C183617B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E4F91A4-F1BE-4DDD-85AE-A18C183617B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DDD9E3E-FE01-47BD-BF72-0A565B38ABD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DDD9E3E-FE01-47BD-BF72-0A565B38ABD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DDD9E3E-FE01-47BD-BF72-0A565B38ABD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DDD9E3E-FE01-47BD-BF72-0A565B38ABD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
