@@ -1,0 +1,62 @@
+﻿<Window x:Class="LectionFoldersDatesFix.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:LectionFoldersDatesFix"
+        Title="Rename lecture folders" Height="350" Width="1000">
+    <Window.Resources>
+        <local:MainViewModel x:Key="viewModel" />
+    </Window.Resources>
+    <Grid DataContext="{StaticResource viewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" TextAlignment="Center">
+            <Run FontWeight="Bold">Folders rename pattern: </Run> 
+            <Run FontStyle="Italic">{Something}-{date}.{month}.{year}</Run> 
+            becomes 
+            <Run FontStyle="Italic">{Something}-{year}.{month}.{date}</Run>
+        </TextBlock>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="3" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Foreground="Green" TextAlignment="Center">Folders that match the rename pattern:</TextBlock>
+            <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding FoldersThatMatchPattern}" Background="AliceBlue" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Padding="5" Foreground="#009900" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <GridSplitter Grid.Row="1" Grid.Column="1" Background="Blue" HorizontalAlignment="Stretch" />
+            
+            <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" Foreground="Red" TextAlignment="Center">Folders that does not match the rename pattern:</TextBlock>
+            <ListBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding FoldersThatDoesNotMatchPattern}" Background="AliceBlue" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Padding="5" Foreground="#FF3333" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>          
+        </Grid>
+
+        <ToolBarTray Grid.Row="2">
+            <ToolBar>
+                <Button Grid.Row="3" HorizontalAlignment="Center" Padding="5" BorderThickness="3" BorderBrush="Black" Margin="3" Background="Blue" Foreground="White" Content="Rename folders" Command="{Binding RenameFoldersCommand}" />
+                <Button Content="Select root folder" Padding="5" BorderThickness="3" BorderBrush="Black" Margin="3" Background="Blue" Foreground="White" Command="{Binding SelectFolderCommand}" />
+                <TextBox MinWidth="50" MaxWidth="500" Text="{Binding SelectedFolder}" IsReadOnly="True" />
+            </ToolBar>
+        </ToolBarTray>
+        
+    </Grid>
+</Window>
