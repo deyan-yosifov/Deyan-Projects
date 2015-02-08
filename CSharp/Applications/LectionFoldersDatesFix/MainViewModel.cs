@@ -127,7 +127,9 @@ namespace LectionFoldersDatesFix
 
             foreach (string directory in this.FoldersThatMatchPattern)
             {
-                if (Directory.Exists(directory))
+                string directoryPath = Path.Combine(this.SelectedFolder, directory);
+
+                if (Directory.Exists(directoryPath))
                 {
                     string newFolderName;
                     if (MainViewModel.TryCalculateNewFolderName(directory, out newFolderName))
