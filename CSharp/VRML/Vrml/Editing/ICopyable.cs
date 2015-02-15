@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VrmlSceneCreator
+namespace Vrml.Editing
 {
-    public interface ICommand
+    public interface ICopyable<T>
     {
+        void CopyFrom(T other);
     }
 }

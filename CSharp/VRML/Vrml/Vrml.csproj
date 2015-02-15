@@ -43,6 +43,11 @@
   <ItemGroup>
     <Compile Include="Core\Collection.cs" />
     <Compile Include="Core\Guard.cs" />
+    <Compile Include="Editing\DisposableAction.cs" />
+    <Compile Include="Editing\GraphicProperties.cs" />
+    <Compile Include="Editing\ICopyable.cs" />
+    <Compile Include="Editing\PropertiesState.cs" />
+    <Compile Include="Editing\VrmlDocumentEditor.cs" />
     <Compile Include="FormatProvider\ElementWriters\AppearanceWriter.cs" />
     <Compile Include="FormatProvider\ElementWriters\ElementWriterBase.cs" />
     <Compile Include="FormatProvider\ElementWriters\ExtrusionWriter.cs" />
