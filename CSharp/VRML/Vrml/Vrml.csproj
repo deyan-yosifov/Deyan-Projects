@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Core\Collection.cs" />
     <Compile Include="Core\Guard.cs" />
+    <Compile Include="Core\MathUtilities.cs" />
     <Compile Include="Editing\DisposableAction.cs" />
     <Compile Include="Editing\GraphicProperties.cs" />
     <Compile Include="Editing\ICopyable.cs" />

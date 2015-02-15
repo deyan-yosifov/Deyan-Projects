@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using Vrml.Core;
 using Vrml.Model;
 using Vrml.Model.Shapes;
 
@@ -47,7 +48,30 @@ namespace Vrml.Editing
         public void AddView(Point3D fromPoint, Point3D toPoint)
         {
             Viewpoint viewpoint = new Viewpoint(string.Format("View {0}", ++this.viewsCount));
+            viewpoint.Position = new Position(fromPoint);
+            Transformation transformation = new Transformation();
+            transformation.Center = viewpoint.Position;
 
+            Vector3D lookVector = toPoint - fromPoint;
+            lookVector.Normalize();
+            Vector3D rotationVector = new Vector3D(1, 0, 0);
+            double angle = 0;
+
+            if (!(lookVector.X.IsZero() && lookVector.Y.IsZero()))
+            {
+                rotationVector = new Vector3D(lookVector.Y, -lookVector.X, 0);
+                rotationVector.Normalize();
+                angle = Vector3D.AngleBetween(new Vector3D(0, 0, -1), lookVector).ToRadians();
+            }
+            else if (lookVector.Z > 0)
+            {
+                angle = Math.PI;
+            }            
+
+            transformation.Rotation = new Orientation(rotationVector, angle);            
+
+            transformation.Children.Add(viewpoint);
+            this.document.Elements.Add(transformation);
         }
 
         public void DrawLine(Point point1, Point point2)

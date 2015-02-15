@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using Vrml.Core;
 using Vrml.Editing;
 using Vrml.FormatProvider;
 using Vrml.Model;
@@ -43,10 +44,9 @@ namespace VrmlSceneCreator
         {
             VrmlDocumentEditor editor = new VrmlDocumentEditor(new VrmlDocument());
 
-            editor.GraphicProperties.StrokeThickness = 1;
-
             Rect rect = new Rect(new Point(0, 3), new Point(3, 0));
 
+            editor.GraphicProperties.StrokeThickness = 1;
             editor.GraphicProperties.StrokeColor = new VrmlColor(Colors.GreenYellow);
             editor.DrawPolyline(new Point[] 
             {
@@ -63,8 +63,21 @@ namespace VrmlSceneCreator
             editor.GraphicProperties.StrokeColor = new VrmlColor(Colors.Blue);
             editor.DrawPoint(rect.TopRight);
 
+            editor.GraphicProperties.StrokeColor = new VrmlColor(Colors.Orange);
+            editor.GraphicProperties.StrokeThickness = 0.2;
+            DrawViewAndLine(editor, new Point3D(10, 10, 10));
+            DrawViewAndLine(editor, new Point3D(0, 0, 10));
+            DrawViewAndLine(editor, new Point3D(0, 0, -10));
+            DrawViewAndLine(editor, new Point3D(10, 0, 0));
+            DrawViewAndLine(editor, new Point3D(0, 10, 0));
+
             return editor.Document;
         }
 
+        private static void DrawViewAndLine(VrmlDocumentEditor editor, Point3D point)
+        {
+            editor.AddView(point, new Point3D(0, 0, 0));
+            editor.DrawLine(new Point3D(), point.Multiply(0.5));
+        }
     }
 }
