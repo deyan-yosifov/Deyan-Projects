@@ -13,6 +13,8 @@ namespace Deyo.Controls.Dialogs.Explorer
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            Guard.ThrowExceptionIfNull(value, "value");
+
             if ((value as string).Contains(@"\"))
             {
                 Uri uri = ResourceHelper.GetResourceUri(ImagesPath + "diskdrive.png");

@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:Deyo.Controls.Dialogs.Explorer"
         Title="FolderBrowserDialog" Height="300" Width="300">
     <Grid>
-        <TreeView x:Name="foldersItem" SelectedItemChanged="foldersItem_SelectedItemChanged" Width="Auto" Background="#FFFFFFFF" BorderBrush="#FFFFFFFF" Foreground="#FFFFFFFF">
+        <TreeView x:Name="foldersItem" SelectedItemChanged="FoldersItem_SelectedItemChanged" Width="Auto" Background="#FFFFFFFF" BorderBrush="#FFFFFFFF" Foreground="#FFFFFFFF">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="HeaderTemplate">

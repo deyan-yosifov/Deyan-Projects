@@ -77,12 +77,12 @@ namespace Deyo.Controls.Dialogs.Explorer
                 item.Tag = s;
                 item.FontWeight = FontWeights.Normal;
                 item.Items.Add(dummyNode);
-                item.Expanded += new RoutedEventHandler(folder_Expanded);
+                item.Expanded += new RoutedEventHandler(Folder_Expanded);
                 foldersItem.Items.Add(item);
             }
         }
 
-        private void folder_Expanded(object sender, RoutedEventArgs e)
+        private void Folder_Expanded(object sender, RoutedEventArgs e)
         {
             TreeViewItem item = (TreeViewItem)sender;
             if (item.Items.Count == 1 && item.Items[0] == dummyNode)
@@ -97,7 +97,7 @@ namespace Deyo.Controls.Dialogs.Explorer
                         subitem.Tag = s;
                         subitem.FontWeight = FontWeights.Normal;
                         subitem.Items.Add(dummyNode);
-                        subitem.Expanded += new RoutedEventHandler(folder_Expanded);
+                        subitem.Expanded += new RoutedEventHandler(Folder_Expanded);
                         item.Items.Add(subitem);
                     }
                 }
@@ -105,16 +105,20 @@ namespace Deyo.Controls.Dialogs.Explorer
             }
         }
 
-        private void foldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void FoldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeView tree = (TreeView)sender;
             TreeViewItem temp = ((TreeViewItem)tree.SelectedItem);
 
             if (temp == null)
+            {
                 return;
+            }
+
             this.SelectedPath = "";
             string temp1 = "";
             string temp2 = "";
+
             while (true)
             {
                 temp1 = temp.Header.ToString();
