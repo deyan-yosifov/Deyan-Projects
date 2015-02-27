@@ -47,10 +47,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Dialogs\Explorer\DeyoFolderBrowserDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Dialogs\Explorer\FolderBrowserDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -65,9 +61,6 @@
     <Compile Include="Common\Guard.cs" />
     <Compile Include="Common\ResourceHelper.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
-    <Compile Include="Dialogs\Explorer\DeyoFolderBrowserDialog.xaml.cs">
-      <DependentUpon>DeyoFolderBrowserDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\Explorer\FolderBrowserDialog.xaml.cs">
       <DependentUpon>FolderBrowserDialog.xaml</DependentUpon>
     </Compile>

@@ -13,16 +13,6 @@ namespace TestApplication
             InitializeComponent();
         }
 
-        private void BrowseFolderOld_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Deyo.Controls.Dialogs.Explorer.FolderBrowserDialog();
-
-            if (dialog.ShowDialog() == true)
-            {
-                MessageBox.Show(dialog.SelectedPath);
-            }
-        }
-
         private void BrowseFolderWithWinForms_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -35,7 +25,7 @@ namespace TestApplication
 
         private void DeyoBrowseFolderDialog_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Deyo.Controls.Dialogs.Explorer.DeyoFolderBrowserDialog();
+            var dialog = new Deyo.Controls.Dialogs.Explorer.FolderBrowserDialog();
 
             if (dialog.ShowDialog() == true)
             {

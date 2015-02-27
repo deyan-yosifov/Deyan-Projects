@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Deyo.Controls.Common;
+using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Deyo.Controls.Dialogs.Explorer
 {
@@ -10,94 +13,153 @@ namespace Deyo.Controls.Dialogs.Explorer
     /// </summary>
     public partial class FolderBrowserDialog : Window
     {
-        private object dummyNode = null;
+        private const string Slash = @"\";
+        private readonly FolderBrowserDialogViewModel viewModel;
+        private bool isFinished;
 
         public FolderBrowserDialog()
         {
             InitializeComponent();
+            this.isFinished = false;
+            this.viewModel = new FolderBrowserDialogViewModel();
+            this.viewModel.OkCommand = new DelegateCommand((parameter) => this.Finish(true));
+            this.viewModel.CancelCommand = new DelegateCommand((parameter) => this.Finish(false));
+            this.DataContext = this.viewModel;
+            
             this.AttachToEvents();
+        }
+
+        /// <summary>
+        /// Gets or sets the title.
+        /// </summary>
+        /// <value>The title.</value>
+        public string Title
+        {
+            get
+            {
+                return this.viewModel.Title;
+            }
+            set
+            {
+                this.viewModel.Title = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the selected path.
+        /// </summary>
+        /// <value>The selected path.</value>
+        public string SelectedPath
+        {
+            get
+            {
+                return this.viewModel.SelectedPath;
+            }
+            set
+            {
+                this.viewModel.SelectedPath = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether or not the editbox to be shown.
+        /// </summary>
+        /// <value>Boolean value indicating whether or not the editbox should be shown.</value>
+        public bool ShowEditbox
+        {
+            get
+            {
+                return this.viewModel.ShowEditBox;
+            }
+            set
+            {
+                this.viewModel.ShowEditBox = value;
+            }
         }
 
         private void AttachToEvents()
         {
-            this.Closing += this.FolderBrowserDialog_Closing;
-            this.Loaded += this.Window_Loaded;
+            this.Loaded += this.FolderBrowserDialog_Loaded;
             this.PreviewKeyDown += this.FolderBrowserDialog_PreviewKeyDown;
+            this.Closing += this.FolderBrowserDialog_Closing;
+
+            this.AttachToTreeViewEvents();
         }
 
         private void DetachFromEvents()
         {
-            this.Closing -= this.FolderBrowserDialog_Closing;
-            this.Loaded -= this.Window_Loaded;
+            this.Loaded -= this.FolderBrowserDialog_Loaded;
             this.PreviewKeyDown -= this.FolderBrowserDialog_PreviewKeyDown;
+            this.Closing -= this.FolderBrowserDialog_Closing;
+
+            this.DetachFromTreeViewEvents();
         }
 
-        private void FolderBrowserDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void AttachToTreeViewEvents()
         {
-            if (0 == Math.Abs(0))
+            this.foldersTree.SelectedItemChanged += this.FoldersTree_SelectedItemChanged;
+        }
+
+        private void DetachFromTreeViewEvents()
+        {
+            this.foldersTree.SelectedItemChanged -= this.FoldersTree_SelectedItemChanged;
+            DetachFromEventsAllSubItemsRecursively(this.foldersTree.Items);
+        }
+
+        private static void DetachFromEventsAllSubItemsRecursively(ItemCollection collection)
+        {
+            foreach (TreeViewItem item in collection)
             {
-                this.Finish(true);
-            }
-            else
-            {
-                this.Finish(false);
+                if (item != null)
+                {
+                    DetachFromTreeViewItemEvents(item);
+                    DetachFromEventsAllSubItemsRecursively(item.Items);
+                }
             }
         }
 
-        private void FolderBrowserDialog_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private static void AttachToTreeViewItemEvents(TreeViewItem item)
         {
-            e.Handled = true;
-
-            if (e.Key == System.Windows.Input.Key.Enter)
-            {
-                this.Finish(true);
-            }
-            else if (e.Key == System.Windows.Input.Key.Escape)
-            {
-                this.Finish(false);
-            }
+            item.Expanded += TreeViewItem_Expanded;
         }
 
-        private void Finish(bool success)
+        private static void DetachFromTreeViewItemEvents(TreeViewItem item)
         {
-            this.DetachFromEvents();
-            this.DialogResult = success;
+            item.Expanded -= TreeViewItem_Expanded;
         }
-        
-        public string Title { get; set; }
-        public string SelectedPath { get; set; }
-        public bool ShowEditbox { get; set; }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void FolderBrowserDialog_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach (string s in Directory.GetLogicalDrives())
+            foreach (string fullPath in Directory.GetLogicalDrives())
             {
                 TreeViewItem item = new TreeViewItem();
-                item.Header = s;
-                item.Tag = s;
+                item.Header = fullPath;
+                item.Tag = fullPath;
                 item.FontWeight = FontWeights.Normal;
-                item.Items.Add(dummyNode);
-                item.Expanded += new RoutedEventHandler(Folder_Expanded);
-                foldersItem.Items.Add(item);
+                item.Items.Add(null);
+                AttachToTreeViewItemEvents(item);
+
+                this.foldersTree.Items.Add(item);
             }
         }
 
-        private void Folder_Expanded(object sender, RoutedEventArgs e)
+        private static void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
         {
             TreeViewItem item = (TreeViewItem)sender;
-            if (item.Items.Count == 1 && item.Items[0] == dummyNode)
+            if (item.Items.Count == 1 && item.Items[0] == null)
             {
                 item.Items.Clear();
                 try
                 {
-                    foreach (string s in Directory.GetDirectories(item.Tag.ToString()))
+                    foreach (string fullPath in Directory.GetDirectories(item.Tag.ToString()))
                     {
                         TreeViewItem subitem = new TreeViewItem();
-                        subitem.Header = s.Substring(s.LastIndexOf("\\") + 1);
-                        subitem.Tag = s;
+                        subitem.Header = fullPath.Substring(fullPath.LastIndexOf(Slash) + 1);
+                        subitem.Tag = fullPath;
                         subitem.FontWeight = FontWeights.Normal;
-                        subitem.Items.Add(dummyNode);
-                        subitem.Expanded += new RoutedEventHandler(Folder_Expanded);
+                        subitem.Items.Add(null);
+                        AttachToTreeViewItemEvents(subitem);
+
                         item.Items.Add(subitem);
                     }
                 }
@@ -105,34 +167,61 @@ namespace Deyo.Controls.Dialogs.Explorer
             }
         }
 
-        private void FoldersItem_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void FoldersTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            string selectedPath = string.Empty;
             TreeView tree = (TreeView)sender;
-            TreeViewItem temp = ((TreeViewItem)tree.SelectedItem);
-
-            if (temp == null)
+            TreeViewItem currentItem = tree.SelectedItem as TreeViewItem;
+            
+            while (currentItem != null)
             {
-                return;
+                string folderName = currentItem.Header.ToString();
+                selectedPath = string.Format("{0}{1}{2}", folderName, folderName.Contains(Slash) ? string.Empty : Slash, selectedPath);
+                currentItem = currentItem.Parent as TreeViewItem;
             }
 
-            this.SelectedPath = "";
-            string temp1 = "";
-            string temp2 = "";
+            this.SelectedPath = selectedPath;
+        }
 
-            while (true)
+        private void FolderBrowserDialog_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
             {
-                temp1 = temp.Header.ToString();
-                if (temp1.Contains(@"\"))
+                e.Handled = true;
+                this.Finish(true);
+            }
+            else if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                e.Handled = true;
+                this.Finish(false);
+            }
+        }
+
+        private void FolderBrowserDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.Finish(false);
+        }
+
+        private void Finish(bool success)
+        {
+            if (!this.isFinished)
+            {
+                this.isFinished = true;
+                this.DetachFromEvents();
+
+                if (this.fullPathTextBox.IsVisible && !FolderValidator.IsValid(this.fullPathTextBox.Text))
                 {
-                    temp2 = "";
+                    this.DialogResult = false;
                 }
-                this.SelectedPath = temp1 + temp2 + this.SelectedPath;
-                if (temp.Parent.GetType().Equals(typeof(TreeView)))
+                else
                 {
-                    break;
+                    if (this.SelectedPath != null && !this.SelectedPath.EndsWith(Slash))
+                    {
+                        this.SelectedPath += Slash;
+                    }
+
+                    this.DialogResult = success;
                 }
-                temp = ((TreeViewItem)temp.Parent);
-                temp2 = @"\";
             }
         }
     }

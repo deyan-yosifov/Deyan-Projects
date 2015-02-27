@@ -4,7 +4,6 @@
         Title="MainWindow" Height="350" Width="525">
     <ToolBar>
         <Button Click="DeyoBrowseFolderDialog_Click" Content="Browse folder with Deyo" />
-        <Button Click="BrowseFolderOld_Click" Content="Browse folder with Old" />
         <Button Click="BrowseFolderWithWinForms_Click"  Content="Browse folder with WinForms" />
     </ToolBar>
 </Window>

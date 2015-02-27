@@ -2,9 +2,38 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Deyo.Controls.Dialogs.Explorer"
-        Title="FolderBrowserDialog" Height="300" Width="300">
+        Title="{Binding Title}" Height="300" Width="300">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\..\Themes\Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <ControlTemplate x:Key="validationErrorTemplate">
+                <Border BorderBrush="Red" BorderThickness="2">
+                    <AdornedElementPlaceholder />
+                </Border>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
-        <TreeView x:Name="foldersItem" SelectedItemChanged="FoldersItem_SelectedItemChanged" Width="Auto" Background="#FFFFFFFF" BorderBrush="#FFFFFFFF" Foreground="#FFFFFFFF">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBox Visibility="{Binding ShowEditBox, Converter={StaticResource visibilityConverter}}" 
+                 Validation.ErrorTemplate="{StaticResource validationErrorTemplate}" x:Name="fullPathTextBox">
+            <TextBox.Text>
+                <Binding Path="SelectedPath" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:FolderValidator />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        
+        <TreeView Grid.Row="1" x:Name="foldersTree" Width="Auto" Background="#FFFFFFFF" BorderBrush="#FFFFFFFF" Foreground="#FFFFFFFF">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="HeaderTemplate">
@@ -17,7 +46,7 @@
                                        Mode=FindAncestor, 
                                        AncestorType={x:Type TreeViewItem}}, 
                                        Path=Header, 
-                                       Converter={x:Static local:HeaderToImageConverter.Instance}}"       
+                                       Converter={x:Static local:HeaderToImageConverter.Instance}}"
                                        />
                                     <TextBlock Text="{Binding}" Margin="5,0" />
                                 </StackPanel>
@@ -27,5 +56,10 @@
                 </Style>
             </TreeView.Resources>
         </TreeView>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right" >
+            <Button Content="OK" Command="{Binding OkCommand}" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" />
+        </StackPanel>
     </Grid>
 </Window>
