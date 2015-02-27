@@ -27,6 +27,7 @@ namespace Deyo.Controls.Dialogs.Explorer
             this.DataContext = this.viewModel;
             
             this.AttachToEvents();
+            this.LoadInitialTreeItems();
         }
 
         /// <summary>
@@ -79,7 +80,6 @@ namespace Deyo.Controls.Dialogs.Explorer
 
         private void AttachToEvents()
         {
-            this.Loaded += this.FolderBrowserDialog_Loaded;
             this.PreviewKeyDown += this.FolderBrowserDialog_PreviewKeyDown;
             this.Closing += this.FolderBrowserDialog_Closing;
             this.viewModel.SelectedPathChanged += ViewModel_SelectedPathChanged;
@@ -89,7 +89,6 @@ namespace Deyo.Controls.Dialogs.Explorer
 
         private void DetachFromEvents()
         {
-            this.Loaded -= this.FolderBrowserDialog_Loaded;
             this.PreviewKeyDown -= this.FolderBrowserDialog_PreviewKeyDown;
             this.Closing -= this.FolderBrowserDialog_Closing;
             this.viewModel.SelectedPathChanged -= ViewModel_SelectedPathChanged;
@@ -128,6 +127,21 @@ namespace Deyo.Controls.Dialogs.Explorer
         private static void DetachFromTreeViewItemEvents(TreeViewItem item)
         {
             item.Expanded -= TreeViewItem_Expanded;
+        }
+
+        private void LoadInitialTreeItems()
+        {
+            foreach (string fullPath in Directory.GetLogicalDrives())
+            {
+                TreeViewItem item = new TreeViewItem();
+                item.Header = fullPath;
+                item.Tag = fullPath;
+                item.FontWeight = FontWeights.Normal;
+                item.Items.Add(null);
+                AttachToTreeViewItemEvents(item);
+
+                this.foldersTree.Items.Add(item);
+            }
         }
 
         private void ViewModel_SelectedPathChanged(object sender, EventArgs e)
@@ -183,21 +197,6 @@ namespace Deyo.Controls.Dialogs.Explorer
             }
 
             return false;
-        }
-
-        private void FolderBrowserDialog_Loaded(object sender, RoutedEventArgs e)
-        {
-            foreach (string fullPath in Directory.GetLogicalDrives())
-            {
-                TreeViewItem item = new TreeViewItem();
-                item.Header = fullPath;
-                item.Tag = fullPath;
-                item.FontWeight = FontWeights.Normal;
-                item.Items.Add(null);
-                AttachToTreeViewItemEvents(item);
-
-                this.foldersTree.Items.Add(item);
-            }
         }
 
         private static void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
