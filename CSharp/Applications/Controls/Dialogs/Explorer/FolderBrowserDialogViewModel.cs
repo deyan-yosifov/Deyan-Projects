@@ -41,7 +41,10 @@ namespace Deyo.Controls.Dialogs.Explorer
             }
             set
             {
-                this.SetProperty(ref this.selectedPath, value);
+                if (this.SetProperty(ref this.selectedPath, value))
+                {
+                    this.OnSelectedPathChanged();
+                }
             }
         }
 
@@ -78,6 +81,16 @@ namespace Deyo.Controls.Dialogs.Explorer
             set
             {
                 this.SetProperty(ref this.cancelCommand, value);
+            }
+        }
+
+        public event EventHandler SelectedPathChanged;
+
+        protected void OnSelectedPathChanged()
+        {
+            if (this.SelectedPathChanged != null)
+            {
+                this.SelectedPathChanged(this, null);
             }
         }
     }

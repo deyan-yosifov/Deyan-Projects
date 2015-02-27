@@ -82,6 +82,7 @@ namespace Deyo.Controls.Dialogs.Explorer
             this.Loaded += this.FolderBrowserDialog_Loaded;
             this.PreviewKeyDown += this.FolderBrowserDialog_PreviewKeyDown;
             this.Closing += this.FolderBrowserDialog_Closing;
+            this.viewModel.SelectedPathChanged += ViewModel_SelectedPathChanged;
 
             this.AttachToTreeViewEvents();
         }
@@ -91,6 +92,7 @@ namespace Deyo.Controls.Dialogs.Explorer
             this.Loaded -= this.FolderBrowserDialog_Loaded;
             this.PreviewKeyDown -= this.FolderBrowserDialog_PreviewKeyDown;
             this.Closing -= this.FolderBrowserDialog_Closing;
+            this.viewModel.SelectedPathChanged -= ViewModel_SelectedPathChanged;
 
             this.DetachFromTreeViewEvents();
         }
@@ -126,6 +128,61 @@ namespace Deyo.Controls.Dialogs.Explorer
         private static void DetachFromTreeViewItemEvents(TreeViewItem item)
         {
             item.Expanded -= TreeViewItem_Expanded;
+        }
+
+        private void ViewModel_SelectedPathChanged(object sender, EventArgs e)
+        {
+            string path = this.viewModel.SelectedPath;
+
+            if (path != null)
+            {
+                string[] folderNames = path.Split(new char[] { Slash[0] }, StringSplitOptions.RemoveEmptyEntries);
+                ItemCollection folderItems = this.foldersTree.Items;
+                TreeViewItem selectedItem = null;
+
+                for (int i = 0; i < folderNames.Length; i++)
+                {
+                    string folderName = folderNames[i];
+
+                    if (TryFindFolderItem(folderItems, folderName, out selectedItem))
+                    {
+                        if (i < folderNames.Length - 1)
+                        {
+                            selectedItem.IsExpanded = true;
+                            folderItems = selectedItem.Items;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (selectedItem != null)
+                {
+                    selectedItem.IsSelected = true;
+                    selectedItem.BringIntoView();
+                }
+            }            
+        }
+
+        private static bool TryFindFolderItem(ItemCollection collection, string folderName, out TreeViewItem folderItem)
+        {
+            folderItem = null;
+
+            foreach (TreeViewItem item in collection)
+            {
+                string header = item.Header.ToString().Replace(Slash, string.Empty);
+
+                if (header == folderName)
+                {
+                    folderItem = item;
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void FolderBrowserDialog_Loaded(object sender, RoutedEventArgs e)
@@ -172,12 +229,15 @@ namespace Deyo.Controls.Dialogs.Explorer
             string selectedPath = string.Empty;
             TreeView tree = (TreeView)sender;
             TreeViewItem currentItem = tree.SelectedItem as TreeViewItem;
-            
-            while (currentItem != null)
-            {
-                string folderName = currentItem.Header.ToString();
-                selectedPath = string.Format("{0}{1}{2}", folderName, folderName.Contains(Slash) ? string.Empty : Slash, selectedPath);
-                currentItem = currentItem.Parent as TreeViewItem;
+
+            if (currentItem != null)
+            {                
+                selectedPath = currentItem.Tag.ToString();
+
+                if (selectedPath.IndexOf(Slash) != selectedPath.LastIndexOf(Slash) && selectedPath.EndsWith(Slash))
+                {
+                    selectedPath = selectedPath.Substring(0, selectedPath.Length - 1);
+                }
             }
 
             this.SelectedPath = selectedPath;
