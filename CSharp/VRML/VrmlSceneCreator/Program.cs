@@ -66,10 +66,15 @@ namespace VrmlSceneCreator
             editor.GraphicProperties.StrokeColor = new VrmlColor(Colors.Orange);
             editor.GraphicProperties.StrokeThickness = 0.2;
             DrawViewAndLine(editor, new Point3D(10, 10, 10));
+            DrawViewAndLine(editor, new Point3D(0, -10, 10));
+            DrawViewAndLine(editor, new Point3D(10, 3, 10));
             DrawViewAndLine(editor, new Point3D(0, 0, 10));
             DrawViewAndLine(editor, new Point3D(0, 0, -10));
             DrawViewAndLine(editor, new Point3D(10, 0, 0));
             DrawViewAndLine(editor, new Point3D(0, 10, 0));
+
+            editor.AddView(new Point3D(10, 5, 20), new Point3D(3, 2, 1));
+            editor.DrawLine(Point3D.Add(new Point3D(3, 2, 1), Vector3D.Divide(new Point3D(10, 5, 20) - new Point3D(3, 2, 1), 2)), new Point3D(3, 2, 1));
 
             return editor.Document;
         }

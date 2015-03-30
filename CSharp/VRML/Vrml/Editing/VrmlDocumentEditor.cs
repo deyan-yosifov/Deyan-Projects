@@ -47,31 +47,98 @@ namespace Vrml.Editing
 
         public void AddView(Point3D fromPoint, Point3D toPoint)
         {
-            Viewpoint viewpoint = new Viewpoint(string.Format("View {0}", ++this.viewsCount));
-            viewpoint.Position = new Position(fromPoint);
-            Transformation transformation = new Transformation();
-            transformation.Center = viewpoint.Position;
+            this.AddView(fromPoint, toPoint, 0);
+        }
 
+        public void AddView(Point3D fromPoint, Point3D toPoint, double rollAngleInDegrees)
+        {
+            string description = string.Format("View {0}", ++this.viewsCount);
+
+            this.AddView(fromPoint, toPoint, rollAngleInDegrees, description);
+        }
+        
+        public void AddView(Point3D fromPoint, Point3D toPoint, double rollAngleInDegrees, string description)
+        {
+            Viewpoint viewpoint = new Viewpoint(description);
+            viewpoint.Position = new Position(fromPoint);
             Vector3D lookVector = toPoint - fromPoint;
             lookVector.Normalize();
-            Vector3D rotationVector = new Vector3D(1, 0, 0);
-            double angle = 0;
+
+            IVrmlElement rootViewElement = viewpoint;
+
+            Transformation horizontalRotation;
+            if (TryGetViewHorizontalRotation(viewpoint.Position, lookVector, out horizontalRotation))
+            {
+                horizontalRotation.Children.Add(rootViewElement);
+                rootViewElement = horizontalRotation;
+            }
+
+            Transformation verticalRotation;
+            if (TryGetViewVerticalRotation(viewpoint.Position, lookVector, out verticalRotation))
+            {
+                verticalRotation.Children.Add(rootViewElement);
+                rootViewElement = verticalRotation;
+            }
+
+            if (rollAngleInDegrees != 0)
+            {
+                Transformation rollRotation = new Transformation();
+                rollRotation.Center = viewpoint.Position;
+                rollRotation.Rotation = new Orientation(lookVector, rollAngleInDegrees.ToRadians());
+                rollRotation.Children.Add(rootViewElement);
+                rootViewElement = rollRotation;
+            }
+
+            this.document.Elements.Add(rootViewElement);
+        }
+
+        private static bool TryGetViewVerticalRotation(Position center, Vector3D lookVector, out Transformation verticalRotation)
+        {
+            if (!(lookVector.X.IsZero() && lookVector.Y.IsZero()))
+            {
+                Vector projection = new Vector(lookVector.X, lookVector.Y);
+                double angleInRadians = Vector.AngleBetween(new Vector(0, 1), projection).ToRadians();
+
+                if (!angleInRadians.IsZero())
+                {
+                    verticalRotation = new Transformation();
+                    verticalRotation.Center = center;
+                    verticalRotation.Rotation = new Orientation(new Vector3D(0, 0, 1), angleInRadians);
+                    return true;
+                }
+            }
+
+            verticalRotation = null;
+            return false;
+        }
+
+        private static bool TryGetViewHorizontalRotation(Position center, Vector3D lookVector, out Transformation horizontalRotation)
+        {
+            double angleInRadians = 0;
 
             if (!(lookVector.X.IsZero() && lookVector.Y.IsZero()))
             {
-                rotationVector = new Vector3D(lookVector.Y, -lookVector.X, 0);
-                rotationVector.Normalize();
-                angle = Vector3D.AngleBetween(new Vector3D(0, 0, -1), lookVector).ToRadians();
+                angleInRadians = Vector3D.AngleBetween(new Vector3D(0, 0, -1), lookVector).ToRadians();
             }
             else if (lookVector.Z > 0)
             {
-                angle = Math.PI;
-            }            
+                angleInRadians = Math.PI;
+            }
 
-            transformation.Rotation = new Orientation(rotationVector, angle);            
+            if (angleInRadians == 0)
+            {
+                horizontalRotation = null;
 
-            transformation.Children.Add(viewpoint);
-            this.document.Elements.Add(transformation);
+                return false;
+            }
+            else
+            {
+                horizontalRotation = new Transformation();
+                horizontalRotation.Center = center;
+                horizontalRotation.Rotation = new Orientation(new Vector3D(1, 0, 0), angleInRadians);
+
+                return true;
+            }
         }
 
         public void DrawLine(Point point1, Point point2)
