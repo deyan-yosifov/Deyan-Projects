@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Media3D;
-using Vrml.Core;
+using Deyo.Vrml.Core;
 
-namespace Vrml.Geometries
+namespace Deyo.Vrml.Geometries
 {
     public class Face
     {

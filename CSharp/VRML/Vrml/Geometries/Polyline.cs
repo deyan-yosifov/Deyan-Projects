@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Media.Media3D;
-using Vrml.Core;
+using Deyo.Vrml.Core;
 
-namespace Vrml.Geometries
+namespace Deyo.Vrml.Geometries
 {
     public class Polyline
     {

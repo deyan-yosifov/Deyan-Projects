@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using Vrml.Core;
-using Vrml.Editing;
-using Vrml.FormatProvider;
-using Vrml.Model;
+using Deyo.Vrml.Core;
+using Deyo.Vrml.Editing;
+using Deyo.Vrml.FormatProvider;
+using Deyo.Vrml.Model;
 
 namespace VrmlSceneCreator
 {

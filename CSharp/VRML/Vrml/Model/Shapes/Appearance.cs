@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vrml.Model.Shapes
+namespace Deyo.Vrml.Model.Shapes
 {
     public class Appearance : IVrmlElement
     {

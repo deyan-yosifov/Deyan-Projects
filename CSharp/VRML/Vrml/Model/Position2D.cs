@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public class Position2D : IVrmlSimpleType
     {

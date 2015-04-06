@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vrml.Core
+namespace Deyo.Vrml.Core
 {
     public class Collection<T> : IEnumerable<T>
     {

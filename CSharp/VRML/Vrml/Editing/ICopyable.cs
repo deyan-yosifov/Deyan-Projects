@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vrml.Editing
+namespace Deyo.Vrml.Editing
 {
     public interface ICopyable<T>
     {

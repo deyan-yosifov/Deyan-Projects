@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vrml.Geometries
+namespace Deyo.Vrml.Geometries
 {
     public class ExtrusionGeometry
     {

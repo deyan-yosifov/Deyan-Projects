@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vrml.Core;
+using Deyo.Vrml.Core;
 
-namespace Vrml.Model.Animations
+namespace Deyo.Vrml.Model.Animations
 {
     public abstract class Interpolator<T> : IVrmlElement
         where T : IVrmlSimpleType

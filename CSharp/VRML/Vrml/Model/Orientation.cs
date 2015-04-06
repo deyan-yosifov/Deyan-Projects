@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media.Media3D;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public class Orientation : IVrmlSimpleType
     {

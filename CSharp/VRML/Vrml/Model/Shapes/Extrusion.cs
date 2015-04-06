@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
-using Vrml.Core;
-using Vrml.Geometries;
+using Deyo.Vrml.Core;
+using Deyo.Vrml.Geometries;
 
-namespace Vrml.Model.Shapes
+namespace Deyo.Vrml.Model.Shapes
 {
     public class Extrusion : ShapeBase
     {

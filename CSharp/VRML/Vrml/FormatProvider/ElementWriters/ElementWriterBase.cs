@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Vrml.Model;
+using Deyo.Vrml.Model;
 
-namespace Vrml.FormatProvider.ElementWriters
+namespace Deyo.Vrml.FormatProvider.ElementWriters
 {
     internal abstract class ElementWriterBase
     {

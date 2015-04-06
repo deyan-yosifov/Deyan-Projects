@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public interface IVrmlElement
     {

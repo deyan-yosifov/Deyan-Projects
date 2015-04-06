@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Media.Media3D;
-using Vrml.Core;
+using Deyo.Vrml.Core;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public class Transformation : IVrmlElement
     {

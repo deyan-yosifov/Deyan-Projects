@@ -6,11 +6,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using Vrml.FormatProvider;
-using Vrml.Geometries;
-using Vrml.Model;
-using Vrml.Model.Animations;
-using Vrml.Model.Shapes;
+using Deyo.Vrml.FormatProvider;
+using Deyo.Vrml.Geometries;
+using Deyo.Vrml.Model;
+using Deyo.Vrml.Model.Animations;
+using Deyo.Vrml.Model.Shapes;
 
 namespace CrossBowCreator
 {

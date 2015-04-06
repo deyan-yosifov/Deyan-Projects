@@ -1,7 +1,7 @@
 ﻿using System;
-using Vrml.Core;
+using Deyo.Vrml.Core;
 
-namespace Vrml.Model.Animations
+namespace Deyo.Vrml.Model.Animations
 {
     public class Route
     {

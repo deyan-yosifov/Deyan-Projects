@@ -1,8 +1,8 @@
 ﻿using System;
-using Vrml.Core;
-using Vrml.Model;
+using Deyo.Vrml.Core;
+using Deyo.Vrml.Model;
 
-namespace Vrml.FormatProvider.ElementWriters
+namespace Deyo.Vrml.FormatProvider.ElementWriters
 {
     internal class NavigationInfoWriter : ElementWriterBase
     {

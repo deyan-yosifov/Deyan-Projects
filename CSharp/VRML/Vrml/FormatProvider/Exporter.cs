@@ -1,8 +1,8 @@
 ﻿using System;
-using Vrml.FormatProvider.ElementWriters;
-using Vrml.Model;
+using Deyo.Vrml.FormatProvider.ElementWriters;
+using Deyo.Vrml.Model;
 
-namespace Vrml.FormatProvider
+namespace Deyo.Vrml.FormatProvider
 {
     internal class Exporter
     {

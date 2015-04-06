@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Vrml.Editing
+namespace Deyo.Vrml.Editing
 {
     public class PropertiesState<T>
         where T : ICopyable<T>

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Vrml.Model;
-using Vrml.Model.Animations;
-using Vrml.Model.Shapes;
+using Deyo.Vrml.Model;
+using Deyo.Vrml.Model.Animations;
+using Deyo.Vrml.Model.Shapes;
 
-namespace Vrml.FormatProvider.ElementWriters
+namespace Deyo.Vrml.FormatProvider.ElementWriters
 {
     internal static class Writers
     {

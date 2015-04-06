@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
-namespace Vrml.Core
+namespace Deyo.Vrml.Core
 {
     public static class MathUtilities
     {

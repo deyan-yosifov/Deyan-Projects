@@ -1,7 +1,7 @@
 ﻿using System;
-using Vrml.Model.Animations;
+using Deyo.Vrml.Model.Animations;
 
-namespace Vrml.FormatProvider.ElementWriters
+namespace Deyo.Vrml.FormatProvider.ElementWriters
 {
     internal class InterpolatorWriter : ElementWriterBase
     {

@@ -1,9 +1,9 @@
 ﻿using System;
-using Vrml.Core;
-using Vrml.Model;
-using Vrml.Model.Shapes;
+using Deyo.Vrml.Core;
+using Deyo.Vrml.Model;
+using Deyo.Vrml.Model.Shapes;
 
-namespace Vrml.FormatProvider.ElementWriters
+namespace Deyo.Vrml.FormatProvider.ElementWriters
 {
     internal class TransformationWriter : ElementWriterBase
     {

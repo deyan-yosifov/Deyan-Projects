@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vrml.Model.Animations
+namespace Deyo.Vrml.Model.Animations
 {
     public class PositionInterpolator : Interpolator<Position>
     {

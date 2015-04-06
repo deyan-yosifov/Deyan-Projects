@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Vrml.Model;
+using Deyo.Vrml.Model;
 
-namespace Vrml.Editing
+namespace Deyo.Vrml.Editing
 {
     public class GraphicProperties : ICopyable<GraphicProperties>
     {

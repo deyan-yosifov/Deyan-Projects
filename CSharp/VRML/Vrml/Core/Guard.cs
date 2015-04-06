@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vrml.Core
+namespace Deyo.Vrml.Core
 {
     public static class Guard
     {

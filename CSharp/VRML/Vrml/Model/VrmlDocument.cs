@@ -1,8 +1,8 @@
 ﻿using System;
-using Vrml.Core;
-using Vrml.Model.Animations;
+using Deyo.Vrml.Core;
+using Deyo.Vrml.Model.Animations;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public class VrmlDocument
     {

@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Vrml.Model;
+using Deyo.Vrml.Model;
 
-namespace Vrml.FormatProvider
+namespace Deyo.Vrml.FormatProvider
 {
     public class VrmlFormatProvider
     {

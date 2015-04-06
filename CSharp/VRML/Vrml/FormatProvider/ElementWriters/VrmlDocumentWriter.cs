@@ -1,8 +1,8 @@
 ﻿using System;
-using Vrml.Model;
-using Vrml.Model.Animations;
+using Deyo.Vrml.Model;
+using Deyo.Vrml.Model.Animations;
 
-namespace Vrml.FormatProvider.ElementWriters
+namespace Deyo.Vrml.FormatProvider.ElementWriters
 {
     internal static class VrmlDocumentWriter
     {

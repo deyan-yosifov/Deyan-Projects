@@ -1,7 +1,7 @@
 ﻿using System;
 using M = System.Windows.Media;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public class VrmlColor : IVrmlSimpleType
     {

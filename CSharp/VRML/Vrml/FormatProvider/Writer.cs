@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using Vrml.Core;
-using Vrml.Model;
-using Vrml.Model.Animations;
+using Deyo.Vrml.Core;
+using Deyo.Vrml.Model;
+using Deyo.Vrml.Model.Animations;
 
-namespace Vrml.FormatProvider
+namespace Deyo.Vrml.FormatProvider
 {
     internal class Writer
     {

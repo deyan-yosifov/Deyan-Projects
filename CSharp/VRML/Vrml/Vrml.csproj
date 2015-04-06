@@ -7,8 +7,8 @@
     <ProjectGuid>{A9DA8E2B-C357-41E5-A7ED-FC3D9DDAE07A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Vrml</RootNamespace>
-    <AssemblyName>Vrml</AssemblyName>
+    <RootNamespace>Deyo.Vrml</RootNamespace>
+    <AssemblyName>Deyo.Vrml</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

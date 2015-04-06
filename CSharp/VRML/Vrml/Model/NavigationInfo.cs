@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Vrml.Model
+namespace Deyo.Vrml.Model
 {
     public class NavigationInfo : IVrmlElement
     {

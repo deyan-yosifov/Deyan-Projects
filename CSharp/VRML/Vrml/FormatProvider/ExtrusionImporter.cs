@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Media.Media3D;
-using Vrml.Geometries;
-using Vrml.Model.Shapes;
+using Deyo.Vrml.Geometries;
+using Deyo.Vrml.Model.Shapes;
 
-namespace Vrml.FormatProvider
+namespace Deyo.Vrml.FormatProvider
 {
     public class ExtrusionImporter
     {
