@@ -95,6 +95,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\VRML\Vrml\Vrml.csproj">
+      <Project>{a9da8e2b-c357-41e5-a7ed-fc3d9ddae07a}</Project>
+      <Name>Vrml</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Controls\Controls.csproj">
       <Project>{2284d4fb-bc90-46db-af31-be77a991a39e}</Project>
       <Name>Controls</Name>
