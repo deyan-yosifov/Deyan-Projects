@@ -128,6 +128,8 @@ namespace TestApplication
             editor.AddShape(cube);
 
             editor.Look(new Point3D(3, 3, 3), new Point3D());
+
+            editor.OrbitControl.Start();
         }
     }
 }

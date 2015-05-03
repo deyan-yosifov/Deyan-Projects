@@ -1,0 +1,18 @@
+﻿<Window x:Class="GeometryBasics.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cartesian="clr-namespace:Deyo.Controls.CartesianPlane;assembly=Deyo.Controls"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Click="CheckIfPointIsInside_Click" Content="Check if point is exact" />
+            <TextBlock Text="Intersections:" />
+            <TextBox x:Name="intersections" IsReadOnly="True" />
+        </StackPanel>
+        <cartesian:CartesianPlaneControl Grid.Row="1" x:Name="cartesianPlane"/>
+    </Grid>
+</Window>
