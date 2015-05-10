@@ -7,29 +7,30 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Deyo.Controls.Contols3D
 {
     public class OrbitControl
     {
-        private readonly SceneEditor editor;
+        private readonly Scene3D scene3D;
         private const int moveTimeInterval = 100;
         private int previousMoveTimeStamp = 0;
         private bool isStarted;
         private double wheelSpeed;
 
-        internal OrbitControl(SceneEditor editor)
+        internal OrbitControl(Scene3D scene3D)
         {
             this.wheelSpeed = 0.1;
             this.isStarted = false;
-            this.editor = editor;
+            this.scene3D = scene3D;
         }
 
-        internal Viewport3D Viewport
+        internal Canvas Viewport2D
         {
             get
             {
-                return this.editor.Viewport;
+                return this.scene3D.Viewport2D;
             }
         }
 
@@ -38,7 +39,6 @@ namespace Deyo.Controls.Contols3D
             if (!this.isStarted)
             {
                 this.isStarted = true;
-                this.Viewport.IsHitTestVisible = true;
                 this.InitializeEvents();
             }
         }
@@ -48,31 +48,30 @@ namespace Deyo.Controls.Contols3D
             if (this.isStarted)
             {
                 this.isStarted = false;
-                this.Viewport.IsHitTestVisible = false;
                 this.ReleaseEvents();
             }
         }
 
         internal void InitializeEvents()
         {
-            this.Viewport.MouseDown += this.Viewport_MouseDown;
-            this.Viewport.MouseMove += this.Viewport_MouseMove;
-            this.Viewport.MouseUp += this.Viewport_MouseUp;
-            this.Viewport.MouseWheel += this.Viewport_MouseWheel;
+            this.Viewport2D.MouseDown += this.Viewport_MouseDown;
+            this.Viewport2D.MouseMove += this.Viewport_MouseMove;
+            this.Viewport2D.MouseUp += this.Viewport_MouseUp;
+            this.Viewport2D.MouseWheel += this.Viewport_MouseWheel;
         }
 
         internal void ReleaseEvents()
         {
-            this.Viewport.MouseDown -= this.Viewport_MouseDown;
-            this.Viewport.MouseMove -= this.Viewport_MouseMove;
-            this.Viewport.MouseUp -= this.Viewport_MouseUp;
-            this.Viewport.MouseWheel -= this.Viewport_MouseWheel;
+            this.Viewport2D.MouseDown -= this.Viewport_MouseDown;
+            this.Viewport2D.MouseMove -= this.Viewport_MouseMove;
+            this.Viewport2D.MouseUp -= this.Viewport_MouseUp;
+            this.Viewport2D.MouseWheel -= this.Viewport_MouseWheel;
         }
 
         private void Viewport_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Point position = this.GetPosition(e);
-            System.Diagnostics.Debug.WriteLine("MouseUp ({0}), ViewportSize:({1}, {2})", position, this.Viewport.ActualWidth, this.Viewport.ActualHeight);
+            System.Diagnostics.Debug.WriteLine("MouseUp ({0}), {1}", position, this.VieportSizeInfo);
         }
 
         private void Viewport_MouseMove(object sender, MouseEventArgs e)
@@ -88,18 +87,26 @@ namespace Deyo.Controls.Contols3D
         private void Viewport_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Point position = this.GetPosition(e);
-            System.Diagnostics.Debug.WriteLine("MouseDown ({0}), ViewportSize:({1}, {2})", position, this.Viewport.ActualWidth, this.Viewport.ActualHeight);
+            System.Diagnostics.Debug.WriteLine("MouseDown ({0}), {1}", position, this.VieportSizeInfo);
         }
 
         private void Viewport_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             Point position = this.GetPosition(e);
-            System.Diagnostics.Debug.WriteLine("MouseWheel ({0}), Delta:{1}, ViewportSize:({2}, {3})", position, e.Delta, this.Viewport.ActualWidth, this.Viewport.ActualHeight);
+            System.Diagnostics.Debug.WriteLine("MouseWheel ({0}), Delta:{1}, {2}", position, e.Delta, this.VieportSizeInfo);
         }
 
         private Point GetPosition(MouseEventArgs e)
         {
-            return e.GetPosition(this.Viewport);
+            return e.GetPosition(this.Viewport2D);
+        }
+
+        private string VieportSizeInfo
+        {
+            get
+            {
+                return string.Format("ViewportSize: ({0}, {1})", this.Viewport2D.ActualWidth, this.Viewport2D.ActualHeight);
+            }
         }
     }
 }

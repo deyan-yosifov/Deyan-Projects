@@ -22,7 +22,6 @@ namespace Deyo.Controls.Controls3D
 
         private readonly Viewport3D viewport;
         private readonly Position3D position;
-        private readonly OrbitControl orbitControl;
         private static readonly Dictionary<Type, SupportedCameraType> cameraToSupportedCameraType;
 
         static SceneEditor()
@@ -36,7 +35,6 @@ namespace Deyo.Controls.Controls3D
         {
             this.position = new Position3D();
             this.viewport = viewport;
-            this.orbitControl = new OrbitControl(this);
             this.Camera = new PerspectiveCamera(new Point3D(), new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 45);
         }
 
@@ -69,14 +67,6 @@ namespace Deyo.Controls.Controls3D
                 }
 
                 this.viewport.Camera = value;
-            }
-        }
-
-        public OrbitControl OrbitControl
-        {
-            get
-            {
-                return this.orbitControl;
             }
         }
 

@@ -115,7 +115,7 @@ namespace TestApplication
 
         private void InitializeViewport()
         {
-            SceneEditor editor = new SceneEditor(this.viewport);
+            SceneEditor editor = this.viewport.Editor;
 
             byte directionIntensity = 250;
             byte ambientIntensity = 40;
@@ -129,7 +129,7 @@ namespace TestApplication
 
             editor.Look(new Point3D(3, 3, 3), new Point3D());
 
-            editor.OrbitControl.Start();
+            this.viewport.OrbitControl.Start();
         }
     }
 }
