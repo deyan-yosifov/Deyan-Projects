@@ -70,6 +70,7 @@ namespace Deyo.Controls.Contols3D
 
         private void Viewport_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            this.Viewport2D.ReleaseMouseCapture();
             Point position = this.GetPosition(e);
             System.Diagnostics.Debug.WriteLine("MouseUp ({0}), {1}", position, this.VieportSizeInfo);
         }
@@ -80,13 +81,24 @@ namespace Deyo.Controls.Contols3D
             {
                 Point position = this.GetPosition(e);
                 this.previousMoveTimeStamp = e.Timestamp;
-                //System.Diagnostics.Debug.WriteLine("MouseMove ({0}), Timestamp:{1}", position, e.Timestamp);
+                System.Diagnostics.Debug.WriteLine("MouseMove ({0}), Timestamp:{1}", position, e.Timestamp);
             }
         }
 
         private void Viewport_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            this.Viewport2D.CaptureMouse();
             Point position = this.GetPosition(e);
+
+            if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
+            {
+
+            }
+            else
+            {
+
+            }
+
             System.Diagnostics.Debug.WriteLine("MouseDown ({0}), {1}", position, this.VieportSizeInfo);
         }
 
