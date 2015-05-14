@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
-namespace Deyo.Controls.Contols3D
+namespace Deyo.Controls.Controls3D
 {
     public class Position3D
     {

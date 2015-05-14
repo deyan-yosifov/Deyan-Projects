@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Common
 {
@@ -10,6 +11,11 @@ namespace Deyo.Controls.Common
             {
                 throw new ArgumentNullException(parameterName);
             }
+        }
+
+        public static void ThrowNotSupportedCameraException()
+        {
+            throw new NotSupportedException("Not supported camera type!");
         }
     }
 }

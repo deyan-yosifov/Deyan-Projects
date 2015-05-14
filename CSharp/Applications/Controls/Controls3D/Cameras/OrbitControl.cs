@@ -1,4 +1,6 @@
-﻿using Deyo.Controls.Controls3D;
+﻿using Deyo.Controls.Common;
+using Deyo.Controls.Controls3D;
+using Deyo.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,29 +10,52 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
-namespace Deyo.Controls.Contols3D
+namespace Deyo.Controls.Controls3D.Cameras
 {
     public class OrbitControl
     {
         private readonly Scene3D scene3D;
-        private const int moveTimeInterval = 100;
+        private const int MoveMinimumTimeDelta = 100;
+        private const int WheelDelta = 120;
         private int previousMoveTimeStamp = 0;
-        private bool isStarted;
-        private double wheelSpeed;
+        private bool isStarted;        
 
         internal OrbitControl(Scene3D scene3D)
         {
-            this.wheelSpeed = 0.1;
+            this.ZoomSpeed = 0.1;
             this.isStarted = false;
             this.scene3D = scene3D;
         }
 
-        internal Canvas Viewport2D
+        public double ZoomSpeed
+        {
+            get;
+            set;
+        }
+
+        private Canvas Viewport2D
         {
             get
             {
                 return this.scene3D.Viewport2D;
+            }
+        }
+
+        private SceneEditor Editor
+        {
+            get
+            {
+                return this.scene3D.Editor;
+            }
+        }
+
+        private Size ViewportSize
+        {
+            get
+            {
+                return new Size(this.Viewport2D.ActualWidth, this.Viewport2D.ActualHeight);
             }
         }
 
@@ -77,7 +102,7 @@ namespace Deyo.Controls.Contols3D
 
         private void Viewport_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Timestamp - this.previousMoveTimeStamp > OrbitControl.moveTimeInterval)
+            if (e.Timestamp - this.previousMoveTimeStamp > OrbitControl.MoveMinimumTimeDelta)
             {
                 Point position = this.GetPosition(e);
                 this.previousMoveTimeStamp = e.Timestamp;
@@ -92,11 +117,26 @@ namespace Deyo.Controls.Contols3D
 
             if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
             {
-
+                
             }
             else
             {
+                PerspectiveCamera perspectiveCamera;
+                OrthographicCamera orthographicCamera;
 
+                if (this.Editor.TryGetCamera<PerspectiveCamera>(out perspectiveCamera))
+                {
+                    Vector3D lookDirection = CameraHelper.GetLookDirectionFromPoint(position, this.ViewportSize, perspectiveCamera);
+                    perspectiveCamera.LookDirection = lookDirection * perspectiveCamera.LookDirection.Length;
+                }
+                else if (this.Editor.TryGetCamera<OrthographicCamera>(out orthographicCamera))
+                {
+
+                }
+                else
+                {
+                    Guard.ThrowNotSupportedCameraException();
+                }
             }
 
             System.Diagnostics.Debug.WriteLine("MouseDown ({0}), {1}", position, this.VieportSizeInfo);
@@ -105,6 +145,23 @@ namespace Deyo.Controls.Contols3D
         private void Viewport_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             Point position = this.GetPosition(e);
+
+            PerspectiveCamera perspectiveCamera;
+            OrthographicCamera orthographicCamera;
+
+            if (this.Editor.TryGetCamera<PerspectiveCamera>(out perspectiveCamera))
+            {
+                
+            }
+            else if (this.Editor.TryGetCamera<OrthographicCamera>(out orthographicCamera))
+            {
+
+            }
+            else
+            {
+                Guard.ThrowNotSupportedCameraException();
+            }
+
             System.Diagnostics.Debug.WriteLine("MouseWheel ({0}), Delta:{1}, {2}", position, e.Delta, this.VieportSizeInfo);
         }
 
