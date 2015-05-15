@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="CartesianPlane\CartesianPlaneControlViewModel.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
+    <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
     <Compile Include="Controls3D\Position3D.cs" />
     <Compile Include="Controls3D\Scene3D.xaml.cs">

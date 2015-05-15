@@ -73,27 +73,40 @@ namespace Deyo.Controls.Controls3D
         public void Look(Point3D fromPoint, Point3D toPoint, double rollAngleInDegrees)
         {
             Point3D position;
-            Vector3D lookDirection, upDirection;
-            CameraHelper.GetCameraPropertiesOnLook(fromPoint, toPoint, rollAngleInDegrees, out position, out lookDirection, out upDirection);
+            Vector3D lookVector, upDirection;
+            CameraHelper.GetCameraPropertiesOnLook(fromPoint, toPoint, rollAngleInDegrees, out position, out lookVector, out upDirection);
 
+            this.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    perspectiveCamera.Position = position;
+                    perspectiveCamera.LookDirection = lookVector;
+                    perspectiveCamera.UpDirection = upDirection;
+                },
+                (orthographicCamera) =>
+                {
+                    orthographicCamera.Position = position;
+                    orthographicCamera.LookDirection = lookVector;
+                    orthographicCamera.UpDirection = upDirection;
+                });
+        }
+
+        public void DoActionOnCamera(Action<PerspectiveCamera> actionOnPerspective, Action<OrthographicCamera> actionOnOrthographic)
+        {
             PerspectiveCamera perspectiveCamera;
             OrthographicCamera orthographicCamera;
             if (this.TryGetCamera<PerspectiveCamera>(out perspectiveCamera))
             {
-                perspectiveCamera.Position = position;
-                perspectiveCamera.LookDirection = lookDirection;
-                perspectiveCamera.UpDirection = upDirection;
+                actionOnPerspective(perspectiveCamera);
             }
             else if (this.TryGetCamera<OrthographicCamera>(out orthographicCamera))
             {
-                orthographicCamera.Position = position;
-                orthographicCamera.LookDirection = lookDirection;
-                orthographicCamera.UpDirection = upDirection;
+                actionOnOrthographic(orthographicCamera);
             }
             else
             {
                 Guard.ThrowNotSupportedCameraException();
             }
-        }  
+        }
     }
 }

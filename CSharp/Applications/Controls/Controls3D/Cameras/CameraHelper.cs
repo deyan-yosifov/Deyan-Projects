@@ -12,10 +12,11 @@ namespace Deyo.Controls.Controls3D.Cameras
 {
     public class CameraHelper
     {
-        public static void GetCameraPropertiesOnLook(Point3D fromPoint, Point3D toPoint, double rollAngleInDegrees, out Point3D position, out Vector3D lookDirection, out Vector3D upDirection)
+        public static void GetCameraPropertiesOnLook(Point3D fromPoint, Point3D toPoint, double rollAngleInDegrees, out Point3D position, out Vector3D lookVector, out Vector3D upDirection)
         {
             position = fromPoint;
-            lookDirection = toPoint - fromPoint;
+            lookVector = toPoint - fromPoint;
+            Vector3D lookDirection = lookVector * 1;
             lookDirection.Normalize();
 
             if (lookDirection.Z == 1)

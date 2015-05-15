@@ -17,19 +17,30 @@ namespace Deyo.Controls.Controls3D.Cameras
     public class OrbitControl
     {
         private readonly Scene3D scene3D;
-        private const int MoveMinimumTimeDelta = 100;
-        private const int WheelDelta = 120;
-        private int previousMoveTimeStamp = 0;
-        private bool isStarted;        
+        private const int WheelSingleDelta = 120;
+        private int previousMoveTimestamp = 0;
+        private bool isStarted;
+        private DragAction dragAction;
+        private Vector3D firstPanDirection;
+        
 
         internal OrbitControl(Scene3D scene3D)
         {
-            this.ZoomSpeed = 0.1;
             this.isStarted = false;
             this.scene3D = scene3D;
+            this.dragAction = DragAction.NoAction;
+
+            this.ZoomSpeed = 0.1;
+            this.MoveDeltaTime = 20;
         }
 
         public double ZoomSpeed
+        {
+            get;
+            set;
+        }
+
+        public double MoveDeltaTime
         {
             get;
             set;
@@ -64,6 +75,7 @@ namespace Deyo.Controls.Controls3D.Cameras
             if (!this.isStarted)
             {
                 this.isStarted = true;
+                this.dragAction = DragAction.NoAction;
                 this.InitializeEvents();
             }
         }
@@ -73,6 +85,7 @@ namespace Deyo.Controls.Controls3D.Cameras
             if (this.isStarted)
             {
                 this.isStarted = false;
+                this.dragAction = DragAction.NoAction;
                 this.ReleaseEvents();
             }
         }
@@ -98,16 +111,91 @@ namespace Deyo.Controls.Controls3D.Cameras
             this.Viewport2D.ReleaseMouseCapture();
             Point position = this.GetPosition(e);
             System.Diagnostics.Debug.WriteLine("MouseUp ({0}), {1}", position, this.VieportSizeInfo);
+            this.dragAction = DragAction.NoAction;
         }
 
         private void Viewport_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Timestamp - this.previousMoveTimeStamp > OrbitControl.MoveMinimumTimeDelta)
+            if (this.dragAction != DragAction.NoAction)
             {
-                Point position = this.GetPosition(e);
-                this.previousMoveTimeStamp = e.Timestamp;
-                System.Diagnostics.Debug.WriteLine("MouseMove ({0}), Timestamp:{1}", position, e.Timestamp);
+                if (e.Timestamp - this.previousMoveTimestamp > this.MoveDeltaTime)
+                {
+                    this.previousMoveTimestamp = e.Timestamp;
+                    Point position = this.GetPosition(e);
+                    System.Diagnostics.Debug.WriteLine("MouseMove ({0}), Timestamp:{1}", position, e.Timestamp);
+
+                    if (this.dragAction == DragAction.Orbit)
+                    {
+                        this.Editor.DoActionOnCamera(
+                            (perspectiveCamera) =>
+                            {
+                                this.Orbit(perspectiveCamera, position);
+                            },
+                            (orthographicCamera) =>
+                            {
+                                this.Orbit(orthographicCamera, position);
+                            });
+                    }
+                    else if (this.dragAction == DragAction.Pan)
+                    {
+                        this.Editor.DoActionOnCamera(
+                            (perspectiveCamera) =>
+                            {
+                                this.Pan(perspectiveCamera, position);
+                            },
+                            (orthographicCamera) =>
+                            {
+                                this.Pan(orthographicCamera, position);
+                            });
+                    }
+                }
             }
+        }
+
+        private void Orbit(PerspectiveCamera perspectiveCamera, Point position)
+        {
+
+        }
+
+        private void Orbit(OrthographicCamera orthographicCamera, Point position)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Pan(PerspectiveCamera perspectiveCamera, Point panPoint)
+        {
+            Vector3D lookDirection;
+            Vector3D panDirection = CameraHelper.GetLookDirectionFromPoint(panPoint, this.ViewportSize, perspectiveCamera);
+
+            if (this.TryGetLookDirectionOnPan(perspectiveCamera.LookDirection, panDirection, out lookDirection))
+            {
+                perspectiveCamera.LookDirection = lookDirection;
+            }
+        }
+
+        private void Pan(OrthographicCamera orthographicCamera, Point panPoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool TryGetLookDirectionOnPan(Vector3D oldCameraLookDirection, Vector3D panDirection, out Vector3D newCameraLookDirection)
+        {
+            double angle = Vector3D.AngleBetween(firstPanDirection, panDirection);
+            newCameraLookDirection = oldCameraLookDirection;
+
+            if (!angle.IsZero())
+            {
+                Vector3D rotationAxis = Vector3D.CrossProduct(panDirection, firstPanDirection);
+                rotationAxis.Normalize();
+                Matrix3D matrix = new Matrix3D();
+                matrix.Rotate(new Quaternion(rotationAxis, angle));
+                newCameraLookDirection = matrix.Transform(oldCameraLookDirection);
+                
+                return true;
+            }
+
+
+            return false;
         }
 
         private void Viewport_MouseDown(object sender, MouseButtonEventArgs e)
@@ -117,52 +205,91 @@ namespace Deyo.Controls.Controls3D.Cameras
 
             if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
             {
-                
+                this.dragAction = DragAction.Pan;
+
+                this.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    this.StartPan(perspectiveCamera, position);
+                },
+                (orthographicCamera) =>
+                {
+                    this.StartPan(orthographicCamera, position);
+                });
             }
             else
             {
-                PerspectiveCamera perspectiveCamera;
-                OrthographicCamera orthographicCamera;
+                this.dragAction = DragAction.Orbit;
 
-                if (this.Editor.TryGetCamera<PerspectiveCamera>(out perspectiveCamera))
+                this.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
                 {
-                    Vector3D lookDirection = CameraHelper.GetLookDirectionFromPoint(position, this.ViewportSize, perspectiveCamera);
-                    perspectiveCamera.LookDirection = lookDirection * perspectiveCamera.LookDirection.Length;
-                }
-                else if (this.Editor.TryGetCamera<OrthographicCamera>(out orthographicCamera))
+                    this.StartOrbit(perspectiveCamera);
+                },
+                (orthographicCamera) =>
                 {
-
-                }
-                else
-                {
-                    Guard.ThrowNotSupportedCameraException();
-                }
+                    this.StartOrbit(orthographicCamera);
+                });
             }
 
             System.Diagnostics.Debug.WriteLine("MouseDown ({0}), {1}", position, this.VieportSizeInfo);
         }
 
+        private void StartPan(PerspectiveCamera perspectiveCamera, Point panPoint)
+        {
+            this.firstPanDirection = CameraHelper.GetLookDirectionFromPoint(panPoint, this.ViewportSize, perspectiveCamera);
+        }
+
+        private void StartPan(OrthographicCamera orthographicCamera, Point panPoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void StartOrbit(PerspectiveCamera perspectiveCamera)
+        {
+
+        }
+
+        private void StartOrbit(OrthographicCamera orthographicCamera)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Viewport_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             Point position = this.GetPosition(e);
+            double zoomAmount = (this.ZoomSpeed * e.Delta) / WheelSingleDelta;
 
-            PerspectiveCamera perspectiveCamera;
-            OrthographicCamera orthographicCamera;
-
-            if (this.Editor.TryGetCamera<PerspectiveCamera>(out perspectiveCamera))
-            {
-                
-            }
-            else if (this.Editor.TryGetCamera<OrthographicCamera>(out orthographicCamera))
-            {
-
-            }
-            else
-            {
-                Guard.ThrowNotSupportedCameraException();
-            }
+            this.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    this.Zoom(perspectiveCamera, position, zoomAmount);
+                },
+                (orthographicCamera) =>
+                {
+                    this.Zoom(orthographicCamera, position, zoomAmount);
+                });
 
             System.Diagnostics.Debug.WriteLine("MouseWheel ({0}), Delta:{1}, {2}", position, e.Delta, this.VieportSizeInfo);
+        }
+
+        private void Zoom(PerspectiveCamera perspectiveCamera, Point position, double zoomAmount)
+        {
+            Vector3D zoomDirection = CameraHelper.GetLookDirectionFromPoint(position, this.ViewportSize, perspectiveCamera);
+            perspectiveCamera.Position = CalculateZoomedPosition(zoomDirection, perspectiveCamera.LookDirection, perspectiveCamera.Position, zoomAmount);
+        }
+
+        private void Zoom(OrthographicCamera orthographicCamera, Point position, double zoomAmount)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static Point3D CalculateZoomedPosition(Vector3D zoomDirection, Vector3D currentLookVector, Point3D currentPosition, double zoomAmount)
+        {
+            Vector3D zoomVector = zoomDirection * (currentLookVector.Length * zoomAmount);
+            Point3D zoomPosition = currentPosition + zoomVector;
+
+            return zoomPosition;
         }
 
         private Point GetPosition(MouseEventArgs e)
