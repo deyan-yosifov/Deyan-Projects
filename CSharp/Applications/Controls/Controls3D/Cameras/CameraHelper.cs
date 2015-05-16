@@ -72,14 +72,21 @@ namespace Deyo.Controls.Controls3D.Cameras
 
         public static Point GetPointOnUnityDistantPlane(Point pointOnViewport, Size viewportSize, double fieldOfViewInDegrees)
         {
-            double radians = fieldOfViewInDegrees.DegreesToRadians();
-            double unityPlaneWidth = 2 * Math.Tan(radians / 2);
+            double unityPlaneWidth = GetUnityDistantPlaneWidth(fieldOfViewInDegrees);
             double scale = unityPlaneWidth / viewportSize.Width;
 
             Point coordinateSystemCenter = new Point(viewportSize.Width / 2, viewportSize.Height / 2);
             Point transformedPoint = pointOnViewport.Minus(coordinateSystemCenter).MultiplyBy(scale);
 
             return transformedPoint;
+        }
+
+        public static double GetUnityDistantPlaneWidth(double fieldOfViewInDegrees)
+        {
+            double radians = fieldOfViewInDegrees.DegreesToRadians();
+            double unityPlaneWidth = 2 * Math.Tan(radians / 2);
+
+            return unityPlaneWidth;
         }
     }
 }

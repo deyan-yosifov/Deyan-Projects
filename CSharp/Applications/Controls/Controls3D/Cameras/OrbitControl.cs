@@ -17,11 +17,13 @@ namespace Deyo.Controls.Controls3D.Cameras
     public class OrbitControl
     {
         private readonly Scene3D scene3D;
+        private const double FullCircleAngleInDegrees = 360;
         private const int WheelSingleDelta = 120;
         private int previousMoveTimestamp = 0;
         private bool isStarted;
         private DragAction dragAction;
         private Vector3D firstPanDirection;
+        private OrbitPositionInfo firstOrbitPosition;
         
 
         internal OrbitControl(Scene3D scene3D)
@@ -32,6 +34,7 @@ namespace Deyo.Controls.Controls3D.Cameras
 
             this.ZoomSpeed = 0.1;
             this.MoveDeltaTime = 20;
+            this.WidthOrbitAngleInDegrees = 180;
         }
 
         public double ZoomSpeed
@@ -41,6 +44,12 @@ namespace Deyo.Controls.Controls3D.Cameras
         }
 
         public double MoveDeltaTime
+        {
+            get;
+            set;
+        }
+
+        public double WidthOrbitAngleInDegrees
         {
             get;
             set;
@@ -154,7 +163,26 @@ namespace Deyo.Controls.Controls3D.Cameras
 
         private void Orbit(PerspectiveCamera perspectiveCamera, Point position)
         {
+            Point positionOnUnityDistantPlane = CameraHelper.GetPointOnUnityDistantPlane(position, this.ViewportSize, perspectiveCamera.FieldOfView);
+            Vector vector = positionOnUnityDistantPlane - this.firstOrbitPosition.PositionOnUnityDistantPlane;
+            double angleInDegrees = (vector.Length / this.firstOrbitPosition.FullCircleLength) * FullCircleAngleInDegrees;
 
+            if (!angleInDegrees.IsZero())
+            {
+                Vector3D rotateDirection = this.firstOrbitPosition.CameraX * vector.X + this.firstOrbitPosition.CameraY * vector.Y;
+                Vector3D rotationAxis = Vector3D.CrossProduct(this.firstOrbitPosition.CameraZ, rotateDirection);
+                rotationAxis.Normalize();
+
+                Matrix3D matrix = new Matrix3D();
+                matrix.Rotate(new Quaternion(rotationAxis, angleInDegrees));
+                Vector3D reverseLookDirection = matrix.Transform(this.firstOrbitPosition.CameraZ);
+                reverseLookDirection *= -perspectiveCamera.LookDirection.Length;
+
+                Point3D lookAtPoint = perspectiveCamera.Position + perspectiveCamera.LookDirection;
+                Point3D cameraPosition = lookAtPoint + reverseLookDirection;
+
+                this.Editor.Look(cameraPosition, lookAtPoint);
+            }
         }
 
         private void Orbit(OrthographicCamera orthographicCamera, Point position)
@@ -169,7 +197,7 @@ namespace Deyo.Controls.Controls3D.Cameras
 
             if (this.TryGetLookDirectionOnPan(perspectiveCamera.LookDirection, panDirection, out lookDirection))
             {
-                perspectiveCamera.LookDirection = lookDirection;
+                this.Editor.Look(perspectiveCamera.Position, perspectiveCamera.Position + lookDirection);
             }
         }
 
@@ -224,11 +252,11 @@ namespace Deyo.Controls.Controls3D.Cameras
                 this.Editor.DoActionOnCamera(
                 (perspectiveCamera) =>
                 {
-                    this.StartOrbit(perspectiveCamera);
+                    this.StartOrbit(perspectiveCamera, position);
                 },
                 (orthographicCamera) =>
                 {
-                    this.StartOrbit(orthographicCamera);
+                    this.StartOrbit(orthographicCamera, position);
                 });
             }
 
@@ -245,12 +273,30 @@ namespace Deyo.Controls.Controls3D.Cameras
             throw new NotImplementedException();
         }
 
-        private void StartOrbit(PerspectiveCamera perspectiveCamera)
+        private void StartOrbit(PerspectiveCamera perspectiveCamera, Point orbitPoint)
         {
+            Vector3D x, y, z;
+            CameraHelper.GetCameraLocalCoordinateVectors(perspectiveCamera.LookDirection, perspectiveCamera.UpDirection, out x, out y, out z);
 
+            this.firstOrbitPosition = new OrbitPositionInfo()
+            {
+                PositionOnUnityDistantPlane = CameraHelper.GetPointOnUnityDistantPlane(orbitPoint, this.ViewportSize, perspectiveCamera.FieldOfView),
+                FullCircleLength = CameraHelper.GetUnityDistantPlaneWidth(perspectiveCamera.FieldOfView),
+                CameraX = x,
+                CameraY = y,
+                CameraZ = z,
+            };
         }
 
-        private void StartOrbit(OrthographicCamera orthographicCamera)
+        private double CalculateFullCircleLength(PerspectiveCamera perspectiveCamera)
+        {
+            double widthLengths = FullCircleAngleInDegrees / this.WidthOrbitAngleInDegrees;
+            double fullCircleLength = widthLengths * CameraHelper.GetUnityDistantPlaneWidth(perspectiveCamera.FieldOfView);
+
+            return widthLengths;
+        }
+
+        private void StartOrbit(OrthographicCamera orthographicCamera, Point orbitPoint)
         {
             throw new NotImplementedException();
         }
