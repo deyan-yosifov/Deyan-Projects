@@ -11,30 +11,37 @@ namespace Deyo.Controls.Controls3D
     {
         private Matrix3D matrix;
 
+        public Position3D(Matrix3D matrix)
+        {
+            this.matrix = matrix;
+        }
+
         public Matrix3D Matrix
         {
             get
             {
                 return this.matrix;
             }
-            set
-            {
-                if (this.matrix != value)
-                {
-                    this.matrix = value;
-                    this.OnMatrixChanged();
-                }
-            }
         }
 
-        public event EventHandler MatrixChanged;
-
-        protected void OnMatrixChanged()
+        public void Translate(Vector3D offset)
         {
-            if (this.MatrixChanged != null)
-            {
-                this.MatrixChanged(this, new EventArgs());
-            }
+            this.matrix.Translate(offset);
+        }
+
+        public void Rotate(Quaternion quaternion)
+        {
+            this.matrix.Rotate(quaternion);
+        }
+
+        public void Scale(Vector3D scale)
+        {
+            this.matrix.Scale(scale);
+        }
+
+        public void Append(Matrix3D matrix)
+        {
+            matrix.Append(matrix);
         }
     }
 }

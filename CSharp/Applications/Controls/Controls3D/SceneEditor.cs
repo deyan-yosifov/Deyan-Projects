@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -16,12 +17,13 @@ namespace Deyo.Controls.Controls3D
     public class SceneEditor
     {
         private readonly Viewport3D viewport;
-        private readonly Position3D position;
+        private readonly Stack<Position3D> positionStack;
 
         public SceneEditor(Viewport3D viewport)
         {
-            this.position = new Position3D();
             this.viewport = viewport;
+            this.positionStack = new Stack<Position3D>();
+            this.positionStack.Push(new Position3D(Matrix3D.Identity));
             this.viewport.Camera = new PerspectiveCamera(new Point3D(), new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 45);
         }
 
@@ -29,7 +31,7 @@ namespace Deyo.Controls.Controls3D
         {
             get
             {
-                return this.position;
+                return this.positionStack.Peek();
             }
         }
         
@@ -48,11 +50,13 @@ namespace Deyo.Controls.Controls3D
             return camera != null;
         }
 
-        public void AddShape(ShapeBase shape)
+        public ModelVisual3D AddShapeVisual(ShapeBase shape)
         {
-            Visual3D visual = new ModelVisual3D() { Content = shape.GeometryModel };
-            shape.GeometryModel.Transform = new MatrixTransform3D(this.Position.Matrix);
+            ModelVisual3D visual = new ModelVisual3D() { Content = shape.GeometryModel };
+            visual.Transform = new MatrixTransform3D(this.Position.Matrix);
             this.Viewport.Children.Add(visual);
+
+            return visual;
         }
 
         public void AddDirectionalLight(Color color, Vector3D directionVector)
@@ -107,6 +111,18 @@ namespace Deyo.Controls.Controls3D
             {
                 Guard.ThrowNotSupportedCameraException();
             }
+        }
+
+        public IDisposable SavePosition()
+        {
+            this.positionStack.Push(new Position3D(this.Position.Matrix));
+
+            return new DisposableAction(this.RestorePosition);
+        }
+
+        public void RestorePosition()
+        {
+            this.positionStack.Pop();
         }
     }
 }

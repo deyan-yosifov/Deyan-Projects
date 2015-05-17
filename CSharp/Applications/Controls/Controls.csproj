@@ -74,6 +74,7 @@
       <DependentUpon>CartesianPlaneControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="CartesianPlane\CartesianPlaneControlViewModel.cs" />
+    <Compile Include="Common\DisposableAction.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />

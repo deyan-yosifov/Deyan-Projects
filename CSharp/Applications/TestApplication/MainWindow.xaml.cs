@@ -125,7 +125,17 @@ namespace TestApplication
             Cube cube = new Cube();
             cube.AddDiffuseMaterial(Colors.Red);
             cube.AddBackDiffuseMaterial(Colors.Blue);
-            editor.AddShape(cube);
+            editor.AddShapeVisual(cube);
+            
+            editor.Position.Translate(new Vector3D(0.5, 0.5, 0.5));
+
+            using (editor.SavePosition())
+            {
+                editor.Position.Rotate(new Quaternion(new Vector3D(1, 1, 1), 90));
+                editor.AddShapeVisual(cube);
+            }
+
+            editor.AddShapeVisual(cube);
 
             editor.Look(new Point3D(3, 3, 3), new Point3D());
 

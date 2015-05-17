@@ -56,7 +56,6 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
-        // Provide a required override for the VisualChildrenCount property. 
         protected override int VisualChildrenCount
         {
             get
@@ -65,7 +64,6 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
-        // Provide a required override for the GetVisualChild method. 
         protected override Visual GetVisualChild(int index)
         {
             return this.container;
