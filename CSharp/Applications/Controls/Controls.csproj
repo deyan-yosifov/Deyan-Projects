@@ -60,10 +60,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls3D\Scene3D.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Dialogs\Explorer\FolderBrowserDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -83,9 +79,7 @@
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
     <Compile Include="Controls3D\Cameras\OrbitPositionInfo.cs" />
     <Compile Include="Controls3D\Position3D.cs" />
-    <Compile Include="Controls3D\Scene3D.xaml.cs">
-      <DependentUpon>Scene3D.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Controls3D\Scene3D.cs" />
     <Compile Include="Controls3D\SceneEditor.cs" />
     <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Common\Guard.cs" />

@@ -16,20 +16,23 @@ namespace Deyo.Controls.Controls3D.Cameras
 {
     public class OrbitControl
     {
-        private readonly Scene3D scene3D;
         private const double FullCircleAngleInDegrees = 360;
         private const int WheelSingleDelta = 120;
+        private readonly SceneEditor editor;
+        private readonly Canvas viewport2D;
         private int previousMoveTimestamp = 0;
         private bool isStarted;
         private DragAction dragAction;
         private Vector3D firstPanDirection;
         private OrbitPositionInfo firstOrbitPosition;        
 
-        internal OrbitControl(Scene3D scene3D)
+        internal OrbitControl(SceneEditor editor, Canvas viewport2D)
         {
+            this.editor = editor;
+            this.viewport2D = viewport2D;
+
             this.isStarted = false;
-            this.scene3D = scene3D;
-            this.dragAction = DragAction.NoAction;
+            this.dragAction = DragAction.NoAction;            
 
             this.ZoomSpeed = 0.1;
             this.MoveDeltaTime = 20;
@@ -58,7 +61,7 @@ namespace Deyo.Controls.Controls3D.Cameras
         {
             get
             {
-                return this.scene3D.Viewport2D;
+                return this.viewport2D;
             }
         }
 
@@ -66,7 +69,7 @@ namespace Deyo.Controls.Controls3D.Cameras
         {
             get
             {
-                return this.scene3D.Editor;
+                return this.editor;
             }
         }
 
