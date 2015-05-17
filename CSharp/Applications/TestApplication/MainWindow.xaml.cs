@@ -118,7 +118,7 @@ namespace TestApplication
             SceneEditor editor = this.viewport.Editor;
 
             byte directionIntensity = 250;
-            byte ambientIntensity = 40;
+            byte ambientIntensity = 125;
             editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 

@@ -59,14 +59,20 @@ namespace Deyo.Controls.Controls3D
             return visual;
         }
 
-        public void AddDirectionalLight(Color color, Vector3D directionVector)
+        public ModelVisual3D AddDirectionalLight(Color color, Vector3D directionVector)
         {
-            this.viewport.Children.Add(new ModelVisual3D() { Content = new DirectionalLight(color, directionVector) });
+            ModelVisual3D light = new ModelVisual3D() { Content = new DirectionalLight(color, directionVector) };
+            this.viewport.Children.Add(light);
+
+            return light;
         }
 
-        public void AddAmbientLight(Color color)
+        public ModelVisual3D AddAmbientLight(Color color)
         {
-            this.viewport.Children.Add(new ModelVisual3D() { Content = new AmbientLight(color) });
+            ModelVisual3D light = new ModelVisual3D() { Content = new AmbientLight(color) };
+            this.viewport.Children.Add(light);
+
+            return light;
         }
 
         public void Look(Point3D fromPoint, Point3D toPoint)

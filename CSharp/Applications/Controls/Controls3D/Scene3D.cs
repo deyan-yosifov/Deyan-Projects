@@ -56,6 +56,14 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
+        protected Viewport3D Viewport
+        {
+            get
+            {
+                return this.viewport3D;
+            }
+        }
+
         protected override int VisualChildrenCount
         {
             get

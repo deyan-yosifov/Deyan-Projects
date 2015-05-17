@@ -57,8 +57,10 @@ namespace Deyo.Controls.Contols3D.Shapes
             
             Action<int, int> initializeSquareVertex = (u, v) =>
             {
+                double yCoordinate = (v == 0 || v == (zCoordinates.Length - 1)) ? 0 : xyCoordinates[u].Y;
+
                 Cube.textureCoordinates.Add(new Point(u / (xyCoordinates.Length - 1.0), v / (zCoordinates.Length - 1.0)));
-                Cube.positionCoordinates.Add(new Point3D(xyCoordinates[u].X, xyCoordinates[u].Y, zCoordinates[v]));
+                Cube.positionCoordinates.Add(new Point3D(xyCoordinates[u].X, yCoordinate, zCoordinates[v]));
             };
 
             Action<int, int> initializeSquareSide = (u, v) =>
