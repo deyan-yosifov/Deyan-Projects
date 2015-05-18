@@ -1,6 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
-using Deyo.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

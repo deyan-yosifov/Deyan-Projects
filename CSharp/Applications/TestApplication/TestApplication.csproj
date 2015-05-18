@@ -103,6 +103,10 @@
       <Project>{2284d4fb-bc90-46db-af31-be77a991a39e}</Project>
       <Name>Controls</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{d0aed8a4-81ef-4ee6-a63d-4488e7ebda99}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

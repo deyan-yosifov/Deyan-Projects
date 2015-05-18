@@ -74,7 +74,6 @@
       <DependentUpon>CartesianPlaneControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="CartesianPlane\CartesianPlaneControlViewModel.cs" />
-    <Compile Include="Common\DisposableAction.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
@@ -124,9 +123,9 @@
     <Resource Include="Dialogs\Explorer\Images\folder.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Math\Math.csproj">
-      <Project>{4910fe1a-9f7b-4177-952c-a59dfe1af7d3}</Project>
-      <Name>Math</Name>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{d0aed8a4-81ef-4ee6-a63d-4488e7ebda99}</Project>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

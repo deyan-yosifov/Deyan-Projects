@@ -1,5 +1,5 @@
-﻿using Deyo.Mathematics;
-using Deyo.Mathematics.Algebra;
+﻿using Deyo.Core.Mathematics;
+using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

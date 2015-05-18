@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Contols3D.Shapes;
 using Deyo.Controls.Controls3D;
+using Deyo.Core.Media.Imaging;
 using Deyo.Vrml.Core;
 using Deyo.Vrml.Editing;
 using Deyo.Vrml.FormatProvider;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 
 namespace TestApplication
@@ -123,7 +125,8 @@ namespace TestApplication
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 
             Cube cube = new Cube();
-            cube.AddDiffuseMaterial(Colors.Red);
+            cube.AddTexture(JpegDecoder.GetBitmapSource(File.OpenRead(@"D:\Pictures\Photos\TeamBuilding Pamporovo - 29.11.2014\IMG_0557.JPG")));
+            cube.AddDiffuseMaterial(Color.FromArgb(50, 255, 0, 0));
             cube.AddBackDiffuseMaterial(Colors.Blue);
             editor.AddShapeVisual(cube);
             

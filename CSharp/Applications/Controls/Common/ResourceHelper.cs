@@ -20,5 +20,27 @@ namespace Deyo.Controls.Common
         {
             return Application.GetResourceStream(ResourceHelper.GetResourceUri(resource)).Stream;
         }
+
+        public static byte[] GetResourceBytes(string resource)
+        {
+            return GetBytesFromStream(GetResourceStream(resource));
+        }
+
+        public static byte[] GetBytesFromStream(Stream stream)
+        {
+            byte[] bytes = null;
+
+            using (MemoryStream memory = new MemoryStream())
+            {
+                using (stream)
+                {
+                    stream.CopyTo(memory);
+                }
+
+                bytes = memory.ToArray();
+            }
+
+            return bytes;
+        }
     }
 }

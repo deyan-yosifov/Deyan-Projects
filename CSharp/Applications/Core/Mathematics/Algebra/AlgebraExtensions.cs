@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace Deyo.Mathematics.Algebra
+namespace Deyo.Core.Mathematics.Algebra
 {
     public static class AlgebraExtensions
     {
