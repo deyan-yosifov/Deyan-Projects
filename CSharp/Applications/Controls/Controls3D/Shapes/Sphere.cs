@@ -1,12 +1,37 @@
-﻿using System;
+﻿using Deyo.Controls.Controls3D.Shapes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Deyo.Controls.Contols3D.Shapes
 {
-    public class Sphere : ShapeBase
+    public class Sphere : RotationalShape
     {
+        public const double Diameter = 1;
+        public const double Radius = Diameter / 2;
+
+        public Sphere(int parallelsCount, int meridiansCount, bool isSmooth)
+            : base(Sphere.CalculateSectionPoints(parallelsCount), meridiansCount, isSmooth)
+        {
+        }
+
+        private static Point[] CalculateSectionPoints(int parallelsCount)
+        {
+            Point[] points = new Point[parallelsCount + 2];
+            points[0] = new Point(0, Radius);
+            points[parallelsCount + 1] = new Point(0, -Radius);
+            double deltaAngle = Math.PI / (parallelsCount + 1);
+
+            for (int i = 1; i <= parallelsCount; i++)
+            {
+                double angle = i * deltaAngle;
+                points[i] = new Point(Radius * Math.Sin(angle), Radius * Math.Cos(angle));
+            }
+
+            return points;
+        }
     }
 }

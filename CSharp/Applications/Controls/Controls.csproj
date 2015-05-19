@@ -86,6 +86,7 @@
     <Compile Include="Common\ResourceHelper.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
     <Compile Include="Controls3D\Shapes\Cube.cs" />
+    <Compile Include="Controls3D\Shapes\RotationalShape.cs" />
     <Compile Include="Controls3D\Shapes\ShapeBase.cs" />
     <Compile Include="Controls3D\Shapes\Sphere.cs" />
     <Compile Include="Dialogs\Explorer\FolderBrowserDialog.xaml.cs">
