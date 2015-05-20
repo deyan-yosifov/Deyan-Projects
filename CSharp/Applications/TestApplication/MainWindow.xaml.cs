@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using TestApplication.Resources;
 
 namespace TestApplication
 {
@@ -125,7 +126,7 @@ namespace TestApplication
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 
             Cube cube = new Cube();
-            cube.AddTexture(JpegDecoder.GetBitmapSource(File.OpenRead(@"D:\Pictures\Photos\TeamBuilding Pamporovo - 29.11.2014\IMG_0557.JPG")));
+            cube.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
             cube.AddDiffuseMaterial(Color.FromArgb(50, 255, 0, 0));
             cube.AddBackDiffuseMaterial(Colors.Blue);
             editor.AddShapeVisual(cube);
@@ -141,8 +142,8 @@ namespace TestApplication
             editor.AddShapeVisual(cube);
             editor.Position.Translate(new Vector3D(-1, 1, 0));
             
-            Sphere sphere = new Sphere(6, 10, false);
-            sphere.AddTexture(JpegDecoder.GetBitmapSource(File.OpenRead(@"D:\Pictures\Photos\TeamBuilding Pamporovo - 29.11.2014\IMG_0557.JPG")));
+            Sphere sphere = new Sphere(10, 15, false);
+            sphere.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             //sphere.AddDiffuseMaterial(Color.FromRgb(255, 0, 0));
             sphere.AddBackDiffuseMaterial(Color.FromRgb(0, 255, 0));
             editor.AddShapeVisual(sphere);

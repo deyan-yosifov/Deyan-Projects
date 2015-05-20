@@ -40,14 +40,14 @@ namespace Deyo.Controls.Controls3D.Shapes
             
             for (int meridian = 0; meridian < meridiansCount; meridian++)
             {
-                Matrix3D matrix = new Matrix3D();
-                Quaternion rotation = new Quaternion(RotationalShape.RotationAxis, GetMeridianRotation(meridian + 1, meridiansCount)); 
-                matrix.Rotate(rotation);
+                double angle = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
 
                 for (int parallel = 0; parallel < sectionPoints.Length; parallel++)
                 {
                     Point3D sectionPoint = sectionPoints[parallel];
-                    Point3D rotatedPoint = isOnAxis(parallel) || (meridian == meridiansCount - 1) ? sectionPoint : matrix.Transform(sectionPoint);
+                    Point3D rotatedPoint = (isOnAxis(parallel) || (meridian == meridiansCount - 1))
+                        ? sectionPoint 
+                        : new Point3D(sectionPoint.X * Math.Cos(angle), sectionPoint.X * Math.Sin(angle), sectionPoint.Z);
 
                     secondPoints[parallel] = rotatedPoint;
                 }
@@ -126,9 +126,9 @@ namespace Deyo.Controls.Controls3D.Shapes
             return new Point(u, v);
         }
 
-        private static double GetMeridianRotation(int meridian, int meridiansCount)
+        private static double GetMeridianRotationInRadians(int meridian, int meridiansCount)
         {
-            return meridian * (360.0 / meridiansCount);
+            return meridian * (2 * Math.PI / meridiansCount);
         }
     }
 }
