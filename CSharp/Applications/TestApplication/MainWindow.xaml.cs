@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Contols3D.Shapes;
 using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Core.Media.Imaging;
 using Deyo.Vrml.Core;
 using Deyo.Vrml.Editing;
@@ -125,21 +126,27 @@ namespace TestApplication
             editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 
+            Cylinder cylinder = new Cylinder(20, false, true);
+            //cylinder.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
+            cylinder.AddDiffuseMaterial(Color.FromArgb(255, 255, 0, 0));
+            cylinder.AddBackDiffuseMaterial(Colors.Blue);
+            editor.AddShapeVisual(cylinder);
+
             Cube cube = new Cube();
             cube.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
             cube.AddDiffuseMaterial(Color.FromArgb(50, 255, 0, 0));
             cube.AddBackDiffuseMaterial(Colors.Blue);
-            editor.AddShapeVisual(cube);
+            //editor.AddShapeVisual(cube);
 
-            editor.Position.Translate(new Vector3D(0.5, 0.5, 0.5));
+            //editor.Position.Translate(new Vector3D(0.5, 0.5, 0.5));
 
-            using (editor.SavePosition())
-            {
-                editor.Position.Rotate(new Quaternion(new Vector3D(1, 1, 1), 90));
-                editor.AddShapeVisual(cube);
-            }
+            //using (editor.SavePosition())
+            //{
+            //    editor.Position.Rotate(new Quaternion(new Vector3D(1, 1, 1), 90));
+            //    editor.AddShapeVisual(cube);
+            //}
 
-            editor.AddShapeVisual(cube);
+            //editor.AddShapeVisual(cube);
             editor.Position.Translate(new Vector3D(-1, 1, 0));
             
             Sphere sphere = new Sphere(10, 15, false);

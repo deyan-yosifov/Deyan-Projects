@@ -18,7 +18,7 @@ namespace Deyo.Controls.Contols3D.Shapes
         {
         }
 
-        private static Point[] CalculateSectionPoints(int parallelsCount)
+        private static Point[][] CalculateSectionPoints(int parallelsCount)
         {
             Point[] points = new Point[parallelsCount + 2];
             points[0] = new Point(0, Radius);
@@ -31,7 +31,7 @@ namespace Deyo.Controls.Contols3D.Shapes
                 points[i] = new Point(Radius * Math.Sin(angle), Radius * Math.Cos(angle));
             }
 
-            return points;
+            return new Point[][] { points };
         }
     }
 }

@@ -11,60 +11,61 @@ namespace Deyo.Controls.Controls3D.Shapes
 {
     public class RotationalShape : ShapeBase
     {
-        public static readonly Vector3D RotationAxis = new Vector3D(0, 0, 1);
-
-        public RotationalShape(Point[] sectionInXZPlane, int meridiansCount, bool isSmooth)
+        public RotationalShape(Point[][] sectionsInXZPlane, int meridiansCount, bool isSmooth)
         {
-            base.GeometryModel.Geometry = this.GenerateGeometry(sectionInXZPlane, meridiansCount, isSmooth);
+            base.GeometryModel.Geometry = this.GenerateGeometry(sectionsInXZPlane, meridiansCount, isSmooth);
         }
-
-        private Geometry3D GenerateGeometry(Point[] sectionInXZPlane, int meridiansCount, bool isSmooth)
+        
+        private Geometry3D GenerateGeometry(Point[][] sectionsInXZPlane, int meridiansCount, bool isSmooth)
         {
             double minZ, maxZ;
-            Point3D[] sectionPoints;
-            CalculateSectionPoints(sectionInXZPlane, out sectionPoints, out minZ, out maxZ);
+            Point3D[][] sectionsPoints;
+            CalculateSectionsPoints(sectionsInXZPlane, out sectionsPoints, out minZ, out maxZ);
             
-            MeshGeometry3D geometry = isSmooth ? GenerateSmoothEdgesGeometry(sectionPoints, minZ, maxZ, meridiansCount) : GenerateSharpEdgesGeometry(sectionPoints, minZ, maxZ, meridiansCount);
+            MeshGeometry3D geometry = isSmooth ? GenerateSmoothEdgesGeometry(sectionsPoints, minZ, maxZ, meridiansCount) : GenerateSharpEdgesGeometry(sectionsPoints, minZ, maxZ, meridiansCount);
             
             return geometry;
         }
 
-        private MeshGeometry3D GenerateSharpEdgesGeometry(Point3D[] sectionPoints, double minZ, double maxZ, int meridiansCount)
+        private MeshGeometry3D GenerateSharpEdgesGeometry(Point3D[][] sectionsPoints, double minZ, double maxZ, int meridiansCount)
         {
             MeshGeometry3D geometry = new MeshGeometry3D();
 
+            for (int section = 0; section < sectionsPoints.Length; section++)
+            {
+                this.GenerateSharpEdgesGeometry(geometry, sectionsPoints[section], minZ, maxZ, meridiansCount);
+            }
+
+            return geometry;
+        }
+
+        private void GenerateSharpEdgesGeometry(MeshGeometry3D geometry, Point3D[] sectionPoints, double minZ, double maxZ, int meridiansCount)
+        {
             Func<int, bool> isOnAxis = (parallelIndex) => { return sectionPoints[parallelIndex].X == 0; };
 
             Point3D[] firstPoints = sectionPoints.ToArray();
             Point3D[] secondPoints = new Point3D[firstPoints.Length];
-            
+
             for (int meridian = 0; meridian < meridiansCount; meridian++)
             {
                 double angle = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
 
                 for (int parallel = 0; parallel < sectionPoints.Length; parallel++)
                 {
-                    Point3D sectionPoint = sectionPoints[parallel];
-                    Point3D rotatedPoint = (isOnAxis(parallel) || (meridian == meridiansCount - 1))
-                        ? sectionPoint 
-                        : new Point3D(sectionPoint.X * Math.Cos(angle), sectionPoint.X * Math.Sin(angle), sectionPoint.Z);
-
-                    secondPoints[parallel] = rotatedPoint;
+                    secondPoints[parallel] = RotateSectionPoint(sectionPoints[parallel], angle, meridian + 1, meridiansCount);
                 }
 
                 Func<Point3D, int, int> addPointToGeometry = (point, meridianIndex) => { return AddPointToGeometry(geometry, point, meridianIndex, meridiansCount, minZ, maxZ); };
                 Action<Point3D, Point3D, Point3D> addPointsToGeomety = (first, second, third) =>
-                    {
-                        geometry.TriangleIndices.Add(addPointToGeometry(first, meridian));
-                        geometry.TriangleIndices.Add(addPointToGeometry(second, meridian));
-                        geometry.TriangleIndices.Add(addPointToGeometry(third, meridian + 1));
-                    };
+                {
+                    AddTriangle(geometry, addPointToGeometry(first, meridian), addPointToGeometry(second, meridian), addPointToGeometry(third, meridian + 1));
+                };
 
                 for (int parallel = 0; parallel < sectionPoints.Length - 1; parallel++)
                 {
                     if (isOnAxis(parallel))
                     {
-                        if(!isOnAxis(parallel + 1))
+                        if (!isOnAxis(parallel + 1))
                         {
                             addPointsToGeomety(firstPoints[parallel], firstPoints[parallel + 1], secondPoints[parallel + 1]);
                         }
@@ -76,9 +77,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                     else
                     {
                         addPointsToGeomety(firstPoints[parallel], firstPoints[parallel + 1], secondPoints[parallel + 1]);
-                        geometry.TriangleIndices.Add(geometry.Positions.Count - 3);
-                        geometry.TriangleIndices.Add(geometry.Positions.Count - 1);
-                        geometry.TriangleIndices.Add(addPointToGeometry(secondPoints[parallel], meridian + 1));
+                        AddTriangle(geometry, geometry.Positions.Count - 3, geometry.Positions.Count - 1, addPointToGeometry(secondPoints[parallel], meridian + 1));
                     }
                 }
 
@@ -86,13 +85,84 @@ namespace Deyo.Controls.Controls3D.Shapes
                 firstPoints = secondPoints;
                 secondPoints = swap;
             }
+        }
+
+        private MeshGeometry3D GenerateSmoothEdgesGeometry(Point3D[][] sectionsPoints, double minZ, double maxZ, int meridiansCount)
+        {
+            MeshGeometry3D geometry = new MeshGeometry3D();
+
+            for (int section = 0; section < sectionsPoints.Length; section++)
+            {
+                this.GenerateSmoothEdgesGeometry(geometry, sectionsPoints[section], minZ, maxZ, meridiansCount);
+            }
 
             return geometry;
         }
 
-        private MeshGeometry3D GenerateSmoothEdgesGeometry(Point3D[] sectionPoints, double minZ, double maxZ, int meridiansCount)
+        private void GenerateSmoothEdgesGeometry(MeshGeometry3D geometry, Point3D[] sectionPoints, double minZ, double maxZ, int meridiansCount)
         {
-            throw new NotImplementedException();
+            Func<int, bool> isOnAxis = (parallelIndex) => { return sectionPoints[parallelIndex].X == 0; };
+
+            int[] firstPoints = new int[sectionPoints.Length];
+            int[] secondPoints = new int[firstPoints.Length];
+            for (int i = 0; i < firstPoints.Length; i++)
+            {
+                firstPoints[i] = AddPointToGeometry(geometry, sectionPoints[i], 0, meridiansCount, minZ, maxZ);
+            }
+
+            for (int meridian = 0; meridian < meridiansCount; meridian++)
+            {
+                double angle = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
+
+                for (int parallel = 0; parallel < sectionPoints.Length; parallel++)
+                {
+                    Point3D rotatedPoint = RotateSectionPoint(sectionPoints[parallel], angle, meridian + 1, meridiansCount);
+                    secondPoints[parallel] = AddPointToGeometry(geometry, rotatedPoint, meridian + 1, meridiansCount, minZ, maxZ);
+                }
+
+                for (int parallel = 0; parallel < sectionPoints.Length - 1; parallel++)
+                {
+                    if (isOnAxis(parallel))
+                    {
+                        if (!isOnAxis(parallel + 1))
+                        {
+                            AddTriangle(geometry, firstPoints[parallel], firstPoints[parallel + 1], secondPoints[parallel + 1]);
+                        }
+                    }
+                    else if (isOnAxis(parallel + 1))
+                    {
+                        AddTriangle(geometry, firstPoints[parallel], firstPoints[parallel + 1], secondPoints[parallel]);
+                    }
+                    else
+                    {
+                        AddTriangle(geometry, firstPoints[parallel], firstPoints[parallel + 1], secondPoints[parallel + 1]);
+                        AddTriangle(geometry, firstPoints[parallel], secondPoints[parallel + 1], secondPoints[parallel]);
+                    }
+                }
+
+                int[] swap = firstPoints;
+                firstPoints = secondPoints;
+                secondPoints = swap;
+            }
+        }
+
+        private static void AddTriangle(MeshGeometry3D geometry, int first, int second, int third)
+        {
+            geometry.TriangleIndices.Add(first);
+            geometry.TriangleIndices.Add(second);
+            geometry.TriangleIndices.Add(third);
+        }
+
+        private static Point3D RotateSectionPoint(Point3D sectionPoint, double angle, int meridian, int meridiansCount)
+        {
+            if (sectionPoint.X == 0 || meridian == meridiansCount)
+            {
+                return sectionPoint;
+            }
+            else
+            {
+                return new Point3D(sectionPoint.X * Math.Cos(angle), sectionPoint.X * Math.Sin(angle), sectionPoint.Z);
+            }
         }
 
         private static int AddPointToGeometry(MeshGeometry3D geometry, Point3D point, int meridian, int meridiansCount, double minZ, double maxZ)
@@ -103,18 +173,25 @@ namespace Deyo.Controls.Controls3D.Shapes
             return geometry.Positions.Count - 1;
         }
 
-        private static void CalculateSectionPoints(Point[] sectionInXZPlane, out Point3D[] sectionPoints, out double minZ, out double maxZ)
+        private static void CalculateSectionsPoints(Point[][] sectionsInXZPlane, out Point3D[][] sectionsPoints, out double minZ, out double maxZ)
         {
             minZ = double.MaxValue;
             maxZ = double.MinValue;
-            sectionPoints = new Point3D[sectionInXZPlane.Length];
+            sectionsPoints = new Point3D[sectionsInXZPlane.Length][];
 
-            for(int i = 0; i < sectionPoints.Length; i++)
+            for(int section = 0; section < sectionsPoints.Length; section++)
             {
-                Point point = sectionInXZPlane[i];
-                sectionPoints[i] = new Point3D(point.X, 0, point.Y);
-                minZ = Math.Min(minZ, point.Y);
-                maxZ = Math.Max(maxZ, point.Y);
+                Point[] sectionInXZPlane = sectionsInXZPlane[section];
+                Point3D[] sectionPoints = new Point3D[sectionInXZPlane.Length];
+                sectionsPoints[section] = sectionPoints;
+
+                for (int i = 0; i < sectionPoints.Length; i++)
+                {
+                    Point point = sectionInXZPlane[i];
+                    sectionPoints[i] = new Point3D(point.X, 0, point.Y);
+                    minZ = Math.Min(minZ, point.Y);
+                    maxZ = Math.Max(maxZ, point.Y);
+                }
             }
         }
 
