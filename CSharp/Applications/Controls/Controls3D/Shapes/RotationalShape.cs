@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Contols3D.Shapes;
+using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Deyo.Controls.Controls3D.Shapes
 {
     public class RotationalShape : ShapeBase
     {
+        public const double FullCircleAngleInRadians = 2 * Math.PI;
+
         public RotationalShape(Point[][] sectionsInXZPlane, int meridiansCount, bool isSmooth)
         {
             base.GeometryModel.Geometry = this.GenerateGeometry(sectionsInXZPlane, meridiansCount, isSmooth);
@@ -48,17 +51,18 @@ namespace Deyo.Controls.Controls3D.Shapes
 
             for (int meridian = 0; meridian < meridiansCount; meridian++)
             {
-                double angle = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
+                double previousAngleInRadians = GetMeridianRotationInRadians(meridian, meridiansCount);
+                double angleInRadians = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
 
                 for (int parallel = 0; parallel < sectionPoints.Length; parallel++)
                 {
-                    secondPoints[parallel] = RotateSectionPoint(sectionPoints[parallel], angle, meridian + 1, meridiansCount);
+                    secondPoints[parallel] = RotateSectionPoint(sectionPoints[parallel], angleInRadians);
                 }
 
-                Func<Point3D, int, int> addPointToGeometry = (point, meridianIndex) => { return AddPointToGeometry(geometry, point, meridianIndex, meridiansCount, minZ, maxZ); };
+                Func<Point3D, double, int> addPointToGeometry = (point, meridianAngleInRadians) => { return AddPointToGeometry(geometry, point, meridianAngleInRadians, minZ, maxZ); };
                 Action<Point3D, Point3D, Point3D> addPointsToGeomety = (first, second, third) =>
                 {
-                    AddTriangle(geometry, addPointToGeometry(first, meridian), addPointToGeometry(second, meridian), addPointToGeometry(third, meridian + 1));
+                    AddTriangle(geometry, addPointToGeometry(first, previousAngleInRadians), addPointToGeometry(second, previousAngleInRadians), addPointToGeometry(third, angleInRadians));
                 };
 
                 for (int parallel = 0; parallel < sectionPoints.Length - 1; parallel++)
@@ -77,7 +81,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                     else
                     {
                         addPointsToGeomety(firstPoints[parallel], firstPoints[parallel + 1], secondPoints[parallel + 1]);
-                        AddTriangle(geometry, geometry.Positions.Count - 3, geometry.Positions.Count - 1, addPointToGeometry(secondPoints[parallel], meridian + 1));
+                        AddTriangle(geometry, geometry.Positions.Count - 3, geometry.Positions.Count - 1, addPointToGeometry(secondPoints[parallel], angleInRadians));
                     }
                 }
 
@@ -107,17 +111,16 @@ namespace Deyo.Controls.Controls3D.Shapes
             int[] secondPoints = new int[firstPoints.Length];
             for (int i = 0; i < firstPoints.Length; i++)
             {
-                firstPoints[i] = AddPointToGeometry(geometry, sectionPoints[i], 0, meridiansCount, minZ, maxZ);
+                firstPoints[i] = AddPointWithNormalToGeometry(geometry, sectionPoints, i, 0, minZ, maxZ);
             }
 
             for (int meridian = 0; meridian < meridiansCount; meridian++)
             {
-                double angle = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
+                double angleInRadians = GetMeridianRotationInRadians(meridian + 1, meridiansCount);
 
                 for (int parallel = 0; parallel < sectionPoints.Length; parallel++)
                 {
-                    Point3D rotatedPoint = RotateSectionPoint(sectionPoints[parallel], angle, meridian + 1, meridiansCount);
-                    secondPoints[parallel] = AddPointToGeometry(geometry, rotatedPoint, meridian + 1, meridiansCount, minZ, maxZ);
+                    secondPoints[parallel] = AddPointWithNormalToGeometry(geometry, sectionPoints, parallel, angleInRadians, minZ, maxZ);
                 }
 
                 for (int parallel = 0; parallel < sectionPoints.Length - 1; parallel++)
@@ -146,6 +149,14 @@ namespace Deyo.Controls.Controls3D.Shapes
             }
         }
 
+        private static int AddPointWithNormalToGeometry(MeshGeometry3D geometry, Point3D[] sectionPoints, int pointIndex, double meridianAngleInRadians, double minZ, double maxZ)
+        {
+            Point3D sectionPoint = sectionPoints[pointIndex];
+            Point3D rotatedPoint = RotateSectionPoint(sectionPoint, meridianAngleInRadians);
+
+            return AddPointToGeometry(geometry, rotatedPoint, meridianAngleInRadians, minZ, maxZ);
+        }
+
         private static void AddTriangle(MeshGeometry3D geometry, int first, int second, int third)
         {
             geometry.TriangleIndices.Add(first);
@@ -153,22 +164,22 @@ namespace Deyo.Controls.Controls3D.Shapes
             geometry.TriangleIndices.Add(third);
         }
 
-        private static Point3D RotateSectionPoint(Point3D sectionPoint, double angle, int meridian, int meridiansCount)
+        private static Point3D RotateSectionPoint(Point3D sectionPoint, double angleInRadians)
         {
-            if (sectionPoint.X == 0 || meridian == meridiansCount)
+            if (sectionPoint.X == 0 || angleInRadians == 0 || (FullCircleAngleInRadians - angleInRadians).IsZero())
             {
                 return sectionPoint;
             }
             else
             {
-                return new Point3D(sectionPoint.X * Math.Cos(angle), sectionPoint.X * Math.Sin(angle), sectionPoint.Z);
+                return new Point3D(sectionPoint.X * Math.Cos(angleInRadians), sectionPoint.X * Math.Sin(angleInRadians), sectionPoint.Z);
             }
         }
 
-        private static int AddPointToGeometry(MeshGeometry3D geometry, Point3D point, int meridian, int meridiansCount, double minZ, double maxZ)
+        private static int AddPointToGeometry(MeshGeometry3D geometry, Point3D point, double angleInRadians, double minZ, double maxZ)
         {
             geometry.Positions.Add(point);
-            geometry.TextureCoordinates.Add(GetTextureCoordinate(meridian, meridiansCount, point.Z, minZ, maxZ));
+            geometry.TextureCoordinates.Add(GetTextureCoordinate(angleInRadians, point.Z, minZ, maxZ));
 
             return geometry.Positions.Count - 1;
         }
@@ -195,9 +206,9 @@ namespace Deyo.Controls.Controls3D.Shapes
             }
         }
 
-        private static Point GetTextureCoordinate(int meridian, int meridiansCount, double parallelZ, double minZ, double maxZ)
+        private static Point GetTextureCoordinate(double angleInRadians, double parallelZ, double minZ, double maxZ)
         {
-            double u = meridian / ((double) meridiansCount);
+            double u = angleInRadians / FullCircleAngleInRadians;
             double v = (maxZ - parallelZ) / (maxZ - minZ);
 
             return new Point(u, v);
@@ -205,7 +216,7 @@ namespace Deyo.Controls.Controls3D.Shapes
 
         private static double GetMeridianRotationInRadians(int meridian, int meridiansCount)
         {
-            return meridian * (2 * Math.PI / meridiansCount);
+            return (meridian / (double)meridiansCount) * FullCircleAngleInRadians;
         }
     }
 }

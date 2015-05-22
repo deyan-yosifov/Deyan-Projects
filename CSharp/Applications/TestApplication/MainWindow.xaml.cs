@@ -127,15 +127,16 @@ namespace TestApplication
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 
             Cylinder cylinder = new Cylinder(20, false, true);
+            cylinder.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             //cylinder.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
             cylinder.AddDiffuseMaterial(Color.FromArgb(255, 255, 0, 0));
             cylinder.AddBackDiffuseMaterial(Colors.Blue);
             editor.AddShapeVisual(cylinder);
 
-            Cube cube = new Cube();
-            cube.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
-            cube.AddDiffuseMaterial(Color.FromArgb(50, 255, 0, 0));
-            cube.AddBackDiffuseMaterial(Colors.Blue);
+            //Cube cube = new Cube();
+            //cube.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
+            //cube.AddDiffuseMaterial(Color.FromArgb(50, 255, 0, 0));
+            //cube.AddBackDiffuseMaterial(Colors.Blue);
             //editor.AddShapeVisual(cube);
 
             //editor.Position.Translate(new Vector3D(0.5, 0.5, 0.5));
@@ -149,7 +150,7 @@ namespace TestApplication
             //editor.AddShapeVisual(cube);
             editor.Position.Translate(new Vector3D(-1, 1, 0));
             
-            Sphere sphere = new Sphere(10, 15, false);
+            Sphere sphere = new Sphere(10, 15, true);
             sphere.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             //sphere.AddDiffuseMaterial(Color.FromRgb(255, 0, 0));
             sphere.AddBackDiffuseMaterial(Color.FromRgb(0, 255, 0));
