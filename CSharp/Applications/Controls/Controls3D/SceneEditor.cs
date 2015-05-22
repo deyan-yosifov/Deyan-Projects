@@ -2,6 +2,7 @@
 using Deyo.Controls.Contols3D;
 using Deyo.Controls.Contols3D.Shapes;
 using Deyo.Controls.Controls3D.Cameras;
+using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Core.Common;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,16 @@ namespace Deyo.Controls.Controls3D
     public class SceneEditor
     {
         private readonly Viewport3D viewport;
-        private readonly Stack<Position3D> positionStack;
+        private readonly PreservableState<Position3D> positionState;
+        private readonly PreservableState<GraphicProperties> graphicState;
+        private readonly ShapeFactory shapeFactory;
 
         public SceneEditor(Viewport3D viewport)
         {
             this.viewport = viewport;
-            this.positionStack = new Stack<Position3D>();
-            this.positionStack.Push(new Position3D(Matrix3D.Identity));
+            this.positionState = new PreservableState<Position3D>();
+            this.graphicState = new PreservableState<GraphicProperties>();
+            this.shapeFactory = new ShapeFactory(this.graphicState);
             this.viewport.Camera = new PerspectiveCamera(new Point3D(), new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 45);
         }
 
@@ -32,7 +36,23 @@ namespace Deyo.Controls.Controls3D
         {
             get
             {
-                return this.positionStack.Peek();
+                return this.positionState.Value;
+            }
+        }
+
+        public GraphicProperties GraphicProperties
+        {
+            get
+            {
+                return this.graphicState.Value;
+            }
+        }
+
+        public ShapeFactory ShapeFactory
+        {
+            get
+            {
+                return this.shapeFactory;
             }
         }
         
@@ -120,16 +140,24 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
+        public IDisposable SaveGraphicProperties()
+        {
+            return this.graphicState.Preserve();
+        }
+
+        public void RestoreGraphicProperties()
+        {
+            this.graphicState.Restore();
+        }
+
         public IDisposable SavePosition()
         {
-            this.positionStack.Push(new Position3D(this.Position.Matrix));
-
-            return new DisposableAction(this.RestorePosition);
+            return this.positionState.Preserve();
         }
 
         public void RestorePosition()
         {
-            this.positionStack.Pop();
+            this.positionState.Restore();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Controls.Controls3D;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,12 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Contols3D.Shapes
 {
-    public abstract class ShapeBase
+    public abstract class ShapeBase : IMaterialsOwner
     {
         private readonly GeometryModel3D geometryModel;
-        private readonly MaterialGroup materialGroup;
+        private readonly MaterialGroup frontMaterialGroup;
         private readonly MaterialGroup backMaterialGroup;
+        private readonly MaterialsManager materialsManager;
 
         protected internal GeometryModel3D GeometryModel
         {
@@ -25,54 +27,39 @@ namespace Deyo.Controls.Contols3D.Shapes
         protected ShapeBase()
         {
             this.geometryModel = new GeometryModel3D();
-            this.materialGroup = new MaterialGroup();
+            this.frontMaterialGroup = new MaterialGroup();
             this.backMaterialGroup = new MaterialGroup();
-            this.geometryModel.Material = this.materialGroup;            
+            this.geometryModel.Material = this.frontMaterialGroup;
+            this.materialsManager = new MaterialsManager(this);
         }
 
-        public void AddMaterial(Material material)
+        public MaterialGroup FrontMaterials
         {
-            this.materialGroup.Children.Add(material);
-        }
-
-        public void AddBackMaterial(Material material)
-        {
-            if (this.geometryModel.BackMaterial == null)
+            get
             {
-                this.geometryModel.BackMaterial = this.backMaterialGroup;
+                return this.frontMaterialGroup;
             }
-
-            this.backMaterialGroup.Children.Add(material);
         }
 
-        public void AddDiffuseMaterial(Color color)
+        public MaterialGroup BackMaterials
         {
-            this.AddMaterial(CreateDiffuseMaterial(color));
+            get
+            {
+                if (this.geometryModel.BackMaterial == null)
+                {
+                    this.geometryModel.BackMaterial = this.backMaterialGroup;
+                }
+
+                return this.backMaterialGroup;
+            }
         }
 
-        public void AddBackDiffuseMaterial(Color color)
+        public MaterialsManager MaterialsManager
         {
-            this.AddBackMaterial(new DiffuseMaterial(new SolidColorBrush(color)));
-        }
-
-        public void AddTexture(ImageSource image)
-        {
-            this.AddMaterial(CreateDiffuseMaterial(image));
-        }
-
-        public void AddBackTexture(ImageSource image)
-        {
-            this.AddBackMaterial(CreateDiffuseMaterial(image));
-        }
-
-        private static DiffuseMaterial CreateDiffuseMaterial(Color color)
-        {
-            return new DiffuseMaterial(new SolidColorBrush(color));
-        }
-
-        private static DiffuseMaterial CreateDiffuseMaterial(ImageSource image)
-        {
-            return new DiffuseMaterial(new ImageBrush(image) { ViewportUnits = BrushMappingMode.Absolute });
+            get
+            {
+                return this.materialsManager;
+            }
         }
     }
 }

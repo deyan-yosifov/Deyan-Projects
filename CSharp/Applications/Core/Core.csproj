@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\DisposableAction.cs" />
+    <Compile Include="Common\ICloneable.cs" />
+    <Compile Include="Common\PreservableState.cs" />
     <Compile Include="Mathematics\Algebra\AlgebraExtensions.cs" />
     <Compile Include="Mathematics\MathExtensions.cs" />
     <Compile Include="Media\Imaging\JpegDecoder.cs" />

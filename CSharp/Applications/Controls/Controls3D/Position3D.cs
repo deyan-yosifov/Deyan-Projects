@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Core.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,14 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D
 {
-    public class Position3D
+    public class Position3D : ICloneable<Position3D>
     {
         private Matrix3D matrix;
+
+        public Position3D()
+            : this(Matrix3D.Identity)
+        {
+        }
 
         public Position3D(Matrix3D matrix)
         {
@@ -34,14 +40,29 @@ namespace Deyo.Controls.Controls3D
             this.matrix.Rotate(quaternion);
         }
 
+        public void RotateAt(Quaternion quaternion, Point3D center)
+        {
+            this.matrix.RotateAt(quaternion, center);
+        }
+
         public void Scale(Vector3D scale)
         {
             this.matrix.Scale(scale);
         }
 
+        public void ScaleAt(Vector3D scale, Point3D center)
+        {
+            this.matrix.ScaleAt(scale, center);
+        }
+
         public void Append(Matrix3D matrix)
         {
             matrix.Append(matrix);
+        }
+
+        public Position3D Clone()
+        {
+            return new Position3D(this.Matrix);
         }
     }
 }
