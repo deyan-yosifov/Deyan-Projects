@@ -129,7 +129,7 @@ namespace TestApplication
             Cylinder cylinder = new Cylinder(20, false, true);
             cylinder.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             //cylinder.AddTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
-            cylinder.AddDiffuseMaterial(Color.FromArgb(255, 255, 0, 0));
+            //cylinder.AddDiffuseMaterial(Color.FromArgb(255, 255, 0, 0));
             cylinder.AddBackDiffuseMaterial(Colors.Blue);
             editor.AddShapeVisual(cylinder);
 

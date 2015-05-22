@@ -12,18 +12,18 @@ namespace Deyo.Controls.Controls3D.Shapes
 {
     public class RotationalShape : ShapeBase
     {
-        public const double FullCircleAngleInRadians = 2 * Math.PI;
+        private const double FullCircleAngleInRadians = 2 * Math.PI;
 
-        public RotationalShape(Point[][] sectionsInXZPlane, int meridiansCount, bool isSmooth)
+        public RotationalShape(Point[][] sectionsInXZPlaneCounterClockSide, int meridiansCount, bool isSmooth)
         {
-            base.GeometryModel.Geometry = this.GenerateGeometry(sectionsInXZPlane, meridiansCount, isSmooth);
+            base.GeometryModel.Geometry = this.GenerateGeometry(sectionsInXZPlaneCounterClockSide, meridiansCount, isSmooth);
         }
         
-        private Geometry3D GenerateGeometry(Point[][] sectionsInXZPlane, int meridiansCount, bool isSmooth)
+        private Geometry3D GenerateGeometry(Point[][] sectionsInXYPlane, int meridiansCount, bool isSmooth)
         {
             double minZ, maxZ;
             Point3D[][] sectionsPoints;
-            CalculateSectionsPoints(sectionsInXZPlane, out sectionsPoints, out minZ, out maxZ);
+            CalculateSectionsPoints(sectionsInXYPlane, out sectionsPoints, out minZ, out maxZ);
             
             MeshGeometry3D geometry = isSmooth ? GenerateSmoothEdgesGeometry(sectionsPoints, minZ, maxZ, meridiansCount) : GenerateSharpEdgesGeometry(sectionsPoints, minZ, maxZ, meridiansCount);
             
@@ -151,10 +151,39 @@ namespace Deyo.Controls.Controls3D.Shapes
 
         private static int AddPointWithNormalToGeometry(MeshGeometry3D geometry, Point3D[] sectionPoints, int pointIndex, double meridianAngleInRadians, double minZ, double maxZ)
         {
+            Point3D normalVectorInSectionPlane = CalculateNormalVectorInSectionPlane(sectionPoints, pointIndex);
+            Point3D rotatedNormalVector = RotateSectionPoint(normalVectorInSectionPlane, meridianAngleInRadians);
+            geometry.Normals.Add(new Vector3D(rotatedNormalVector.X, rotatedNormalVector.Y, rotatedNormalVector.Z));
+
             Point3D sectionPoint = sectionPoints[pointIndex];
             Point3D rotatedPoint = RotateSectionPoint(sectionPoint, meridianAngleInRadians);
 
             return AddPointToGeometry(geometry, rotatedPoint, meridianAngleInRadians, minZ, maxZ);
+        }
+
+        private static Point3D CalculateNormalVectorInSectionPlane(Point3D[] sectionPoints, int pointIndex)
+        {
+            Vector3D tangent = new Vector3D();
+            Point3D sectionPoint = sectionPoints[pointIndex];
+
+            if (pointIndex > 0)
+            {
+                Vector3D previousTangent = sectionPoint - sectionPoints[pointIndex - 1];
+                previousTangent.Normalize();
+                tangent += previousTangent;
+            }
+
+            if (pointIndex < sectionPoints.Length - 1)
+            {
+                Vector3D nextTangent = sectionPoints[pointIndex + 1] - sectionPoint;
+                nextTangent.Normalize();
+                tangent += nextTangent;
+            }
+
+            tangent.Normalize();
+            Point3D normalVectorInSectionPlane = new Point3D(-tangent.Z, 0, tangent.X);
+
+            return normalVectorInSectionPlane;
         }
 
         private static void AddTriangle(MeshGeometry3D geometry, int first, int second, int third)
