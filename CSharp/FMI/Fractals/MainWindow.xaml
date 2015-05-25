@@ -23,11 +23,11 @@
         </Border>
 
         <Border Grid.Row="1" Grid.Column="0" Margin="10" BorderBrush="Black" BorderThickness="2">
-            <fractals:FractalTree2D  />
+            <fractals:FractalTree2D x:Name="fractalTree2D" />
         </Border>
 
         <Border Grid.Row="2" Grid.Column="0" Margin="10" BorderBrush="Black" BorderThickness="2">
-            <fractals:FractalTree3D />
+          <fractals:FractalTree3D x:Name="fractalTree3D" />
         </Border>
 
         <Border Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="10" BorderBrush="Black" BorderThickness="2">

@@ -22,11 +22,10 @@ namespace Fractals
     /// </summary>
     public partial class FractalTree2D : UserControl
     {
-        private readonly DispatcherTimer timer;
         private readonly Queue<Line> lineVisuals;
         private const int FractalLevelsCount = 12;
-        private const int FramesPerLevel = 10;
-        private const double SecondsPerLevel = 1;
+        private const int FramesPerLevel = MainWindow.FramesPerLevel;
+        private const double SecondsPerLevel = MainWindow.SecondsPerLevel;
         private int counter;
         private FractalTreeGenerator2D fractalGenerator;
 
@@ -38,21 +37,17 @@ namespace Fractals
             this.InitializeScene();
 
             this.lineVisuals = new Queue<Line>();
-            this.timer = new DispatcherTimer();
-            this.timer.Interval = TimeSpan.FromSeconds(SecondsPerLevel / FramesPerLevel);
-            this.timer.Tick += this.TimerTick;
-            this.timer.Start();
         }
 
-        private void TimerTick(object sender, EventArgs e)
+        internal void TimerTick(object sender, EventArgs e)
         {
             this.counter++;
 
             if (counter % FramesPerLevel == 0)
             {
-                if (this.fractalGenerator.CurrentLevel == FractalLevelsCount - 1)
+                if (this.fractalGenerator.CurrentLevel >= FractalLevelsCount - 1)
                 {
-                    this.timer.Stop();
+                    ((DispatcherTimer)sender).Stop();
                     return;
                 }
                 else
