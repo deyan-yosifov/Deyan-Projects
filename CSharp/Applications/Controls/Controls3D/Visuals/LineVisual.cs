@@ -78,6 +78,17 @@ namespace Deyo.Controls.Controls3D.Visuals
             }
         }
 
+        private Vector3D Direction
+        {
+            get
+            {
+                Vector3D direction = this.End - this.Start;
+                direction.Normalize();
+
+                return direction;
+            }
+        }
+
         public void MoveTo(Point3D start, Point3D end)
         {
             this.start = start;
@@ -100,10 +111,19 @@ namespace Deyo.Controls.Controls3D.Visuals
                 double angle = Vector3D.AngleBetween(Line.InitialVector, direction);
                 matrix.Rotate(new Quaternion(rotationAxis, angle));
             }
+            else if (direction.Z < 0)
+            {
+                matrix.Scale(new Vector3D(1, 1, -1));
+            }
 
             matrix.Translate(new Vector3D(this.start.X, this.start.Y, this.start.Z));
 
             this.positionTransform.Matrix = matrix;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("LineSegment: ({0})->({1})=({2})", this.Start, this.End, this.Direction);
         }
     }
 }

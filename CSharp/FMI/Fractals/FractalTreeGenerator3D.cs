@@ -23,6 +23,7 @@ namespace Fractals
 
         public int CurrentLevel { get; private set; }
         public double CurrentSegmentLength { get; private set; }
+        public double CurrentSegmentThickness { get; private set; }
 
         public IEnumerable<LineSegment3D> CurrentLevelLineSegments
         {
@@ -42,11 +43,13 @@ namespace Fractals
             if (this.CurrentLevel == 0)
             {
                 this.CurrentSegmentLength = InitialLineSegmentLength;
-                this.lineSegments.Enqueue(new LineSegment3D(new Point3D(0, 0, 0), new Point3D(0, 0, this.CurrentSegmentLength), InitialLineSegmentThickness));
+                this.CurrentSegmentThickness = InitialLineSegmentThickness;
+                this.lineSegments.Enqueue(new LineSegment3D(new Point3D(0, 0, 0), new Point3D(0, 0, this.CurrentSegmentLength), this.CurrentSegmentThickness));
             }
             else
             {
                 this.CurrentSegmentLength *= ScaleBetweenLevels;
+                this.CurrentSegmentThickness *= ScaleBetweenLevels;
                 int parentsCount = this.lineSegments.Count;
 
                 for (int parentIndex = 0; parentIndex < parentsCount; parentIndex++)
@@ -54,10 +57,10 @@ namespace Fractals
                     LineSegment3D parent = this.lineSegments.Dequeue();
                     Vector3D i, j;
                     GetNormalPlaneVectors(parent, out i, out j);
-                    this.lineSegments.Enqueue(CalculateChild(parent, 1 * parent.Thickness * ScaleBetweenLevels, i));
-                    this.lineSegments.Enqueue(CalculateChild(parent, 2 * parent.Thickness * ScaleBetweenLevels, j));
-                    this.lineSegments.Enqueue(CalculateChild(parent, 3 * parent.Thickness * ScaleBetweenLevels, -i));
-                    this.lineSegments.Enqueue(CalculateChild(parent, 4 * parent.Thickness * ScaleBetweenLevels, -j));
+                    this.lineSegments.Enqueue(CalculateChild(parent, 1 * this.CurrentSegmentThickness, i));
+                    this.lineSegments.Enqueue(CalculateChild(parent, 2 * this.CurrentSegmentThickness, j));
+                    this.lineSegments.Enqueue(CalculateChild(parent, 3 * this.CurrentSegmentThickness, -1 * i));
+                    this.lineSegments.Enqueue(CalculateChild(parent, 4 * this.CurrentSegmentThickness, -1 * j));
                 }
             }
         }
@@ -69,9 +72,8 @@ namespace Fractals
 
             Point3D childStart = parent.Start + displacement;
             Point3D childEnd = childStart + (childDirection * this.CurrentSegmentLength);
-            double childThickness = parent.Thickness * ScaleBetweenLevels;
 
-            LineSegment3D childSegment = new LineSegment3D(childStart, childEnd, childThickness);
+            LineSegment3D childSegment = new LineSegment3D(childStart, childEnd, this.CurrentSegmentThickness);
 
             return childSegment;
         }

@@ -43,5 +43,21 @@ namespace Fractals
                 return this.thickness;
             }
         }
+
+        private Vector3D Direction
+        {
+            get
+            {
+                Vector3D direction = this.End - this.Start;
+                direction.Normalize();
+
+                return direction;
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("LineSegment: ({0})->({1})=({2})", this.Start, this.End, this.Direction);
+        }
     }
 }

@@ -26,8 +26,8 @@ namespace Fractals
     {
         private readonly DispatcherTimer timer;
         private readonly Queue<LineVisual> lineVisuals;
-        private const int FractalLevelsCount = 2;
-        private const int FramesPerLevel = 2;
+        private const int FractalLevelsCount = 6;
+        private const int FramesPerLevel = 10;
         private const double SecondsPerLevel = 1;
         private int counter;
         private FractalTreeGenerator3D fractalGenerator;
@@ -36,6 +36,7 @@ namespace Fractals
         {
             InitializeComponent();
 
+            this.scene3D.OrbitControl.Start();
             this.InitializeScene();
 
             this.lineVisuals = new Queue<LineVisual>();
@@ -79,11 +80,11 @@ namespace Fractals
         {
             this.fractalGenerator.MoveToNextLevel();
             this.lineVisuals.Clear();
+            this.SceneEditor.GraphicProperties.Thickness = this.fractalGenerator.CurrentSegmentThickness;
 
             foreach (LineSegment3D segment in this.fractalGenerator.CurrentLevelLineSegments)
             {
                 LineVisual visual = this.SceneEditor.AddLineVisual(segment.Start, this.ReCalculateEndPoint(segment.Start, segment.End));
-                visual.Thickness = segment.Thickness;
                 this.lineVisuals.Enqueue(visual);
             }
         }
@@ -93,7 +94,7 @@ namespace Fractals
             Vector3D direction = endPoint - startPoint;
             direction.Normalize();
 
-            double percentLength = ((this.counter % FramesPerLevel) + 1) / FramesPerLevel;
+            double percentLength = ((this.counter % FramesPerLevel) + 1d) / FramesPerLevel;
             Point3D end = startPoint + direction * (this.fractalGenerator.CurrentSegmentLength * percentLength);
 
             return end;
@@ -115,11 +116,11 @@ namespace Fractals
             byte directionIntensity = 250;
             byte ambientIntensity = 125;
             this.SceneEditor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
-            this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
+            this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));            
 
-            this.SceneEditor.GraphicProperties.ArcResolution = 10;
-            this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Colors.Gray);
-            this.SceneEditor.Look(new Point3D(3, 3, 3), new Point3D(0, 0, 0));
+            this.SceneEditor.GraphicProperties.ArcResolution = 8;
+            this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Color.FromRgb(160, 160, 160));
+            this.SceneEditor.Look(new Point3D(2.5, 2.5, 3.5), new Point3D(0, 0, 0.5));
         }
     }
 }
