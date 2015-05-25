@@ -11,11 +11,19 @@ namespace Deyo.Controls.Controls3D.Shapes
 {
     public class ShapeFactory
     {
-        private readonly PreservableState<GraphicProperties> graphicState;
+        private readonly GraphicState graphicState;
 
-        internal ShapeFactory(PreservableState<GraphicProperties> graphicState)
+        internal ShapeFactory(GraphicState graphicState)
         {
             this.graphicState = graphicState;
+        }
+
+        internal GraphicState GraphicState
+        {
+            get
+            {
+                return this.graphicState;
+            }
         }
 
         private GraphicProperties GraphicProperties
@@ -44,7 +52,7 @@ namespace Deyo.Controls.Controls3D.Shapes
 
         public Line CreateLine()
         {
-            Line line = new Line(this.GraphicProperties.ArcResolution, this.GraphicProperties.Thickness);
+            Line line = new Line(this.GraphicProperties.ArcResolution);
             this.ApplyMatherials(line);
 
             return line;
@@ -60,12 +68,12 @@ namespace Deyo.Controls.Controls3D.Shapes
 
         private void ApplyMatherials(ShapeBase shape)
         {
-            foreach (Material material in this.GraphicProperties.FrontMaterials.Children)
+            foreach (Material material in this.GraphicProperties.MaterialsManager.FrontMaterials)
             {
                 shape.MaterialsManager.AddFrontMaterial(material);
             }
 
-            foreach (Material material in this.GraphicProperties.BackMaterials.Children)
+            foreach (Material material in this.GraphicProperties.MaterialsManager.BackMaterials)
             {
                 shape.MaterialsManager.AddBackMaterial(material);
             }

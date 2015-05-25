@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Contols3D.Shapes;
 using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Shapes;
+using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Core.Media.Imaging;
 using Deyo.Vrml.Core;
 using Deyo.Vrml.Editing;
@@ -13,6 +14,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 using TestApplication.Resources;
 
 namespace TestApplication
@@ -126,12 +128,25 @@ namespace TestApplication
             editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 
+            
             editor.GraphicProperties.IsSmooth = true;
             editor.GraphicProperties.ArcResolution = 20;
             editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             editor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(Colors.Green);
 
+            editor.GraphicProperties.Thickness = 0.2;
+            LineVisual line = editor.AddLineVisual(new Point3D(0, 0, 0), new Point3D(-1, -1, -1));
             editor.AddShapeVisual(editor.ShapeFactory.CreateCylinder(false));
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(0.1);
+            Matrix3D rotation = new Matrix3D();
+            rotation.Rotate(new Quaternion(new Vector3D(0, 0, 1), 5));
+            timer.Tick += (s, e) =>
+                {
+                    line.MoveTo(line.Start, rotation.Transform(line.End));
+                };
+            timer.Start();
 
             using (editor.SavePosition())
             {
@@ -144,7 +159,7 @@ namespace TestApplication
 
             editor.Position.Translate(new Vector3D(1, 1, 0.5));
             Cube cube = editor.ShapeFactory.CreateCube();
-            editor.AddShapeVisual(cube); 
+            editor.AddShapeVisual(cube);
             editor.Position.Translate(new Vector3D(1, 1, 0.5));
 
             using (editor.SavePosition())

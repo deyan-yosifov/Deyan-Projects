@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Core.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,23 +9,49 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D
 {
-    public class MaterialsManager
+    public class MaterialsManager : INotifyPropertiesChanged
     {
-        private readonly IMaterialsOwner materialsOwner;
+        private readonly MaterialGroup frontMaterials;
+        private readonly MaterialGroup backMaterials;
 
-        public MaterialsManager(IMaterialsOwner materialsOwner)
+        internal MaterialsManager(MaterialGroup frontMaterials, MaterialGroup backMaterials)
         {
-            this.materialsOwner = materialsOwner;
+            this.frontMaterials = frontMaterials;
+            this.backMaterials = backMaterials;
+        }
+
+        public IEnumerable<Material> FrontMaterials
+        {
+            get
+            {
+                foreach (Material material in this.frontMaterials.Children)
+                {
+                    yield return material;
+                }
+            }
+        }
+
+        public IEnumerable<Material> BackMaterials
+        {
+            get
+            {
+                foreach (Material material in this.backMaterials.Children)
+                {
+                    yield return material;
+                }
+            }
         }
 
         public void AddFrontMaterial(Material material)
         {
-            this.materialsOwner.FrontMaterials.Children.Add(material);
+            this.frontMaterials.Children.Add(material);
+            this.OnPropertyChanged(GraphicPropertyNames.FrontMaterial);
         }
 
         public void AddBackMaterial(Material material)
         {
-            this.materialsOwner.BackMaterials.Children.Add(material);
+            this.backMaterials.Children.Add(material);
+            this.OnPropertyChanged(GraphicPropertyNames.BackMaterial);
         }
 
         public void AddFrontDiffuseMaterial(Color color)
@@ -55,6 +82,21 @@ namespace Deyo.Controls.Controls3D
         public static DiffuseMaterial CreateDiffuseMaterial(ImageSource image)
         {
             return new DiffuseMaterial(new ImageBrush(image) { ViewportUnits = BrushMappingMode.Absolute });
+        }
+
+        public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            this.OnPropertiesChanged(new string[] { propertyName });
+        }
+
+        private void OnPropertiesChanged(IEnumerable<string> propertyNames)
+        {
+            if (this.PropertiesChanged != null)
+            {
+                this.PropertiesChanged(this, new PropertiesChangedEventArgs(propertyNames));
+            }
         }
     }
 }

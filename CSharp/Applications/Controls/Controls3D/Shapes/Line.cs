@@ -10,10 +10,11 @@ namespace Deyo.Controls.Controls3D.Shapes
 {
     public class Line : Cylinder
     {
-        public Line(int sidesCount, double thickness)
+        internal static readonly Vector3D InitialVector = new Vector3D(0, 0, 1);
+
+        public Line(int sidesCount)
             : base(sidesCount, true, true)
         {
-            this.GeometryModel.Transform = new ScaleTransform3D(thickness, thickness, 1);
         }
     }
 }

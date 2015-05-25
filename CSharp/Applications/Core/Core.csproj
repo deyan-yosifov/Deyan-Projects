@@ -50,7 +50,9 @@
   <ItemGroup>
     <Compile Include="Common\DisposableAction.cs" />
     <Compile Include="Common\ICloneable.cs" />
+    <Compile Include="Common\INotifyPropertiesChanged.cs" />
     <Compile Include="Common\PreservableState.cs" />
+    <Compile Include="Common\PropertiesChangedEventArgs.cs" />
     <Compile Include="Mathematics\Algebra\AlgebraExtensions.cs" />
     <Compile Include="Mathematics\MathExtensions.cs" />
     <Compile Include="Media\Imaging\JpegDecoder.cs" />

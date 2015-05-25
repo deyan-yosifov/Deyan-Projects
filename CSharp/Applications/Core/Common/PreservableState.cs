@@ -28,6 +28,7 @@ namespace Deyo.Core.Common
         public IDisposable Preserve()
         {
             this.states.Push(this.Value.Clone());
+            this.OnStatePreservedOverride();
 
             return new DisposableAction(this.Restore);
         }
@@ -37,11 +38,20 @@ namespace Deyo.Core.Common
             if (this.states.Count > 1)
             {
                 this.states.Pop();
+                this.OnStateRestoredOverride();
             }
             else
             {
                 throw new InvalidOperationException("Cannot call Restore() method more times than Preserve() method!");
             }
+        }
+
+        protected virtual void OnStatePreservedOverride()
+        {
+        }
+
+        protected virtual void OnStateRestoredOverride()
+        {
         }
     }
 }

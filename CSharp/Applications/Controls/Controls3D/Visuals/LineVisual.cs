@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Controls3D.Shapes;
+using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,28 @@ namespace Deyo.Controls.Controls3D.Visuals
     {
         private Point3D start;
         private Point3D end;
+        private double thickness;
         private readonly Line line;
         private readonly ModelVisual3D visual;
+        private readonly MatrixTransform3D positionTransform;
+        private readonly ScaleTransform3D thicknessTransform;
 
-        public LineVisual(Line line)
+        public LineVisual(Line line, double thickness)
         {
             this.line = line;
-            this.visual = new ModelVisual3D() { Content = line.GeometryModel };
+            this.thickness = thickness;
+
+            this.thicknessTransform = new ScaleTransform3D() { ScaleX = thickness, ScaleY = thickness };
+            this.positionTransform = new MatrixTransform3D();
+            Transform3DGroup transformGroup = new Transform3DGroup();
+            transformGroup.Children.Add(this.thicknessTransform);
+            transformGroup.Children.Add(this.positionTransform);
+
+            this.visual = new ModelVisual3D() 
+            {
+                Content = line.GeometryModel ,
+                Transform = transformGroup
+            };
         }
 
         internal ModelVisual3D Visual
@@ -45,9 +61,49 @@ namespace Deyo.Controls.Controls3D.Visuals
             }
         }
 
-        public void Move(Point3D start, Point3D end)
+        public double Thickness
         {
-            // TODO: Calculate visual transform.
+            get
+            {
+                return this.thickness;
+            }
+            set
+            {
+                if (this.thickness != value)
+                {
+                    this.thickness = value;
+                    this.thicknessTransform.ScaleX = value;
+                    this.thicknessTransform.ScaleY = value;
+                }
+            }
+        }
+
+        public void MoveTo(Point3D start, Point3D end)
+        {
+            this.start = start;
+            this.end = end;
+
+            this.CalculatePositionTransform();
+        }
+
+        private void CalculatePositionTransform()
+        {
+            Matrix3D matrix = new Matrix3D();
+            Vector3D direction = this.end - this.start;
+
+            matrix.Scale(new Vector3D(1, 1, direction.Length));
+
+            Vector3D rotationAxis = new Vector3D(-direction.Y, +direction.X, 0);
+            if (!rotationAxis.LengthSquared.IsZero())
+            {
+                rotationAxis.Normalize();
+                double angle = Vector3D.AngleBetween(Line.InitialVector, direction);
+                matrix.Rotate(new Quaternion(rotationAxis, angle));
+            }
+
+            matrix.Translate(new Vector3D(this.start.X, this.start.Y, this.start.Z));
+
+            this.positionTransform.Matrix = matrix;
         }
     }
 }
