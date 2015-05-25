@@ -1,0 +1,34 @@
+﻿<Window x:Class="Fractals.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fractals="clr-namespace:Fractals"
+        Title="MainWindow" Height="350" Width="525" FontFamily="Arial">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <!--HEADER-->
+        <Border Margin="10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="5">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 10 10 0" FontWeight="Bold" FontSize="16">Рекурсивни дървовидни фрактали</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 0" FontWeight="Bold" FontSize="14">Деян Йосифов, Ф.Н. М24906</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 2 10 10" FontWeight="Bold" FontSize="14">Магистърска програма "Компютърна графика"</TextBlock>
+            </StackPanel>            
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0">
+            <fractals:FractalTree2D  />
+        </Border>
+
+        <Border Grid.Row="2" Grid.Column="0">
+            <fractals:FractalTree3D />
+        </Border>
+
+    </Grid>
+</Window>

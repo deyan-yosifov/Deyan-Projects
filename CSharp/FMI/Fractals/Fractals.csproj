@@ -4,18 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2284D4FB-BC90-46DB-AF31-BE77A991A39E}</ProjectGuid>
-    <OutputType>library</OutputType>
+    <ProjectGuid>{D742D5C6-3D2E-493F-8F2C-53A9ED9594C1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Deyo.Controls</RootNamespace>
-    <AssemblyName>Deyo.Controls</AssemblyName>
+    <RootNamespace>Fractals</RootNamespace>
+    <AssemblyName>Fractals</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,22 +23,15 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>DeyoControls.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -56,55 +49,42 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="CartesianPlane\CartesianPlaneControl.xaml">
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="FractalTree2D.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\Explorer\FolderBrowserDialog.xaml">
+    <Page Include="FractalTree3D.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Generic.xaml">
+    <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FractalTreeGenerator2D.cs" />
+    <Compile Include="FractalTree2D.xaml.cs">
+      <DependentUpon>FractalTree2D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FractalTree3D.xaml.cs">
+      <DependentUpon>FractalTree3D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FractalTreeGenerator3D.cs" />
+    <Compile Include="LineSegment2D.cs" />
+    <Compile Include="LineSegment3D.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CartesianPlane\CartesianPlaneControl.xaml.cs">
-      <DependentUpon>CartesianPlaneControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="CartesianPlane\CartesianPlaneControlViewModel.cs" />
-    <Compile Include="Charts\CartesianPlane.cs" />
-    <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
-    <Compile Include="Controls3D\Cameras\DragAction.cs" />
-    <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
-    <Compile Include="Controls3D\Cameras\OrbitPositionInfo.cs" />
-    <Compile Include="Controls3D\GraphicProperties.cs" />
-    <Compile Include="Controls3D\GraphicPropertyNames.cs" />
-    <Compile Include="Controls3D\GraphicState.cs" />
-    <Compile Include="Controls3D\MaterialsManager.cs" />
-    <Compile Include="Controls3D\Position3D.cs" />
-    <Compile Include="Controls3D\Scene3D.cs" />
-    <Compile Include="Controls3D\SceneEditor.cs" />
-    <Compile Include="Common\DelegateCommand.cs" />
-    <Compile Include="Common\Guard.cs" />
-    <Compile Include="Common\ResourceHelper.cs" />
-    <Compile Include="Common\ViewModelBase.cs" />
-    <Compile Include="Controls3D\Shapes\Cube.cs" />
-    <Compile Include="Controls3D\Shapes\Cylinder.cs" />
-    <Compile Include="Controls3D\Shapes\Line.cs" />
-    <Compile Include="Controls3D\Shapes\RotationalShape.cs" />
-    <Compile Include="Controls3D\Shapes\ShapeBase.cs" />
-    <Compile Include="Controls3D\Shapes\ShapeFactory.cs" />
-    <Compile Include="Controls3D\Shapes\Sphere.cs" />
-    <Compile Include="Controls3D\Visuals\LineVisual.cs" />
-    <Compile Include="Controls3D\Visuals\VisualsFactory.cs" />
-    <Compile Include="Dialogs\Explorer\FolderBrowserDialog.xaml.cs">
-      <DependentUpon>FolderBrowserDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\Explorer\FolderBrowserDialogViewModel.cs" />
-    <Compile Include="Dialogs\Explorer\FolderValidator.cs" />
-    <Compile Include="Dialogs\Explorer\HeaderToImageConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -122,7 +102,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="DeyoControls.snk" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -130,11 +109,14 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Dialogs\Explorer\Images\diskdrive.png" />
-    <Resource Include="Dialogs\Explorer\Images\folder.png" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
+    <ProjectReference Include="..\..\Applications\Controls\Controls.csproj">
+      <Project>{2284d4fb-bc90-46db-af31-be77a991a39e}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Applications\Core\Core.csproj">
       <Project>{d0aed8a4-81ef-4ee6-a63d-4488e7ebda99}</Project>
       <Name>Core</Name>
     </ProjectReference>
