@@ -37,6 +37,7 @@ namespace Fractals
             InitializeComponent();
 
             this.scene3D.OrbitControl.Start();
+            this.fractalGenerator = new FractalTreeGenerator3D();
             this.InitializeScene();
 
             this.lineVisuals = new Queue<LineVisual>();
@@ -111,7 +112,6 @@ namespace Fractals
         private void InitializeScene()
         {
             this.counter = -1;
-            this.fractalGenerator = new FractalTreeGenerator3D();
 
             byte directionIntensity = 250;
             byte ambientIntensity = 125;

@@ -167,6 +167,10 @@ namespace Deyo.Controls.Charts
         public void AddElement(UIElement element)
         {
             this.container.Children.Add(element);
+            //this.UpdateLayout();
+            //this.InvalidateMeasure();
+            //this.InvalidateArrange();
+            //this.InvalidateVisual();
         }
 
         public void RemoveElement(UIElement element)
@@ -209,6 +213,7 @@ namespace Deyo.Controls.Charts
             if(constraint.Width.IsZero())
             {
                 this.VisibleRange = new Rect();
+                this.ViewportTransform = Matrix.Identity;
                 return;
             }
 
