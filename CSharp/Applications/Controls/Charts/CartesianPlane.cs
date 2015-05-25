@@ -167,19 +167,19 @@ namespace Deyo.Controls.Charts
         public void AddElement(UIElement element)
         {
             this.container.Children.Add(element);
-            //this.container.UpdateLayout();
-            //this.container.InvalidateMeasure();
-            //this.container.InvalidateArrange();
-            //this.container.InvalidateVisual();
-            //this.UpdateLayout();
-            //this.InvalidateMeasure();
-            //this.InvalidateArrange();
-            //this.InvalidateVisual();
+            this.InvalidateLayout();
         }
 
         public void RemoveElement(UIElement element)
         {
             this.container.Children.Remove(element);
+            this.InvalidateLayout();
+        }
+
+        private void InvalidateLayout()
+        {
+            this.RemoveVisualChild(this.container);
+            this.AddVisualChild(this.container);
         }
 
         public IDisposable SaveGraphicProperties()
@@ -191,6 +191,8 @@ namespace Deyo.Controls.Charts
         {
             this.graphicState.Restore();
         }
+
+        
 
         protected override Visual GetVisualChild(int index)
         {
