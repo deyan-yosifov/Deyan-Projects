@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Controls.Charts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,6 @@ namespace GeometryBasics
         private const double PointRadius = 0.2;
         private const double LineThickness = 0.1;
         private int countOfIntersections = 0;
-        private Color color;
         private Point[] poligone;
         private Point pointToCheck;
 
@@ -34,9 +34,10 @@ namespace GeometryBasics
 
             this.InitializePoligone();
 
-            this.color = Colors.Black;
-            this.cartesianPlane.VisibleRange = new Rect(-15, -15, 30, 30);
-            this.cartesianPlane.AddRectangle(this.cartesianPlane.VisibleRange, Colors.AliceBlue);
+            this.cartesianPlane.GraphicProperties.Thickness = LineThickness;
+            this.cartesianPlane.GraphicProperties.IsFilled = false;
+            this.cartesianPlane.GraphicProperties.IsStroked = true;
+            this.cartesianPlane.ViewportInfo = new ViewportInfo(new Point(0, 0), 30);
 
             this.AddLine(new Point(), new Point(1, 0));
             this.AddLine(new Point(), new Point(0, 1));
@@ -49,14 +50,14 @@ namespace GeometryBasics
 
         private void DrawPoligone()
         {
-            this.color = Colors.Blue;
+            this.cartesianPlane.GraphicProperties.Stroke = new SolidColorBrush(Colors.Blue);
 
             for (int i = 0; i < this.poligone.Length; i++)
             {
                 this.AddLine(this.GetPoligonePoint(i), this.GetPoligonePoint(i + 1));
             }
 
-            this.color = Colors.Red;
+            this.cartesianPlane.GraphicProperties.Stroke = new SolidColorBrush(Colors.Red);
             this.AddPoint(this.pointToCheck);
         }
 
@@ -90,12 +91,12 @@ namespace GeometryBasics
 
         private Line AddLine(Point start, Point end, Color? color = null)
         {
-            return this.cartesianPlane.AddLine(start.X, start.Y, end.X, end.Y, LineThickness, color ?? this.color);
+            return this.cartesianPlane.AddLine(start, end);
         }
 
         private Ellipse AddPoint(Point point, Color? color = null)
         {
-            return this.cartesianPlane.AddPoint(point, PointRadius, color ?? this.color);
+            return this.cartesianPlane.AddPoint(point);
         }
 
         private Stack<Shape> lastIntersections = new Stack<Shape>();
@@ -104,7 +105,7 @@ namespace GeometryBasics
         {
             this.intersections.Text = string.Empty;
             this.countOfIntersections = 0;
-            this.color = Colors.Orange;
+            this.cartesianPlane.GraphicProperties.Stroke = new SolidColorBrush(Colors.Orange);
 
             for (int i = 0; i < this.poligone.Length; i++)
             {
