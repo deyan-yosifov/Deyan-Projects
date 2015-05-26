@@ -8,8 +8,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="AliceBlue">
-        <controls3D:Scene3D x:Name="scene3D" />
-        <buttonControls:PausePlayButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="50"
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <controls3D:Scene3D x:Name="scene3D" Grid.Row="0" />
+        <buttonControls:PausePlayButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="50" Grid.Row="0"
                                         IsPlaying="True" IsPlayingChanged="PausePlayButton_IsPlayingChanged"/>
+        <TextBlock Grid.Row="1" FontWeight="Bold" FontStyle="Italic">Hausdorff dimension ~ 3.89</TextBlock>
     </Grid>
 </UserControl>

@@ -8,8 +8,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="AliceBlue">
-        <charts:CartesianPlane x:Name="cartesianPlane" />
-        <buttonControls:PausePlayButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="50" 
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <charts:CartesianPlane x:Name="cartesianPlane" Grid.Row="0" />
+        <buttonControls:PausePlayButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="50" Grid.Row="0"
                                         IsPlaying="True" IsPlayingChanged="PausePlayButton_IsPlayingChanged"/>
+        <TextBlock Grid.Row="1" FontWeight="Bold" FontStyle="Italic">Hausdorff dimension ~ 1.94</TextBlock>
     </Grid>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,10 @@ namespace Fractals
         public MainWindow()
         {
             InitializeComponent();
+
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string path = System.IO.Path.Combine(currentDirectory, @"Resources\RecursiveTreeLikeFractalsM24906.html");
+            this.browser.Navigate(new Uri(path));
         }
     }
 }
