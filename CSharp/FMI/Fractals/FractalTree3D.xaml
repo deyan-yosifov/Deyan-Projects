@@ -2,11 +2,14 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls3D="clr-namespace:Deyo.Controls.Controls3D;assembly=Deyo.Controls"
+             xmlns:buttonControls="clr-namespace:Deyo.Controls.Buttons;assembly=Deyo.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="AliceBlue">
         <controls3D:Scene3D x:Name="scene3D" />
+        <buttonControls:PausePlayButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="50"
+                                        IsPlaying="True" IsPlayingChanged="PausePlayButton_IsPlayingChanged"/>
     </Grid>
 </UserControl>

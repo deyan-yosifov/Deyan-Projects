@@ -4,9 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:charts="clr-namespace:Deyo.Controls.Charts;assembly=Deyo.Controls"
+             xmlns:buttonControls="clr-namespace:Deyo.Controls.Buttons;assembly=Deyo.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="AliceBlue">
         <charts:CartesianPlane x:Name="cartesianPlane" />
+        <buttonControls:PausePlayButton HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="50" 
+                                        IsPlaying="True" IsPlayingChanged="PausePlayButton_IsPlayingChanged"/>
     </Grid>
 </UserControl>

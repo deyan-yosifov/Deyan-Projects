@@ -1,17 +1,11 @@
-﻿using Deyo.Controls.Charts;
+﻿using Deyo.Controls.Buttons;
+using Deyo.Controls.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -32,17 +26,15 @@ namespace Fractals
 
         public FractalTree2D()
         {
-            InitializeComponent();
-
-            this.fractalGenerator = new FractalTreeGenerator2D();
-            this.InitializeScene();
-
-            this.lineVisuals = new Queue<Line>();
-
             this.timer = new DispatcherTimer();
             this.timer.Interval = TimeSpan.FromSeconds(SecondsPerLevel / FramesPerLevel);
             this.timer.Tick += this.TimerTick;
-            this.timer.Start();
+
+            this.fractalGenerator = new FractalTreeGenerator2D();
+            this.lineVisuals = new Queue<Line>();
+
+            InitializeComponent();
+            this.InitializeScene();
         }
 
         private void TimerTick(object sender, EventArgs e)
@@ -96,10 +88,13 @@ namespace Fractals
             this.lineVisuals.Clear();
             this.cartesianPlane.GraphicProperties.Thickness = this.fractalGenerator.CurrentSegmentThickness;
 
-            foreach (LineSegment2D segment in this.fractalGenerator.CurrentLevelLineSegments)
+            using (this.cartesianPlane.SuspendLayoutUpdate())
             {
-                Line visual = this.cartesianPlane.AddLine(segment.Start, this.ReCalculateEndPoint(segment.Start, segment.End));
-                this.lineVisuals.Enqueue(visual);
+                foreach (LineSegment2D segment in this.fractalGenerator.CurrentLevelLineSegments)
+                {
+                    Line visual = this.cartesianPlane.AddLine(segment.Start, this.ReCalculateEndPoint(segment.Start, segment.End));
+                    this.lineVisuals.Enqueue(visual);
+                }
             }
         }
 
@@ -111,6 +106,26 @@ namespace Fractals
             this.cartesianPlane.GraphicProperties.IsFilled = false;
             this.cartesianPlane.GraphicProperties.IsStroked = true;
             this.cartesianPlane.GraphicProperties.Stroke = new SolidColorBrush(Colors.Gray);
+        }
+
+        private void PausePlayButton_IsPlayingChanged(object sender, EventArgs e)
+        {
+            PausePlayButton button = (PausePlayButton)sender;
+
+            if (button.IsPlaying)
+            {
+                if (!this.timer.IsEnabled)
+                {
+                    this.timer.Start();
+                }
+            }
+            else
+            {
+                if (this.timer.IsEnabled)
+                {
+                    this.timer.Stop();
+                }
+            }
         }
     }
 }

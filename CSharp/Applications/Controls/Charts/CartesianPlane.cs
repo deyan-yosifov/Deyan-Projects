@@ -20,6 +20,7 @@ namespace Deyo.Controls.Charts
         private readonly MatrixTransform viewportTransform;
         private readonly PreservableState<GraphicProperties> graphicState;
         private ViewportInfo viewportInfo;
+        private int layoutSuspendCount = 0;
         
         public CartesianPlane()
         {
@@ -176,12 +177,6 @@ namespace Deyo.Controls.Charts
             this.InvalidateLayout();
         }
 
-        private void InvalidateLayout()
-        {
-            this.RemoveVisualChild(this.container);
-            this.AddVisualChild(this.container);
-        }
-
         public IDisposable SaveGraphicProperties()
         {
             return this.graphicState.Preserve();
@@ -192,6 +187,31 @@ namespace Deyo.Controls.Charts
             this.graphicState.Restore();
         }
 
+        private void InvalidateLayout()
+        {
+            if (this.layoutSuspendCount == 0)
+            {
+                this.RemoveVisualChild(this.container);
+                this.AddVisualChild(this.container);
+            }
+        }
+
+        public IDisposable SuspendLayoutUpdate()
+        {
+            this.layoutSuspendCount++;
+
+            return new DisposableAction(this.ResumeLayoutUpdate);
+        }
+
+        public void ResumeLayoutUpdate()
+        {
+            if (--this.layoutSuspendCount < 0)
+            {
+                throw new InvalidOperationException("Cannot call ResumeLayoutUpdate more times that SuspendLayoutUpdate!");
+            }
+
+            this.InvalidateLayout();
+        }
         
 
         protected override Visual GetVisualChild(int index)

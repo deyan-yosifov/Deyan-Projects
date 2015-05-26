@@ -56,6 +56,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Buttons\PausePlayButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\Explorer\FolderBrowserDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -66,6 +70,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buttons\PausePlayButton.xaml.cs">
+      <DependentUpon>PausePlayButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Buttons\PausePlayButtonViewModel.cs" />
     <Compile Include="Charts\CartesianPlane.cs" />
     <Compile Include="Charts\GraphicProperties.cs" />
     <Compile Include="Charts\ViewportInfo.cs" />
@@ -133,7 +141,10 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Buttons\Images\Pause.png" />
+    <Resource Include="Buttons\Images\Play.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,4 +1,5 @@
-﻿using Deyo.Controls.Controls3D;
+﻿using Deyo.Controls.Buttons;
+using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Visuals;
 using System;
 using System.Collections.Generic;
@@ -34,18 +35,17 @@ namespace Fractals
 
         public FractalTree3D()
         {
-            InitializeComponent();
-
-            this.scene3D.OrbitControl.Start();
             this.fractalGenerator = new FractalTreeGenerator3D();
-            this.InitializeScene();
 
             this.lineVisuals = new Queue<LineVisual>();
 
             this.timer = new DispatcherTimer();
             this.timer.Interval = TimeSpan.FromSeconds(SecondsPerLevel / FramesPerLevel);
             this.timer.Tick += this.TimerTick;
-            this.timer.Start();
+
+            InitializeComponent();
+            this.InitializeScene();
+            this.scene3D.OrbitControl.Start();
         }
 
         private void TimerTick(object sender, EventArgs e)
@@ -119,9 +119,29 @@ namespace Fractals
             this.SceneEditor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));            
 
-            this.SceneEditor.GraphicProperties.ArcResolution = 8;
+            this.SceneEditor.GraphicProperties.ArcResolution = 6;
             this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Color.FromRgb(160, 160, 160));
             this.SceneEditor.Look(new Point3D(2.5, 2.5, 3.5), new Point3D(0, 0, 0.5));
+        }
+
+        private void PausePlayButton_IsPlayingChanged(object sender, EventArgs e)
+        {
+            PausePlayButton button = (PausePlayButton)sender;
+
+            if (button.IsPlaying)
+            {
+                if (!this.timer.IsEnabled)
+                {
+                    this.timer.Start();
+                }
+            }
+            else
+            {
+                if (this.timer.IsEnabled)
+                {
+                    this.timer.Stop();
+                }
+            }
         }
     }
 }
