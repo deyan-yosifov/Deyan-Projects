@@ -77,6 +77,8 @@
     <Compile Include="Charts\CartesianPlane.cs" />
     <Compile Include="Charts\GraphicProperties.cs" />
     <Compile Include="Charts\ViewportInfo.cs" />
+    <Compile Include="Common\INamedObject.cs" />
+    <Compile Include="Common\NamedObjectsCollection.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="Dialogs\Explorer\FolderBrowserDialogViewModel.cs" />
     <Compile Include="Dialogs\Explorer\FolderValidator.cs" />
     <Compile Include="Dialogs\Explorer\HeaderToImageConverter.cs" />
+    <Compile Include="MouseHandlers\IPointerHandler.cs" />
+    <Compile Include="MouseHandlers\PointerHandlersController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
