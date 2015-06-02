@@ -10,6 +10,8 @@ namespace Deyo.Controls.MouseHandlers
 {
     public interface IPointerHandler : INamedObject
     {
+        bool IsEnabled { get; set; }
+
         bool TryHandleMouseDown(MouseButtonEventArgs e);
 
         bool TryHandleMouseUp(MouseButtonEventArgs e);

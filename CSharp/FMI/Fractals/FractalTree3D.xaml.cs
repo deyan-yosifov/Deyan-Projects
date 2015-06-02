@@ -45,7 +45,7 @@ namespace Fractals
 
             InitializeComponent();
             this.InitializeScene();
-            this.scene3D.OrbitControl.Start();
+            this.scene3D.StartListeningToMouseEvents();
         }
 
         private void TimerTick(object sender, EventArgs e)

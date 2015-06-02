@@ -172,7 +172,7 @@ namespace TestApplication
 
             editor.Look(new Point3D(3, 3, 3), new Point3D());
 
-            this.viewport.OrbitControl.Start();
+            this.viewport.StartListeningToMouseEvents();
         }
     }
 }

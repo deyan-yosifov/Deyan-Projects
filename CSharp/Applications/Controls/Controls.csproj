@@ -89,6 +89,7 @@
     <Compile Include="Controls3D\MaterialsManager.cs" />
     <Compile Include="Controls3D\Position3D.cs" />
     <Compile Include="Controls3D\Scene3D.cs" />
+    <Compile Include="Controls3D\Scene3DMouseHandlerNames.cs" />
     <Compile Include="Controls3D\SceneEditor.cs" />
     <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Common\Guard.cs" />

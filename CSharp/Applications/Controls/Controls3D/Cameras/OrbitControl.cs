@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
+using Deyo.Controls.MouseHandlers;
 using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
@@ -14,29 +15,46 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D.Cameras
 {
-    public class OrbitControl
+    public class OrbitControl : IPointerHandler
     {
         private const double FullCircleAngleInDegrees = 360;
         private const int WheelSingleDelta = 120;
         private readonly SceneEditor editor;
-        private readonly Canvas viewport2D;
         private int previousMoveTimestamp = 0;
-        private bool isStarted;
+        private bool isEnabled;
         private DragAction dragAction;
         private Vector3D firstPanDirection;
         private OrbitPositionInfo firstOrbitPosition;        
 
-        internal OrbitControl(SceneEditor editor, Canvas viewport2D)
+        internal OrbitControl(SceneEditor editor)
         {
             this.editor = editor;
-            this.viewport2D = viewport2D;
 
-            this.isStarted = false;
-            this.dragAction = DragAction.NoAction;            
-
+            this.IsEnabled = true;
             this.ZoomSpeed = 0.1;
             this.MoveDeltaTime = 20;
             this.WidthOrbitAngleInDegrees = 180;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return Scene3DMouseHandlerNames.OrbitControlHandler;
+            }
+        }
+
+        public bool IsEnabled
+        {
+            get
+            {
+                return this.isEnabled;
+            }
+            set
+            {
+                this.dragAction = DragAction.NoAction;
+                this.isEnabled = value;
+            }
         }
 
         public double ZoomSpeed
@@ -57,14 +75,6 @@ namespace Deyo.Controls.Controls3D.Cameras
             set;
         }
 
-        private Canvas Viewport2D
-        {
-            get
-            {
-                return this.viewport2D;
-            }
-        }
-
         private SceneEditor Editor
         {
             get
@@ -73,76 +83,70 @@ namespace Deyo.Controls.Controls3D.Cameras
             }
         }
 
-        private Size ViewportSize
+        public bool TryHandleMouseDown(MouseButtonEventArgs e)
         {
-            get
+            Point position = OrbitControl.GetPosition(e);
+            Size viewportSize = OrbitControl.GetViewportSize(e);
+
+            if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
             {
-                return new Size(this.Viewport2D.ActualWidth, this.Viewport2D.ActualHeight);
-            }
-        }
+                this.dragAction = DragAction.Pan;
 
-        public void Start()
-        {
-            if (!this.isStarted)
+                this.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    this.StartPan(perspectiveCamera, position, viewportSize);
+                },
+                (orthographicCamera) =>
+                {
+                    this.StartPan(orthographicCamera, position, viewportSize);
+                });
+            }
+            else
             {
-                this.isStarted = true;
-                this.dragAction = DragAction.NoAction;
-                this.InitializeEvents();
+                this.dragAction = DragAction.Orbit;
+
+                this.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    this.StartOrbit(perspectiveCamera, position, viewportSize);
+                },
+                (orthographicCamera) =>
+                {
+                    this.StartOrbit(orthographicCamera, position, viewportSize);
+                });
             }
+
+            return true;
         }
 
-        public void Stop()
+        public bool TryHandleMouseUp(MouseButtonEventArgs e)
         {
-            if (this.isStarted)
-            {
-                this.isStarted = false;
-                this.dragAction = DragAction.NoAction;
-                this.ReleaseEvents();
-            }
-        }
-
-        internal void InitializeEvents()
-        {
-            this.Viewport2D.MouseDown += this.Viewport_MouseDown;
-            this.Viewport2D.MouseMove += this.Viewport_MouseMove;
-            this.Viewport2D.MouseUp += this.Viewport_MouseUp;
-            this.Viewport2D.MouseWheel += this.Viewport_MouseWheel;
-        }
-
-        internal void ReleaseEvents()
-        {
-            this.Viewport2D.MouseDown -= this.Viewport_MouseDown;
-            this.Viewport2D.MouseMove -= this.Viewport_MouseMove;
-            this.Viewport2D.MouseUp -= this.Viewport_MouseUp;
-            this.Viewport2D.MouseWheel -= this.Viewport_MouseWheel;
-        }
-
-        private void Viewport_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            this.Viewport2D.ReleaseMouseCapture();
-            Point position = this.GetPosition(e);
             this.dragAction = DragAction.NoAction;
+
+            return true;
         }
 
-        private void Viewport_MouseMove(object sender, MouseEventArgs e)
+        public bool TryHandleMouseMove(MouseEventArgs e)
         {
             if (this.dragAction != DragAction.NoAction)
             {
                 if (e.Timestamp - this.previousMoveTimestamp > this.MoveDeltaTime)
                 {
                     this.previousMoveTimestamp = e.Timestamp;
-                    Point position = this.GetPosition(e);
+                    Point position = OrbitControl.GetPosition(e);
+                    Size viewportSize = OrbitControl.GetViewportSize(e);
 
                     if (this.dragAction == DragAction.Orbit)
                     {
                         this.Editor.DoActionOnCamera(
                             (perspectiveCamera) =>
                             {
-                                this.Orbit(perspectiveCamera, position);
+                                this.Orbit(perspectiveCamera, position, viewportSize);
                             },
                             (orthographicCamera) =>
                             {
-                                this.Orbit(orthographicCamera, position);
+                                this.Orbit(orthographicCamera, position, viewportSize);
                             });
                     }
                     else if (this.dragAction == DragAction.Pan)
@@ -150,27 +154,48 @@ namespace Deyo.Controls.Controls3D.Cameras
                         this.Editor.DoActionOnCamera(
                             (perspectiveCamera) =>
                             {
-                                this.Pan(perspectiveCamera, position);
+                                this.Pan(perspectiveCamera, position, viewportSize);
                             },
                             (orthographicCamera) =>
                             {
-                                this.Pan(orthographicCamera, position);
+                                this.Pan(orthographicCamera, position, viewportSize);
                             });
                     }
                 }
             }
+
+            return true;
         }
 
-        private void Orbit(PerspectiveCamera perspectiveCamera, Point position)
+        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
         {
-            Point positionOnUnityDistantPlane = CameraHelper.GetPointOnUnityDistantPlane(position, this.ViewportSize, perspectiveCamera.FieldOfView);
+            Point position = OrbitControl.GetPosition(e);
+            Size viewportSize = OrbitControl.GetViewportSize(e);
+            double zoomAmount = (this.ZoomSpeed * e.Delta) / WheelSingleDelta;
+
+            this.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    this.Zoom(perspectiveCamera, position, zoomAmount, viewportSize);
+                },
+                (orthographicCamera) =>
+                {
+                    this.Zoom(orthographicCamera, position, zoomAmount, viewportSize);
+                });
+
+            return true;
+        }
+
+        private void Orbit(PerspectiveCamera perspectiveCamera, Point position, Size viewportSize)
+        {
+            Point positionOnUnityDistantPlane = CameraHelper.GetPointOnUnityDistantPlane(position, viewportSize, perspectiveCamera.FieldOfView);
             Point3D currentCameraPosition = perspectiveCamera.Position;
             Vector3D currentCameraLookDirection = perspectiveCamera.LookDirection;
 
             this.Orbit(positionOnUnityDistantPlane, currentCameraPosition, currentCameraLookDirection);
         }
 
-        private void Orbit(OrthographicCamera orthographicCamera, Point position)
+        private void Orbit(OrthographicCamera orthographicCamera, Point position, Size viewportSize)
         {
             throw new NotImplementedException();
         }
@@ -198,14 +223,14 @@ namespace Deyo.Controls.Controls3D.Cameras
             }
         }
 
-        private void Pan(PerspectiveCamera perspectiveCamera, Point panPoint)
+        private void Pan(PerspectiveCamera perspectiveCamera, Point panPoint, Size viewportSize)
         {
-            Vector3D panDirection = CameraHelper.GetLookDirectionFromPoint(panPoint, this.ViewportSize, perspectiveCamera);
+            Vector3D panDirection = CameraHelper.GetLookDirectionFromPoint(panPoint, viewportSize, perspectiveCamera);
 
             this.Pan(perspectiveCamera.Position, perspectiveCamera.LookDirection, panDirection);
         }
 
-        private void Pan(OrthographicCamera orthographicCamera, Point panPoint)
+        private void Pan(OrthographicCamera orthographicCamera, Point panPoint, Size viewportSize)
         {
             throw new NotImplementedException();
         }
@@ -226,59 +251,24 @@ namespace Deyo.Controls.Controls3D.Cameras
             }
         }
 
-        private void Viewport_MouseDown(object sender, MouseButtonEventArgs e)
+        private void StartPan(PerspectiveCamera perspectiveCamera, Point panPoint, Size viewportSize)
         {
-            this.Viewport2D.CaptureMouse();
-            Point position = this.GetPosition(e);
-
-            if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
-            {
-                this.dragAction = DragAction.Pan;
-
-                this.Editor.DoActionOnCamera(
-                (perspectiveCamera) =>
-                {
-                    this.StartPan(perspectiveCamera, position);
-                },
-                (orthographicCamera) =>
-                {
-                    this.StartPan(orthographicCamera, position);
-                });
-            }
-            else
-            {
-                this.dragAction = DragAction.Orbit;
-
-                this.Editor.DoActionOnCamera(
-                (perspectiveCamera) =>
-                {
-                    this.StartOrbit(perspectiveCamera, position);
-                },
-                (orthographicCamera) =>
-                {
-                    this.StartOrbit(orthographicCamera, position);
-                });
-            }
+            this.firstPanDirection = CameraHelper.GetLookDirectionFromPoint(panPoint, viewportSize, perspectiveCamera);
         }
 
-        private void StartPan(PerspectiveCamera perspectiveCamera, Point panPoint)
-        {
-            this.firstPanDirection = CameraHelper.GetLookDirectionFromPoint(panPoint, this.ViewportSize, perspectiveCamera);
-        }
-
-        private void StartPan(OrthographicCamera orthographicCamera, Point panPoint)
+        private void StartPan(OrthographicCamera orthographicCamera, Point panPoint, Size viewportSize)
         {
             throw new NotImplementedException();
         }
 
-        private void StartOrbit(PerspectiveCamera perspectiveCamera, Point orbitPoint)
+        private void StartOrbit(PerspectiveCamera perspectiveCamera, Point orbitPoint, Size viewportSize)
         {
             Vector3D x, y, z;
             CameraHelper.GetCameraLocalCoordinateVectors(perspectiveCamera.LookDirection, perspectiveCamera.UpDirection, out x, out y, out z);
 
             this.firstOrbitPosition = new OrbitPositionInfo()
             {
-                PositionOnUnityDistantPlane = CameraHelper.GetPointOnUnityDistantPlane(orbitPoint, this.ViewportSize, perspectiveCamera.FieldOfView),
+                PositionOnUnityDistantPlane = CameraHelper.GetPointOnUnityDistantPlane(orbitPoint, viewportSize, perspectiveCamera.FieldOfView),
                 FullCircleLength = this.CalculateFullCircleLength(perspectiveCamera),
                 CameraX = x,
                 CameraY = y,
@@ -294,34 +284,18 @@ namespace Deyo.Controls.Controls3D.Cameras
             return widthLengths;
         }
 
-        private void StartOrbit(OrthographicCamera orthographicCamera, Point orbitPoint)
+        private void StartOrbit(OrthographicCamera orthographicCamera, Point orbitPoint, Size viewportSize)
         {
             throw new NotImplementedException();
         }
 
-        private void Viewport_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Zoom(PerspectiveCamera perspectiveCamera, Point position, double zoomAmount, Size viewportSize)
         {
-            Point position = this.GetPosition(e);
-            double zoomAmount = (this.ZoomSpeed * e.Delta) / WheelSingleDelta;
-
-            this.Editor.DoActionOnCamera(
-                (perspectiveCamera) =>
-                {
-                    this.Zoom(perspectiveCamera, position, zoomAmount);
-                },
-                (orthographicCamera) =>
-                {
-                    this.Zoom(orthographicCamera, position, zoomAmount);
-                });
-        }
-
-        private void Zoom(PerspectiveCamera perspectiveCamera, Point position, double zoomAmount)
-        {
-            Vector3D zoomDirection = CameraHelper.GetLookDirectionFromPoint(position, this.ViewportSize, perspectiveCamera);
+            Vector3D zoomDirection = CameraHelper.GetLookDirectionFromPoint(position, viewportSize, perspectiveCamera);
             perspectiveCamera.Position = CalculateZoomedPosition(zoomDirection, perspectiveCamera.LookDirection, perspectiveCamera.Position, zoomAmount);
         }
 
-        private void Zoom(OrthographicCamera orthographicCamera, Point position, double zoomAmount)
+        private void Zoom(OrthographicCamera orthographicCamera, Point position, double zoomAmount, Size viewportSize)
         {
             throw new NotImplementedException();
         }
@@ -334,9 +308,16 @@ namespace Deyo.Controls.Controls3D.Cameras
             return zoomPosition;
         }
 
-        private Point GetPosition(MouseEventArgs e)
+        private static Point GetPosition(MouseEventArgs e)
         {
-            return e.GetPosition(this.Viewport2D);
+            return e.GetPosition((IInputElement)e.Source);
+        }
+
+        private static Size GetViewportSize(MouseEventArgs e)
+        {
+            FrameworkElement element = (FrameworkElement)e.Source;
+
+            return new Size(element.ActualWidth, element.ActualHeight);
         }
     }
 }

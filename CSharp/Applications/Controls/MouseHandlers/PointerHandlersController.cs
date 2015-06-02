@@ -33,7 +33,7 @@ namespace Deyo.Controls.MouseHandlers
 
             foreach (IPointerHandler handler in this.Handlers)
             {
-                if (handler.TryHandleMouseDown(e))
+                if (handler.IsEnabled && handler.TryHandleMouseDown(e))
                 {
                     this.CaptureHandler(handler);
                     return true;
@@ -58,7 +58,7 @@ namespace Deyo.Controls.MouseHandlers
 
         public bool TryHandleMouseMove(MouseEventArgs e)
         {
-            if (this.capturedHandler != null)
+            if (this.capturedHandler != null && this.capturedHandler.IsEnabled)
             {
                 return this.capturedHandler.TryHandleMouseMove(e);
             }
@@ -68,14 +68,14 @@ namespace Deyo.Controls.MouseHandlers
 
         public bool TryHandleMouseWheel(MouseWheelEventArgs e)
         {
-            if (this.capturedHandler != null)
+            if (this.capturedHandler != null && this.capturedHandler.IsEnabled)
             {
                 return this.capturedHandler.TryHandleMouseWheel(e);
             }
 
             foreach (IPointerHandler handler in this.Handlers)
             {
-                if (handler.TryHandleMouseWheel(e))
+                if (handler.IsEnabled && handler.TryHandleMouseWheel(e))
                 {
                     return true;
                 }
