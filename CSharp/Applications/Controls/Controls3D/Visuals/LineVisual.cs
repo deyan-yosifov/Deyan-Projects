@@ -14,14 +14,12 @@ namespace Deyo.Controls.Controls3D.Visuals
         private Point3D start;
         private Point3D end;
         private double thickness;
-        private readonly Line line;
         private readonly ModelVisual3D visual;
         private readonly MatrixTransform3D positionTransform;
         private readonly ScaleTransform3D thicknessTransform;
 
         public LineVisual(Line line, double thickness)
         {
-            this.line = line;
             this.thickness = thickness;
 
             this.thicknessTransform = new ScaleTransform3D() { ScaleX = thickness, ScaleY = thickness };
