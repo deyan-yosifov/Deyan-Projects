@@ -13,22 +13,31 @@ namespace Deyo.Controls.Controls3D.Visuals
     {
         private readonly ShapeFactory shapeFactory;
         private readonly PreservableState<Position3D> positionState;
-        private static readonly HashSet<string> LineInvalidatingProperties;
+        private readonly Dictionary<string, Action> propertyInvalidations;
         private Line lineGeometry = null;
-
-        static VisualsFactory()
-        {
-            LineInvalidatingProperties = new HashSet<string>();
-            LineInvalidatingProperties.Add(GraphicPropertyNames.ArcResolution);
-            LineInvalidatingProperties.Add(GraphicPropertyNames.FrontMaterial);
-            LineInvalidatingProperties.Add(GraphicPropertyNames.BackMaterial);
-        }
-
+        private Cube cubeGeometry = null;
+        
         public VisualsFactory(ShapeFactory shapeFactory, PreservableState<Position3D> positionState)
         {
             this.shapeFactory = shapeFactory;
             this.positionState = positionState;
             this.shapeFactory.GraphicState.PropertiesChanged += GraphicStatePropertiesChanged;
+            
+            this.propertyInvalidations = new Dictionary<string, Action>();
+            this.propertyInvalidations.Add(GraphicPropertyNames.ArcResolution, () =>
+                {
+                    this.InvalidateLineGeometry();
+                });
+            this.propertyInvalidations.Add(GraphicPropertyNames.FrontMaterial, () =>
+                {
+                    this.InvalidateLineGeometry();
+                    this.InvalidateCubeGeometry();
+                });
+            this.propertyInvalidations.Add(GraphicPropertyNames.BackMaterial, () =>
+                {
+                    this.InvalidateLineGeometry();
+                    this.InvalidateCubeGeometry();
+                });
         }
 
         public GraphicProperties GraphicProperties
@@ -60,6 +69,19 @@ namespace Deyo.Controls.Controls3D.Visuals
             }
         }
 
+        internal Cube CubeGeometry
+        {
+            get
+            {
+                if (this.IsCubeGeometryInvalidated())
+                {
+                    this.cubeGeometry = this.shapeFactory.CreateCube();
+                }
+
+                return this.cubeGeometry;
+            }
+        }
+
         public LineVisual CreateLineVisual(Point3D fromPoint, Point3D toPoint)
         {
             LineVisual lineVisual = new LineVisual(this.LineGeometry, this.GraphicProperties.Thickness);
@@ -68,6 +90,15 @@ namespace Deyo.Controls.Controls3D.Visuals
             lineVisual.MoveTo(startPoint, endPoint);
 
             return lineVisual;
+        }
+
+        public CubePointVisual CreateCubePointVisual(Point3D position)
+        {
+            CubePointVisual cubePointVisual = new CubePointVisual(this.CubeGeometry, this.GraphicProperties.Thickness);
+            Point3D center = this.Position.Matrix.Transform(position);
+            cubePointVisual.Position = center;
+
+            return cubePointVisual;
         }
 
         private void InvalidateLineGeometry()
@@ -80,14 +111,24 @@ namespace Deyo.Controls.Controls3D.Visuals
             return this.lineGeometry == null;
         }
 
+        private void InvalidateCubeGeometry()
+        {
+            this.cubeGeometry = null;
+        }
+
+        private bool IsCubeGeometryInvalidated()
+        {
+            return this.cubeGeometry == null;
+        }
+
         private void GraphicStatePropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
             foreach (string property in e.PropertyNames)
             {
-                if (LineInvalidatingProperties.Contains(property))
+                Action invalidateGeometries;
+                if (this.propertyInvalidations.TryGetValue(property, out invalidateGeometries))
                 {
-                    this.InvalidateLineGeometry();
-                    break;
+                    invalidateGeometries();
                 }
             }
         }

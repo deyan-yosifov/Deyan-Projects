@@ -1,5 +1,4 @@
-﻿using Deyo.Controls.Contols3D.Shapes;
-using Deyo.Controls.Controls3D;
+﻿using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Core.Media.Imaging;

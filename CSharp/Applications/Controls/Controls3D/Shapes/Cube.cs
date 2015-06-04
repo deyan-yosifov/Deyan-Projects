@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Media3D;
 
-namespace Deyo.Controls.Contols3D.Shapes
+namespace Deyo.Controls.Controls3D.Shapes
 {
     public class Cube : ShapeBase
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
-namespace Deyo.Controls.Contols3D.Shapes
+namespace Deyo.Controls.Controls3D.Shapes
 {
     public abstract class ShapeBase
     {

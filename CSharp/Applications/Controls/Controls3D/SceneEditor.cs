@@ -1,6 +1,5 @@
 ﻿using Deyo.Controls.Common;
-using Deyo.Controls.Contols3D;
-using Deyo.Controls.Contols3D.Shapes;
+using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Cameras;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
@@ -80,6 +79,14 @@ namespace Deyo.Controls.Controls3D
         {
             camera = this.viewport.Camera as T;
             return camera != null;
+        }
+
+        public CubePointVisual AddCubePointVisual(Point3D position)
+        {
+            CubePointVisual cubePointVisual = this.VisualsFactory.CreateCubePointVisual(position);
+            this.Viewport.Children.Add(cubePointVisual.Visual);
+
+            return cubePointVisual;
         }
 
         public LineVisual AddLineVisual(Point3D fromPoint, Point3D toPoint)

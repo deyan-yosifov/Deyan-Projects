@@ -102,6 +102,7 @@
     <Compile Include="Controls3D\Shapes\ShapeBase.cs" />
     <Compile Include="Controls3D\Shapes\ShapeFactory.cs" />
     <Compile Include="Controls3D\Shapes\Sphere.cs" />
+    <Compile Include="Controls3D\Visuals\CubePointVisual.cs" />
     <Compile Include="Controls3D\Visuals\LineVisual.cs" />
     <Compile Include="Controls3D\Visuals\PointVisual.cs" />
     <Compile Include="Controls3D\Visuals\VisualsFactory.cs" />

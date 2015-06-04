@@ -1,5 +1,4 @@
-﻿using Deyo.Controls.Contols3D.Shapes;
-using Deyo.Core.Mathematics.Algebra;
+﻿using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

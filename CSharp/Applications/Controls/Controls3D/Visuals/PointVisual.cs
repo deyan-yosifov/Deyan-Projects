@@ -1,4 +1,4 @@
-﻿using Deyo.Controls.Contols3D.Shapes;
+﻿using Deyo.Controls.Controls3D.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,6 +81,7 @@ namespace Deyo.Controls.Controls3D.Visuals
                     matrix.OffsetY = value.Y;
                     matrix.OffsetZ = value.Z;
                     this.positionAndScaleTransform.Matrix = matrix;
+                    this.OnPositionChanged();
                 }
             }
         }
