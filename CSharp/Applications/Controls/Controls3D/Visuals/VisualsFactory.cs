@@ -16,6 +16,7 @@ namespace Deyo.Controls.Controls3D.Visuals
         private readonly Dictionary<string, Action> propertyInvalidations;
         private Line lineGeometry = null;
         private Cube cubeGeometry = null;
+        private Sphere sphereGeometry = null;
         
         public VisualsFactory(ShapeFactory shapeFactory, PreservableState<Position3D> positionState)
         {
@@ -27,16 +28,19 @@ namespace Deyo.Controls.Controls3D.Visuals
             this.propertyInvalidations.Add(GraphicPropertyNames.ArcResolution, () =>
                 {
                     this.InvalidateLineGeometry();
+                    this.InvalidateSphereGeometry();
                 });
             this.propertyInvalidations.Add(GraphicPropertyNames.FrontMaterial, () =>
                 {
                     this.InvalidateLineGeometry();
                     this.InvalidateCubeGeometry();
+                    this.InvalidateSphereGeometry();
                 });
             this.propertyInvalidations.Add(GraphicPropertyNames.BackMaterial, () =>
                 {
                     this.InvalidateLineGeometry();
                     this.InvalidateCubeGeometry();
+                    this.InvalidateSphereGeometry();
                 });
         }
 
@@ -82,11 +86,24 @@ namespace Deyo.Controls.Controls3D.Visuals
             }
         }
 
+        internal Sphere SphereGeometry
+        {
+            get
+            {
+                if (this.IsSphereGeometryInvalidated())
+                {
+                    this.sphereGeometry = this.shapeFactory.CreateSphere();
+                }
+
+                return this.sphereGeometry;
+            }
+        }
+
         public LineVisual CreateLineVisual(Point3D fromPoint, Point3D toPoint)
         {
             LineVisual lineVisual = new LineVisual(this.LineGeometry, this.GraphicProperties.Thickness);
-            Point3D startPoint = this.Position.Matrix.Transform(fromPoint);
-            Point3D endPoint = this.Position.Matrix.Transform(toPoint);
+            Point3D startPoint = this.TransformPointToCurrentPosition(fromPoint);
+            Point3D endPoint = this.TransformPointToCurrentPosition(toPoint);
             lineVisual.MoveTo(startPoint, endPoint);
 
             return lineVisual;
@@ -95,10 +112,22 @@ namespace Deyo.Controls.Controls3D.Visuals
         public CubePointVisual CreateCubePointVisual(Point3D position)
         {
             CubePointVisual cubePointVisual = new CubePointVisual(this.CubeGeometry, this.GraphicProperties.Thickness);
-            Point3D center = this.Position.Matrix.Transform(position);
-            cubePointVisual.Position = center;
+            cubePointVisual.Position = this.TransformPointToCurrentPosition(position);
 
             return cubePointVisual;
+        }
+
+        public PointVisual CreatePointVisual(Point3D position)
+        {
+            PointVisual pointVisual = new PointVisual(this.SphereGeometry, this.GraphicProperties.Thickness);
+            pointVisual.Position = this.TransformPointToCurrentPosition(position);
+
+            return pointVisual;
+        }
+
+        private Point3D TransformPointToCurrentPosition(Point3D point)
+        {
+            return this.Position.Matrix.Transform(point);
         }
 
         private void InvalidateLineGeometry()
@@ -119,6 +148,16 @@ namespace Deyo.Controls.Controls3D.Visuals
         private bool IsCubeGeometryInvalidated()
         {
             return this.cubeGeometry == null;
+        }
+
+        private void InvalidateSphereGeometry()
+        {
+            this.sphereGeometry = null;
+        }
+
+        private bool IsSphereGeometryInvalidated()
+        {
+            return this.sphereGeometry == null;
         }
 
         private void GraphicStatePropertiesChanged(object sender, PropertiesChangedEventArgs e)

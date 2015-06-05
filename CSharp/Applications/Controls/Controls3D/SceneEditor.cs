@@ -81,6 +81,14 @@ namespace Deyo.Controls.Controls3D
             return camera != null;
         }
 
+        public PointVisual AddPointVisual(Point3D position)
+        {
+            PointVisual pointVisual = this.VisualsFactory.CreatePointVisual(position);
+            this.Viewport.Children.Add(pointVisual.Visual);
+
+            return pointVisual;
+        }
+
         public CubePointVisual AddCubePointVisual(Point3D position)
         {
             CubePointVisual cubePointVisual = this.VisualsFactory.CreateCubePointVisual(position);
