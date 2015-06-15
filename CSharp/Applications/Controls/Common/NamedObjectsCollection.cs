@@ -17,6 +17,14 @@ namespace Deyo.Controls.Common
             this.elements = new List<T>();
         }
 
+        public INamedObject this[string name]
+        {
+            get
+            {
+                return this.elements[this.GetExistingElementIndex(name)];
+            }
+        }
+
         public void AddLast(T element)
         {
             this.EnsureUniqueName(element);
@@ -39,6 +47,23 @@ namespace Deyo.Controls.Common
             this.InsertRelativeTo(elementToInsert, 1, existingElementName);
         }
 
+        public bool TryGetElementOfType<W>(string name, out W element)
+            where W : class, T
+        {
+            int index;
+            if (this.TryGetElementIndex(name, out index))
+            {
+                element = this.elements[index] as W;
+                if (element != null)
+                {
+                    return true;
+                }
+            }
+            
+            element = null;
+            return false;
+        }
+
         private void InsertRelativeTo(T elementToInsert, int relativeIndexDistance, string existingElementName)
         {
             int index = this.GetExistingElementIndex(existingElementName);
@@ -48,15 +73,28 @@ namespace Deyo.Controls.Common
 
         private int GetExistingElementIndex(string alreadyAddedName)
         {
-            for (int index = 0; index < this.elements.Count; index++)
+            int index;
+            if (this.TryGetElementIndex(alreadyAddedName, out index))
             {
-                if (this.elements[index].Name.Equals(alreadyAddedName))
-                {
-                    return index;
-                }
+                return index;
             }
 
             throw new InvalidOperationException(string.Format("Cannot find element with the specified name: {0}", alreadyAddedName));
+        }
+
+        private bool TryGetElementIndex(string name, out int elementIndex)
+        {
+            for (int index = 0; index < this.elements.Count; index++)
+            {
+                if (this.elements[index].Name.Equals(name))
+                {
+                    elementIndex = index;
+                    return true;
+                }
+            }
+
+            elementIndex = -1;
+            return false;
         }
 
         private void EnsureUniqueName(INamedObject newlyAddedElement)

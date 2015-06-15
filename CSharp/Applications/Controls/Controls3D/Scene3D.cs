@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Controls3D.Cameras;
+using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.MouseHandlers;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace Deyo.Controls.Controls3D
             this.viewport3D = new Viewport3D() { IsHitTestVisible = false };
             this.editor = new SceneEditor(this.viewport3D);
             this.pointerHandlersControler = new PointerHandlersController();
+            this.pointerHandlersControler.Handlers.AddLast(new IteractivePointsHandler(this.editor));
             this.pointerHandlersControler.Handlers.AddLast(new OrbitControl(this.editor));
             this.isListeningToMouseEvents = false;
             
@@ -58,6 +60,34 @@ namespace Deyo.Controls.Controls3D
             get
             {
                 return this.pointerHandlersControler;
+            }
+        }
+
+        public OrbitControl OrbitControl
+        {
+            get
+            {
+                OrbitControl orbitControl;
+                if (this.PointerHandlersController.Handlers.TryGetElementOfType<OrbitControl>(Scene3DMouseHandlerNames.OrbitControlHandler, out orbitControl))
+                {
+                    return orbitControl;
+                }
+
+                return null;
+            }
+        }
+
+        public IteractivePointsHandler IteractivePointsHandler
+        {
+            get
+            {
+                IteractivePointsHandler iteractivePointsHandler;
+                if (this.PointerHandlersController.Handlers.TryGetElementOfType<IteractivePointsHandler>(Scene3DMouseHandlerNames.IteractivePointsHandler, out iteractivePointsHandler))
+                {
+                    return iteractivePointsHandler;
+                }
+
+                return null;
             }
         }
 

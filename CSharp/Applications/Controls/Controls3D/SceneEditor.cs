@@ -66,7 +66,7 @@ namespace Deyo.Controls.Controls3D
             }
         }
         
-        private Viewport3D Viewport
+        internal Viewport3D Viewport
         {
             get
             {
