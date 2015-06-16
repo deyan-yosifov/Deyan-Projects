@@ -9,7 +9,7 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D.Visuals
 {
-    public class LineVisual
+    public class LineVisual : IVisual3DOwner
     {
         private Point3D start;
         private Point3D end;
@@ -35,7 +35,7 @@ namespace Deyo.Controls.Controls3D.Visuals
             };
         }
 
-        internal ModelVisual3D Visual
+        public Visual3D Visual
         {
             get
             {

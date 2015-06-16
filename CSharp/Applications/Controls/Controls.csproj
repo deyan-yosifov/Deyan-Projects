@@ -77,9 +77,9 @@
     <Compile Include="Charts\CartesianPlane.cs" />
     <Compile Include="Charts\GraphicProperties.cs" />
     <Compile Include="Charts\ViewportInfo.cs" />
-    <Compile Include="Common\IVisibilityOwner.cs" />
     <Compile Include="Common\INamedObject.cs" />
     <Compile Include="Common\NamedObjectsCollection.cs" />
+    <Compile Include="Common\ObjectPool.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
@@ -105,8 +105,11 @@
     <Compile Include="Controls3D\Shapes\ShapeFactory.cs" />
     <Compile Include="Controls3D\Shapes\Sphere.cs" />
     <Compile Include="Controls3D\Visuals\CubePointVisual.cs" />
+    <Compile Include="Controls3D\Visuals\IVisual3DOwner.cs" />
     <Compile Include="Controls3D\Visuals\LineVisual.cs" />
     <Compile Include="Controls3D\Visuals\PointVisual.cs" />
+    <Compile Include="Controls3D\Visuals\Visual3DPool.cs" />
+    <Compile Include="Controls3D\Visuals\VisualOwner.cs" />
     <Compile Include="Controls3D\Visuals\VisualsFactory.cs" />
     <Compile Include="Dialogs\Explorer\FolderBrowserDialog.xaml.cs">
       <DependentUpon>FolderBrowserDialog.xaml</DependentUpon>

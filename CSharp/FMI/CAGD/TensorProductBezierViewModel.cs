@@ -23,6 +23,8 @@ namespace CAGD
         {
             this.scene = scene;
             this.geometryManager = new TensorProductBezierGeometryManager(scene);
+            this.degreeInDirectionU = 3;
+            this.degreeInDirectionV = 5;
 
             this.scene.StartListeningToMouseEvents();
             this.InitializeScene();
@@ -104,7 +106,32 @@ namespace CAGD
             this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
             this.SceneEditor.Look(new Point3D(25, 25, 35), new Point3D());
 
-            this.geometryManager.GenerateGeometry(new Point3D[,] { /* TODO: */ });
+            this.geometryManager.GenerateGeometry(this.CalculateControlPoints(), 5, 5);
+        }
+
+        private Point3D[,] CalculateControlPoints()
+        {
+            int uPoints = this.DegreeInDirectionU + 1;
+            int vPoints = this.DegreeInDirectionV + 1;
+            Point3D[,] points = new Point3D[uPoints, vPoints];
+            double squareSize = 15;
+            double startX = -squareSize / 2;
+            double deltaX = squareSize / this.DegreeInDirectionU;
+            double startY = -squareSize / 2;
+            double deltaY = squareSize / this.DegreeInDirectionV;
+
+            for (int u = 0; u < uPoints; u++)
+            {
+                for (int v = 0; v < vPoints; v++)
+                {
+                    double x = startX + u * deltaX;
+                    double y = startY + v * deltaY;
+
+                    points[u, v] = new Point3D(x, y, 0);
+                }
+            }
+
+            return points;
         }
     }
 }

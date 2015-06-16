@@ -9,7 +9,7 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D.Visuals
 {
-    public class PointVisual
+    public class PointVisual : IVisual3DOwner
     {
         private Point3D position;
         private double diameter;
@@ -86,7 +86,7 @@ namespace Deyo.Controls.Controls3D.Visuals
             }
         }
 
-        internal ModelVisual3D Visual
+        public Visual3D Visual
         {
             get
             {

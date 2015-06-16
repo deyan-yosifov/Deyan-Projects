@@ -66,7 +66,7 @@ namespace Deyo.Controls.Controls3D
             }
         }
         
-        internal Viewport3D Viewport
+        public Viewport3D Viewport
         {
             get
             {
@@ -105,29 +105,29 @@ namespace Deyo.Controls.Controls3D
             return lineVisual;
         }
 
-        public ModelVisual3D AddShapeVisual(ShapeBase shape)
+        public VisualOwner AddShapeVisual(ShapeBase shape)
         {
             ModelVisual3D visual = new ModelVisual3D() { Content = shape.GeometryModel };
             visual.Transform = new MatrixTransform3D(this.Position.Matrix);
             this.Viewport.Children.Add(visual);
 
-            return visual;
+            return new VisualOwner(visual);
         }
 
-        public ModelVisual3D AddDirectionalLight(Color color, Vector3D directionVector)
+        public VisualOwner AddDirectionalLight(Color color, Vector3D directionVector)
         {
             ModelVisual3D light = new ModelVisual3D() { Content = new DirectionalLight(color, directionVector) };
             this.viewport.Children.Add(light);
 
-            return light;
+            return new VisualOwner(light);
         }
 
-        public ModelVisual3D AddAmbientLight(Color color)
+        public VisualOwner AddAmbientLight(Color color)
         {
             ModelVisual3D light = new ModelVisual3D() { Content = new AmbientLight(color) };
             this.viewport.Children.Add(light);
 
-            return light;
+            return new VisualOwner(light);
         }
 
         public void Look(Point3D fromPoint, Point3D toPoint)
