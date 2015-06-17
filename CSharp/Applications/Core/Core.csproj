@@ -54,6 +54,8 @@
     <Compile Include="Common\PreservableState.cs" />
     <Compile Include="Common\PropertiesChangedEventArgs.cs" />
     <Compile Include="Mathematics\Algebra\AlgebraExtensions.cs" />
+    <Compile Include="Mathematics\Geometry\IntersectionsHelper.cs" />
+    <Compile Include="Mathematics\Geometry\IntersectionType.cs" />
     <Compile Include="Mathematics\MathExtensions.cs" />
     <Compile Include="Media\Imaging\JpegDecoder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
