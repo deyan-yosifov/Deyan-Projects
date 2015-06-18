@@ -1,10 +1,13 @@
-﻿using Deyo.Controls.Controls3D.Visuals;
+﻿using Deyo.Controls.Controls3D.Cameras;
+using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.MouseHandlers;
+using Deyo.Core.Mathematics.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -15,11 +18,15 @@ namespace Deyo.Controls.Controls3D.Iteractions
     {
         private readonly SceneEditor editor;
         private readonly Dictionary<Visual3D, PointVisual> registeredPoints;
+        private PointVisual capturedPoint;
+        private PointIteractionPositionInfo firstIteractionInfo;
         private bool isEnabled;
 
         public IteractivePointsHandler(SceneEditor editor)
         {
             this.editor = editor;
+            this.capturedPoint = null;
+            this.firstIteractionInfo = null;
             this.registeredPoints = new Dictionary<Visual3D, PointVisual>();
             this.IsEnabled = true;
             this.CanMoveOnXAxis = true;
@@ -68,7 +75,9 @@ namespace Deyo.Controls.Controls3D.Iteractions
 
         public bool TryHandleMouseDown(MouseButtonEventArgs e)
         {
-            HitTestResult result = VisualTreeHelper.HitTest(this.editor.Viewport, e.GetPosition(this.editor.Viewport));
+            this.ReleaseCapturedPoint();
+            Point viewportPosition = IteractivePointsHandler.GetPosition(e);
+            HitTestResult result = VisualTreeHelper.HitTest(this.editor.Viewport, viewportPosition);
 
             if (result != null)
             {
@@ -77,7 +86,18 @@ namespace Deyo.Controls.Controls3D.Iteractions
 
                 if (visual != null && this.registeredPoints.TryGetValue(visual, out point))
                 {
-                    System.Diagnostics.Debug.WriteLine("Hit visual 3d!");
+                    this.CapturePoint(point);
+                    Size viewportSize = IteractivePointsHandler.GetViewportSize(e);
+
+                    this.editor.DoActionOnCamera(
+                        (perspectiveCamera) =>
+                        {
+                            this.CalculateFirstIteractionInfo(perspectiveCamera, viewportPosition, viewportSize);
+                        },
+                        (orthographicCamera) =>
+                        {
+                            this.CalculateFirstIteractionInfo(orthographicCamera, viewportPosition, viewportSize);
+                        });
 
                     return true;
                 }
@@ -86,19 +106,114 @@ namespace Deyo.Controls.Controls3D.Iteractions
             return false;
         }
 
+        private void CalculateFirstIteractionInfo(PerspectiveCamera perspectiveCamera, Point viewportPosition, Size viewportSize)
+        {
+            if (this.CanMoveOnXAxis && this.CanMoveOnYAxis && this.CanMoveOnZAxis)
+            {
+                this.CalculateFirstIteractionMovingParallelToProjectionPlane(perspectiveCamera, viewportPosition, viewportSize);
+            }
+            else
+            {
+                // TODO;
+            }
+        }
+
+        private void CalculateFirstIteractionMovingParallelToProjectionPlane(PerspectiveCamera perspectiveCamera, Point viewportPosition, Size viewportSize)
+        {
+            PointIteractionPositionInfo info = new PointIteractionPositionInfo();
+            info.MovementPlanePoint = this.capturedPoint.Position;
+            info.MovementPlaneNormal = perspectiveCamera.LookDirection;
+            info.InitialIteractionPosition = this.CalculateIteractionPosition(perspectiveCamera, viewportPosition, viewportSize, info.MovementPlanePoint, info.MovementPlaneNormal);
+
+            this.firstIteractionInfo = info;
+        }
+
+        private Point3D CalculateIteractionPosition(PerspectiveCamera perspectiveCamera, Point viewportPosition, Size viewportSize, Point3D planePoint, Vector3D planeNormal)
+        {
+            Vector3D iteractionDirection = CameraHelper.GetLookDirectionFromPoint(viewportPosition, viewportSize, perspectiveCamera);
+            Point3D interactionOnMovementPlane = IntersectionsHelper.IntersectLineAndPlane(perspectiveCamera.Position, iteractionDirection, planePoint, planeNormal);
+
+            return interactionOnMovementPlane;
+        }
+
+        private void CalculateFirstIteractionInfo(OrthographicCamera orthographicCamera, Point viewportPosition, Size viewportSize)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryHandleMouseUp(MouseButtonEventArgs e)
         {
-            return true;
+            if (this.capturedPoint != null)
+            {
+                this.ReleaseCapturedPoint();
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryHandleMouseMove(MouseEventArgs e)
         {
-            return true;
+            if (this.capturedPoint != null && this.firstIteractionInfo != null)
+            {                
+                Point viewportPosition = IteractivePointsHandler.GetPosition(e);
+                Size viewportSize = IteractivePointsHandler.GetViewportSize(e);
+
+                this.editor.DoActionOnCamera(
+                    (perspectiveCamera) =>
+                    {
+                        this.MovePoint(perspectiveCamera, viewportPosition, viewportSize);
+                    },
+                    (orthographicCamera) =>
+                    {
+                        this.MovePoint(orthographicCamera, viewportPosition, viewportSize);
+                    });
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private void MovePoint(PerspectiveCamera perspectiveCamera, Point viewportPosition, Size viewportSize)
+        {
+            Point3D iteractionPosition = this.CalculateIteractionPosition(perspectiveCamera, viewportPosition, viewportSize, this.firstIteractionInfo.MovementPlanePoint, this.firstIteractionInfo.MovementPlaneNormal);
+            Vector3D movementVector = iteractionPosition - this.firstIteractionInfo.InitialIteractionPosition;
+
+            this.capturedPoint.Position = this.firstIteractionInfo.MovementPlanePoint + movementVector;
+        }
+
+        private void MovePoint(OrthographicCamera orthographicCamera, Point viewportPosition, Size viewportSize)
+        {
+            throw new NotImplementedException();
         }
 
         public bool TryHandleMouseWheel(MouseWheelEventArgs e)
         {
-            return false;
+            return this.capturedPoint != null;
+        }
+
+        private void CapturePoint(PointVisual point)
+        {
+            this.capturedPoint = point;
+        }
+
+        private void ReleaseCapturedPoint()
+        {
+            this.capturedPoint = null;
+            this.firstIteractionInfo = null;
+        }
+
+        private static Point GetPosition(MouseEventArgs e)
+        {
+            return e.GetPosition((IInputElement)e.Source);
+        }        
+
+        private static Size GetViewportSize(MouseEventArgs e)
+        {
+            FrameworkElement element = (FrameworkElement)e.Source;
+
+            return new Size(element.ActualWidth, element.ActualHeight);
         }
     }
 }

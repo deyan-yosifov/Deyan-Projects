@@ -65,7 +65,14 @@ namespace Deyo.Controls.Controls3D.Cameras
             Vector3D i, j, k;
             GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
             Point point = GetPointOnUnityDistantPlane(pointOnViewport, viewportSize, camera.FieldOfView);
-            Point3D point3D = (camera.Position + k) + (point.X * i) + (point.Y * j);
+            Point3D point3D = GetPoint3DOnUnityDistantPlane(point, camera.Position, i, j, k);
+
+            return point3D;
+        }
+
+        public static Point3D GetPoint3DOnUnityDistantPlane(Point unityDistantPlanePoint, Point3D cameraPosition, Vector3D cameraI, Vector3D cameraJ, Vector3D cameraK)
+        {
+            Point3D point3D = (cameraPosition + cameraK) + (unityDistantPlanePoint.X * cameraI) + (unityDistantPlanePoint.Y * cameraJ);
 
             return point3D;
         }
