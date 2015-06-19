@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Iteractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +15,29 @@ namespace CAGD
     {
         private readonly Scene3D scene;
         private readonly TensorProductBezierGeometryManager geometryManager;
+        private readonly IteractivePointsHandler iteractivePointsHandler;
         private int degreeInDirectionU;
         private int degreeInDirectionV;
         private int devisionsInDirectionU;
         private int devisionsInDirectionV;
+        private bool showControlPoints;
+        private bool showControlLines;
+        private bool showSurfaceLines;
+        private bool showSurfaceGeometry;
 
         public TensorProductBezierViewModel(Scene3D scene)
         {
             this.scene = scene;
+            this.iteractivePointsHandler = this.scene.IteractivePointsHandler;
             this.geometryManager = new TensorProductBezierGeometryManager(scene);
             this.degreeInDirectionU = 3;
             this.degreeInDirectionV = 5;
+            this.devisionsInDirectionU = 10;
+            this.devisionsInDirectionV = 10;
+            this.showControlPoints = true;
+            this.showControlLines = true;
+            this.showSurfaceLines = true;
+            this.showSurfaceGeometry = true;
 
             this.scene.StartListeningToMouseEvents();
             this.InitializeScene();
@@ -93,6 +106,117 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.devisionsInDirectionV, value))
                 {
+                    // TODO:
+                }
+            }
+        }
+
+        public bool ShowControlPoints
+        {
+            get
+            {
+                return this.showControlPoints;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.showControlPoints, value))
+                {
+                    // TODO:
+                }
+            }
+        }
+
+        public bool ShowControlLines
+        {
+            get
+            {
+                return this.showControlLines;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.showControlLines, value))
+                {
+                    // TODO:
+                }
+            }
+        }
+
+        public bool ShowSurfaceLines
+        {
+            get
+            {
+                return this.showSurfaceLines;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.showSurfaceLines, value))
+                {
+                    // TODO:
+                }
+            }
+        }
+
+        public bool ShowSurfaceGeometry
+        {
+            get
+            {
+                return this.showSurfaceGeometry;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.showSurfaceGeometry, value))
+                {
+                    // TODO:
+                }
+            }
+        }
+
+        public bool CanMoveOnXAxis
+        {
+            get
+            {
+                return this.iteractivePointsHandler.CanMoveOnXAxis;
+            }
+            set
+            {
+                if (this.iteractivePointsHandler.CanMoveOnXAxis != value)
+                {
+                    this.iteractivePointsHandler.CanMoveOnXAxis = value;
+                    this.OnPropertyChanged();
+                    // TODO:
+                }
+            }
+        }
+
+        public bool CanMoveOnYAxis
+        {
+            get
+            {
+                return this.iteractivePointsHandler.CanMoveOnYAxis;
+            }
+            set
+            {
+                if (this.iteractivePointsHandler.CanMoveOnYAxis != value)
+                {
+                    this.iteractivePointsHandler.CanMoveOnYAxis = value;
+                    this.OnPropertyChanged();
+                    // TODO:
+                }
+            }
+        }
+
+        public bool CanMoveOnZAxis
+        {
+            get
+            {
+                return this.iteractivePointsHandler.CanMoveOnZAxis;
+            }
+            set
+            {
+                if (this.iteractivePointsHandler.CanMoveOnZAxis != value)
+                {
+                    this.iteractivePointsHandler.CanMoveOnZAxis = value;
+                    this.OnPropertyChanged();
                     // TODO:
                 }
             }
