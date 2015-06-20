@@ -61,7 +61,7 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.degreeInDirectionU, value))
                 {
-                    this.RecalculateGeometry();
+                    this.RecalculateControlPointsGeometry();
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.degreeInDirectionV, value))
                 {
-                    this.RecalculateGeometry();
+                    this.RecalculateControlPointsGeometry();
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.devisionsInDirectionU, value))
                 {
-                    // TODO:
+                    this.RecalculateSurfaceGeometry();
                 }
             }
         }
@@ -106,7 +106,7 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.devisionsInDirectionV, value))
                 {
-                    // TODO:
+                    this.RecalculateSurfaceGeometry();
                 }
             }
         }
@@ -143,7 +143,14 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.showControlLines, value))
                 {
-                    // TODO:
+                    if (value)
+                    {
+                        this.geometryManager.ShowControlLines();
+                    }
+                    else
+                    {
+                        this.geometryManager.HideControlLines();
+                    }
                 }
             }
         }
@@ -158,7 +165,14 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.showSurfaceLines, value))
                 {
-                    // TODO:
+                    if (value)
+                    {
+                        this.geometryManager.ShowSurfaceLines(this.GeometryContext);
+                    }
+                    else
+                    {
+                        this.geometryManager.HideSurfaceLines();
+                    }
                 }
             }
         }
@@ -173,7 +187,14 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.showSurfaceGeometry, value))
                 {
-                    // TODO:
+                    if (value)
+                    {
+                        this.geometryManager.ShowSurfaceGeometry(this.GeometryContext);
+                    }
+                    else
+                    {
+                        this.geometryManager.HideSurfaceGeometry();
+                    }
                 }
             }
         }
@@ -190,7 +211,6 @@ namespace CAGD
                 {
                     this.iteractivePointsHandler.CanMoveOnXAxis = value;
                     this.OnPropertyChanged();
-                    // TODO:
                 }
             }
         }
@@ -207,7 +227,6 @@ namespace CAGD
                 {
                     this.iteractivePointsHandler.CanMoveOnYAxis = value;
                     this.OnPropertyChanged();
-                    // TODO:
                 }
             }
         }
@@ -224,7 +243,6 @@ namespace CAGD
                 {
                     this.iteractivePointsHandler.CanMoveOnZAxis = value;
                     this.OnPropertyChanged();
-                    // TODO:
                 }
             }
         }
@@ -253,12 +271,17 @@ namespace CAGD
             this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
             this.SceneEditor.Look(new Point3D(25, 25, 35), new Point3D());
 
-            this.RecalculateGeometry();
+            this.RecalculateControlPointsGeometry();
         }
 
-        private void RecalculateGeometry()
+        private void RecalculateControlPointsGeometry()
         {
             this.geometryManager.GenerateGeometry(this.CalculateControlPoints(), this.GeometryContext);
+        }
+
+        private void RecalculateSurfaceGeometry()
+        {
+            this.geometryManager.GenerateGeometry(this.GeometryContext);
         }
 
         private Point3D[,] CalculateControlPoints()

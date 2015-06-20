@@ -20,6 +20,7 @@ namespace CAGD
         private readonly Queue<LineVisual> visibleControlLines;
         private readonly Queue<LineVisual> visibleSurfaceLines;
         private PointVisual[,] controlPoints;
+        private Point3D[,] surfacePoints;
 
         public TensorProductBezierGeometryManager(Scene3D scene)
         {
@@ -46,6 +47,12 @@ namespace CAGD
         {
             this.DeleteOldControlPoints();
             this.GenerateNewControlPointsGeometry(controlPoints, geometryContext.ShowControlPoints);
+            this.GenerateGeometry(geometryContext);
+        }
+
+        public void GenerateGeometry(TensorProductBezierGeometryContext geometryContext)
+        {
+            this.RecalculateSurfacePoints(geometryContext.DevisionsInDirectionU, geometryContext.DevisionsInDirectionV);
         }
 
         public void ShowControlPoints()
@@ -67,6 +74,36 @@ namespace CAGD
                 this.controlPointsPool.PushElementToPool(point);
                 this.DetachFromPointEvents(point);
             }
+        }
+
+        public void ShowControlLines()
+        {
+            // TODO:
+        }
+
+        public void HideControlLines()
+        {
+            // TODO:
+        }
+
+        public void ShowSurfaceLines(TensorProductBezierGeometryContext geometryContext)
+        {
+            // TODO:
+        }
+
+        public void HideSurfaceLines()
+        {
+            // TODO:
+        }
+
+        public void ShowSurfaceGeometry(TensorProductBezierGeometryContext geometryContext)
+        {
+            // TODO:
+        }
+
+        public void HideSurfaceGeometry()
+        {
+            // TODO:
         }
 
         private void RegisterVisiblePoint(PointVisual point)
@@ -132,6 +169,61 @@ namespace CAGD
                     this.HideControlPoints();
                 }
             }
+        }
+
+        private void RecalculateSurfacePoints(int uDevisions, int vDevisions)
+        {
+            int uCount = uDevisions + 1;
+            int vCount = vDevisions + 1;
+            this.surfacePoints = new Point3D[uCount, vCount];
+
+            BezierCurve[] vCurves = this.CalculateVCurves();
+
+            for (int i = 0; i < uCount; i++)
+            {
+                double u = (double)i / uDevisions;
+                BezierCurve uCurve = this.CalculateUBezierCurve(vCurves, u);
+
+                for (int j = 0; j < vCount; j++)
+                {                    
+                    double v = (double)j / vDevisions;
+                    this.surfacePoints[i, j] = uCurve.GetPointOnCurve(v);
+                }
+            }
+        }
+
+        private BezierCurve CalculateUBezierCurve(BezierCurve[] vCurves, double u)
+        {
+            int vCount = this.controlPoints.GetLength(1);
+            Point3D[] bezierPoints = new Point3D[vCount];
+
+            for (int v = 0; v < vCount; v++)
+            {
+                bezierPoints[v] = vCurves[v].GetPointOnCurve(u);
+            }
+
+            return new BezierCurve(bezierPoints);
+        }
+
+        private BezierCurve[] CalculateVCurves()
+        {
+            int uCount = this.controlPoints.GetLength(0);
+            int vCount = this.controlPoints.GetLength(1);
+            BezierCurve[] vCurves = new BezierCurve[vCount];
+
+            for (int v = 0; v < vCount; v++)
+            {
+                Point3D[] bezierPoints = new Point3D[uCount];
+
+                for (int u = 0; u < uCount; u++)
+                {
+                    bezierPoints[u] = this.controlPoints[u, v].Position;
+                }
+
+                vCurves[v] = new BezierCurve(bezierPoints);
+            }
+
+            return vCurves;
         }
 
         private void RecalculateControlLines()
