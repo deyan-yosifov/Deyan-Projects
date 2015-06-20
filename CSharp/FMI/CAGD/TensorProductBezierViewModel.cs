@@ -61,7 +61,7 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.degreeInDirectionU, value))
                 {
-                    // TODO:
+                    this.RecalculateGeometry();
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.degreeInDirectionV, value))
                 {
-                    // TODO:
+                    this.RecalculateGeometry();
                 }
             }
         }
@@ -121,7 +121,14 @@ namespace CAGD
             {
                 if (this.SetProperty(ref this.showControlPoints, value))
                 {
-                    // TODO:
+                    if (value)
+                    {
+                        this.geometryManager.ShowControlPoints();
+                    }
+                    else
+                    {
+                        this.geometryManager.HideControlPoints();
+                    }
                 }
             }
         }
@@ -222,6 +229,22 @@ namespace CAGD
             }
         }
 
+        public TensorProductBezierGeometryContext GeometryContext
+        {
+            get
+            {
+                return new TensorProductBezierGeometryContext()
+                {
+                    DevisionsInDirectionU = this.DevisionsInDirectionU,
+                    DevisionsInDirectionV = this.DevisionsInDirectionV,
+                    ShowControlLines = this.ShowControlLines,
+                    ShowControlPoints = this.ShowControlPoints,
+                    ShowSurfaceGeometry = this.ShowSurfaceGeometry,
+                    ShowSurfaceLines = this.ShowSurfaceLines
+                };
+            }
+        }
+
         private void InitializeScene()
         {
             byte directionIntensity = 250;
@@ -230,7 +253,12 @@ namespace CAGD
             this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
             this.SceneEditor.Look(new Point3D(25, 25, 35), new Point3D());
 
-            this.geometryManager.GenerateGeometry(this.CalculateControlPoints(), 5, 5);
+            this.RecalculateGeometry();
+        }
+
+        private void RecalculateGeometry()
+        {
+            this.geometryManager.GenerateGeometry(this.CalculateControlPoints(), this.GeometryContext);
         }
 
         private Point3D[,] CalculateControlPoints()

@@ -14,19 +14,24 @@ namespace CAGD
     {
         private readonly Scene3D scene;
         private readonly Visual3DPool<PointVisual> controlPointsPool;
+        private readonly Visual3DPool<LineVisual> controlLinesPool;
         private readonly Visual3DPool<LineVisual> surfaceLinesPool;
+        private readonly Queue<PointVisual> visibleControlPoints;
+        private readonly Queue<LineVisual> visibleControlLines;
+        private readonly Queue<LineVisual> visibleSurfaceLines;
         private PointVisual[,] controlPoints;
-        private readonly Queue<LineVisual> surfaceLines;
-        //private int lastUDevisions;
-        //private int lastVDevisions;
 
         public TensorProductBezierGeometryManager(Scene3D scene)
         {
             this.scene = scene;
             this.controlPointsPool = new Visual3DPool<PointVisual>(this.SceneEditor.Viewport);
+            this.controlLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
             this.surfaceLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
+            this.visibleControlPoints = new Queue<PointVisual>();
+            this.visibleControlLines = new Queue<LineVisual>();
+            this.visibleSurfaceLines = new Queue<LineVisual>();
+
             this.controlPoints = null;
-            this.surfaceLines = new Queue<LineVisual>();
         }
 
         public SceneEditor SceneEditor
@@ -37,40 +42,62 @@ namespace CAGD
             }
         }
 
-        public void GenerateGeometry(Point3D[,] controlPoints, int uDevisions, int vDevisions)
+        public void GenerateGeometry(Point3D[,] controlPoints, TensorProductBezierGeometryContext geometryContext)
         {
-            this.DeleteControlPoints();
-            this.GenerateControlPointsGeometry(controlPoints);
+            this.DeleteOldControlPoints();
+            this.GenerateNewControlPointsGeometry(controlPoints, geometryContext.ShowControlPoints);
         }
 
-        public void GenerateSurfaceLines(int uDevisions, int vDevisions)
+        public void ShowControlPoints()
         {
+            int count = this.controlPoints.GetLength(0) * this.controlPoints.GetLength(1);
 
+            while (this.visibleControlPoints.Count < count)
+            {
+                PointVisual point = this.controlPointsPool.PopElementFromPool();
+                this.RegisterVisiblePoint(point);
+            }
+        }
+
+        public void HideControlPoints()
+        {
+            while(this.visibleControlPoints.Count > 0)
+            {
+                PointVisual point = this.visibleControlPoints.Dequeue();
+                this.controlPointsPool.PushElementToPool(point);
+                this.DetachFromPointEvents(point);
+            }
+        }
+
+        private void RegisterVisiblePoint(PointVisual point)
+        {
+            this.visibleControlPoints.Enqueue(point);
+            this.AttachToPointEvents(point);
+        }
+
+        private void DeleteOldControlPoints()
+        {
+            this.HideControlPoints();
+            this.controlPoints = null;
+        }
+
+        private void DeleteControlLines()
+        {
+            while (this.visibleControlLines.Count > 0)
+            {
+                this.controlLinesPool.PushElementToPool(this.visibleControlLines.Dequeue());
+            }
         }
 
         private void DeleteSurfaceLines()
         {
-            while (this.surfaceLines.Count > 0)
+            while (this.visibleSurfaceLines.Count > 0)
             {
-                this.surfaceLinesPool.AddElementToPool(this.surfaceLines.Dequeue());
+                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.Dequeue());
             }
         }
 
-        private void DeleteControlPoints()
-        {
-            if (this.controlPoints != null)
-            {
-                foreach (PointVisual point in this.controlPoints)
-                {
-                    this.DetachFromPointEvents(point);
-                    this.controlPointsPool.AddElementToPool(point);
-                }
-
-                this.controlPoints = null;
-            }
-        }
-
-        private void GenerateControlPointsGeometry(Point3D[,] points)
+        private void GenerateNewControlPointsGeometry(Point3D[,] points, bool showControlPoints)
         {
             using (this.SceneEditor.SaveGraphicProperties())
             {
@@ -78,32 +105,46 @@ namespace CAGD
                 this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Color.FromRgb(160, 0, 0));
 
                 int uLength = points.GetLength(0);
-                int vLength = points.GetLength(1);
-
+                int vLength = points.GetLength(1);                
                 this.controlPoints = new PointVisual[uLength, vLength];
-
+                
                 for (int i = 0; i < uLength; i++)
                 {
                     for (int j = 0; j < vLength; j++)
                     {
                         PointVisual controlPoint;
-                        if (!this.controlPointsPool.TryGetElementFromPool(out controlPoint))
+                        if (this.controlPointsPool.TryPopElementFromPool(out controlPoint))
+                        {
+                            controlPoint.Position = points[i, j];
+                        }
+                        else
                         {
                             controlPoint = this.SceneEditor.AddPointVisual(points[i, j]);
                         }
 
-                        this.AttachToPointEvents(controlPoint);
+                        this.controlPoints[i, j] = controlPoint;
+                        this.RegisterVisiblePoint(controlPoint);
                     }
+                }
+
+                if (!showControlPoints)
+                {
+                    this.HideControlPoints();
                 }
             }
         }
 
-        private void GenerateSurfaceLines()
+        private void RecalculateControlLines()
         {
             // TODO:
         }
 
         private void RecalculateSurfaceLines()
+        {
+            // TODO:
+        }
+
+        private void RecalculateSurfaceGeometry()
         {
             // TODO:
         }
@@ -122,7 +163,9 @@ namespace CAGD
 
         private void PointPositionChanged(object sender, EventArgs e)
         {
+            this.RecalculateControlLines();
             this.RecalculateSurfaceLines();
+            this.RecalculateSurfaceGeometry();
         }
     }
 }

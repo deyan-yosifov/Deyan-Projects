@@ -53,6 +53,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="TensorProductBezierGeometryContext.cs" />
     <Compile Include="TensorProductBezierGeometryManager.cs" />
     <Compile Include="TensorProductBezierSurface.xaml.cs">
       <DependentUpon>TensorProductBezierSurface.xaml</DependentUpon>

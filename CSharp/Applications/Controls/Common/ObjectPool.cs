@@ -5,35 +5,40 @@ namespace Deyo.Controls.Common
 {
     public class ObjectPool<T>
     {
-        private readonly Queue<T> pool;
+        private readonly Stack<T> pool;
         private readonly Action<T> hideElement;
         private readonly Action<T> showElement;
 
         public ObjectPool(Action<T> showElement, Action<T> hideElement)
         {
-            this.pool = new Queue<T>();
+            this.pool = new Stack<T>();
             this.showElement = showElement;
             this.hideElement = hideElement;
         }
 
-        public void AddElementToPool(T element)
+        public void PushElementToPool(T element)
         {
             this.hideElement(element);
-            this.pool.Enqueue(element);
+            this.pool.Push(element);
         }
 
-        public bool TryGetElementFromPool(out T element)
+        public T PopElementFromPool()
+        {
+            T element = this.pool.Pop();
+            this.showElement(element);
+
+            return element;
+        }
+
+        public bool TryPopElementFromPool(out T element)
         {
             if (this.pool.Count > 0)
             {
-                element = this.pool.Dequeue();
-                this.showElement(element);
-
+                element = this.PopElementFromPool();
                 return true;
             }
 
             element = default(T);
-
             return false;
         }
     }
