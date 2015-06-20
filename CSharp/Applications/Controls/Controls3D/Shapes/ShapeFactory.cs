@@ -65,6 +65,14 @@ namespace Deyo.Controls.Controls3D.Shapes
             return sphere;
         }
 
+        public Mesh CreateMesh()
+        {
+            Mesh mesh = new Mesh();
+            this.ApplyMatherials(mesh);
+
+            return mesh;
+        }
+
         private void ApplyMatherials(ShapeBase shape)
         {
             foreach (Material material in this.GraphicProperties.MaterialsManager.FrontMaterials)

@@ -101,6 +101,7 @@
     <Compile Include="Controls3D\Shapes\Cube.cs" />
     <Compile Include="Controls3D\Shapes\Cylinder.cs" />
     <Compile Include="Controls3D\Shapes\Line.cs" />
+    <Compile Include="Controls3D\Shapes\Mesh.cs" />
     <Compile Include="Controls3D\Shapes\RotationalShape.cs" />
     <Compile Include="Controls3D\Shapes\ShapeBase.cs" />
     <Compile Include="Controls3D\Shapes\ShapeFactory.cs" />

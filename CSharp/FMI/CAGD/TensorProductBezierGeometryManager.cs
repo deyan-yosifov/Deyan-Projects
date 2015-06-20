@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace CAGD
         private readonly Visual3DPool<PointVisual> controlPointsPool;
         private readonly Visual3DPool<LineVisual> controlLinesPool;
         private readonly Visual3DPool<LineVisual> surfaceLinesPool;
+        private readonly Visual3DPool<VisualOwner> surfaceGeometryPool;
         private readonly Queue<PointVisual> visibleControlPoints;
         private readonly List<LineVisual> visibleControlLines;
         private readonly List<LineVisual> visibleSurfaceLines;
-        private bool isSurfaceGeometryVisible;
+        private VisualOwner visibleSurfaceGeometry;
+        private Mesh surfaceGeometry;
         private PointVisual[,] controlPoints;
         private Point3D[,] surfacePoints;
 
@@ -29,12 +32,14 @@ namespace CAGD
             this.controlPointsPool = new Visual3DPool<PointVisual>(this.SceneEditor.Viewport);
             this.controlLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
             this.surfaceLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
+            this.surfaceGeometryPool = new Visual3DPool<VisualOwner>(this.SceneEditor.Viewport);
             this.visibleControlPoints = new Queue<PointVisual>();
             this.visibleControlLines = new List<LineVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
 
             this.controlPoints = null;
-            this.isSurfaceGeometryVisible = false;
+            this.visibleSurfaceGeometry = null;
+            this.surfaceGeometry = null;
         }
 
         public SceneEditor SceneEditor
@@ -73,6 +78,15 @@ namespace CAGD
             else
             {
                 this.HideSurfaceLines();
+            }
+
+            if (geometryContext.ShowSurfaceGeometry)
+            {
+                this.ShowSurfaceGeometry(geometryContext);
+            }
+            else
+            {
+                this.HideSurfaceGeometry();
             }
         }
 
@@ -147,12 +161,32 @@ namespace CAGD
 
         public void ShowSurfaceGeometry(TensorProductBezierGeometryContext geometryContext)
         {
-            // TODO:
+            if (this.surfaceGeometry == null)
+            {
+                using (this.SceneEditor.SaveGraphicProperties())
+                {
+                    this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceGeometryColor);
+                    this.SceneEditor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(SceneConstants.SurfaceGeometryColor);
+                    this.surfaceGeometry = this.SceneEditor.ShapeFactory.CreateMesh();
+                    this.visibleSurfaceGeometry = this.SceneEditor.AddShapeVisual(this.surfaceGeometry);
+                }
+            }
+
+            if (this.visibleSurfaceGeometry == null)
+            {
+                this.visibleSurfaceGeometry = this.surfaceGeometryPool.PopElementFromPool();
+            }
+
+            this.RecalculateSurfaceGeometry(SceneConstants.IsSmoothBezierSurfaceGeometry);
         }
 
         public void HideSurfaceGeometry()
         {
-            // TODO:
+            if (this.visibleSurfaceGeometry != null)
+            {
+                this.surfaceGeometryPool.PushElementToPool(this.visibleSurfaceGeometry);
+                this.visibleSurfaceGeometry = null;
+            }
         }
 
         private void RegisterVisiblePoint(PointVisual point)
@@ -322,9 +356,84 @@ namespace CAGD
             RecalculateLinesMesh(this.surfacePoints.GetLength(0), this.surfacePoints.GetLength(1), this.visibleSurfaceLines, (i, j) => this.surfacePoints[i, j]);
         }
 
-        private void RecalculateSurfaceGeometry()
+        private void RecalculateSurfaceGeometry(bool isSmooth)
         {
-            // TODO:
+            if (this.visibleSurfaceGeometry == null)
+            {
+                return;
+            }
+
+            if (isSmooth)
+            {
+                this.surfaceGeometry.Geometry = this.CalculateSmoothSurfaceGeometry();
+            }
+            else
+            {
+                this.surfaceGeometry.Geometry = this.CalculateSharpSurfaceGeometry();
+            }
+        }
+
+        private MeshGeometry3D CalculateSmoothSurfaceGeometry()
+        {
+            MeshGeometry3D meshGeometry = new MeshGeometry3D();
+            int uCount = this.surfacePoints.GetLength(0);
+            int vCount = this.surfacePoints.GetLength(1);
+
+            for (int i = 0; i < uCount; i++)
+            {
+                for (int j = 0; j < vCount; j++)
+                {
+                    meshGeometry.Positions.Add(this.surfacePoints[i, j]);
+                }
+            }
+
+            Func<int, int, int> getTriangleIndex = (i, j) => i * vCount + j;
+
+            int uLast = uCount - 1;
+            int vLast = vCount - 1;
+            for (int i = 0; i < uLast; i++)
+            {
+                for (int j = 0; j < vLast; j++)
+                {
+                    meshGeometry.TriangleIndices.Add(getTriangleIndex(i, j));
+                    meshGeometry.TriangleIndices.Add(getTriangleIndex(i + 1, j));
+                    meshGeometry.TriangleIndices.Add(getTriangleIndex(i + 1, j + 1));
+                    meshGeometry.TriangleIndices.Add(getTriangleIndex(i, j));
+                    meshGeometry.TriangleIndices.Add(getTriangleIndex(i + 1, j + 1));
+                    meshGeometry.TriangleIndices.Add(getTriangleIndex(i, j + 1));
+                }
+            }
+
+            return meshGeometry;
+        }
+
+        private MeshGeometry3D CalculateSharpSurfaceGeometry()
+        {
+            MeshGeometry3D meshGeometry = new MeshGeometry3D();
+
+            int uLast = this.surfacePoints.GetLength(0) - 1;
+            int vLast = this.surfacePoints.GetLength(1) - 1;
+
+            for (int i = 0; i < uLast; i++)
+            {
+                for (int j = 0; j < vLast; j++)
+                {
+                    meshGeometry.Positions.Add(this.surfacePoints[i, j]);
+                    meshGeometry.Positions.Add(this.surfacePoints[i + 1, j]);
+                    meshGeometry.Positions.Add(this.surfacePoints[i + 1, j + 1]);
+                    meshGeometry.Positions.Add(this.surfacePoints[i, j + 1]);
+                    int index = meshGeometry.Positions.Count - 4;
+
+                    meshGeometry.TriangleIndices.Add(index);
+                    meshGeometry.TriangleIndices.Add(index + 1);
+                    meshGeometry.TriangleIndices.Add(index + 2);
+                    meshGeometry.TriangleIndices.Add(index);
+                    meshGeometry.TriangleIndices.Add(index + 2);
+                    meshGeometry.TriangleIndices.Add(index + 3);
+                }
+            }
+
+            return meshGeometry;
         }
 
         private void AttachToPointEvents(PointVisual point)
@@ -343,11 +452,11 @@ namespace CAGD
         {
             this.RecalculateControlLines();
 
-            if (this.visibleSurfaceLines.Count > 0 || this.isSurfaceGeometryVisible)
+            if (this.visibleSurfaceLines.Count > 0 || this.visibleSurfaceGeometry != null)
             {
                 this.RecalculateSurfacePoints(this.surfacePoints.GetLength(0) - 1, this.surfacePoints.GetLength(1) - 1);
                 this.RecalculateSurfaceLines();
-                this.RecalculateSurfaceGeometry();
+                this.RecalculateSurfaceGeometry(SceneConstants.IsSmoothBezierSurfaceGeometry);
             }
         }
     }

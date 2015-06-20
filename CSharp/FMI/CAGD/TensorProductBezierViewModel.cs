@@ -31,7 +31,7 @@ namespace CAGD
             this.iteractivePointsHandler = this.scene.IteractivePointsHandler;
             this.geometryManager = new TensorProductBezierGeometryManager(scene);
             this.degreeInDirectionU = 3;
-            this.degreeInDirectionV = 5;
+            this.degreeInDirectionV = 4;
             this.devisionsInDirectionU = 10;
             this.devisionsInDirectionV = 10;
             this.showControlPoints = true;
