@@ -19,6 +19,7 @@ namespace CAGD
         private readonly Queue<PointVisual> visibleControlPoints;
         private readonly List<LineVisual> visibleControlLines;
         private readonly List<LineVisual> visibleSurfaceLines;
+        private bool isSurfaceGeometryVisible;
         private PointVisual[,] controlPoints;
         private Point3D[,] surfacePoints;
 
@@ -33,6 +34,7 @@ namespace CAGD
             this.visibleSurfaceLines = new List<LineVisual>();
 
             this.controlPoints = null;
+            this.isSurfaceGeometryVisible = false;
         }
 
         public SceneEditor SceneEditor
@@ -63,6 +65,15 @@ namespace CAGD
         public void GenerateGeometry(TensorProductBezierGeometryContext geometryContext)
         {
             this.RecalculateSurfacePoints(geometryContext.DevisionsInDirectionU, geometryContext.DevisionsInDirectionV);
+
+            if (geometryContext.ShowSurfaceLines)
+            {
+                this.ShowSurfaceLines(geometryContext);
+            }
+            else
+            {
+                this.HideSurfaceLines();
+            }
         }
 
         public void ShowControlPoints()
@@ -88,7 +99,7 @@ namespace CAGD
 
         public void ShowControlLines()
         {
-            int count = (this.controlPoints.GetLength(0) - 1) * this.controlPoints.GetLength(1) + (this.controlPoints.GetLength(1) - 1) * this.controlPoints.GetLength(0);
+            int count = GetLinesCountOnMesh(this.controlPoints.GetLength(0), this.controlPoints.GetLength(1));
 
             using (this.SceneEditor.SaveGraphicProperties())
             {
@@ -96,21 +107,7 @@ namespace CAGD
                 this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.ControlLinesColor);
                 this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlLinesDiameter;
 
-                while (this.visibleControlLines.Count < count)
-                {
-                    LineVisual line;
-                    if (!this.controlLinesPool.TryPopElementFromPool(out line))
-                    {
-                        line = SceneEditor.AddLineVisual(new Point3D(), new Point3D());
-                    }
-
-                    this.visibleControlLines.Add(line);
-                }
-            }
-
-            while (this.visibleControlLines.Count > count)
-            {                
-                this.controlLinesPool.PushElementToPool(this.visibleControlLines.RemoveLast());
+                ExtensionMethods.EnsureVisibleLinesCount(this.visibleControlLines, this.controlLinesPool, this.SceneEditor, count);
             }
 
             this.RecalculateControlLines();
@@ -126,12 +123,26 @@ namespace CAGD
 
         public void ShowSurfaceLines(TensorProductBezierGeometryContext geometryContext)
         {
-            // TODO:
+            int count = GetLinesCountOnMesh(this.surfacePoints.GetLength(0), this.surfacePoints.GetLength(1));
+
+            using (this.SceneEditor.SaveGraphicProperties())
+            {
+                this.SceneEditor.GraphicProperties.ArcResolution = SceneConstants.SurfaceLinesArcResolution;
+                this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceLinesColor);
+                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
+
+                ExtensionMethods.EnsureVisibleLinesCount(this.visibleSurfaceLines, this.surfaceLinesPool, this.SceneEditor, count);
+            }
+
+            this.RecalculateSurfaceLines();
         }
 
         public void HideSurfaceLines()
         {
-            // TODO:
+            while (this.visibleSurfaceLines.Count > 0)
+            {
+                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.RemoveLast());
+            }
         }
 
         public void ShowSurfaceGeometry(TensorProductBezierGeometryContext geometryContext)
@@ -267,38 +278,48 @@ namespace CAGD
 
         private void RecalculateControlLines()
         {
-            if (this.visibleControlLines.Count == 0)
+            RecalculateLinesMesh(this.controlPoints.GetLength(0), this.controlPoints.GetLength(1), this.visibleControlLines, (i, j) => this.controlPoints[i, j].Position);
+        }
+
+        private static int GetLinesCountOnMesh(int uMeshPointsCount, int vMeshPointsCount)
+        {
+            return (uMeshPointsCount - 1) * vMeshPointsCount + (vMeshPointsCount - 1) * uMeshPointsCount;
+        }
+
+        private static void RecalculateLinesMesh(int uPointsCount, int vPointsCount, List<LineVisual> visibleLines, Func<int, int, Point3D> getPosition)
+        {
+            if (visibleLines.Count == 0)
             {
                 return;
             }
 
-            int lastU = this.controlPoints.GetLength(0) - 1;
-            int lastV = this.controlPoints.GetLength(1) - 1;
+            int lastU = uPointsCount - 1;
+            int lastV = vPointsCount - 1;
             int lineIndex = 0;
 
             for (int i = 0; i < lastU; i++)
             {
                 for (int j = 0; j < lastV; j++)
                 {
-                    this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[i, j].Position, this.controlPoints[i + 1, j].Position);
-                    this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[i, j].Position, this.controlPoints[i, j + 1].Position);
+                    visibleLines[lineIndex++].MoveTo(getPosition(i, j), getPosition(i + 1, j));
+                    visibleLines[lineIndex++].MoveTo(getPosition(i, j), getPosition(i, j + 1));
                 }
             }
 
             for (int i = 0; i < lastU; i++)
             {
-                this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[i, lastV].Position, this.controlPoints[i + 1, lastV].Position);
+                visibleLines[lineIndex++].MoveTo(getPosition(i, lastV), getPosition(i + 1, lastV));
             }
 
             for (int j = 0; j < lastV; j++)
             {
-                this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[lastU, j].Position, this.controlPoints[lastU, j + 1].Position);
+                visibleLines[lineIndex++].MoveTo(getPosition(lastU, j), getPosition(lastU, j + 1));
             }
         }
 
         private void RecalculateSurfaceLines()
         {
-            // TODO:
+            RecalculateLinesMesh(this.surfacePoints.GetLength(0), this.surfacePoints.GetLength(1), this.visibleSurfaceLines, (i, j) => this.surfacePoints[i, j]);
         }
 
         private void RecalculateSurfaceGeometry()
@@ -321,8 +342,13 @@ namespace CAGD
         private void PointPositionChanged(object sender, EventArgs e)
         {
             this.RecalculateControlLines();
-            this.RecalculateSurfaceLines();
-            this.RecalculateSurfaceGeometry();
+
+            if (this.visibleSurfaceLines.Count > 0 || this.isSurfaceGeometryVisible)
+            {
+                this.RecalculateSurfacePoints(this.surfacePoints.GetLength(0) - 1, this.surfacePoints.GetLength(1) - 1);
+                this.RecalculateSurfaceLines();
+                this.RecalculateSurfaceGeometry();
+            }
         }
     }
 }
