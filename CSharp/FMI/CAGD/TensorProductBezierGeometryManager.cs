@@ -17,8 +17,8 @@ namespace CAGD
         private readonly Visual3DPool<LineVisual> controlLinesPool;
         private readonly Visual3DPool<LineVisual> surfaceLinesPool;
         private readonly Queue<PointVisual> visibleControlPoints;
-        private readonly Queue<LineVisual> visibleControlLines;
-        private readonly Queue<LineVisual> visibleSurfaceLines;
+        private readonly List<LineVisual> visibleControlLines;
+        private readonly List<LineVisual> visibleSurfaceLines;
         private PointVisual[,] controlPoints;
         private Point3D[,] surfacePoints;
 
@@ -29,8 +29,8 @@ namespace CAGD
             this.controlLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
             this.surfaceLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
             this.visibleControlPoints = new Queue<PointVisual>();
-            this.visibleControlLines = new Queue<LineVisual>();
-            this.visibleSurfaceLines = new Queue<LineVisual>();
+            this.visibleControlLines = new List<LineVisual>();
+            this.visibleSurfaceLines = new List<LineVisual>();
 
             this.controlPoints = null;
         }
@@ -47,6 +47,16 @@ namespace CAGD
         {
             this.DeleteOldControlPoints();
             this.GenerateNewControlPointsGeometry(controlPoints, geometryContext.ShowControlPoints);
+
+            if (geometryContext.ShowControlLines)
+            {
+                this.ShowControlLines();
+            }
+            else
+            {
+                this.HideControlLines();
+            }
+
             this.GenerateGeometry(geometryContext);
         }
 
@@ -78,12 +88,40 @@ namespace CAGD
 
         public void ShowControlLines()
         {
-            // TODO:
+            int count = (this.controlPoints.GetLength(0) - 1) * this.controlPoints.GetLength(1) + (this.controlPoints.GetLength(1) - 1) * this.controlPoints.GetLength(0);
+
+            using (this.SceneEditor.SaveGraphicProperties())
+            {
+                this.SceneEditor.GraphicProperties.ArcResolution = SceneConstants.ControlLinesArcResolution;
+                this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.ControlLinesColor);
+                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlLinesDiameter;
+
+                while (this.visibleControlLines.Count < count)
+                {
+                    LineVisual line;
+                    if (!this.controlLinesPool.TryPopElementFromPool(out line))
+                    {
+                        line = SceneEditor.AddLineVisual(new Point3D(), new Point3D());
+                    }
+
+                    this.visibleControlLines.Add(line);
+                }
+            }
+
+            while (this.visibleControlLines.Count > count)
+            {                
+                this.controlLinesPool.PushElementToPool(this.visibleControlLines.RemoveLast());
+            }
+
+            this.RecalculateControlLines();
         }
 
         public void HideControlLines()
         {
-            // TODO:
+            while (this.visibleControlLines.Count > 0)
+            {
+                this.controlLinesPool.PushElementToPool(this.visibleControlLines.RemoveLast());
+            }
         }
 
         public void ShowSurfaceLines(TensorProductBezierGeometryContext geometryContext)
@@ -122,7 +160,7 @@ namespace CAGD
         {
             while (this.visibleControlLines.Count > 0)
             {
-                this.controlLinesPool.PushElementToPool(this.visibleControlLines.Dequeue());
+                this.controlLinesPool.PushElementToPool(this.visibleControlLines.RemoveLast());
             }
         }
 
@@ -130,7 +168,7 @@ namespace CAGD
         {
             while (this.visibleSurfaceLines.Count > 0)
             {
-                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.Dequeue());
+                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.RemoveLast());
             }
         }
 
@@ -138,8 +176,9 @@ namespace CAGD
         {
             using (this.SceneEditor.SaveGraphicProperties())
             {
-                this.SceneEditor.GraphicProperties.ArcResolution = 6;
-                this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Color.FromRgb(160, 0, 0));
+                this.SceneEditor.GraphicProperties.ArcResolution = SceneConstants.ControlPointsArcResolution;
+                this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.ControlPointsColor);
+                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlPointsDiameter;
 
                 int uLength = points.GetLength(0);
                 int vLength = points.GetLength(1);                
@@ -228,7 +267,33 @@ namespace CAGD
 
         private void RecalculateControlLines()
         {
-            // TODO:
+            if (this.visibleControlLines.Count == 0)
+            {
+                return;
+            }
+
+            int lastU = this.controlPoints.GetLength(0) - 1;
+            int lastV = this.controlPoints.GetLength(1) - 1;
+            int lineIndex = 0;
+
+            for (int i = 0; i < lastU; i++)
+            {
+                for (int j = 0; j < lastV; j++)
+                {
+                    this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[i, j].Position, this.controlPoints[i + 1, j].Position);
+                    this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[i, j].Position, this.controlPoints[i, j + 1].Position);
+                }
+            }
+
+            for (int i = 0; i < lastU; i++)
+            {
+                this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[i, lastV].Position, this.controlPoints[i + 1, lastV].Position);
+            }
+
+            for (int j = 0; j < lastV; j++)
+            {
+                this.visibleControlLines[lineIndex++].MoveTo(this.controlPoints[lastU, j].Position, this.controlPoints[lastU, j + 1].Position);
+            }
         }
 
         private void RecalculateSurfaceLines()

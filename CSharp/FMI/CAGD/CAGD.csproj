@@ -54,6 +54,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BezierCurve.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="SceneConstants.cs" />
     <Compile Include="TensorProductBezierGeometryContext.cs" />
     <Compile Include="TensorProductBezierGeometryManager.cs" />
     <Compile Include="TensorProductBezierSurface.xaml.cs">
