@@ -70,10 +70,10 @@ namespace CAGD
 
         private static BezierTriangle CalculateInitialBezierTriangle()
         {
-            double squareSize = SceneConstants.InitialSurfaceBoundingTriangleSide;
+            double triangleSide = SceneConstants.InitialSurfaceBoundingTriangleSide;
             Matrix3D matrix = new Matrix3D();
             matrix.Rotate(new Quaternion(new Vector3D(0, 0, 1), 120));
-            Point3D c = new Point3D(0, squareSize / 2, 0);
+            Point3D c = new Point3D(0, triangleSide / Math.Sqrt(3), 0);
             Point3D a = matrix.Transform(c);
             Point3D b = matrix.Transform(a);
 
@@ -82,22 +82,13 @@ namespace CAGD
 
         private Point3D[] CalculateControlPoints()
         {
-            Point3D[] points = new Point3D[BezierTriangle.GetControlPointsCount(this.SurfaceDegree)];            
-            int wLevelsMaximum = this.SurfaceDegree;
             int index = 0;
+            Point3D[] points = new Point3D[BezierTriangle.GetMeshPointsCount(this.SurfaceDegree)];  
 
-            for (int wLevel = 0; wLevel <= wLevelsMaximum; wLevel++)
-            {
-                double w = (double)wLevel / this.SurfaceDegree;
-                int vLevelsMaximum = this.SurfaceDegree - wLevel;
-
-                for (int vLevel = 0; vLevel <= vLevelsMaximum; vLevel++)
+            BezierTriangle.IterateTriangleCoordinates(this.SurfaceDegree, (u, v) =>
                 {
-                    double v = (double)vLevel / this.SurfaceDegree;
-                    double u = 1 - v - w;
                     points[index++] = this.initialBezierTriangle.GetPointOnCurve(u, v);
-                }
-            }
+                });
 
             return points;
         }

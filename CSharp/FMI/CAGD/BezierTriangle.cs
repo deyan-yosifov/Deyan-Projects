@@ -51,6 +51,22 @@ namespace CAGD
             this.degree = degree;
         }
 
+        public Point3D this[int index]
+        {
+            get
+            {
+                return this.points[index];
+            }
+        }
+
+        public int MeshPointsCount
+        {
+            get
+            {
+                return this.points.Length;
+            }
+        }
+
         public int Degree
         {
             get
@@ -64,21 +80,32 @@ namespace CAGD
             return this.GetPointOnCurve(uBarycentricCoordinate, vBarycentricCoordinate, 1 - uBarycentricCoordinate - vBarycentricCoordinate);
         }
 
-        public static int GetControlPointsCount(int degree)
+        public static int GetMeshPointsCount(int devisions)
         {
-            return ((degree + 1) * (degree + 2)) / 2;
+            return ((devisions + 1) * (devisions + 2)) / 2;
         }
 
-        private Point3D GetPointOnCurve(double u, double v, double w)
+        public static void IterateTriangleCoordinates(int sideDevisions, Action<double, double> actionOnUVCoordinates)
         {
-            if (this.Degree == 1)
-            {
-                return InterpolatePoints(this.points[0], this.points[1], this.points[2], u, v, w);
-            }
+            int wLevelsMaximum = sideDevisions;
 
-            int pointIndex = 0;
+            for (int wLevel = 0; wLevel <= wLevelsMaximum; wLevel++)
+            {
+                double w = (double)wLevel / sideDevisions;
+                int vLevelsMaximum = sideDevisions - wLevel;
+
+                for (int vLevel = 0; vLevel <= vLevelsMaximum; vLevel++)
+                {
+                    double v = (double)vLevel / sideDevisions;
+                    double u = 1 - v - w;
+                    actionOnUVCoordinates(u, v);
+                }
+            }
+        }
+
+        public void IterateTrianlges(Action<Point3D, Point3D, Point3D> actionOnTriangle)
+        {
             int firstTriangleIndex = 0;
-            Point3D[] nextPoints = new Point3D[this.points.Length - this.Degree - 1];
 
             for (int trianglesInLevel = this.Degree; trianglesInLevel > 0; trianglesInLevel--)
             {
@@ -90,11 +117,27 @@ namespace CAGD
                     Point3D b = this.points[firstTriangleIndex + i + 1];
                     Point3D c = this.points[nextLevelFirstTriangleIndex + i];
 
-                    nextPoints[pointIndex++] = InterpolatePoints(a, b, c, u, v, w);
+                    actionOnTriangle(a, b, c);
                 }
 
                 firstTriangleIndex = nextLevelFirstTriangleIndex;
             }
+        }
+
+        private Point3D GetPointOnCurve(double u, double v, double w)
+        {
+            if (this.Degree == 1)
+            {
+                return InterpolatePoints(this.points[0], this.points[1], this.points[2], u, v, w);
+            }
+
+            int pointIndex = 0;
+            Point3D[] nextPoints = new Point3D[this.points.Length - this.Degree - 1];
+
+            this.IterateTrianlges((a, b, c) =>
+                {
+                    nextPoints[pointIndex++] = BezierTriangle.InterpolatePoints(a, b, c, u, v, w);
+                });
 
             return new BezierTriangle(nextPoints).GetPointOnCurve(u, v, w);
         }

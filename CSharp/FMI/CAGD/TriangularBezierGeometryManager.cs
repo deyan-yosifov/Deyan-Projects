@@ -10,7 +10,7 @@ namespace CAGD
     {
         private int degree;
         private int devisions;
-        private Point3D[] surfacePoints;
+        private BezierTriangle surfacePoints;
         private PointVisual[] controlPoints;
 
         public TriangularBezierGeometryManager(Scene3D scene)
@@ -57,23 +57,56 @@ namespace CAGD
         protected override void RecalculateSurfacePoints(TriangularBezierGeometryContext geometryContext)
         {
             this.devisions = geometryContext.SurfaceDevisions;
-
-            // TODO:
+            this.RecalculateSurfacePoints();
         }
 
         protected override void RecalculateSurfacePoints()
         {
-            // TODO:
+            Point3D[] surfacePoints = new Point3D[BezierTriangle.GetMeshPointsCount(this.devisions)];
+            BezierTriangle bezierTriangle = this.GetCurrentControlTriange();
+            int index = 0;
+
+            BezierTriangle.IterateTriangleCoordinates(this.devisions, (u, v) =>
+                {
+                    surfacePoints[index++] = bezierTriangle.GetPointOnCurve(u, v);
+                });
+
+            this.surfacePoints = new BezierTriangle(surfacePoints);
         }
 
         protected override void RecalculateControlLines()
         {
-            // TODO:
+            if (this.visibleControlLines.Count == 0)
+            {
+                return;
+            }
+
+            BezierTriangle controlTriangle = this.GetCurrentControlTriange();
+            int index = 0;
+
+            controlTriangle.IterateTrianlges((a, b, c) =>
+                {
+                    this.visibleControlLines[index++].MoveTo(a, b);
+                    this.visibleControlLines[index++].MoveTo(b, c);
+                    this.visibleControlLines[index++].MoveTo(a, c);
+                });
         }
 
         protected override void RecalculateSurfaceLines()
         {
-            // TODO
+            if (this.visibleSurfaceLines.Count == 0)
+            {
+                return;
+            }
+
+            int index = 0;
+
+            this.surfacePoints.IterateTrianlges((a, b, c) =>
+                {
+                    this.visibleSurfaceLines[index++].MoveTo(a, b);
+                    this.visibleSurfaceLines[index++].MoveTo(b, c);
+                    this.visibleSurfaceLines[index++].MoveTo(a, c);
+                });
         }
 
         protected override MeshGeometry3D CalculateSmoothSurfaceGeometry()
@@ -91,6 +124,18 @@ namespace CAGD
         private static int CalculateTriangularMeshLinesCount(int devisions)
         {
             return 3 * ((devisions * (devisions + 1)) / 2);
+        }
+
+        private BezierTriangle GetCurrentControlTriange()
+        {
+            Point3D[] positions = new Point3D[this.controlPoints.Length];
+
+            for (int i = 0; i < positions.Length; i++)
+            {
+                positions[i] = this.controlPoints[i].Position;
+            }
+
+            return new BezierTriangle(positions);
         }
 
         private void GenerateNewControlPointsGeometry(Point3D[] points, int degree, bool showControlPoints)
