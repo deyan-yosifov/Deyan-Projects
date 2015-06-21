@@ -54,7 +54,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BezierCurve.cs" />
+    <Compile Include="BezierGeometryContextBase.cs" />
+    <Compile Include="BezierGeometryManagerBase.cs" />
     <Compile Include="BezierTriangle.cs" />
+    <Compile Include="BezierViewModelBase.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="SceneConstants.cs" />
     <Compile Include="TensorProductBezierGeometryContext.cs" />
@@ -63,6 +66,7 @@
       <DependentUpon>TensorProductBezierSurface.xaml</DependentUpon>
     </Compile>
     <Compile Include="TensorProductBezierViewModel.cs" />
+    <Compile Include="TriangularBezierGeometryContext.cs" />
     <Compile Include="TriangularBezierSurface.xaml.cs">
       <DependentUpon>TriangularBezierSurface.xaml</DependentUpon>
     </Compile>

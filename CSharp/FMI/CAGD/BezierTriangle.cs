@@ -96,7 +96,7 @@ namespace CAGD
 
         private static Point3D InterpolatePoints(Point3D a, Point3D b, Point3D c, double u, double v, double w)
         {
-            return new Point3D(u * a.X + v * b.X + w * c.X, u * a.Y + v * b.Y + w * c.Y, u * a.Z+ v * b.Z + w * c.Z);
+            return new Point3D(u * a.X + v * b.X + w * c.X, u * a.Y + v * b.Y + w * c.Y, u * a.Z + v * b.Z + w * c.Z);
         }
     }
 }
