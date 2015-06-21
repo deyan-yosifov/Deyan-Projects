@@ -64,6 +64,11 @@ namespace CAGD
             return this.GetPointOnCurve(uBarycentricCoordinate, vBarycentricCoordinate, 1 - uBarycentricCoordinate - vBarycentricCoordinate);
         }
 
+        public static int GetControlPointsCount(int degree)
+        {
+            return ((degree + 1) * (degree + 2)) / 2;
+        }
+
         private Point3D GetPointOnCurve(double u, double v, double w)
         {
             if (this.Degree == 1)

@@ -19,24 +19,5 @@ namespace CAGD
 
             return element;
         }
-
-        public static void EnsureVisibleLinesCount(List<LineVisual> visibleLines, Visual3DPool<LineVisual> linesPool, SceneEditor sceneEditor, int visibleCount)
-        {
-            while (visibleLines.Count < visibleCount)
-            {
-                LineVisual line;
-                if (!linesPool.TryPopElementFromPool(out line))
-                {
-                    line = sceneEditor.AddLineVisual(new Point3D(), new Point3D());
-                }
-
-                visibleLines.Add(line);
-            }
-
-            while (visibleLines.Count > visibleCount)
-            {
-                linesPool.PushElementToPool(visibleLines.RemoveLast());
-            }
-        }
     }
 }

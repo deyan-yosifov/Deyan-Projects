@@ -67,9 +67,11 @@
     </Compile>
     <Compile Include="TensorProductBezierViewModel.cs" />
     <Compile Include="TriangularBezierGeometryContext.cs" />
+    <Compile Include="TriangularBezierGeometryManager.cs" />
     <Compile Include="TriangularBezierSurface.xaml.cs">
       <DependentUpon>TriangularBezierSurface.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TriangularBezierViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

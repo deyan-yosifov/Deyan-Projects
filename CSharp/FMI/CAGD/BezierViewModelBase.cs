@@ -15,8 +15,6 @@ namespace CAGD
         private readonly Scene3D scene;
         protected readonly U geometryManager;
         private readonly IteractivePointsHandler iteractivePointsHandler;
-        private int devisionsInDirectionU;
-        private int devisionsInDirectionV;
         private bool showControlPoints;
         private bool showControlLines;
         private bool showSurfaceLines;
@@ -27,8 +25,6 @@ namespace CAGD
             this.scene = scene;
             this.iteractivePointsHandler = this.scene.IteractivePointsHandler;
             this.geometryManager = this.CreateGeometryManager(scene);
-            this.devisionsInDirectionU = 10;
-            this.devisionsInDirectionV = 10;
             this.showControlPoints = true;
             this.showControlLines = true;
             this.showSurfaceLines = true;
@@ -36,36 +32,6 @@ namespace CAGD
 
             this.scene.StartListeningToMouseEvents();
             this.InitializeScene();
-        }
-
-        public int DevisionsInDirectionU
-        {
-            get
-            {
-                return this.devisionsInDirectionU;
-            }
-            set
-            {
-                if (this.SetProperty(ref this.devisionsInDirectionU, value))
-                {
-                    this.RecalculateSurfaceGeometry();
-                }
-            }
-        }
-
-        public int DevisionsInDirectionV
-        {
-            get
-            {
-                return this.devisionsInDirectionV;
-            }
-            set
-            {
-                if (this.SetProperty(ref this.devisionsInDirectionV, value))
-                {
-                    this.RecalculateSurfaceGeometry();
-                }
-            }
         }
 
         public bool ShowControlPoints
@@ -226,6 +192,10 @@ namespace CAGD
 
         protected abstract void RecalculateControlPointsGeometry();
 
+        protected void RecalculateSurfaceGeometry()
+        {
+            this.geometryManager.GenerateGeometry(this.GeometryContext);
+        }
 
         private void InitializeScene()
         {
@@ -236,11 +206,6 @@ namespace CAGD
             this.SceneEditor.Look(new Point3D(25, 25, 35), new Point3D());
 
             this.RecalculateControlPointsGeometry();
-        }
-
-        private void RecalculateSurfaceGeometry()
-        {
-            this.geometryManager.GenerateGeometry(this.GeometryContext);
         }
     }
 }

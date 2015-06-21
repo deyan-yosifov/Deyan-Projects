@@ -20,9 +20,13 @@ namespace CAGD
     /// </summary>
     public partial class TriangularBezierSurface : UserControl
     {
+        private readonly TriangularBezierViewModel viewModel;
+
         public TriangularBezierSurface()
         {
             InitializeComponent();
+            this.viewModel = new TriangularBezierViewModel(this.scene);
+            this.DataContext = this.viewModel;
         }
     }
 }

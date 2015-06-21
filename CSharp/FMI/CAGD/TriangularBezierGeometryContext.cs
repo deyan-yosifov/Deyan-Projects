@@ -8,6 +8,6 @@ namespace CAGD
 {
     public class TriangularBezierGeometryContext : BezierGeometryContextBase
     {
-        public int DevisionsOnEachTriangleSide { get; set; }
+        public int SurfaceDevisions { get; set; }
     }
 }

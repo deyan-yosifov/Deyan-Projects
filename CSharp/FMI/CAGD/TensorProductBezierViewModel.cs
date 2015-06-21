@@ -15,6 +15,8 @@ namespace CAGD
     {
         private int degreeInDirectionU = 3;
         private int degreeInDirectionV = 4;
+        private int devisionsInDirectionU = 10;
+        private int devisionsInDirectionV = 10;
 
         public TensorProductBezierViewModel(Scene3D scene)
             : base(scene)
@@ -51,6 +53,36 @@ namespace CAGD
             }
         }
 
+        public int DevisionsInDirectionU
+        {
+            get
+            {
+                return this.devisionsInDirectionU;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.devisionsInDirectionU, value))
+                {
+                    this.RecalculateSurfaceGeometry();
+                }
+            }
+        }
+
+        public int DevisionsInDirectionV
+        {
+            get
+            {
+                return this.devisionsInDirectionV;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.devisionsInDirectionV, value))
+                {
+                    this.RecalculateSurfaceGeometry();
+                }
+            }
+        }
+
         protected override void RecalculateControlPointsGeometry()
         {
             this.geometryManager.GenerateGeometry(this.CalculateControlPoints(), this.GeometryContext);
@@ -79,7 +111,7 @@ namespace CAGD
             int uPoints = this.DegreeInDirectionU + 1;
             int vPoints = this.DegreeInDirectionV + 1;
             Point3D[,] points = new Point3D[uPoints, vPoints];
-            double squareSize = 15;
+            double squareSize = SceneConstants.InitialSurfaceBoundingSquareSide;
             double startX = -squareSize / 2;
             double deltaX = squareSize / this.DegreeInDirectionU;
             double startY = -squareSize / 2;

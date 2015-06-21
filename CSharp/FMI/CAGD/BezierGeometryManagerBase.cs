@@ -98,7 +98,7 @@ namespace CAGD
                 this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.ControlLinesColor);
                 this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlLinesDiameter;
 
-                ExtensionMethods.EnsureVisibleLinesCount(this.visibleControlLines, this.controlLinesPool, this.SceneEditor, count);
+                this.EnsureVisibleLinesCount(this.visibleControlLines, this.controlLinesPool, count);
             }
 
             this.RecalculateControlLines();
@@ -122,7 +122,7 @@ namespace CAGD
                 this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceLinesColor);
                 this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
 
-                ExtensionMethods.EnsureVisibleLinesCount(this.visibleSurfaceLines, this.surfaceLinesPool, this.SceneEditor, count);
+                this.EnsureVisibleLinesCount(this.visibleSurfaceLines, this.surfaceLinesPool, count);
             }
 
             this.RecalculateSurfaceLines();
@@ -189,6 +189,25 @@ namespace CAGD
         protected abstract MeshGeometry3D CalculateSmoothSurfaceGeometry();
 
         protected abstract MeshGeometry3D CalculateSharpSurfaceGeometry();
+
+        private void EnsureVisibleLinesCount(List<LineVisual> visibleLines, Visual3DPool<LineVisual> linesPool, int visibleCount)
+        {
+            while (visibleLines.Count < visibleCount)
+            {
+                LineVisual line;
+                if (!linesPool.TryPopElementFromPool(out line))
+                {
+                    line = this.SceneEditor.AddLineVisual(new Point3D(), new Point3D());
+                }
+
+                visibleLines.Add(line);
+            }
+
+            while (visibleLines.Count > visibleCount)
+            {
+                linesPool.PushElementToPool(visibleLines.RemoveLast());
+            }
+        }
 
         private void DeleteControlLines()
         {
