@@ -20,6 +20,7 @@ namespace CAGD
         protected readonly List<LineVisual> visibleSurfaceLines;
         private VisualOwner visibleSurfaceGeometry;
         private Mesh surfaceGeometry;
+        private bool isSmoothSurface;
 
         protected BezierGeometryManagerBase(Scene3D scene)
         {
@@ -154,7 +155,8 @@ namespace CAGD
                 this.visibleSurfaceGeometry = this.surfaceGeometryPool.PopElementFromPool();
             }
 
-            this.RecalculateSurfaceGeometry(SceneConstants.IsSmoothBezierSurfaceGeometry);
+            this.isSmoothSurface = geometryContext.ShowSmoothSurfaceGeometry;
+            this.RecalculateSurfaceGeometry();
         }
 
         public void HideSurfaceGeometry()
@@ -164,6 +166,12 @@ namespace CAGD
                 this.surfaceGeometryPool.PushElementToPool(this.visibleSurfaceGeometry);
                 this.visibleSurfaceGeometry = null;
             }
+        }
+
+        public void ChangeSurfaceSmoothness(bool isSmooth)
+        {
+            this.isSmoothSurface = isSmooth;
+            this.RecalculateSurfaceGeometry();
         }
 
         protected void RegisterVisiblePoint(PointVisual point)
@@ -225,14 +233,14 @@ namespace CAGD
             }
         }
 
-        private void RecalculateSurfaceGeometry(bool isSmooth)
+        private void RecalculateSurfaceGeometry()
         {
             if (this.visibleSurfaceGeometry == null)
             {
                 return;
             }
 
-            if (isSmooth)
+            if (this.isSmoothSurface)
             {
                 this.surfaceGeometry.Geometry = this.CalculateSmoothSurfaceGeometry();
             }
@@ -262,7 +270,7 @@ namespace CAGD
             if (this.visibleSurfaceLines.Count > 0 || this.visibleSurfaceGeometry != null)
             {
                 this.RecalculateSurfaceLines();
-                this.RecalculateSurfaceGeometry(SceneConstants.IsSmoothBezierSurfaceGeometry);
+                this.RecalculateSurfaceGeometry();
             }
         }
     }

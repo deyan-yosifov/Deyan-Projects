@@ -19,6 +19,7 @@ namespace CAGD
         private bool showControlLines;
         private bool showSurfaceLines;
         private bool showSurfaceGeometry;
+        private bool showSmoothSurfaceGeometry;
 
         protected BezierViewModelBase(Scene3D scene)
         {
@@ -29,6 +30,7 @@ namespace CAGD
             this.showControlLines = true;
             this.showSurfaceLines = true;
             this.showSurfaceGeometry = true;
+            this.showSmoothSurfaceGeometry = false;
 
             this.scene.StartListeningToMouseEvents();
             this.InitializeScene();
@@ -118,6 +120,21 @@ namespace CAGD
                     {
                         this.geometryManager.HideSurfaceGeometry();
                     }
+                }
+            }
+        }
+
+        public bool ShowSmoothSurfaceGeometry
+        {
+            get
+            {
+                return this.showSmoothSurfaceGeometry;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.showSmoothSurfaceGeometry, value))
+                {
+                    this.geometryManager.ChangeSurfaceSmoothness(value);
                 }
             }
         }

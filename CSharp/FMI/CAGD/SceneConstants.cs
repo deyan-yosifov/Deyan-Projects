@@ -21,6 +21,5 @@ namespace CAGD
         public static readonly double SurfaceLinesDiameter = 0.2;
         public static readonly double InitialSurfaceBoundingSquareSide = 15;
         public static readonly double InitialSurfaceBoundingTriangleSide = 18;
-        public static readonly bool IsSmoothBezierSurfaceGeometry = false;
     }
 }

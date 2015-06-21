@@ -12,5 +12,6 @@ namespace CAGD
         public bool ShowControlLines { get; set; }
         public bool ShowSurfaceLines { get; set; }
         public bool ShowSurfaceGeometry { get; set; }
+        public bool ShowSmoothSurfaceGeometry { get; set; }
     }
 }

@@ -54,7 +54,8 @@ namespace CAGD
                 ShowControlLines = this.ShowControlLines,
                 ShowControlPoints = this.ShowControlPoints,
                 ShowSurfaceGeometry = this.ShowSurfaceGeometry,
-                ShowSurfaceLines = this.ShowSurfaceLines
+                ShowSurfaceLines = this.ShowSurfaceLines,
+                ShowSmoothSurfaceGeometry = this.ShowSmoothSurfaceGeometry
             };
         }
 
