@@ -103,25 +103,42 @@ namespace CAGD
             }
         }
 
-        public void IterateTrianlges(Action<Point3D, Point3D, Point3D> actionOnTriangle)
+        public void IterateTriangleIndexes(bool skipNonParallelTriangles, Action<int, int, int> actionOnTrianlgePointsIndexes)
         {
             int firstTriangleIndex = 0;
 
-            for (int trianglesInLevel = this.Degree; trianglesInLevel > 0; trianglesInLevel--)
+            for (int parallelTrianglesInLevel = this.Degree; parallelTrianglesInLevel > 0; parallelTrianglesInLevel--)
             {
-                int nextLevelFirstTriangleIndex = firstTriangleIndex + trianglesInLevel + 1;
+                int nextLevelFirstTriangleIndex = firstTriangleIndex + parallelTrianglesInLevel + 1;
+                int nonParallelTrianglesInLevel = parallelTrianglesInLevel - 1;
 
-                for (int i = 0; i < trianglesInLevel; i++)
+                for (int i = 0; i < nonParallelTrianglesInLevel; i++)
                 {
-                    Point3D a = this.points[firstTriangleIndex + i];
-                    Point3D b = this.points[firstTriangleIndex + i + 1];
-                    Point3D c = this.points[nextLevelFirstTriangleIndex + i];
+                    actionOnTrianlgePointsIndexes(firstTriangleIndex + i, firstTriangleIndex + i + 1, nextLevelFirstTriangleIndex + i);
 
-                    actionOnTriangle(a, b, c);
+                    if (!skipNonParallelTriangles)
+                    {
+                        actionOnTrianlgePointsIndexes(firstTriangleIndex + i + 1, nextLevelFirstTriangleIndex + i + 1, nextLevelFirstTriangleIndex + i);
+                    }
                 }
+
+                int iLast = nonParallelTrianglesInLevel;
+                actionOnTrianlgePointsIndexes(firstTriangleIndex + iLast, firstTriangleIndex + iLast + 1, nextLevelFirstTriangleIndex + iLast);
 
                 firstTriangleIndex = nextLevelFirstTriangleIndex;
             }
+        }
+
+        public void IterateTrianlges(bool skipNonParallelTriangles, Action<Point3D, Point3D, Point3D> actionOnTrianglePoints)
+        {
+            this.IterateTriangleIndexes(skipNonParallelTriangles, (i, j, k) =>
+                {
+                    Point3D a = this.points[i];
+                    Point3D b = this.points[j];
+                    Point3D c = this.points[k];
+
+                    actionOnTrianglePoints(a, b, c);
+                });
         }
 
         private Point3D GetPointOnCurve(double u, double v, double w)
@@ -134,7 +151,7 @@ namespace CAGD
             int pointIndex = 0;
             Point3D[] nextPoints = new Point3D[this.points.Length - this.Degree - 1];
 
-            this.IterateTrianlges((a, b, c) =>
+            this.IterateTrianlges(true, (a, b, c) =>
                 {
                     nextPoints[pointIndex++] = BezierTriangle.InterpolatePoints(a, b, c, u, v, w);
                 });

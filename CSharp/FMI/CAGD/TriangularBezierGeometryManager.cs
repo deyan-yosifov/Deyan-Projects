@@ -84,7 +84,7 @@ namespace CAGD
             BezierTriangle controlTriangle = this.GetCurrentControlTriange();
             int index = 0;
 
-            controlTriangle.IterateTrianlges((a, b, c) =>
+            controlTriangle.IterateTrianlges(true, (a, b, c) =>
                 {
                     this.visibleControlLines[index++].MoveTo(a, b);
                     this.visibleControlLines[index++].MoveTo(b, c);
@@ -101,7 +101,7 @@ namespace CAGD
 
             int index = 0;
 
-            this.surfacePoints.IterateTrianlges((a, b, c) =>
+            this.surfacePoints.IterateTrianlges(true, (a, b, c) =>
                 {
                     this.visibleSurfaceLines[index++].MoveTo(a, b);
                     this.visibleSurfaceLines[index++].MoveTo(b, c);
@@ -111,14 +111,40 @@ namespace CAGD
 
         protected override MeshGeometry3D CalculateSmoothSurfaceGeometry()
         {
-            // TODO:
-            return new MeshGeometry3D();
+            MeshGeometry3D mesh = new MeshGeometry3D();
+            int pointsCount = this.surfacePoints.MeshPointsCount;
+
+            for (int i = 0; i < pointsCount; i++)
+            {
+                mesh.Positions.Add(this.surfacePoints[i]);
+            }
+
+            this.surfacePoints.IterateTriangleIndexes(false, (a, b, c) =>
+                {
+                    mesh.TriangleIndices.Add(a);
+                    mesh.TriangleIndices.Add(b);
+                    mesh.TriangleIndices.Add(c);
+                });
+
+            return mesh;
         }
 
         protected override MeshGeometry3D CalculateSharpSurfaceGeometry()
         {
-            // TODO:
-            return new MeshGeometry3D();
+            MeshGeometry3D mesh = new MeshGeometry3D();
+
+            this.surfacePoints.IterateTrianlges(false, (a, b, c) =>
+                {
+                    mesh.Positions.Add(a);
+                    mesh.Positions.Add(b);
+                    mesh.Positions.Add(c);
+
+                    mesh.TriangleIndices.Add(mesh.Positions.Count - 3);
+                    mesh.TriangleIndices.Add(mesh.Positions.Count - 2);
+                    mesh.TriangleIndices.Add(mesh.Positions.Count - 1);
+                });
+
+            return mesh;
         }
 
         private static int CalculateTriangularMeshLinesCount(int devisions)

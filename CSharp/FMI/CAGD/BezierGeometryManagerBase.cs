@@ -257,10 +257,10 @@ namespace CAGD
         private void PointPositionChanged(object sender, EventArgs e)
         {
             this.RecalculateControlLines();
+            this.RecalculateSurfacePoints();
 
             if (this.visibleSurfaceLines.Count > 0 || this.visibleSurfaceGeometry != null)
             {
-                this.RecalculateSurfacePoints();
                 this.RecalculateSurfaceLines();
                 this.RecalculateSurfaceGeometry(SceneConstants.IsSmoothBezierSurfaceGeometry);
             }
