@@ -108,13 +108,23 @@ namespace Deyo.Controls.Controls3D.Iteractions
 
         private void CalculateFirstIteractionInfo(PerspectiveCamera perspectiveCamera, Point viewportPosition, Size viewportSize)
         {
-            if (this.CanMoveOnXAxis && this.CanMoveOnYAxis && this.CanMoveOnZAxis)
+            int allowedDirections = (this.CanMoveOnXAxis ? 1 : 0) + (this.CanMoveOnYAxis ? 1 : 0) + (this.CanMoveOnZAxis ? 1 : 0);
+
+            if (allowedDirections == 3)
             {
                 this.CalculateFirstIteractionMovingParallelToProjectionPlane(perspectiveCamera, viewportPosition, viewportSize);
             }
-            else
+            else if(allowedDirections == 2)
             {
                 // TODO;
+            }
+            else if (allowedDirections == 1)
+            {
+                // TODO;
+            }
+            else
+            {
+                this.firstIteractionInfo = null;
             }
         }
 
