@@ -59,6 +59,9 @@
     <Compile Include="BezierTriangle.cs" />
     <Compile Include="BezierViewModelBase.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="InfoButton.xaml.cs">
+      <DependentUpon>InfoButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SceneConstants.cs" />
     <Compile Include="TensorProductBezierGeometryContext.cs" />
     <Compile Include="TensorProductBezierGeometryManager.cs" />
@@ -72,6 +75,10 @@
       <DependentUpon>TriangularBezierSurface.xaml</DependentUpon>
     </Compile>
     <Compile Include="TriangularBezierViewModel.cs" />
+    <Page Include="InfoButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

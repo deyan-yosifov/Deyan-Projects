@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls3D="clr-namespace:Deyo.Controls.Controls3D;assembly=Deyo.Controls"
+             xmlns:CAGD="clr-namespace:CAGD"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
     <Grid>
@@ -96,7 +97,10 @@
             </Grid>
         </ScrollViewer>
         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="5 0 5 5" Background="AliceBlue">
-            <controls3D:Scene3D x:Name="scene" />
+            <Grid>
+                <controls3D:Scene3D x:Name="scene" />
+                <CAGD:InfoButton Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" />
+            </Grid>            
         </Border>
     </Grid>
 </UserControl>
