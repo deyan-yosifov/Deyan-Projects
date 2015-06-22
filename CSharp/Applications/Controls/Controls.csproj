@@ -87,6 +87,7 @@
     <Compile Include="Controls3D\GraphicProperties.cs" />
     <Compile Include="Controls3D\GraphicPropertyNames.cs" />
     <Compile Include="Controls3D\GraphicState.cs" />
+    <Compile Include="Controls3D\Iteractions\AxisDirection.cs" />
     <Compile Include="Controls3D\Iteractions\IteractivePointsHandler.cs" />
     <Compile Include="Controls3D\Iteractions\PointIteractionPositionInfo.cs" />
     <Compile Include="Controls3D\MaterialsManager.cs" />

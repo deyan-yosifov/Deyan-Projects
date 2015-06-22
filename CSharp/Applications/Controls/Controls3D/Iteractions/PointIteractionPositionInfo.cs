@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D.Iteractions
@@ -16,6 +12,8 @@ namespace Deyo.Controls.Controls3D.Iteractions
 
         public Point3D InitialIteractionPosition { get; set; }
 
-        public Vector? ProjectionLineVectorOnUnityDistantPlane { get; set; }
+        public Vector3D? ProjectionLineVector { get; set; }
+
+        public Vector3D? ProjectionPlaneVector { get; set; }
     }
 }
