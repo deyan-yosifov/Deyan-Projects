@@ -221,7 +221,7 @@ namespace CAGD
             this.SceneEditor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             this.SceneEditor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
             this.SceneEditor.Look(new Point3D(25, 25, 35), new Point3D());
-
+            
             this.RecalculateControlPointsGeometry();
         }
     }

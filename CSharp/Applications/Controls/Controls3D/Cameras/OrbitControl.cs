@@ -19,6 +19,7 @@ namespace Deyo.Controls.Controls3D.Cameras
     {
         private const double FullCircleAngleInDegrees = 360;
         private const int WheelSingleDelta = 120;
+        private static readonly Vector3D zAxisVector = new Vector3D(0, 0, 1);
         private readonly SceneEditor editor;
         private int previousMoveTimestamp = 0;
         private bool isEnabled;
@@ -218,9 +219,31 @@ namespace Deyo.Controls.Controls3D.Cameras
 
                 Point3D lookAtPoint = currentCameraPosition + currentCameraLookDirection;
                 Point3D cameraPosition = lookAtPoint + reverseLookDirection;
+                double rollAngleInDegrees = OrbitControl.CalculateRollAngleOnOrbit(reverseLookDirection, currentCameraLookDirection);
 
-                this.Editor.Look(cameraPosition, lookAtPoint);
+                this.Editor.Look(cameraPosition, lookAtPoint, rollAngleInDegrees);
             }
+        }
+
+        private static double CalculateRollAngleOnOrbit(Vector3D reverseLookDirection, Vector3D previousCameraLookDirection)
+        {
+            double rollAngle = 0;
+            reverseLookDirection.Normalize();
+
+            if (Math.Abs(reverseLookDirection.Z).IsEqualTo(zAxisVector.Z))
+            {
+                previousCameraLookDirection.Normalize();
+
+                if (Math.Abs(previousCameraLookDirection.Z) != zAxisVector.Z)
+                {
+                    Vector projectedPreviousLook = new Vector(previousCameraLookDirection.X, previousCameraLookDirection.Y);
+                    Vector currentLookUp = new Vector(0, -reverseLookDirection.Z);
+
+                    rollAngle = Vector.AngleBetween(projectedPreviousLook, currentLookUp);
+                }
+            }
+
+            return rollAngle;
         }
 
         private void Pan(PerspectiveCamera perspectiveCamera, Point panPoint, Size viewportSize)
