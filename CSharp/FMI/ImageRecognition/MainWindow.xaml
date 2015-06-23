@@ -1,0 +1,46 @@
+﻿<Window x:Class="ImageRecognition.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Курсова работа по &quot;Разпознаване на образи&quot;" Height="800" Width="1000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2.5*" />
+            <ColumnDefinition Width="4" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" BorderBrush="Black" BorderThickness="3">
+            <StackPanel>
+                <Image Width="400" Margin="5" Source="Resources/fmi-logo.png" />
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 0 10 0" FontWeight="Bold" FontSize="18">Курсова работа по "Разпознаване на образи" на тема:</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 0 10 0" FontWeight="Bold" FontSize="18">"Геометрично нормализиране на изображения чрез моменти от втори ред в обектното пространство. Сравняване на нормализираните изображения."</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">Изготвил: Деян Йосифов, Ф.Н. М24906, Магистърска програма "Компютърна графика"</TextBlock>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="0" Margin="10 10 8 10" BorderBrush="Black" BorderThickness="3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">Изображение</TextBlock>
+            </Grid>
+        </Border>
+
+        <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0 10 0 10" Background="#eeeeee" />
+
+        <Border Grid.Row="1" Grid.Column="2" Margin="8 10 10 10 " BorderBrush="Black" BorderThickness="3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">База данни</TextBlock>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
