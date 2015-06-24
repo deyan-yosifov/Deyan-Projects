@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
-namespace ImageRecognition.Common
+namespace ImageRecognition.ViewModels
 {
-
     public class ViewModelBase : INotifyPropertyChanged
     {
         /// <summary>
