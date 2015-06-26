@@ -6,6 +6,28 @@
         Title="Курсова работа по &quot;Разпознаване на образи&quot;" Height="800" Width="1000">    
     <Window.Resources>
         <common:BooleanToVisibilityConverter x:Key="visibilityConverter" />
+
+        <Style TargetType="common:ButtonImageControl">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="common:ButtonImageControl">
+                        <Border x:Name="border" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Image x:Name="buttonImage" Stretch="Fill" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="#550000ff" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="#990000ff" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -30,15 +52,20 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">Изображение</TextBlock>
-                <StackPanel Grid.Row="1" Orientation="Horizontal">
-                    <Button Command="{Binding OpenImageCommand}">Open image</Button>
-                    <Button Command="{Binding AddToDatabaseCommand}">Add to database</Button>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">Изображение</TextBlock>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Open-icon.png" />
+                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Search-icon.png" />
+                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Stop-icon.png" />
+                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Help-icon.png" />
+                    </StackPanel>
                 </StackPanel>
-                <Image Grid.Row="2" Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="10">
+                    <Image Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                </Border>
             </Grid>
         </Border>
 
@@ -50,7 +77,10 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">База данни</TextBlock>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">База данни</TextBlock>
+                    <common:ButtonImageControl Command="{Binding AddToDatabaseCommand}" ButtonImageSource="Resources/Add-icon.png" />
+                </StackPanel>
                 <ListBox Grid.Row="1" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ItemsSource="{Binding Images}" SelectionMode="Single" ScrollViewer.CanContentScroll="False"
                     SelectedItem="{Binding Path=SelectedDatabaseImage, Mode=TwoWay}">
@@ -63,31 +93,11 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>                                    
                                     <Image Source="{Binding ImageSource}" HorizontalAlignment="Stretch" />
-                                    <Button Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"
+                                    <common:ButtonImageControl Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"
                                             Visibility="{Binding IsSelected, Converter={StaticResource visibilityConverter}}"
-                                            Command="{Binding DeleteImageCommand}">
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="Button">
-                                                            <Border x:Name="border" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                                <Image Source="Resources/Close-icon.png" Stretch="Fill" />
-                                                            </Border>
-                                                            <ControlTemplate.Triggers>
-                                                                <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter Property="Background" TargetName="border" Value="#550000ff" />
-                                                                </Trigger>
-                                                                <Trigger Property="IsPressed" Value="True">
-                                                                    <Setter Property="Background" TargetName="border" Value="#990000ff" />
-                                                                </Trigger>
-                                                            </ControlTemplate.Triggers>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
+                                            Command="{Binding DeleteImageCommand}"                                                                
+                                            ButtonImageSource="Resources/Close-icon.png"
+                                            />
                                     <TextBlock FontWeight="Bold" FontSize="14" Grid.Row="1" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding ImageDescription}" />
                                 </Grid>
                             </Border>

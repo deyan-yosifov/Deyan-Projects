@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ImageRecognition.Database
 {
@@ -93,7 +94,7 @@ namespace ImageRecognition.Database
             if (File.Exists(this.databaseFilePath))
             {
                 string json = File.ReadAllText(this.databaseFilePath);
-                IEnumerable<DatabaseImage> images = JsonConvert.DeserializeObject<IEnumerable<DatabaseImage>>(json);
+                IEnumerable<DatabaseImage> images = JsonConvert.DeserializeObject<IEnumerable<DatabaseImage>>(json) ?? Enumerable.Empty<DatabaseImage>();
 
                 foreach (DatabaseImage image in images)
                 {

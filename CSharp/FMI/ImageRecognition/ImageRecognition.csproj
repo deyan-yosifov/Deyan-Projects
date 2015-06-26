@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\ButtonImageControl.cs" />
     <Compile Include="Common\ImageExtensions.cs" />
     <Compile Include="Database\JsonImagesDatabase.cs" />
     <Compile Include="Database\NormalizedImageInfo.cs" />
@@ -112,6 +113,11 @@
   <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Close-icon.png" />
+    <Resource Include="Resources\Help-icon.png" />
+    <Resource Include="Resources\Add-icon.png" />
+    <Resource Include="Resources\Open-icon.png" />
+    <Resource Include="Resources\Search-icon.png" />
+    <Resource Include="Resources\Stop-icon.png" />
     <Content Include="Sample images modified\Crossbow-modified.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
