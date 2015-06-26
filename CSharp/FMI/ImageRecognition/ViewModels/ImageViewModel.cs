@@ -1,21 +1,25 @@
 ﻿using ImageRecognition.Common;
 using ImageRecognition.Database;
 using System;
-using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace ImageRecognition.Models
+namespace ImageRecognition.ViewModels
 {
-    public class ImageModel
+    public class ImageViewModel : ViewModelBase
     {
         private readonly NormalizedImage normalizedImage;
         private BitmapSource imageSource;
+        private ICommand deleteImageCommand;
+        private bool isSelected;
 
-        public ImageModel(NormalizedImage normalizedImage)
+        public ImageViewModel(NormalizedImage normalizedImage)
         {
             this.normalizedImage = normalizedImage;
+            this.deleteImageCommand = null;
+            this.isSelected = false;
         }
 
         public int Id
@@ -68,6 +72,30 @@ namespace ImageRecognition.Models
                 }
 
                 return this.imageSource;
+            }
+        }
+
+        public bool IsSelected
+        {
+            get
+            {
+                return this.isSelected;
+            }
+            set
+            {
+                this.SetProperty(ref this.isSelected, value, "IsSelected");
+            }
+        }
+
+        public ICommand DeleteImageCommand
+        {
+            get
+            {
+                return this.deleteImageCommand;
+            }
+            set
+            {
+                this.SetProperty(ref this.deleteImageCommand, value, "DeleteImageCommand");
             }
         }
     }

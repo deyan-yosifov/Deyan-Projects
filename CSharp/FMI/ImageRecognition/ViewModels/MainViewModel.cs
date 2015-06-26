@@ -1,7 +1,6 @@
 ﻿using ImageRecognition.Common;
 using ImageRecognition.Database;
 using ImageRecognition.ImageRecognizing;
-using ImageRecognition.Models;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
@@ -15,26 +14,33 @@ namespace ImageRecognition.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private const string ImagesDatabaseFolderName = "ImagesDatabase";
-        private readonly ObservableCollection<ImageModel> images;
+        private readonly ObservableCollection<ImageViewModel> images;
         private readonly INormalizedImagesDatabase database;
         private ICommand openImageCommand;
         private ICommand addToDatabaseCommand;
         private ICommand compareWithDatabaseImagesCommand;
         private ICommand deleteImageFromDatabaseCommand;
-        private BitmapSource currentImage;
+        private BitmapSource currentImageSource;
         private string imageDescription;
+        private ImageViewModel selectedDatabaseImage;
 
         public MainViewModel()
         {
             this.database = new JsonImagesDatabase(Path.Combine(Directory.GetCurrentDirectory(), ImagesDatabaseFolderName));
-            this.images = new ObservableCollection<ImageModel>();
-            this.currentImage = null;
+            this.images = new ObservableCollection<ImageViewModel>();
+            this.currentImageSource = null;
+            this.selectedDatabaseImage = null;
 
             this.openImageCommand = new DelegateCommand((parameter) => { this.OpenImage(); });
             this.addToDatabaseCommand = new DelegateCommand((parameter) => { this.AddImageToDataBase(); });
+
+            foreach (NormalizedImage image in this.database.Images)
+            {
+                this.AddImageViewModel(image);
+            }
         }
 
-        public ObservableCollection<ImageModel> Images
+        public ObservableCollection<ImageViewModel> Images
         {
             get
             {
@@ -90,15 +96,42 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public BitmapSource CurrentImage
+        public ImageViewModel SelectedDatabaseImage
         {
             get
             {
-                return this.currentImage;
+                return this.selectedDatabaseImage;
             }
             set
             {
-                this.SetProperty(ref this.currentImage, value, "CurrentImage");
+                if (this.selectedDatabaseImage != value)
+                {
+                    if (this.selectedDatabaseImage != null)
+                    {
+                        this.selectedDatabaseImage.IsSelected = false;
+                    }
+
+                    this.selectedDatabaseImage = value;
+
+                    if (this.selectedDatabaseImage != null)
+                    {
+                        this.selectedDatabaseImage.IsSelected = true;
+                    }
+
+                    this.OnPropertyChanged("SelectedDatabaseImage");
+                }
+            }
+        }
+
+        public BitmapSource CurrentImageSource
+        {
+            get
+            {
+                return this.currentImageSource;
+            }
+            set
+            {
+                this.SetProperty(ref this.currentImageSource, value, "CurrentImageSource");
             }
         }
 
@@ -124,7 +157,7 @@ namespace ImageRecognition.ViewModels
 
         private void AddImageToDataBase()
         {
-            if (this.currentImage == null)
+            if (this.currentImageSource == null)
             {
                 return;
             }
@@ -132,12 +165,18 @@ namespace ImageRecognition.ViewModels
             NormalizedImageInfo info = new NormalizedImageInfo()
             {
                 ImageDescription = this.ImageDescription,
-                ImageSource = this.currentImage,
-                MainInertiaAxis = ImagesComparer.CalculateMainInertiaAxis(this.currentImage)
+                ImageSource = this.currentImageSource,
+                MainInertiaAxis = ImagesComparer.CalculateMainInertiaAxis(this.currentImageSource)
             };
             
             NormalizedImage image = this.Database.AddImage(info);
+            this.AddImageViewModel(image);
             MessageBox.Show("Successfully added image with id: " + image.Id);
+        }
+
+        private void AddImageViewModel(NormalizedImage image)
+        {
+            this.Images.Add(new ImageViewModel(image));
         }
 
         private void OpenImage()
@@ -154,7 +193,7 @@ namespace ImageRecognition.ViewModels
                 {
                     BitmapSource bitmap = ImageExtensions.CreateBitmapSource(dialog.OpenFile());
                     this.ImageDescription = Path.GetFileNameWithoutExtension(dialog.FileName);
-                    this.CurrentImage = bitmap;
+                    this.CurrentImageSource = bitmap;
                 }
                 catch
                 {

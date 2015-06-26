@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\ImageExtensions.cs" />
     <Compile Include="Database\JsonImagesDatabase.cs" />
     <Compile Include="Database\NormalizedImageInfo.cs" />
@@ -62,8 +63,8 @@
     <Compile Include="Database\INormalizedImagesDatabase.cs" />
     <Compile Include="ImageRecognizing\Axis.cs" />
     <Compile Include="ImageRecognizing\ImagesComparer.cs" />
-    <Compile Include="Models\ImageModel.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
+    <Compile Include="ViewModels\ImageViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
@@ -110,6 +111,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Resource Include="Resources\Close-icon.png" />
     <Content Include="Sample images modified\Crossbow-modified.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
