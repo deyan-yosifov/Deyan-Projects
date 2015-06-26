@@ -81,6 +81,7 @@ namespace ImageRecognition.Database
 
         public void RemoveImage(int id)
         {
+            File.Delete(this.GetImagePath(id));
             this.storage.Remove(id);
             this.Save();
         }

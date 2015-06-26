@@ -171,12 +171,24 @@ namespace ImageRecognition.ViewModels
             
             NormalizedImage image = this.Database.AddImage(info);
             this.AddImageViewModel(image);
-            MessageBox.Show("Successfully added image with id: " + image.Id);
         }
 
         private void AddImageViewModel(NormalizedImage image)
         {
-            this.Images.Add(new ImageViewModel(image));
+            ImageViewModel viewModel = new ImageViewModel(image);
+            viewModel.DeleteImageCommand = new DelegateCommand((parameter) =>
+                {
+                    var result = MessageBox.Show("Are you sure you want to delete image from database?", "Delete image!", MessageBoxButton.YesNo);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        this.Images.Remove(viewModel);
+                        this.Database.RemoveImage(viewModel.Id);
+                    }
+                });
+
+            this.Images.Insert(0, viewModel);
+            this.SelectedDatabaseImage = viewModel;
         }
 
         private void OpenImage()

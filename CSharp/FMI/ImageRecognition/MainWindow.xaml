@@ -53,7 +53,7 @@
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">База данни</TextBlock>
                 <ListBox Grid.Row="1" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ItemsSource="{Binding Images}" SelectionMode="Single" ScrollViewer.CanContentScroll="False"
-                    SelectedItem="{Binding SelectedDatabaseImage}">
+                    SelectedItem="{Binding Path=SelectedDatabaseImage, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Padding="0" Margin="0" BorderBrush="Black" BorderThickness="2">
