@@ -55,9 +55,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\BooleanToHiddenConverter.cs" />
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\ButtonImageControl.cs" />
     <Compile Include="Common\ImageExtensions.cs" />
+    <Compile Include="Common\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Database\JsonImagesDatabase.cs" />
     <Compile Include="Database\NormalizedImageInfo.cs" />
     <Compile Include="Database\NormalizedImage.cs" />

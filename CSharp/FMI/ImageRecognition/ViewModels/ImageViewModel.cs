@@ -14,12 +14,16 @@ namespace ImageRecognition.ViewModels
         private BitmapSource imageSource;
         private ICommand deleteImageCommand;
         private bool isSelected;
+        private string comparisonResult;
+        private bool showComparison;
 
         public ImageViewModel(NormalizedImage normalizedImage)
         {
             this.normalizedImage = normalizedImage;
             this.deleteImageCommand = null;
             this.isSelected = false;
+            this.showComparison = false;
+            this.comparisonResult = null;
         }
 
         public int Id
@@ -84,6 +88,30 @@ namespace ImageRecognition.ViewModels
             set
             {
                 this.SetProperty(ref this.isSelected, value, "IsSelected");
+            }
+        }
+
+        public bool ShowComparison
+        {
+            get
+            {
+                return this.showComparison;
+            }
+            set
+            {
+                this.SetProperty(ref this.showComparison, value, "ShowComparison");
+            }
+        }
+
+        public string ComparisonResult
+        {
+            get
+            {
+                return this.comparisonResult;
+            }
+            set
+            {
+                this.SetProperty(ref this.comparisonResult, value, "ComparisonResult");
             }
         }
 

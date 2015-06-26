@@ -6,6 +6,8 @@
         Title="Курсова работа по &quot;Разпознаване на образи&quot;" Height="800" Width="1000">    
     <Window.Resources>
         <common:BooleanToVisibilityConverter x:Key="visibilityConverter" />
+        <common:BooleanToHiddenConverter x:Key="hiddenConverter" />
+        <common:InverseBooleanToVisibilityConverter x:Key="inverseVisibilityConverter" />
 
         <Style TargetType="common:ButtonImageControl">
             <Setter Property="Width" Value="30" />
@@ -57,10 +59,13 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">Изображение</TextBlock>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Open-icon.png" />
-                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Search-icon.png" />
-                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Stop-icon.png" />
-                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Help-icon.png" />
+                        <common:ButtonImageControl Command="{Binding OpenImageCommand}" ButtonImageSource="Resources/Open-icon.png"
+                                                   Visibility="{Binding IsComparing, Converter={StaticResource inverseVisibilityConverter}}"/>
+                        <common:ButtonImageControl Command="{Binding CompareWithDatabaseImagesCommand}" ButtonImageSource="Resources/Search-icon.png" 
+                                                   Visibility="{Binding CanCompare, Converter={StaticResource visibilityConverter}}"/>
+                        <common:ButtonImageControl Command="{Binding StopComparingCommand}" ButtonImageSource="Resources/Stop-icon.png"
+                                                   Visibility="{Binding IsComparing, Converter={StaticResource visibilityConverter}}"/>
+                        <common:ButtonImageControl Command="{Binding HelpCommand}" ButtonImageSource="Resources/Help-icon.png" />
                     </StackPanel>
                 </StackPanel>
                 <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="10">
@@ -79,7 +84,8 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Vertical">
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">База данни</TextBlock>
-                    <common:ButtonImageControl Command="{Binding AddToDatabaseCommand}" ButtonImageSource="Resources/Add-icon.png" />
+                    <common:ButtonImageControl Command="{Binding AddToDatabaseCommand}" ButtonImageSource="Resources/Add-icon.png"
+                                               Visibility="{Binding IsComparing, Converter={StaticResource hiddenConverter}}"/>
                 </StackPanel>
                 <ListBox Grid.Row="1" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ItemsSource="{Binding Images}" SelectionMode="Single" ScrollViewer.CanContentScroll="False"
@@ -98,6 +104,9 @@
                                             Command="{Binding DeleteImageCommand}"                                                                
                                             ButtonImageSource="Resources/Close-icon.png"
                                             />
+                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="50" FontWeight="Bold"
+                                               Text="{Binding ComparisonResult}" Foreground="Green" Background="#aaffffff"
+                                               Visibility="{Binding ShowComparison, Converter={StaticResource visibilityConverter}}" />
                                     <TextBlock FontWeight="Bold" FontSize="14" Grid.Row="1" TextAlignment="Center" TextWrapping="Wrap" Text="{Binding ImageDescription}" />
                                 </Grid>
                             </Border>
