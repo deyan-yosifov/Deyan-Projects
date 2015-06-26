@@ -262,7 +262,7 @@ namespace ImageRecognition.ViewModels
                 this.imagesToProcess.RemoveAt(index);
 
                 image.ShowComparison = false;
-                image.ComparisonResult = null;
+                image.ComparisonResult = 0;
                 this.Images.Add(image);
             }
         }
@@ -281,7 +281,7 @@ namespace ImageRecognition.ViewModels
                 ImageViewModel image = this.imagesToProcess[index];
                 this.imagesToProcess.RemoveAt(index);
 
-                image.ComparisonResult = string.Format("{0}%", 100.0 * index / totalCount);
+                image.ComparisonResult = (double)index / totalCount;
                 image.ShowComparison = true;
                 this.Images.Add(image);
             }

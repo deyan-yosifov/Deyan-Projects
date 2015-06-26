@@ -60,6 +60,7 @@
     <Compile Include="Common\ButtonImageControl.cs" />
     <Compile Include="Common\ImageExtensions.cs" />
     <Compile Include="Common\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\PercentConverter.cs" />
     <Compile Include="Database\JsonImagesDatabase.cs" />
     <Compile Include="Database\NormalizedImageInfo.cs" />
     <Compile Include="Database\NormalizedImage.cs" />

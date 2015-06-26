@@ -14,7 +14,7 @@ namespace ImageRecognition.ViewModels
         private BitmapSource imageSource;
         private ICommand deleteImageCommand;
         private bool isSelected;
-        private string comparisonResult;
+        private double comparisonResult;
         private bool showComparison;
 
         public ImageViewModel(NormalizedImage normalizedImage)
@@ -23,7 +23,7 @@ namespace ImageRecognition.ViewModels
             this.deleteImageCommand = null;
             this.isSelected = false;
             this.showComparison = false;
-            this.comparisonResult = null;
+            this.comparisonResult = 0;
         }
 
         public int Id
@@ -103,7 +103,7 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public string ComparisonResult
+        public double ComparisonResult
         {
             get
             {
