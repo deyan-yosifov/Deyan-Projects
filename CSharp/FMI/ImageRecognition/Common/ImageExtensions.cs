@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ImageRecognition.Common
@@ -47,6 +48,48 @@ namespace ImageRecognition.Common
             PngBitmapDecoder decoder = new PngBitmapDecoder(imageFile.ToMemoryStream(), BitmapCreateOptions.None, BitmapCacheOption.None);
 
             return decoder.Frames.First();
+        }
+
+        private static byte GetGrayIntensity(byte r, byte g, byte b)
+        {
+            return (byte)(0.2126 * r + 0.7152 * g + 0.0722 * b);
+        }
+
+        private static int[] GetPixels(BitmapSource source)
+        {
+            int[] pixels = new int[source.PixelWidth * source.PixelHeight];
+            if (source.Format == PixelFormats.Bgr32 || source.Format == PixelFormats.Bgra32 || source.Format == PixelFormats.Pbgra32)
+            {
+                checked
+                {
+                    source.CopyPixels(pixels, source.PixelWidth * 4, 0);
+                }
+            }
+            else if (source.Format == PixelFormats.Indexed8)
+            {
+                byte[] indices = new byte[source.PixelWidth * source.PixelHeight];
+                source.CopyPixels(indices, source.PixelWidth, 0);
+                for (int i = 0; i < indices.Length; ++i)
+                {
+                    Color c = source.Palette.Colors[indices[i]];
+                    pixels[i] = (c.A << 24) | (c.R << 16) | (c.G << 8) | (c.B << 0);
+                }
+            }
+            else
+            {
+                FormatConvertedBitmap converted = new FormatConvertedBitmap(source, PixelFormats.Bgra32, null, 0);
+                converted.CopyPixels(pixels, source.PixelWidth * 4, 0);
+            }
+
+            return pixels;
+        }
+
+        private static void GetComponentsFromPixel(int pixel, out byte a, out byte r, out byte g, out byte b)
+        {
+            b = (byte)(pixel & 0xFF);
+            g = (byte)((pixel >> 8) & 0xFF);
+            r = (byte)((pixel >> 16) & 0xFF);
+            a = (byte)((pixel >> 24) & 0xFF);
         }
     }
 }
