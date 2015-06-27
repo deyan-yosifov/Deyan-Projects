@@ -12,6 +12,6 @@ namespace ImageRecognition.Database
 
         public string ImageDescription { get; set; }
 
-        public Axis MainInertiaAxis { get; set; }
+        public ImageInertiaInfo InertiaInfo { get; set; }
     }
 }

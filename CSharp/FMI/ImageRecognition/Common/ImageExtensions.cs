@@ -50,6 +50,38 @@ namespace ImageRecognition.Common
             return decoder.Frames.First();
         }
 
+        public static byte?[,] GetPixelsIntensity(this BitmapSource bitmapSource)
+        {
+            int width = bitmapSource.PixelWidth;
+            int height = bitmapSource.PixelHeight;
+            byte?[,] intensities = new byte?[width, height];
+            int[] pixels = ImageExtensions.GetPixels(bitmapSource);
+            int pixelIndex = 0;
+
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    byte a, r, g, b;
+                    ImageExtensions.GetComponentsFromPixel(pixels[pixelIndex++], out a, out r, out g, out b);
+                    byte? intensity;
+                    if(a == 0)
+                    {
+                        intensity = null;
+                    }
+                    else
+                    {
+                        intensity = (byte)((a / 255.0) * ImageExtensions.GetGrayIntensity(r, g, b));
+                        intensity = intensity.Value < 255 ? ((byte)(intensity.Value + 1)) : intensity.Value;
+                    }
+
+                    intensities[i, j] = intensity;
+                }
+            }
+
+            return intensities;
+        }
+
         private static byte GetGrayIntensity(byte r, byte g, byte b)
         {
             return (byte)(0.2126 * r + 0.7152 * g + 0.0722 * b);

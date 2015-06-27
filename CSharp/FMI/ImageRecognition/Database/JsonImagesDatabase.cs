@@ -14,7 +14,7 @@ namespace ImageRecognition.Database
         {
             public int Id { get; set; }
             public string ImageDescription { get; set; }
-            public Axis MainInertiaAxis { get; set; }
+            public ImageInertiaInfo InertiaInfo { get; set; }
         }
 
         public const Formatting JsonFormatting = Formatting.Indented;
@@ -64,7 +64,7 @@ namespace ImageRecognition.Database
             DatabaseImage image = new DatabaseImage()
             {
                 Id = this.nextId++,
-                MainInertiaAxis = imageInfo.MainInertiaAxis,
+                InertiaInfo = imageInfo.InertiaInfo,
                 ImageDescription = imageInfo.ImageDescription
             };
             
@@ -118,7 +118,7 @@ namespace ImageRecognition.Database
             {
                 Id = databaseImage.Id,
                 ImageDescription = databaseImage.ImageDescription,
-                MainInertiaAxis = databaseImage.MainInertiaAxis,
+                InertiaInfo = databaseImage.InertiaInfo,
                 ImageStream = File.OpenRead(this.GetImagePath(databaseImage.Id)).ToMemoryStream()
             };
         }

@@ -42,11 +42,11 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public Point CenterOfMass
+        public Point CenterOfWeight
         {
             get
             {
-                return this.normalizedImage.MainInertiaAxis.StartPoint;
+                return this.normalizedImage.InertiaInfo.CenterOfWeight;
             }
         }
 
@@ -54,7 +54,15 @@ namespace ImageRecognition.ViewModels
         {
             get
             {
-                return this.normalizedImage.MainInertiaAxis.DirectionVector;
+                return this.normalizedImage.InertiaInfo.MainInertiaAxisDirection;
+            }
+        }
+
+        public int Weight
+        {
+            get
+            {
+                return this.normalizedImage.InertiaInfo.Weight;
             }
         }
 

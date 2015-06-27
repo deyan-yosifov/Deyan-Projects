@@ -8,6 +8,6 @@ namespace ImageRecognition.Database
     {
         public BitmapSource ImageSource { get; set; }
         public string ImageDescription { get; set; }
-        public Axis MainInertiaAxis { get; set; }
+        public ImageInertiaInfo InertiaInfo { get; set; }
     }
 }

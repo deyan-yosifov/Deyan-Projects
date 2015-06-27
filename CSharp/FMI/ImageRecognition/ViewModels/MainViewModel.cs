@@ -47,7 +47,7 @@ namespace ImageRecognition.ViewModels
 
             foreach (NormalizedImage image in this.database.Images)
             {
-                this.AddImageViewModel(image);
+                this.CreateImageViewModel(image);
             }
         }
 
@@ -216,15 +216,15 @@ namespace ImageRecognition.ViewModels
                 {
                     ImageDescription = MainViewModel.GetImageDescription(filePath),
                     ImageSource = bitmap,
-                    MainInertiaAxis = ImagesComparer.CalculateMainInertiaAxis(bitmap)
+                    InertiaInfo = ImagesComparer.CalculateInertiaInfo(bitmap)
                 };
 
                 NormalizedImage image = this.Database.AddImage(info);
-                this.AddImageViewModel(image);
+                this.CreateImageViewModel(image);
             }            
         }
 
-        private void AddImageViewModel(NormalizedImage image)
+        private void CreateImageViewModel(NormalizedImage image)
         {
             ImageViewModel viewModel = new ImageViewModel(image);
             viewModel.DeleteImageCommand = new DelegateCommand((parameter) =>
