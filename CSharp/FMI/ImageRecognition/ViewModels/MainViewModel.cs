@@ -271,6 +271,13 @@ namespace ImageRecognition.ViewModels
         {
             this.IsComparing = true;
 
+            NormalizedImageInfo currentImageInfo = new NormalizedImageInfo()
+            {
+                ImageDescription = this.ImageDescription,
+                ImageSource = this.CurrentImageSource,
+                InertiaInfo = ImagesComparer.CalculateInertiaInfo(this.CurrentImageSource)                  
+            };
+
             this.imagesToProcess.AddRange(this.Images);
             this.Images.Clear();
             int totalCount = this.imagesToProcess.Count;
@@ -279,12 +286,14 @@ namespace ImageRecognition.ViewModels
             {
                 int index = totalCount - i - 1;
                 ImageViewModel image = this.imagesToProcess[index];
-                this.imagesToProcess.RemoveAt(index);
 
-                image.ComparisonResult = (double)index / totalCount;
+                //image.ComparisonResult = (double)index / totalCount;
+                image.ComparisonResult = ImagesComparer.CompareImages(image.ImageInfo, currentImageInfo);
                 image.ShowComparison = true;
+
+                this.imagesToProcess.RemoveAt(index);
                 this.Images.Add(image);
-            }
+            }            
 
             // TODO:
         }

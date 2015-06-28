@@ -11,7 +11,7 @@ namespace ImageRecognition.ViewModels
     public class ImageViewModel : ViewModelBase
     {
         private readonly NormalizedImage normalizedImage;
-        private BitmapSource imageSource;
+        private BitmapSource bitmapSource;
         private ICommand deleteImageCommand;
         private bool isSelected;
         private double comparisonResult;
@@ -58,14 +58,6 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public int Weight
-        {
-            get
-            {
-                return this.normalizedImage.InertiaInfo.Weight;
-            }
-        }
-
         public Vector SecondaryAxisDirection
         {
             get
@@ -74,16 +66,29 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public ImageSource ImageSource
+        public BitmapSource ImageSource
         {
             get
             {
-                if (this.imageSource == null)
+                if (this.bitmapSource == null)
                 {
-                    imageSource = ImageExtensions.CreatePngBitmapSource(this.normalizedImage.ImageStream);
+                    this.bitmapSource = ImageExtensions.CreatePngBitmapSource(this.normalizedImage.ImageStream);
                 }
 
-                return this.imageSource;
+                return this.bitmapSource;
+            }
+        }
+
+        public NormalizedImageInfo ImageInfo
+        {
+            get
+            {
+                return new NormalizedImageInfo()
+                {
+                    ImageDescription = this.normalizedImage.ImageDescription,
+                    ImageSource = this.ImageSource,
+                    InertiaInfo = this.normalizedImage.InertiaInfo
+                };
             }
         }
 
