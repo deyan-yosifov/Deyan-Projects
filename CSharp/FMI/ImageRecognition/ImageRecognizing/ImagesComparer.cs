@@ -20,12 +20,130 @@ namespace ImageRecognition.ImageRecognizing
             return ImagesComparer.CompareImagesWithNonZeroArea(originalImage, imageToCompare);
         }
 
+        public static ImageInertiaInfo CalculateInertiaInfo(BitmapSource bitmapSource)
+        {
+            byte?[,] intensities = bitmapSource.GetPixelsIntensity();
+            int height = intensities.GetLength(0);
+            int width = intensities.GetLength(1);
+            double xFirstMoment = 0;
+            double yFirstMoment = 0;
+            double xSecondMoment = 0;
+            double ySecondMoment = 0;
+            double xySecondMoment = 0;            
+            int weight = 0;
+            int area = 0;
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    byte? intensity = intensities[i, j];
+
+                    if (intensity.HasValue)
+                    {
+                        area++;
+                        double x = j + 0.5;
+                        double y = i + 0.5;
+                        byte pixelIntensity = intensity.Value;
+                        weight += pixelIntensity;
+                        xFirstMoment += y * pixelIntensity;
+                        yFirstMoment += x * pixelIntensity;
+                        xSecondMoment += y * y * pixelIntensity;
+                        ySecondMoment += x * x * pixelIntensity;
+                        xySecondMoment += x * y * pixelIntensity;
+                    }
+                }
+            }
+
+            return ImagesComparer.CalculateInertiaInfo(intensities, xFirstMoment, yFirstMoment, xSecondMoment, ySecondMoment, xySecondMoment, weight, area);
+        }
+
+        private static ImageInertiaInfo CalculateInertiaInfo(byte?[,] intensities, double xFirstMoment, double yFirstMoment, double xSecondMoment, double ySecondMoment, double xySecondMoment, int weight, int area)
+        {
+            if (area == 0)
+            {
+                return new ImageInertiaInfo(new Point(), new Vector(), 0, 0);
+            }
+            else
+            {
+                Point centerOfWeight = new Point(yFirstMoment / weight, xFirstMoment / weight);
+                xSecondMoment -= centerOfWeight.Y * centerOfWeight.Y * weight;
+                ySecondMoment -= centerOfWeight.X * centerOfWeight.X * weight;
+                xySecondMoment -= centerOfWeight.X * centerOfWeight.Y * weight;
+
+                if (xSecondMoment == ySecondMoment)
+                {
+                    return ImagesComparer.CalculateSymetricImageInertia(intensities, centerOfWeight, weight, area);
+                }
+                else
+                {
+                    return ImagesComparer.CalculateMaximumInertiaInfo(xSecondMoment, ySecondMoment, xySecondMoment, centerOfWeight, weight, area);
+                }
+            } 
+        }
+
+        private static ImageInertiaInfo CalculateSymetricImageInertia(byte?[,] imageIntensities, Point centerOfWeight, int weight, int area)
+        {
+            double maxDistance = double.MinValue;
+            double xMaxDistance = 0;
+            double yMaxDistance = 0;
+            int height = imageIntensities.GetLength(0);
+            int width = imageIntensities.GetLength(1);
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    if (imageIntensities[i, j].HasValue)
+                    {
+                        double x = j + 0.5;
+                        double y = i + 0.5;
+
+                        double distance = new Vector(centerOfWeight.X - x, centerOfWeight.Y - y).LengthSquared;
+
+                        if (distance > maxDistance)
+                        {
+                            xMaxDistance = x;
+                            yMaxDistance = y;
+                            maxDistance = distance;
+                        }
+                    }
+                }
+            }
+
+            Vector direction = new Vector(xMaxDistance - centerOfWeight.X, yMaxDistance - centerOfWeight.Y);
+            direction.Normalize();
+
+            return new ImageInertiaInfo(centerOfWeight, direction, area, weight);
+        }
+
+        private static ImageInertiaInfo CalculateMaximumInertiaInfo(double xSecondMoment, double ySecondMoment, double xySecondMoment, Point centerOfWeight, int weight, int area)
+        {
+            double extremumAngle = Math.Atan(2 * xySecondMoment / (ySecondMoment - xSecondMoment));
+            double cos = Math.Cos(extremumAngle);
+            double sin = Math.Sin(extremumAngle);
+
+            double uSecondMoment = (xSecondMoment + ySecondMoment) / 2 + (xSecondMoment - ySecondMoment) * cos / 2 - xySecondMoment * sin;
+            double axisAngle = extremumAngle / 2;
+
+            if (2 * uSecondMoment < xSecondMoment + ySecondMoment)
+            {
+                axisAngle += Math.PI / 2;
+            }
+
+            Matrix matrix = new Matrix();
+            matrix.Rotate(axisAngle);
+            Vector vector = matrix.Transform(new Vector(1, 0));
+
+            return new ImageInertiaInfo(centerOfWeight, vector, area, weight);
+        }
+
         private static double CompareImagesWithNonZeroArea(NormalizedImageInfo originalImage, NormalizedImageInfo imageToCompare)
         {
             byte?[,] originalPixels = originalImage.ImageSource.GetPixelsIntensity();
             byte?[,] imageToComparePixels = imageToCompare.ImageSource.GetPixelsIntensity();
-            int width = originalPixels.GetLength(0);
-            int height = originalPixels.GetLength(1);            
+            int height = originalPixels.GetLength(0);
+            int width = originalPixels.GetLength(1);
 
             Matrix firstMatrix = ImagesComparer.CalculateSameDirectionVectorMatrix(originalImage.InertiaInfo, imageToCompare.InertiaInfo);
             Matrix secondMatrix = ImagesComparer.CalculateOpositeDirectionVectorMatrix(originalImage.InertiaInfo, imageToCompare.InertiaInfo);
@@ -33,11 +151,11 @@ namespace ImageRecognition.ImageRecognizing
             int secondDifference = 0;
             byte maxIntensity = 0;
 
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < width; j++)
                 {
-                    Point originalPoint = new Point(i + 0.5, j + 0.5);
+                    Point originalPoint = new Point(j + 0.5, i + 0.5);
                     byte? originalIntensity = originalPixels[i, j];
 
                     if (originalIntensity.HasValue)
@@ -74,8 +192,8 @@ namespace ImageRecognition.ImageRecognizing
 
         private static byte? GetImagePixelFromPoint(byte?[,] pixels, Point point)
         {
-            int i = (int)point.X;
-            int j = (int)point.Y;
+            int j = (int)point.X;
+            int i = (int)point.Y;
 
             if (0 <= i && i < pixels.GetLength(0) && 0 <= j && j < pixels.GetLength(1))
             {
@@ -129,123 +247,6 @@ namespace ImageRecognition.ImageRecognizing
             }
 
             return false;
-        }
-
-        public static ImageInertiaInfo CalculateInertiaInfo(BitmapSource bitmapSource)
-        {
-            byte?[,] intensities = bitmapSource.GetPixelsIntensity();
-            int width = intensities.GetLength(0);
-            int height = intensities.GetLength(1);
-            double xFirstMoment = 0;
-            double yFirstMoment = 0;
-            double xSecondMoment = 0;
-            double ySecondMoment = 0;
-            double xySecondMoment = 0;            
-            int weight = 0;
-            int area = 0;
-
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    byte? intensity = intensities[i, j];
-
-                    if (intensity.HasValue)
-                    {
-                        area++;
-                        double x = i + 0.5;
-                        double y = j + 0.5;
-                        weight += intensity.Value;
-                        xFirstMoment += y * intensity.Value;
-                        yFirstMoment += x * intensity.Value;
-                        xSecondMoment += y * y * intensity.Value;
-                        ySecondMoment += x * x * intensity.Value;
-                        xySecondMoment += x * y * intensity.Value;
-                    }
-                }
-            }
-
-            return ImagesComparer.CalculateInertiaInfo(intensities, xFirstMoment, yFirstMoment, xSecondMoment, ySecondMoment, xySecondMoment, weight, area);
-        }
-
-        private static ImageInertiaInfo CalculateInertiaInfo(byte?[,] intensities, double xFirstMoment, double yFirstMoment, double xSecondMoment, double ySecondMoment, double xySecondMoment, int weight, int area)
-        {
-            if (area == 0)
-            {
-                return new ImageInertiaInfo(new Point(), new Vector(), 0, 0);
-            }
-            else
-            {
-                Point centerOfWeight = new Point(yFirstMoment / weight, xFirstMoment / weight);
-                xSecondMoment -= centerOfWeight.Y * centerOfWeight.Y * weight;
-                ySecondMoment -= centerOfWeight.X * centerOfWeight.X * weight;
-                xySecondMoment -= centerOfWeight.X * centerOfWeight.Y * weight;
-
-                if (xSecondMoment == ySecondMoment)
-                {
-                    return ImagesComparer.CalculateSymetricImageInertia(intensities, centerOfWeight, weight, area);
-                }
-                else
-                {
-                    return ImagesComparer.CalculateMaximumInertiaInfo(xSecondMoment, ySecondMoment, xySecondMoment, centerOfWeight, weight, area);
-                }
-            } 
-        }
-
-        private static ImageInertiaInfo CalculateSymetricImageInertia(byte?[,] imageIntensities, Point centerOfWeight, int weight, int area)
-        {
-            double maxDistance = double.MinValue;
-            double xMaxDistance = 0;
-            double yMaxDistance = 0;
-            int width = imageIntensities.GetLength(0);
-            int height = imageIntensities.GetLength(1);
-
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    if (imageIntensities[i, j].HasValue)
-                    {
-                        double x = i + 0.5;
-                        double y = j + 0.5;
-
-                        double distance = new Vector(centerOfWeight.X - x, centerOfWeight.Y - y).LengthSquared;
-
-                        if (distance > maxDistance)
-                        {
-                            xMaxDistance = x;
-                            yMaxDistance = y;
-                            maxDistance = distance;
-                        }
-                    }
-                }
-            }
-
-            Vector direction = new Vector(xMaxDistance - centerOfWeight.X, yMaxDistance - centerOfWeight.Y);
-            direction.Normalize();
-
-            return new ImageInertiaInfo(centerOfWeight, direction, area, weight);
-        }
-
-        private static ImageInertiaInfo CalculateMaximumInertiaInfo(double xSecondMoment, double ySecondMoment, double xySecondMoment, Point centerOfWeight, int weight, int area)
-        {
-            double extremumAngle = Math.Atan(2 * xySecondMoment / (ySecondMoment - xSecondMoment));
-            double cos = Math.Cos(extremumAngle);
-            double sin = Math.Sin(extremumAngle);
-
-            double uSecondMoment = (xSecondMoment + ySecondMoment) / 2 + (xSecondMoment - ySecondMoment) * cos / 2 - xySecondMoment * sin;
-            double axisAngle = extremumAngle / 2;
-
-            if (2 * uSecondMoment < xSecondMoment + ySecondMoment)
-            {
-                axisAngle += Math.PI / 2;
-            }
-
-            Matrix matrix = new Matrix();
-            matrix.Rotate(axisAngle);
-            Vector vector = matrix.Transform(new Vector(1, 0));
-
-            return new ImageInertiaInfo(centerOfWeight, vector, area, weight);
         }
     }
 }

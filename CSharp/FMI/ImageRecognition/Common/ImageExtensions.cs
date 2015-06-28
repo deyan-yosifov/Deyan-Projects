@@ -54,13 +54,13 @@ namespace ImageRecognition.Common
         {
             int width = bitmapSource.PixelWidth;
             int height = bitmapSource.PixelHeight;
-            byte?[,] intensities = new byte?[width, height];
+            byte?[,] intensities = new byte?[height, width];
             int[] pixels = ImageExtensions.GetPixels(bitmapSource);
             int pixelIndex = 0;
 
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < width; j++)
                 {
                     byte a, r, g, b;
                     ImageExtensions.GetComponentsFromPixel(pixels[pixelIndex++], out a, out r, out g, out b);
