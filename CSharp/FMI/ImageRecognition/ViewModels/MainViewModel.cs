@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ImageRecognition.ViewModels
@@ -28,6 +29,8 @@ namespace ImageRecognition.ViewModels
         private ImageViewModel selectedDatabaseImage;
         private bool isComparing;
         private bool canCompare;
+        private Size imageContainerActualSize;
+        private Transform currentImageArrowTransform;
 
         public MainViewModel()
         {
@@ -197,6 +200,39 @@ namespace ImageRecognition.ViewModels
             }
         }
 
+        public Size ImageContainerActualSize
+        {
+            get
+            {
+                return this.imageContainerActualSize;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.imageContainerActualSize, value, "ImageContainerActualSize"))
+                {
+                    this.OnImageContainerChanged();
+                }
+            }
+        }
+
+        public Transform CurrentImageArrowTransform
+        {
+            get
+            {
+                return this.currentImageArrowTransform;
+            }
+            set
+            {
+                this.SetProperty(ref this.currentImageArrowTransform, value, "CurrentImageArrowTransform");
+            }
+        }
+
+        private NormalizedImageInfo CurrentImageInfo
+        {
+            get;
+            set;
+        }
+
         private INormalizedImagesDatabase Database
         {
             get
@@ -271,13 +307,6 @@ namespace ImageRecognition.ViewModels
         {
             this.IsComparing = true;
 
-            NormalizedImageInfo currentImageInfo = new NormalizedImageInfo()
-            {
-                ImageDescription = this.ImageDescription,
-                ImageSource = this.CurrentImageSource,
-                InertiaInfo = ImagesComparer.CalculateInertiaInfo(this.CurrentImageSource)                  
-            };
-
             this.imagesToProcess.AddRange(this.Images);
             this.Images.Clear();
             int totalCount = this.imagesToProcess.Count;
@@ -288,7 +317,7 @@ namespace ImageRecognition.ViewModels
                 ImageViewModel image = this.imagesToProcess[index];
 
                 //image.ComparisonResult = (double)index / totalCount;
-                image.ComparisonResult = ImagesComparer.CompareImages(image.ImageInfo, currentImageInfo);
+                image.ComparisonResult = ImagesComparer.CompareImages(image.ImageInfo, this.CurrentImageInfo);
                 image.ShowComparison = true;
 
                 this.imagesToProcess.RemoveAt(index);
@@ -308,6 +337,15 @@ namespace ImageRecognition.ViewModels
                 this.ImageDescription = MainViewModel.GetImageDescription(filePath);
                 this.CurrentImageSource = bitmap;
                 this.CanCompare = true;
+
+                this.CurrentImageInfo = new NormalizedImageInfo()
+                {
+                    ImageDescription = this.ImageDescription,
+                    ImageSource = this.CurrentImageSource,
+                    InertiaInfo = ImagesComparer.CalculateInertiaInfo(this.CurrentImageSource)
+                };
+
+                this.OnImageContainerChanged();
             }
         }
 
@@ -340,6 +378,52 @@ namespace ImageRecognition.ViewModels
         private static string GetImageDescription(string filePath)
         {
             return Path.GetFileNameWithoutExtension(filePath);
+        }
+
+        private void OnImageContainerChanged()
+        {
+            Size container = this.ImageContainerActualSize;
+
+            if (this.CurrentImageSource == null)
+            {
+                this.CurrentImageArrowTransform = new MatrixTransform(new Matrix(0, 0, 0, 0, 0, 0));
+                return;
+            }     
+
+            double arrowSize = Math.Min(container.Width, container.Height) * 0.1;
+            Rect imageRect = this.CalculateImageBoundingRect(new Size(this.CurrentImageSource.PixelWidth, this.CurrentImageSource.PixelHeight));
+            double currentImageScale = imageRect.Width / this.CurrentImageSource.PixelWidth;
+            double xCenterOfWeight = this.CurrentImageInfo.InertiaInfo.CenterOfWeight.X * currentImageScale;
+            double yCenterOfWeight = this.CurrentImageInfo.InertiaInfo.CenterOfWeight.Y * currentImageScale;
+            double angle = Vector.AngleBetween(new Vector(1, 0), this.CurrentImageInfo.InertiaInfo.MainInertiaAxisDirection);
+
+            Matrix currentImageArrowMatrix = new Matrix();
+            currentImageArrowMatrix.Scale(arrowSize, arrowSize);
+            currentImageArrowMatrix.Rotate(angle);
+            currentImageArrowMatrix.Translate(imageRect.Left + xCenterOfWeight, imageRect.Top + yCenterOfWeight);
+
+            this.CurrentImageArrowTransform = new MatrixTransform(currentImageArrowMatrix);
+        }
+
+        private Rect CalculateImageBoundingRect(Size imageSize)
+        {
+            Size container = this.ImageContainerActualSize;
+  
+            double scale = container.Width / imageSize.Width;
+            double imageWidth = container.Width;
+            double imageHeight = scale * imageSize.Height;
+
+            if(imageHeight  > container.Height)
+            {
+                scale = container.Height / imageSize.Height;
+                imageWidth = scale * imageSize.Width;
+                imageHeight = container.Height;
+            }
+
+            double left = (container.Width - imageWidth) / 2;
+            double top = (container.Height - imageHeight) / 2;
+
+            return new Rect(left, top, imageWidth, imageHeight);
         }
     }
 }

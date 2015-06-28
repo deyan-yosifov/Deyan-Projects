@@ -9,6 +9,18 @@
         <common:BooleanToHiddenConverter x:Key="hiddenConverter" />
         <common:InverseBooleanToVisibilityConverter x:Key="inverseVisibilityConverter" />
         <common:PercentConverter x:Key="percentConverter" />
+        
+        <PathGeometry x:Key="arrowGeometry">
+            <PathGeometry.Figures>
+                <PathFigure StartPoint="0, 0" IsFilled="False" IsClosed="False">
+                    <LineSegment Point="0.8, 0" />
+                    <LineSegment Point="0.8, 0.1" />
+                    <LineSegment Point="1, 0" />
+                    <LineSegment Point="0.8, -0.1" />
+                    <LineSegment Point="0.8, 0" />
+                </PathFigure>
+            </PathGeometry.Figures>
+        </PathGeometry>
 
         <Style TargetType="common:ButtonImageControl">
             <Setter Property="Width" Value="30" />
@@ -74,7 +86,11 @@
                     </StackPanel>
                 </StackPanel>
                 <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="10">
-                    <Image Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Grid Margin="0" SizeChanged="ImageContainer_SizeChanged">
+                        <Image Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <Path Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
+                              RenderTransform="{Binding CurrentImageArrowTransform}"/>
+                    </Grid>                    
                 </Border>
             </Grid>
         </Border>
@@ -98,12 +114,12 @@
                     SelectedItem="{Binding Path=SelectedDatabaseImage, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Padding="0" Margin="0" BorderBrush="Black" BorderThickness="2">
+                            <Border Padding="0" Margin="0" BorderBrush="Black" BorderThickness="2" >
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>                                    
+                                    </Grid.RowDefinitions>
                                     <Image Source="{Binding ImageSource}" HorizontalAlignment="Stretch" />
                                     <common:ButtonImageControl Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"
                                             Visibility="{Binding IsSelected, Converter={StaticResource visibilityConverter}}"
