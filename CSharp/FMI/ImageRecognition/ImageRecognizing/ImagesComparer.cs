@@ -1,6 +1,7 @@
 ﻿using ImageRecognition.Common;
 using ImageRecognition.Database;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -132,7 +133,7 @@ namespace ImageRecognition.ImageRecognizing
             }
 
             Matrix matrix = new Matrix();
-            matrix.Rotate(axisAngle);
+            matrix.Rotate(axisAngle.RadiansToDegrees());
             Vector vector = matrix.Transform(new Vector(1, 0));
 
             return new ImageInertiaInfo(centerOfWeight, vector, area, weight);
@@ -150,6 +151,8 @@ namespace ImageRecognition.ImageRecognizing
             int firstDifference = 0;
             int secondDifference = 0;
             byte maxIntensity = 0;
+            //byte?[,] firstComparisonImage = new byte?[height, width];
+            //byte?[,] secondComparisonImage = new byte?[height, width];
 
             for (int i = 0; i < height; i++)
             {
@@ -163,15 +166,16 @@ namespace ImageRecognition.ImageRecognizing
                         maxIntensity = Math.Max(maxIntensity, originalIntensity.Value);
                         Point firstPoint = firstMatrix.Transform(originalPoint);
                         byte? firstPixel = ImagesComparer.GetImagePixelFromPoint(imageToComparePixels, firstPoint);
+                        //firstComparisonImage[i, j] = firstPixel;
                         firstDifference += ImagesComparer.GetDifference(originalIntensity.Value, firstPixel);
 
                         Point secondPoint = secondMatrix.Transform(originalPoint);
                         byte? secondPixel = ImagesComparer.GetImagePixelFromPoint(imageToComparePixels, secondPoint);
+                        //secondComparisonImage[i, j] = secondPixel;
                         secondDifference += ImagesComparer.GetDifference(originalIntensity.Value, secondPixel);
                     }
                 }
             }
-
             double maxDifference = originalImage.InertiaInfo.Area * 255;
 
             double difference = Math.Min(firstDifference, secondDifference) / maxDifference;
@@ -205,16 +209,16 @@ namespace ImageRecognition.ImageRecognizing
 
         private static Matrix CalculateSameDirectionVectorMatrix(ImageInertiaInfo originalInertia, ImageInertiaInfo imageToCompareInertia)
         {
-            double scale = imageToCompareInertia.Area / (double)originalInertia.Area;
+            double scale = Math.Sqrt(imageToCompareInertia.Area / (double)originalInertia.Area);
             double angle = Vector.AngleBetween(originalInertia.MainInertiaAxisDirection, imageToCompareInertia.MainInertiaAxisDirection);
-            double centerX = originalInertia.CenterOfWeight.X;
-            double centerY = originalInertia.CenterOfWeight.Y;
+            double centerX = imageToCompareInertia.CenterOfWeight.X;
+            double centerY = imageToCompareInertia.CenterOfWeight.Y;
             Vector translation = imageToCompareInertia.CenterOfWeight - originalInertia.CenterOfWeight;
 
             Matrix matrix = new Matrix();
-            matrix.ScaleAt(scale, scale, centerX, centerY);
-            matrix.RotateAt(angle, centerX, centerY);
             matrix.Translate(translation.X, translation.Y);
+            matrix.RotateAt(angle, centerX, centerY);
+            matrix.ScaleAt(scale, scale, centerX, centerY);
 
             return matrix;
         }

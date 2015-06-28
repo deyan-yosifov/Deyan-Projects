@@ -82,6 +82,27 @@ namespace ImageRecognition.Common
             return intensities;
         }
 
+        public static BitmapSource CreateImageFromGrayPixels(byte?[,] pixels)
+        {
+            double dpi = 96;
+            int height = pixels.GetLength(0);
+            int width = pixels.GetLength(1);
+            byte[] pixelData = new byte[width * height];
+
+            for (int y = 0; y < height; ++y)
+            {
+                int yIndex = y * width;
+                for (int x = 0; x < width; ++x)
+                {
+                    pixelData[x + yIndex] = pixels[y, x] ?? 255;
+                }
+            }
+
+            BitmapSource bmpSource = BitmapSource.Create(width, height, dpi, dpi, PixelFormats.Gray8, null, pixelData, width);
+
+            return bmpSource;
+        }
+
         private static byte GetGrayIntensity(byte r, byte g, byte b)
         {
             return (byte)(0.2126 * r + 0.7152 * g + 0.0722 * b);

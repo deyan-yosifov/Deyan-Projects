@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -310,19 +311,24 @@ namespace ImageRecognition.ViewModels
             this.imagesToProcess.AddRange(this.Images);
             this.Images.Clear();
             int totalCount = this.imagesToProcess.Count;
+            SortedList<double, ImageViewModel> sortedImages = new SortedList<double, ImageViewModel>();
 
             for(int i = 0; i < totalCount; i++)
             {
                 int index = totalCount - i - 1;
                 ImageViewModel image = this.imagesToProcess[index];
-
-                //image.ComparisonResult = (double)index / totalCount;
                 image.ComparisonResult = ImagesComparer.CompareImages(image.ImageInfo, this.CurrentImageInfo);
                 image.ShowComparison = true;
 
                 this.imagesToProcess.RemoveAt(index);
+
+                sortedImages.Add(image.ComparisonResult, image);                
+            }
+
+            foreach (ImageViewModel image in sortedImages.Values.Reverse())
+            {
                 this.Images.Add(image);
-            }            
+            }
 
             // TODO:
         }

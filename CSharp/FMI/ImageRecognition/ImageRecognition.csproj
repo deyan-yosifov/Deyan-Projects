@@ -60,6 +60,7 @@
     <Compile Include="Common\ButtonImageControl.cs" />
     <Compile Include="Common\ImageExtensions.cs" />
     <Compile Include="Common\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\MathExtensions.cs" />
     <Compile Include="Common\PercentConverter.cs" />
     <Compile Include="Database\JsonImagesDatabase.cs" />
     <Compile Include="Database\NormalizedImageInfo.cs" />
@@ -136,6 +137,9 @@
     <Content Include="Sample images modified\North-modified.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Sample images modified\rectangle-modified.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Sample images modified\Stadium filter big-modified.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -167,6 +171,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sample images\North.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sample images\rectangle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sample images\Stadium filter big.png">
