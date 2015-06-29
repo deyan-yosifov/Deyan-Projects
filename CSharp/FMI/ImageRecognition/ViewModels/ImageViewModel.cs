@@ -13,7 +13,7 @@ namespace ImageRecognition.ViewModels
         private readonly NormalizedImage normalizedImage;
         private BitmapSource bitmapSource;
         private ICommand deleteImageCommand;
-        private bool isSelected;
+        private bool canBeDeleted;
         private double comparisonResult;
         private bool showComparison;
 
@@ -21,7 +21,7 @@ namespace ImageRecognition.ViewModels
         {
             this.normalizedImage = normalizedImage;
             this.deleteImageCommand = null;
-            this.isSelected = false;
+            this.canBeDeleted = false;
             this.showComparison = false;
             this.comparisonResult = 0;
         }
@@ -92,15 +92,15 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public bool IsSelected
+        public bool CanBeDeleted
         {
             get
             {
-                return this.isSelected;
+                return this.canBeDeleted;
             }
             set
             {
-                this.SetProperty(ref this.isSelected, value, "IsSelected");
+                this.SetProperty(ref this.canBeDeleted, value, "CanBeDeleted");
             }
         }
 

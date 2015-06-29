@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Media.Imaging;
 
 namespace ImageRecognition.ImageRecognizing
 {
     public class ImagesComparisonInfo
     {
+        private readonly double comparisonResult;
+        private readonly BitmapSource originalImageIntensities;
+        private readonly BitmapSource firstComparisonIntensities;
+        private readonly BitmapSource secondComparisonIntensities;
+
         public ImagesComparisonInfo(double result)
             : this(result, null, null, null)
         {
@@ -15,15 +17,42 @@ namespace ImageRecognition.ImageRecognizing
 
         public ImagesComparisonInfo(double result, BitmapSource originalImage, BitmapSource firstComparison, BitmapSource secondComarison)
         {
-            this.ComparisonResult = result;
-            this.OriginalImageIntensities = originalImage;
-            this.FirstComparisonIntensities = firstComparison;
-            this.SecondComparisonIntensities = secondComarison;
+            this.comparisonResult = result;
+            this.originalImageIntensities = originalImage;
+            this.firstComparisonIntensities = firstComparison;
+            this.secondComparisonIntensities = secondComarison;
         }
 
-        public double ComparisonResult { get; private set; }
-        public BitmapSource OriginalImageIntensities { get; private set; }
-        public BitmapSource FirstComparisonIntensities { get; private set; }
-        public BitmapSource SecondComparisonIntensities { get; private set; }
+        public double ComparisonResult
+        {
+            get
+            {
+                return this.comparisonResult;
+            }
+        }
+
+        public BitmapSource OriginalImageIntensities
+        {
+            get
+            {
+                return this.originalImageIntensities;
+            }
+        }
+
+        public BitmapSource FirstComparisonIntensities
+        {
+            get
+            {
+                return this.firstComparisonIntensities;
+            }
+        }
+
+        public BitmapSource SecondComparisonIntensities
+        {
+            get
+            {
+                return this.secondComparisonIntensities;
+            }
+        }
     }
 }

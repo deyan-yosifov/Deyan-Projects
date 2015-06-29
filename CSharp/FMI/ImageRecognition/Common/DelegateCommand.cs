@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace ImageRecognition.ViewModels
+namespace ImageRecognition.Common
 {
     public class DelegateCommand : ICommand
     {

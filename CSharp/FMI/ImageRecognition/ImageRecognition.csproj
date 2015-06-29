@@ -58,6 +58,7 @@
     <Compile Include="Common\BooleanToHiddenConverter.cs" />
     <Compile Include="Common\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\ButtonImageControl.cs" />
+    <Compile Include="Common\DelegateCommand.cs" />
     <Compile Include="Common\ImageExtensions.cs" />
     <Compile Include="Common\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Common\MathExtensions.cs" />
@@ -69,7 +70,6 @@
     <Compile Include="ImageRecognizing\ImageInertiaInfo.cs" />
     <Compile Include="ImageRecognizing\ImagesComparer.cs" />
     <Compile Include="ImageRecognizing\ImagesComparisonInfo.cs" />
-    <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="ViewModels\ImageViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

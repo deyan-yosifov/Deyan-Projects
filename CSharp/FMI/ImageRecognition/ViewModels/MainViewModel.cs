@@ -26,7 +26,7 @@ namespace ImageRecognition.ViewModels
         private ICommand stopComparingCommand;
         private ICommand helpCommand;
         private BitmapSource currentImageSource;
-        private string imageDescription;
+        private BitmapSource bestMatchImageSource;
         private ImageViewModel selectedDatabaseImage;
         private bool isComparing;
         private bool canCompare;
@@ -34,6 +34,9 @@ namespace ImageRecognition.ViewModels
         private bool showSelectedComparisonInfo;
         private Size imageContainerActualSize;
         private Transform currentImageArrowTransform;
+        private string imageDescription;
+        private string bestResultText;
+        private ImagesComparisonInfo comparisonResult;
 
         public MainViewModel()
         {
@@ -139,14 +142,40 @@ namespace ImageRecognition.ViewModels
                 {
                     if (this.selectedDatabaseImage != null)
                     {
-                        this.selectedDatabaseImage.IsSelected = false;
+                        this.selectedDatabaseImage.CanBeDeleted = false;
                     }
 
                     this.selectedDatabaseImage = value;
 
-                    if (this.selectedDatabaseImage != null && !this.IsComparing)
+                    this.ComparisonResult = null;
+
+                    if (this.selectedDatabaseImage != null)
                     {
-                        this.selectedDatabaseImage.IsSelected = true;
+                        if (this.IsComparing)
+                        {
+                            this.SelectedDatabaseImageInfo = new NormalizedImageInfo()
+                            {
+                                ImageDescription = this.selectedDatabaseImage.ImageDescription,
+                                ImageSource = this.selectedDatabaseImage.ImageSource,
+                                InertiaInfo = ImagesComparer.CalculateInertiaInfo(this.selectedDatabaseImage.ImageSource)
+                            };
+
+                            this.ComparisonResult = ImagesComparer.GetComparisonInfo(this.SelectedDatabaseImageInfo, this.CurrentImageInfo);
+
+                            this.ShowBestResult = false;
+                            this.ShowSelectedComparisonInfo = true;
+                            this.OnImageContainerChanged();
+                        }
+                        else
+                        {
+                            this.selectedDatabaseImage.CanBeDeleted = true;
+                        }
+                    }
+                    else
+                    {
+                        this.ShowBestResult = this.IsComparing;
+                        this.ShowSelectedComparisonInfo = false;
+                        this.SelectedDatabaseImageInfo = null;
                     }
 
                     this.OnPropertyChanged("SelectedDatabaseImage");
@@ -186,7 +215,10 @@ namespace ImageRecognition.ViewModels
             }
             set
             {
-                this.SetProperty(ref this.showSelectedComparisonInfo, value, "ShowSelectedComparisonInfo");
+                if(this.SetProperty(ref this.showSelectedComparisonInfo, value, "ShowSelectedComparisonInfo"))
+                {
+                    this.OnImageContainerChanged();
+                }
             }
         }
 
@@ -201,6 +233,8 @@ namespace ImageRecognition.ViewModels
                 if (this.SetProperty(ref this.isComparing, value, "IsComparing"))
                 {
                     this.CanCompare = !value;
+                    this.ShowSelectedComparisonInfo = false;
+                    this.ShowBestResult = value;
                 }
             }
         }
@@ -214,6 +248,30 @@ namespace ImageRecognition.ViewModels
             set
             {
                 this.SetProperty(ref this.currentImageSource, value, "CurrentImageSource");
+            }
+        }
+
+        public BitmapSource BestMatchImageSource
+        {
+            get
+            {
+                return this.bestMatchImageSource;
+            }
+            set
+            {
+                this.SetProperty(ref this.bestMatchImageSource, value, "BestMatchImageSource");
+            }
+        }
+
+        public string BestResultText
+        {
+            get
+            {
+                return this.bestResultText;
+            }
+            set
+            {
+                this.SetProperty(ref this.bestResultText, value, "BestResultText");
             }
         }
 
@@ -254,6 +312,24 @@ namespace ImageRecognition.ViewModels
             {
                 this.SetProperty(ref this.currentImageArrowTransform, value, "CurrentImageArrowTransform");
             }
+        }
+
+        public ImagesComparisonInfo ComparisonResult
+        {
+            get
+            {
+                return this.comparisonResult;
+            }
+            set
+            {
+                this.SetProperty(ref this.comparisonResult, value, "ComparisonResult");
+            }
+        }
+
+        private NormalizedImageInfo SelectedDatabaseImageInfo
+        {
+            get;
+            set;
         }
 
         private NormalizedImageInfo CurrentImageInfo
@@ -315,8 +391,8 @@ namespace ImageRecognition.ViewModels
         private void StopComparing()
         {
             this.IsComparing = false;
-            // TODO:
-            this.imagesToProcess.AddRange(this.Images);
+
+            this.imagesToProcess.AddRange(this.Images.OrderBy((image) => image.Id));
             this.Images.Clear();
             int totalCount = this.imagesToProcess.Count;
 
@@ -330,6 +406,10 @@ namespace ImageRecognition.ViewModels
                 image.ComparisonResult = 0;
                 this.Images.Add(image);
             }
+
+            this.SelectedDatabaseImage = this.Images.FirstOrDefault();
+            this.bestMatchImageSource = null;
+            this.BestResultText = null;
         }
 
         private void CompareWithDatabase()
@@ -358,7 +438,18 @@ namespace ImageRecognition.ViewModels
                 this.Images.Add(image);
             }
 
-            // TODO:
+            this.SelectedDatabaseImage = this.Images.FirstOrDefault();
+
+            if (this.SelectedDatabaseImage != null)
+            {
+                this.BestMatchImageSource = this.SelectedDatabaseImage.ImageSource;
+                this.BestResultText = string.Format(@"Най-добро съвпадение е ""{0}""
+Процентно съвпадение: {1}",
+                    this.SelectedDatabaseImage.ImageDescription,
+                    PercentConverter.GetPercentRepresentation(this.SelectedDatabaseImage.ComparisonResult));
+            }
+
+            this.SelectedDatabaseImage = null;
         }
 
         private void OpenImage()
@@ -378,8 +469,6 @@ namespace ImageRecognition.ViewModels
                     ImageSource = this.CurrentImageSource,
                     InertiaInfo = ImagesComparer.CalculateInertiaInfo(this.CurrentImageSource)
                 };
-
-                this.OnImageContainerChanged();
             }
         }
 
@@ -416,7 +505,12 @@ namespace ImageRecognition.ViewModels
 
         private void OnImageContainerChanged()
         {
-            Size container = this.ImageContainerActualSize;
+            if (!this.ShowSelectedComparisonInfo)
+            {
+                return;
+            }
+
+            Size container = new Size(this.ImageContainerActualSize.Width / 2, this.ImageContainerActualSize.Height / 2);
 
             if (this.CurrentImageSource == null)
             {
@@ -425,11 +519,11 @@ namespace ImageRecognition.ViewModels
             }     
 
             double arrowSize = Math.Min(container.Width, container.Height) * 0.1;
-            Rect imageRect = this.CalculateImageBoundingRect(new Size(this.CurrentImageSource.PixelWidth, this.CurrentImageSource.PixelHeight));
+            Rect imageRect = MainViewModel.CalculateImageBoundingRect(new Size(this.CurrentImageSource.PixelWidth, this.CurrentImageSource.PixelHeight), container);
             double currentImageScale = imageRect.Width / this.CurrentImageSource.PixelWidth;
-            double xCenterOfWeight = this.CurrentImageInfo.InertiaInfo.CenterOfWeight.X * currentImageScale;
-            double yCenterOfWeight = this.CurrentImageInfo.InertiaInfo.CenterOfWeight.Y * currentImageScale;
-            double angle = Vector.AngleBetween(new Vector(1, 0), this.CurrentImageInfo.InertiaInfo.MainInertiaAxisDirection);
+            double xCenterOfWeight = this.SelectedDatabaseImageInfo.InertiaInfo.CenterOfWeight.X * currentImageScale;
+            double yCenterOfWeight = this.SelectedDatabaseImageInfo.InertiaInfo.CenterOfWeight.Y * currentImageScale;
+            double angle = Vector.AngleBetween(new Vector(1, 0), this.SelectedDatabaseImageInfo.InertiaInfo.MainInertiaAxisDirection);
 
             Matrix currentImageArrowMatrix = new Matrix();
             currentImageArrowMatrix.Scale(arrowSize, arrowSize);
@@ -439,10 +533,8 @@ namespace ImageRecognition.ViewModels
             this.CurrentImageArrowTransform = new MatrixTransform(currentImageArrowMatrix);
         }
 
-        private Rect CalculateImageBoundingRect(Size imageSize)
-        {
-            Size container = this.ImageContainerActualSize;
-  
+        private static Rect CalculateImageBoundingRect(Size imageSize, Size container)
+        {  
             double scale = container.Width / imageSize.Width;
             double imageWidth = container.Width;
             double imageHeight = scale * imageSize.Height;
