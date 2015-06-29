@@ -86,11 +86,51 @@
                     </StackPanel>
                 </StackPanel>
                 <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="10">
-                    <Grid Margin="0" SizeChanged="ImageContainer_SizeChanged">
-                        <Image Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <Path Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
-                              RenderTransform="{Binding CurrentImageArrowTransform}"/>
-                    </Grid>                    
+                    <Grid Margin="0">
+                        <Image Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                               Visibility="{Binding IsComparing, Converter={StaticResource inverseVisibilityConverter}}" />
+
+                        <Grid Margin="0" 
+                              Visibility="{Binding ShowBestResult, Converter={StaticResource visibilityConverter}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition  />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding BestResultText}" />
+                            <Image Grid.Row="1" Grid.Column="0" Source="{Binding CurrentImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <Image Grid.Row="1" Grid.Column="1" Source="{Binding BestMatchImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        </Grid>
+
+                        <Grid Margin="0" SizeChanged="ImageContainer_SizeChanged"
+                              Visibility="{Binding ShowSelectedComparisonInfo, Converter={StaticResource visibilityConverter}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition  />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Row="0" Grid.Column="0" Source="{Binding FirstComparisonImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <Path Grid.Row="0" Grid.Column="0" Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
+                                  
+                                  RenderTransform="{Binding CurrentImageArrowTransform}"/>
+                            <Image Grid.Row="1" Grid.Column="1" Source="{Binding OriginalImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <Path Grid.Row="1" Grid.Column="1" Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
+                                  RenderTransform="{Binding CurrentImageArrowTransform}"/>
+
+                            <Image Grid.Row="1" Grid.Column="0" Source="{Binding SecondComparisonImageSource}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            <Path Grid.Row="1" Grid.Column="0" Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
+                                  RenderTransform="{Binding CurrentImageArrowTransform}" LayoutTransform="-1 0 0 1 0 0"/>
+
+                            <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="50" FontWeight="Bold"
+                                Text="{Binding ComparisonResult, Converter={StaticResource percentConverter}}" Foreground="Green" Background="#aaffffff" />
+                        </Grid>
+                    </Grid>  
                 </Border>
             </Grid>
         </Border>

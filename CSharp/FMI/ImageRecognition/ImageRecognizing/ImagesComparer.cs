@@ -10,15 +10,14 @@ namespace ImageRecognition.ImageRecognizing
 {
     public static class ImagesComparer
     {
+        public static ImagesComparisonInfo GetComparisonInfo(NormalizedImageInfo originalImage, NormalizedImageInfo imageToCompare)
+        {
+            return ImagesComparer.GetComparisonInfo(originalImage, imageToCompare, true);
+        }
+
         public static double CompareImages(NormalizedImageInfo originalImage, NormalizedImageInfo imageToCompare)
         {
-            double comparison;
-            if(ImagesComparer.TryCompareImagesWithZeroArea(originalImage, imageToCompare, out comparison))
-            {
-                return comparison;
-            }
-
-            return ImagesComparer.CompareImagesWithNonZeroArea(originalImage, imageToCompare);
+            return ImagesComparer.GetComparisonInfo(originalImage, imageToCompare, false).ComparisonResult;
         }
 
         public static ImageInertiaInfo CalculateInertiaInfo(BitmapSource bitmapSource)
@@ -139,7 +138,20 @@ namespace ImageRecognition.ImageRecognizing
             return new ImageInertiaInfo(centerOfWeight, vector, area, weight);
         }
 
-        private static double CompareImagesWithNonZeroArea(NormalizedImageInfo originalImage, NormalizedImageInfo imageToCompare)
+        private static ImagesComparisonInfo GetComparisonInfo(NormalizedImageInfo originalImage, NormalizedImageInfo imageToCompare, bool getImageIntensities)
+        {
+            double comparison;
+            if (ImagesComparer.TryCompareImagesWithZeroArea(originalImage, imageToCompare, out comparison))
+            {
+                BitmapSource blankImage = getImageIntensities ? originalImage.ImageSource : null;
+
+                return new ImagesComparisonInfo(comparison, blankImage, blankImage, blankImage);
+            }
+
+            return ImagesComparer.CompareImagesWithNonZeroArea(originalImage, imageToCompare, getImageIntensities);
+        }
+
+        private static ImagesComparisonInfo CompareImagesWithNonZeroArea(NormalizedImageInfo originalImage, NormalizedImageInfo imageToCompare, bool getImageIntensities)
         {
             byte?[,] originalPixels = originalImage.ImageSource.GetPixelsIntensity();
             byte?[,] imageToComparePixels = imageToCompare.ImageSource.GetPixelsIntensity();
@@ -151,8 +163,8 @@ namespace ImageRecognition.ImageRecognizing
             int firstDifference = 0;
             int secondDifference = 0;
             byte maxIntensity = 0;
-            //byte?[,] firstComparisonImage = new byte?[height, width];
-            //byte?[,] secondComparisonImage = new byte?[height, width];
+            byte?[,] firstComparisonImage = getImageIntensities ? new byte?[height, width] : null;
+            byte?[,] secondComparisonImage = getImageIntensities ? new byte?[height, width] : null;
 
             for (int i = 0; i < height; i++)
             {
@@ -166,12 +178,18 @@ namespace ImageRecognition.ImageRecognizing
                         maxIntensity = Math.Max(maxIntensity, originalIntensity.Value);
                         Point firstPoint = firstMatrix.Transform(originalPoint);
                         byte? firstPixel = ImagesComparer.GetImagePixelFromPoint(imageToComparePixels, firstPoint);
-                        //firstComparisonImage[i, j] = firstPixel;
+                        if (getImageIntensities)
+                        {
+                            firstComparisonImage[i, j] = firstPixel;
+                        }
                         firstDifference += ImagesComparer.GetDifference(originalIntensity.Value, firstPixel);
 
                         Point secondPoint = secondMatrix.Transform(originalPoint);
                         byte? secondPixel = ImagesComparer.GetImagePixelFromPoint(imageToComparePixels, secondPoint);
-                        //secondComparisonImage[i, j] = secondPixel;
+                        if (getImageIntensities)
+                        {
+                            secondComparisonImage[i, j] = secondPixel;
+                        }
                         secondDifference += ImagesComparer.GetDifference(originalIntensity.Value, secondPixel);
                     }
                 }
@@ -181,7 +199,18 @@ namespace ImageRecognition.ImageRecognizing
             double difference = Math.Min(firstDifference, secondDifference) / maxDifference;
             double comparison = 1 - difference;
 
-            return comparison;
+            if (getImageIntensities)
+            {
+                BitmapSource originalImageSource = ImageExtensions.CreateImageFromGrayPixels(originalPixels);
+                BitmapSource firstComparisonImageSource = ImageExtensions.CreateImageFromGrayPixels(firstComparisonImage);
+                BitmapSource secondComparisonImageSource = ImageExtensions.CreateImageFromGrayPixels(secondComparisonImage);
+
+                return new ImagesComparisonInfo(comparison, originalImageSource, firstComparisonImageSource, secondComparisonImageSource);
+            }
+            else
+            {
+                return new ImagesComparisonInfo(comparison);
+            }
         }
 
         private static int GetDifference(int firstPixel, byte? secondPixel)

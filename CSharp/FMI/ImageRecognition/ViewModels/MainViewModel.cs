@@ -30,6 +30,8 @@ namespace ImageRecognition.ViewModels
         private ImageViewModel selectedDatabaseImage;
         private bool isComparing;
         private bool canCompare;
+        private bool showBestResult;
+        private bool showSelectedComparisonInfo;
         private Size imageContainerActualSize;
         private Transform currentImageArrowTransform;
 
@@ -42,6 +44,8 @@ namespace ImageRecognition.ViewModels
             this.selectedDatabaseImage = null;
             this.isComparing = false;
             this.canCompare = false;
+            this.showBestResult = false;
+            this.showSelectedComparisonInfo = false;
 
             this.openImageCommand = new DelegateCommand((parameter) => { this.OpenImage(); });
             this.addToDatabaseCommand = new DelegateCommand((parameter) => { this.AddImageToDataBase(); });
@@ -159,6 +163,30 @@ namespace ImageRecognition.ViewModels
             set
             {
                 this.SetProperty(ref this.canCompare, value, "CanCompare");
+            }
+        }
+
+        public bool ShowBestResult
+        {
+            get
+            {
+                return this.showBestResult;
+            }
+            set
+            {
+                this.SetProperty(ref this.showBestResult, value, "ShowBestResult");
+            }
+        }
+
+        public bool ShowSelectedComparisonInfo
+        {
+            get
+            {
+                return this.showSelectedComparisonInfo;
+            }
+            set
+            {
+                this.SetProperty(ref this.showSelectedComparisonInfo, value, "ShowSelectedComparisonInfo");
             }
         }
 

@@ -68,6 +68,7 @@
     <Compile Include="Database\INormalizedImagesDatabase.cs" />
     <Compile Include="ImageRecognizing\ImageInertiaInfo.cs" />
     <Compile Include="ImageRecognizing\ImagesComparer.cs" />
+    <Compile Include="ImageRecognizing\ImagesComparisonInfo.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="ViewModels\ImageViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
