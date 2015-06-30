@@ -19,6 +19,10 @@
                     <LineSegment Point="0.8, -0.1" />
                     <LineSegment Point="0.8, 0" />
                 </PathFigure>
+                <PathFigure StartPoint="-0.09 0" IsFilled="False" IsClosed="False">
+                    <ArcSegment Point="0.09 0" SweepDirection="Clockwise" Size="0.09 0.09" />
+                    <ArcSegment Point="-0.09 0" SweepDirection="Clockwise" Size="0.09 0.09" />
+                </PathFigure>
             </PathGeometry.Figures>
         </PathGeometry>
 
@@ -134,22 +138,22 @@
                             </Grid.ColumnDefinitions>
                             <Image Grid.Row="0" Grid.Column="0" Source="{Binding ComparisonResult.FirstComparisonIntensities}"
                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                            <Path Grid.Row="0" Grid.Column="0" Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"                                  
-                                  RenderTransform="{Binding CurrentImageArrowTransform}"/>
+                            <Path Grid.Row="0" Grid.Column="0" Fill="Transparent" Stroke="Red" StrokeThickness="0.07" Data="{StaticResource arrowGeometry}"                                  
+                                  RenderTransform="{Binding SelectedDatabaseImageArrowTransform}"/>
                             <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontWeight="Bold" Background="#aaffffff"
                                        Text="Първо сравнение." />
                             
                             <Image Grid.Row="1" Grid.Column="0" Source="{Binding ComparisonResult.OriginalImageIntensities}"
                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                            <Path Grid.Row="1" Grid.Column="0" Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
-                                  RenderTransform="{Binding CurrentImageArrowTransform}"/>
+                            <Path Grid.Row="1" Grid.Column="0" Fill="Transparent" Stroke="Red" StrokeThickness="0.07" Data="{StaticResource arrowGeometry}"
+                                  RenderTransform="{Binding SelectedDatabaseImageArrowTransform}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontWeight="Bold" Background="#aaffffff"
                                        Text="Шаблонна картинка." />
 
                             <Image Grid.Row="1" Grid.Column="1" Source="{Binding ComparisonResult.SecondComparisonIntensities}"
                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                            <Path Grid.Row="1" Grid.Column="1" Fill="Transparent" Stroke="Red" StrokeThickness="0.05" Data="{StaticResource arrowGeometry}"
-                                  RenderTransform="{Binding CurrentImageArrowTransform}" LayoutTransform="1 0 0 1 0 0"/>
+                            <Path Grid.Row="1" Grid.Column="1" Fill="Transparent" Stroke="Red" StrokeThickness="0.07" Data="{StaticResource arrowGeometry}"
+                                  RenderTransform="{Binding SelectedDatabaseImageArrowTransform}"/>
                             <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontWeight="Bold" Background="#aaffffff"
                                        Text="Второ сравнение." />
 

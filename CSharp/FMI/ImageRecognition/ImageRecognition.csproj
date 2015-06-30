@@ -138,9 +138,6 @@
     <Content Include="Sample images modified\North-modified.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sample images modified\rectangle-modified.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Sample images modified\Stadium filter big-modified.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -172,9 +169,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sample images\North.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Sample images\rectangle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Sample images\Stadium filter big.png">

@@ -302,7 +302,7 @@ namespace ImageRecognition.ViewModels
             }
         }
 
-        public Transform CurrentImageArrowTransform
+        public Transform SelectedDatabaseImageArrowTransform
         {
             get
             {
@@ -310,7 +310,7 @@ namespace ImageRecognition.ViewModels
             }
             set
             {
-                this.SetProperty(ref this.currentImageArrowTransform, value, "CurrentImageArrowTransform");
+                this.SetProperty(ref this.currentImageArrowTransform, value, "SelectedDatabaseImageArrowTransform");
             }
         }
 
@@ -385,7 +385,8 @@ namespace ImageRecognition.ViewModels
 
         private void Help()
         {
-            MessageBox.Show("Добавете картинки към базата данни и след това селектирайте картинката, която искате да разпознаете. И в двата случая премахнете фона от картинките, заменяйки го с прозрачен цвят на пикселите!", "Помощ");
+            MessageBox.Show("Добавете картинки към базата данни и след това селектирайте картинката, която искате да разпознаете. И в двата случая предварително премахнете фона от картинките, заменяйки го с прозрачен цвят на пикселите!",
+"Помощ");
         }
 
         private void StopComparing()
@@ -505,22 +506,18 @@ namespace ImageRecognition.ViewModels
 
         private void OnImageContainerChanged()
         {
-            if (!this.ShowSelectedComparisonInfo)
+            if (!this.ShowSelectedComparisonInfo || this.SelectedDatabaseImage == null)
             {
+                this.SelectedDatabaseImageArrowTransform = new MatrixTransform(new Matrix(0, 0, 0, 0, 0, 0));
                 return;
             }
 
-            Size container = new Size(this.ImageContainerActualSize.Width / 2, this.ImageContainerActualSize.Height / 2);
+            Size container = new Size(this.ImageContainerActualSize.Width / 2, this.ImageContainerActualSize.Height / 2);            
+            BitmapSource imageSource = this.SelectedDatabaseImage.ImageSource;
 
-            if (this.CurrentImageSource == null)
-            {
-                this.CurrentImageArrowTransform = new MatrixTransform(new Matrix(0, 0, 0, 0, 0, 0));
-                return;
-            }     
-
-            double arrowSize = Math.Min(container.Width, container.Height) * 0.1;
-            Rect imageRect = MainViewModel.CalculateImageBoundingRect(new Size(this.CurrentImageSource.PixelWidth, this.CurrentImageSource.PixelHeight), container);
-            double currentImageScale = imageRect.Width / this.CurrentImageSource.PixelWidth;
+            double arrowSize = Math.Min(container.Width, container.Height) * 0.2;
+            Rect imageRect = MainViewModel.CalculateImageBoundingRect(new Size(imageSource.PixelWidth, imageSource.PixelHeight), container);
+            double currentImageScale = imageRect.Width / imageSource.PixelWidth;
             double xCenterOfWeight = this.SelectedDatabaseImageInfo.InertiaInfo.CenterOfWeight.X * currentImageScale;
             double yCenterOfWeight = this.SelectedDatabaseImageInfo.InertiaInfo.CenterOfWeight.Y * currentImageScale;
             double angle = Vector.AngleBetween(new Vector(1, 0), this.SelectedDatabaseImageInfo.InertiaInfo.MainInertiaAxisDirection);
@@ -530,7 +527,7 @@ namespace ImageRecognition.ViewModels
             currentImageArrowMatrix.Rotate(angle);
             currentImageArrowMatrix.Translate(imageRect.Left + xCenterOfWeight, imageRect.Top + yCenterOfWeight);
 
-            this.CurrentImageArrowTransform = new MatrixTransform(currentImageArrowMatrix);
+            this.SelectedDatabaseImageArrowTransform = new MatrixTransform(currentImageArrowMatrix);
         }
 
         private static Rect CalculateImageBoundingRect(Size imageSize, Size container)
