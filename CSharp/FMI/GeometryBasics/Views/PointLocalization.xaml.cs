@@ -1,10 +1,7 @@
-﻿using Deyo.Controls.Charts;
-using GeometryBasics.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,20 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GeometryBasics
+namespace GeometryBasics.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PointLocalization.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PointLocalization : UserControl
     {
-        public MainWindow()
+        public PointLocalization()
         {
             InitializeComponent();
-
-            MainViewModel viewModel = new MainViewModel((exampleView) => { this.example.Child = exampleView; });
-            this.DataContext = viewModel;
-            viewModel.InitializeExamples();
-        }     
+        }
     }
 }

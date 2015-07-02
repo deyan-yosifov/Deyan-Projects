@@ -77,6 +77,10 @@
     <Compile Include="Charts\CartesianPlane.cs" />
     <Compile Include="Charts\GraphicProperties.cs" />
     <Compile Include="Charts\ViewportInfo.cs" />
+    <Compile Include="Common\Converters\BooleanToHiddenConverter.cs" />
+    <Compile Include="Common\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\Converters\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\Converters\PercentConverter.cs" />
     <Compile Include="Common\INamedObject.cs" />
     <Compile Include="Common\NamedObjectsCollection.cs" />
     <Compile Include="Common\ObjectPool.cs" />

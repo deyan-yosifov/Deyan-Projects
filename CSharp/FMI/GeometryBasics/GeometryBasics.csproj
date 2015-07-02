@@ -53,6 +53,48 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\ClippingAlgorithmModel.cs" />
+    <Compile Include="Models\ConvexPolygonesIntersectionModel.cs" />
+    <Compile Include="Models\GrahamConvexHullModel.cs" />
+    <Compile Include="Models\LineSegmentsIntersectionModel.cs" />
+    <Compile Include="Models\OrthographicVisibilityModel.cs" />
+    <Compile Include="Models\PerspectiveVisibilityModel.cs" />
+    <Compile Include="Models\PointLocalizationModel.cs" />
+    <Compile Include="Models\RotatingCalipersModel.cs" />
+    <Compile Include="ViewModels\CartesianPlaneViewModelBase.cs" />
+    <Compile Include="ViewModels\ClippingAlgorithmViewModel.cs" />
+    <Compile Include="ViewModels\ConvexPolygonesIntersectionViewModel.cs" />
+    <Compile Include="ViewModels\GrahamConvexHullViewModel.cs" />
+    <Compile Include="ViewModels\LineSegmentsIntersectionViewModel.cs" />
+    <Compile Include="ViewModels\OrthographicVisibilityViewModel.cs" />
+    <Compile Include="ViewModels\PerspectiveVisibilityViewModel.cs" />
+    <Compile Include="ViewModels\PointLocalizationViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\RotatingCalipersViewModel.cs" />
+    <Compile Include="Views\ClippingAlgorithm.xaml.cs">
+      <DependentUpon>ClippingAlgorithm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConvexPolygonesIntersection.xaml.cs">
+      <DependentUpon>ConvexPolygonesIntersection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GrahamConvexHull.xaml.cs">
+      <DependentUpon>GrahamConvexHull.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LineSegmentsIntersection.xaml.cs">
+      <DependentUpon>LineSegmentsIntersection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OrthographicVisibility.xaml.cs">
+      <DependentUpon>OrthographicVisibility.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PerspectiveVisibility.xaml.cs">
+      <DependentUpon>PerspectiveVisibility.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PointLocalization.xaml.cs">
+      <DependentUpon>PointLocalization.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RotatingCalipers.xaml.cs">
+      <DependentUpon>RotatingCalipers.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -65,8 +107,41 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ClippingAlgorithm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConvexPolygonesIntersection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GrahamConvexHull.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LineSegmentsIntersection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OrthographicVisibility.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PerspectiveVisibility.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PointLocalization.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RotatingCalipers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ExampleModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -102,6 +177,12 @@
       <Project>{d0aed8a4-81ef-4ee6-a63d-4488e7ebda99}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\fmi-logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,7 +9,8 @@ namespace Deyo.Controls.Common
     {
         public static Uri GetResourceUri(string resource)
         {
-            AssemblyName assemblyName = new AssemblyName(typeof(ResourceHelper).Assembly.FullName);
+            Assembly assembly = Assembly.GetCallingAssembly();
+            AssemblyName assemblyName = new AssemblyName(assembly.FullName);
             string resourcePath = "/" + assemblyName.Name + ";component/" + resource;
             Uri resourceUri = new Uri(resourcePath, UriKind.Relative);
 
