@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Common;
+using GeometryBasics.Common;
 using GeometryBasics.Models;
 using GeometryBasics.Views;
 using System;
@@ -16,13 +17,13 @@ namespace GeometryBasics.ViewModels
         private const string ExpandDescriptionHeaderText = "Покажете описанието на алгоритъма...";
         private const string HideDescriptionHeaderText = "Скрийте описанието на алгоритъма...";
         private readonly ObservableCollection<ExampleModelBase> examples;
-        private readonly Action<UserControl> onExampleViewChanged;
+        private readonly Action<ExampleUserControl> onExampleViewChanged;
         private ExampleModelBase selectedExample;
         private bool isExampleSelected;
         private bool isDescriptionExpanded;
         private string descriptionExpanderHeader;
 
-        public MainViewModel(Action<UserControl> onExampleViewChanged)
+        public MainViewModel(Action<ExampleUserControl> onExampleViewChanged)
         {
             this.examples = new ObservableCollection<ExampleModelBase>();
             this.selectedExample = null;
@@ -49,10 +50,23 @@ namespace GeometryBasics.ViewModels
             }
             set
             {
-                if (this.SetProperty(ref this.selectedExample, value))
+                if (this.selectedExample != value)
                 {
+                    if (this.selectedExample != null)
+                    {
+                        this.selectedExample.View.Release();
+                    }
+
+                    this.selectedExample = value;
+
+                    if (this.selectedExample != null)
+                    {
+                        this.selectedExample.View.Initialize();
+                    }
+
                     this.IsExampleSelected = value != null;
                     this.onExampleViewChanged(value == null ? null : value.View);
+                    this.OnPropertyChanged();
                 }
             }
         }

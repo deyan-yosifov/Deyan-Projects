@@ -70,6 +70,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buttons\ImageButton.cs" />
     <Compile Include="Buttons\PausePlayButton.xaml.cs">
       <DependentUpon>PausePlayButton.xaml</DependentUpon>
     </Compile>
@@ -79,6 +80,7 @@
     <Compile Include="Charts\ViewportInfo.cs" />
     <Compile Include="Common\Converters\BooleanToHiddenConverter.cs" />
     <Compile Include="Common\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\Converters\InverseBooleanToHiddenConverter.cs" />
     <Compile Include="Common\Converters\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Common\Converters\PercentConverter.cs" />
     <Compile Include="Common\INamedObject.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Dialogs\Explorer\FolderBrowserDialogViewModel.cs" />
     <Compile Include="Dialogs\Explorer\FolderValidator.cs" />
     <Compile Include="Dialogs\Explorer\HeaderToImageConverter.cs" />
+    <Compile Include="Media\Imaging\ImageExtensions.cs" />
     <Compile Include="MouseHandlers\IPointerHandler.cs" />
     <Compile Include="MouseHandlers\PointerHandlersController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

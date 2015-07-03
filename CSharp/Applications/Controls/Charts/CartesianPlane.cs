@@ -19,6 +19,7 @@ namespace Deyo.Controls.Charts
         private readonly RectangleGeometry viewportRectangle;
         private readonly MatrixTransform viewportTransform;
         private readonly PreservableState<GraphicProperties> graphicState;
+        private Matrix? inverseMatrix;
         private ViewportInfo viewportInfo;
         private int layoutSuspendCount = 0;
         
@@ -29,6 +30,7 @@ namespace Deyo.Controls.Charts
             this.viewportTransform = new MatrixTransform();
             this.graphicState = new PreservableState<GraphicProperties>();
 
+            this.inverseMatrix = null;
             this.container.Clip = this.viewportRectangle;
             this.container.RenderTransform = this.viewportTransform;
             this.container.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
@@ -83,6 +85,19 @@ namespace Deyo.Controls.Charts
             set
             {
                 this.viewportTransform.Matrix = value;
+            }
+        }
+
+        private Matrix InverseMatrix
+        {
+            get
+            {
+                if (!this.inverseMatrix.HasValue)
+                {
+                    this.inverseMatrix = this.ViewportTransform.InverseMatrix();
+                }
+
+                return this.inverseMatrix.Value;
             }
         }
         
@@ -177,6 +192,12 @@ namespace Deyo.Controls.Charts
             this.InvalidateLayout();
         }
 
+        public void ClearAllElements()
+        {
+            this.container.Children.Clear();
+            this.InvalidateLayout();
+        }
+
         public IDisposable SaveGraphicProperties()
         {
             return this.graphicState.Preserve();
@@ -256,6 +277,7 @@ namespace Deyo.Controls.Charts
             matrix.ScaleAt(scale, -scale, canvasCenter.X, canvasCenter.Y);
 
             this.ViewportTransform = matrix;
+            this.inverseMatrix = null;
         }
     }
 }

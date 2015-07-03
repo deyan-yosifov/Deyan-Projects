@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using GeometryBasics.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,24 @@ namespace GeometryBasics.Views
     /// <summary>
     /// Interaction logic for ConvexPolygonesIntersection.xaml
     /// </summary>
-    public partial class ConvexPolygonesIntersection : UserControl
+    public partial class ConvexPolygonesIntersection : ExampleUserControl
     {
+        private readonly ConvexPolygonesIntersectionViewModel viewModel;
+
         public ConvexPolygonesIntersection()
         {
             InitializeComponent();
+
+            this.viewModel = new ConvexPolygonesIntersectionViewModel(this.cartesianPlane);
+            this.DataContext = this.viewModel;
+        }
+
+        public override CartesianPlaneViewModelBase ViewModel
+        {
+            get
+            {
+                return this.viewModel;
+            }
         }
     }
 }

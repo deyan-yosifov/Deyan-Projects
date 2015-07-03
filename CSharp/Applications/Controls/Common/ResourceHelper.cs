@@ -9,7 +9,7 @@ namespace Deyo.Controls.Common
     {
         public static Uri GetResourceUri(string resource)
         {
-            Assembly assembly = Assembly.GetCallingAssembly();
+            Assembly assembly = Assembly.GetAssembly(typeof(ResourceHelper));
             AssemblyName assemblyName = new AssemblyName(assembly.FullName);
             string resourcePath = "/" + assemblyName.Name + ";component/" + resource;
             Uri resourceUri = new Uri(resourcePath, UriKind.Relative);
@@ -19,7 +19,13 @@ namespace Deyo.Controls.Common
 
         public static Stream GetResourceStream(string resource)
         {
-            return Application.GetResourceStream(ResourceHelper.GetResourceUri(resource)).Stream;
+            Uri uri = ResourceHelper.GetResourceUri(resource);
+            return GetResourceStream(uri);
+        }
+
+        public static Stream GetResourceStream(Uri uri)
+        {
+            return Application.GetResourceStream(uri).Stream;
         }
 
         public static byte[] GetResourceBytes(string resource)

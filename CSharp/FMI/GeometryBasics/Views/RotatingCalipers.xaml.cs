@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using GeometryBasics.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,24 @@ namespace GeometryBasics.Views
     /// <summary>
     /// Interaction logic for RotatingCalipers.xaml
     /// </summary>
-    public partial class RotatingCalipers : UserControl
+    public partial class RotatingCalipers : ExampleUserControl
     {
+        private readonly RotatingCalipersViewModel viewModel;
+
         public RotatingCalipers()
         {
             InitializeComponent();
+
+            this.viewModel = new RotatingCalipersViewModel(this.cartesianPlane);
+            this.DataContext = this.viewModel;
+        }
+
+        public override CartesianPlaneViewModelBase ViewModel
+        {
+            get
+            {
+                return this.viewModel;
+            }
         }
     }
 }

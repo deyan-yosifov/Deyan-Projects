@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using GeometryBasics.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,24 @@ namespace GeometryBasics.Views
     /// <summary>
     /// Interaction logic for GrahamConvexHull.xaml
     /// </summary>
-    public partial class GrahamConvexHull : UserControl
+    public partial class GrahamConvexHull : ExampleUserControl
     {
+        private readonly GrahamConvexHullViewModel viewModel;
+
         public GrahamConvexHull()
         {
             InitializeComponent();
+
+            this.viewModel = new GrahamConvexHullViewModel(this.cartesianPlane);
+            this.DataContext = this.viewModel;
+        }
+
+        public override CartesianPlaneViewModelBase ViewModel
+        {
+            get
+            {
+                return this.viewModel;
+            }
         }
     }
 }

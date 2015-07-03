@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using GeometryBasics.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,24 @@ namespace GeometryBasics.Views
     /// <summary>
     /// Interaction logic for LineSegmentsIntersection.xaml
     /// </summary>
-    public partial class LineSegmentsIntersection : UserControl
+    public partial class LineSegmentsIntersection : ExampleUserControl
     {
+        private readonly LineSegmentsIntersectionViewModel viewModel;
+
         public LineSegmentsIntersection()
         {
             InitializeComponent();
+
+            this.viewModel = new LineSegmentsIntersectionViewModel(this.cartesianPlane);
+            this.DataContext = this.viewModel;
+        }
+
+        public override CartesianPlaneViewModelBase ViewModel
+        {
+            get
+            {
+                return this.viewModel;
+            }
         }
     }
 }

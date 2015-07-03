@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using GeometryBasics.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,24 @@ namespace GeometryBasics.Views
     /// <summary>
     /// Interaction logic for PointLocalization.xaml
     /// </summary>
-    public partial class PointLocalization : UserControl
+    public partial class PointLocalization : ExampleUserControl
     {
+        private readonly PointLocalizationViewModel viewModel;
+
         public PointLocalization()
         {
             InitializeComponent();
+
+            this.viewModel = new PointLocalizationViewModel(this.cartesianPlane);
+            this.DataContext = this.viewModel;
+        }
+
+        public override CartesianPlaneViewModelBase ViewModel
+        {
+            get
+            {
+                return this.viewModel;
+            }
         }
     }
 }

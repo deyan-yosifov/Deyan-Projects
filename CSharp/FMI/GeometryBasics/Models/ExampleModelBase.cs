@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +10,10 @@ namespace GeometryBasics.Models
 {
     public abstract class ExampleModelBase
     {
-        private readonly Func<UserControl> createView;
-        private UserControl view;
+        private readonly Func<ExampleUserControl> createView;
+        private ExampleUserControl view;
 
-        public ExampleModelBase(string name, string description, Func<UserControl> createView)
+        public ExampleModelBase(string name, string description, Func<ExampleUserControl> createView)
         {
             this.Name = name;
             this.Description = description;
@@ -26,7 +27,7 @@ namespace GeometryBasics.Models
 
         public bool CanCreateView { get; set; }
 
-        public UserControl View
+        public ExampleUserControl View
         {
             get
             {

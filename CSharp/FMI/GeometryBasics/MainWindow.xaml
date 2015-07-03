@@ -39,22 +39,23 @@
                 </StackPanel>
                 <TextBlock Grid.Row="1" Text="Изберете алгоритъм от списъка в дясно." Foreground="Black" FontSize="20" Margin="20" 
                            TextAlignment="Center" HorizontalAlignment="Stretch" TextWrapping="Wrap"
-                           Visibility="{Binding IsExampleSelected, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
-                <Border Grid.Row="1" Margin="10" BorderBrush="Gray" BorderThickness="1" Visibility="{Binding IsExampleSelected, Converter={StaticResource booleanToVisibilityConverter}}">
+                           Visibility="{Binding Path=IsExampleSelected, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
+                <Border Grid.Row="1" Margin="10" BorderBrush="Gray" BorderThickness="1" Visibility="{Binding Path=IsExampleSelected, Converter={StaticResource booleanToVisibilityConverter}}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding SelectedExample.Name}" HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="Wrap"
+                            <TextBlock Text="{Binding Path=SelectedExample.Name}" HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="Wrap"
                                        FontSize="18" FontWeight="Bold"/>
-                            <Expander Header="{Binding DescriptionExpanderHeader}" IsExpanded="{Binding IsDescriptionExpanded}" HorizontalAlignment="Stretch" Margin="5 0 0 0"
+                            <Expander Header="{Binding Path=DescriptionExpanderHeader}" IsExpanded="{Binding Path=IsDescriptionExpanded}" HorizontalAlignment="Stretch" Margin="5 0 0 0"
                                       FontStyle="Italic" FontSize="14">
-                                <TextBlock Margin="10" Text="{Binding SelectedExample.Description}" HorizontalAlignment="Stretch" TextAlignment="Left" TextWrapping="Wrap" />
+                                <TextBlock Margin="10" Text="{Binding Path=SelectedExample.Description}" HorizontalAlignment="Stretch" TextAlignment="Left" TextWrapping="Wrap" />
                             </Expander>                            
                         </StackPanel>
-                        <Border Grid.Row="1" x:Name="example" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" />
+                        <Border Grid.Row="1" x:Name="example" Margin="10"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" BorderBrush="Gray" BorderThickness="0.5" />
                     </Grid>                    
                 </Border>                        
             </Grid>
@@ -72,14 +73,14 @@
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="10 5 10 10" FontWeight="Bold" FontSize="14">Списък с алгоритми</TextBlock>
                 </StackPanel>
                 <ListBox Grid.Row="1" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="10"
-                    ItemsSource="{Binding Examples}" SelectionMode="Single" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding Path=Examples}" SelectionMode="Single" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch"
                     SelectedItem="{Binding Path=SelectedExample, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Border Padding="5" Margin="0" BorderBrush="Black" BorderThickness="2" Background="AliceBlue" HorizontalAlignment="Stretch" >
                                     <Grid>
-                                        <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontWeight="Bold" FontSize="14" TextAlignment="Left" />
+                                        <TextBlock Text="{Binding Path=Name}" TextWrapping="Wrap" FontWeight="Bold" FontSize="14" TextAlignment="Left" />
                                     </Grid>
                                 </Border>
                             </Grid>

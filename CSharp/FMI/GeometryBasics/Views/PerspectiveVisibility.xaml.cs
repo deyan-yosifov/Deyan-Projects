@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GeometryBasics.Common;
+using GeometryBasics.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +20,24 @@ namespace GeometryBasics.Views
     /// <summary>
     /// Interaction logic for PerspectiveVisibility.xaml
     /// </summary>
-    public partial class PerspectiveVisibility : UserControl
+    public partial class PerspectiveVisibility : ExampleUserControl
     {
+        private readonly PerspectiveVisibilityViewModel viewModel;
+
         public PerspectiveVisibility()
         {
             InitializeComponent();
+
+            this.viewModel = new PerspectiveVisibilityViewModel(this.cartesianPlane);
+            this.DataContext = this.viewModel;
+        }
+
+        public override CartesianPlaneViewModelBase ViewModel
+        {
+            get
+            {
+                return this.viewModel;
+            }
         }
     }
 }

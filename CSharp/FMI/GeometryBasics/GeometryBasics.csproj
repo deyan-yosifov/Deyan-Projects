@@ -53,6 +53,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\ExampleUserControl.cs" />
+    <Compile Include="Common\IReleasable.cs" />
     <Compile Include="Models\ClippingAlgorithmModel.cs" />
     <Compile Include="Models\ConvexPolygonesIntersectionModel.cs" />
     <Compile Include="Models\GrahamConvexHullModel.cs" />
@@ -91,6 +93,9 @@
     </Compile>
     <Compile Include="Views\PointLocalization.xaml.cs">
       <DependentUpon>PointLocalization.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PointsList.xaml.cs">
+      <DependentUpon>PointsList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RotatingCalipers.xaml.cs">
       <DependentUpon>RotatingCalipers.xaml</DependentUpon>
@@ -132,6 +137,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PointLocalization.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PointsList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -179,10 +188,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Common\" />
+    <Resource Include="Resources\Stop-icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\fmi-logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Select-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Play-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

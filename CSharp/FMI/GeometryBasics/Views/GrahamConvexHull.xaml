@@ -1,11 +1,60 @@
-﻿<UserControl x:Class="GeometryBasics.Views.GrahamConvexHull"
+﻿<common:ExampleUserControl x:Class="GeometryBasics.Views.GrahamConvexHull"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:common="clr-namespace:GeometryBasics.Common"
+             xmlns:views="clr-namespace:GeometryBasics.Views"
+             xmlns:charts="clr-namespace:Deyo.Controls.Charts;assembly=Deyo.Controls"
+             xmlns:buttons="clr-namespace:Deyo.Controls.Buttons;assembly=Deyo.Controls"
+             xmlns:converters="clr-namespace:Deyo.Controls.Common.Converters;assembly=Deyo.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <common:ExampleUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Deyo.Controls;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter" />
+            <converters:BooleanToHiddenConverter x:Key="booleanToHiddenConverter" />
+            <converters:InverseBooleanToHiddenConverter x:Key="inverseBooleanToHiddenConverter" />
+        </ResourceDictionary>
+    </common:ExampleUserControl.Resources>
     <Grid>
-        <TextBlock Text="Алгоритъм на Греъм за изчисляване на изпъкнала обвивка." />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border Grid.RowSpan="2" BorderBrush="Black" BorderThickness="2">
+            <charts:CartesianPlane x:Name="cartesianPlane" />
+        </Border>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <StackPanel>
+                <TextBlock Text="Анимация" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0 ">
+                    <buttons:ImageButton Command="{Binding PlayAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Play-icon.png"
+                                                   ToolTip="Покажи анимация на алгоритъма." />
+                    <buttons:ImageButton Command="{Binding StopAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
+                                                   ToolTip="Спри анимацията на алгоритъма." />
+                </StackPanel>
+            </StackPanel>
+            
+            <StackPanel Margin="0 10 0 0">                
+                <TextBlock Text="Точки" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
+                    <buttons:ImageButton Command="{Binding SelectPointsCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Select-icon.png"
+                                                       ToolTip="Избери нови точки." />
+                    <buttons:ImageButton Command="{Binding StopPointsSelectionCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
+                                                       ToolTip="Спри избирането на точки." />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <views:PointsList Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" DataContext="{Binding Path=Points}" />
     </Grid>
-</UserControl>
+</common:ExampleUserControl>
