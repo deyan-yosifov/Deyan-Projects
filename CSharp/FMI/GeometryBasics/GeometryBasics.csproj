@@ -194,10 +194,11 @@
     <Resource Include="Resources\fmi-logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Select-icon.png" />
+    <Resource Include="Resources\Play-icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Play-icon.png" />
+    <Resource Include="Resources\Point-icon.png" />
+    <Resource Include="Resources\Select-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
