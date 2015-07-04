@@ -76,6 +76,8 @@
     </Compile>
     <Compile Include="Buttons\PausePlayButtonViewModel.cs" />
     <Compile Include="Charts\CartesianPlane.cs" />
+    <Compile Include="Charts\CartesianPlaneIteractions\CartesianPlaneMouseHandlerNames.cs" />
+    <Compile Include="Charts\CartesianPlaneIteractions\ZoomPanControl.cs" />
     <Compile Include="Charts\GraphicProperties.cs" />
     <Compile Include="Charts\ViewportInfo.cs" />
     <Compile Include="Common\Converters\BooleanToHiddenConverter.cs" />

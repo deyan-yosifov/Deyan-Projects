@@ -1,4 +1,6 @@
-﻿using Deyo.Controls.Common;
+﻿using Deyo.Controls.Charts.CartesianPlaneIteractions;
+using Deyo.Controls.Common;
+using Deyo.Controls.MouseHandlers;
 using Deyo.Core.Common;
 using Deyo.Core.Mathematics.Algebra;
 using System;
@@ -8,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -19,17 +22,23 @@ namespace Deyo.Controls.Charts
         private readonly RectangleGeometry viewportRectangle;
         private readonly MatrixTransform viewportTransform;
         private readonly PreservableState<GraphicProperties> graphicState;
+        private readonly PointerHandlersController pointerHandlersController;
+        private bool isListeningToMouseEvents;
         private Matrix? inverseMatrix;
         private ViewportInfo viewportInfo;
         private int layoutSuspendCount = 0;
         
         public CartesianPlane()
         {
-            this.container = new Canvas();
+            this.IsHitTestVisible = true;
+            this.container = new Canvas() { IsHitTestVisible = true, Background = new SolidColorBrush(Colors.Transparent) };
             this.viewportRectangle = new RectangleGeometry();
             this.viewportTransform = new MatrixTransform();
             this.graphicState = new PreservableState<GraphicProperties>();
+            this.pointerHandlersController = new PointerHandlersController();
+            this.pointerHandlersController.Handlers.AddLast(new ZoomPanControl(this));
 
+            this.isListeningToMouseEvents = false;
             this.inverseMatrix = null;
             this.container.Clip = this.viewportRectangle;
             this.container.RenderTransform = this.viewportTransform;
@@ -37,6 +46,28 @@ namespace Deyo.Controls.Charts
             this.container.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 
             this.ViewportInfo = new ViewportInfo(new Point(0, 0), 10);
+        }
+
+        public PointerHandlersController PointerHandlersController
+        {
+            get
+            {
+                return this.pointerHandlersController;
+            }
+        }
+
+        public ZoomPanControl ZoomPanControl
+        {
+            get
+            {
+                ZoomPanControl zoomPanControl;
+                if (this.PointerHandlersController.Handlers.TryGetElementOfType<ZoomPanControl>(CartesianPlaneMouseHandlerNames.ZoomPanControl, out zoomPanControl))
+                {
+                    return zoomPanControl;
+                }
+
+                return null;
+            }
         }
 
         public ViewportInfo ViewportInfo
@@ -208,15 +239,6 @@ namespace Deyo.Controls.Charts
             this.graphicState.Restore();
         }
 
-        private void InvalidateLayout()
-        {
-            if (this.layoutSuspendCount == 0)
-            {
-                this.RemoveVisualChild(this.container);
-                this.AddVisualChild(this.container);
-            }
-        }
-
         public IDisposable SuspendLayoutUpdate()
         {
             this.layoutSuspendCount++;
@@ -233,7 +255,83 @@ namespace Deyo.Controls.Charts
 
             this.InvalidateLayout();
         }
-        
+
+        public Point GetCartesianPointFromMousePosition(MouseEventArgs mouseArgs)
+        {
+            return this.GetCartesianPointFromMousePosition(mouseArgs.GetPosition(this));
+        }
+
+        public Point GetCartesianPointFromMousePosition(Point mousePosition)
+        {
+            return this.InverseMatrix.Transform(mousePosition);
+        }
+
+        public Point GetMousePositionFromCartesianPoint(Point cartesianPoint)
+        {
+            return this.ViewportTransform.Transform(cartesianPoint);
+        }
+
+        public void StartListeningToMouseEvents()
+        {
+            if (!this.isListeningToMouseEvents)
+            {
+                this.isListeningToMouseEvents = true;
+
+                this.pointerHandlersController.HandlerCaptured += this.PointerHandlersController_HandlerCaptured;
+                this.pointerHandlersController.HandlerReleased += this.PointerHandlersController_HandlerReleased;
+            }
+        }
+
+        public void StopListeningToMouseEvents()
+        {
+            if (this.isListeningToMouseEvents)
+            {
+                this.isListeningToMouseEvents = false;
+
+                this.pointerHandlersController.HandlerCaptured -= this.PointerHandlersController_HandlerCaptured;
+                this.pointerHandlersController.HandlerReleased -= this.PointerHandlersController_HandlerReleased;
+            }
+        }
+
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            if (this.isListeningToMouseEvents)
+            {
+                this.PointerHandlersController.TryHandleMouseDown(e);
+            }
+
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            if (this.isListeningToMouseEvents)
+            {
+                this.PointerHandlersController.TryHandleMouseUp(e);
+            }
+
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (this.isListeningToMouseEvents)
+            {
+                this.PointerHandlersController.TryHandleMouseMove(e);
+            }
+
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            if (this.isListeningToMouseEvents)
+            {
+                this.PointerHandlersController.TryHandleMouseWheel(e);
+            }
+
+            base.OnMouseWheel(e);
+        }
 
         protected override Visual GetVisualChild(int index)
         {
@@ -253,6 +351,25 @@ namespace Deyo.Controls.Charts
             this.container.Arrange(new Rect(finalSize));
 
             return base.ArrangeOverride(finalSize);
+        }
+
+        private void PointerHandlersController_HandlerReleased(object sender, EventArgs e)
+        {
+            this.ReleaseMouseCapture();
+        }
+
+        private void PointerHandlersController_HandlerCaptured(object sender, EventArgs e)
+        {
+            this.CaptureMouse();
+        }
+
+        private void InvalidateLayout()
+        {
+            if (this.layoutSuspendCount == 0)
+            {
+                this.RemoveVisualChild(this.container);
+                this.AddVisualChild(this.container);
+            }
         }
 
         private void CalculateViewportTransform(Size constraint)

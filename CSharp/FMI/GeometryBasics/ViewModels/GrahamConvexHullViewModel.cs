@@ -67,5 +67,21 @@ namespace GeometryBasics.ViewModels
                 }
             }
         }
+
+        protected override void OnPointSelectedOverride(Point point, bool isFirstPointSelection)
+        {
+            using (this.CartesianPlane.SaveGraphicProperties())
+            {
+                this.CartesianPlane.GraphicProperties.Thickness = 0.5;
+                this.CartesianPlane.GraphicProperties.IsFilled = true;
+                this.CartesianPlane.GraphicProperties.Fill = new SolidColorBrush(Colors.Black);
+
+                this.CartesianPlane.AddPoint(point);
+            }
+        }
+
+        protected override void OnSelectionMoveOverride(Point point)
+        {
+        }
     }
 }

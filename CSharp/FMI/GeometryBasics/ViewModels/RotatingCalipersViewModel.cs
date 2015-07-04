@@ -30,5 +30,13 @@ namespace GeometryBasics.ViewModels
         protected override void InitializeFieldsOverride()
         {
         }
+
+        protected override void OnPointSelectedOverride(Point point, bool isFirstPointSelection)
+        {
+        }
+
+        protected override void OnSelectionMoveOverride(Point point)
+        {
+        }
     }
 }
