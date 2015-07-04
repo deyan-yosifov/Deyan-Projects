@@ -31,8 +31,8 @@ namespace GeometryBasics.ViewModels
             this.areFieldInitialized = false;
             this.InitializeFields(cartesianPlane);
             this.previousMoveTimestamp = 0;
-            this.cartesianPlane.ZoomPanControl.ZoomWidthSpeed = 3;
 
+            this.cartesianPlane.ZoomPanControl.HandleLeftButtonDown = false;
             this.Initialize();
             this.AttachToMouseEvents();
         }

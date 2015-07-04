@@ -1,4 +1,5 @@
-﻿using Deyo.Controls.MouseHandlers;
+﻿using Deyo.Controls.Common;
+using Deyo.Controls.MouseHandlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
         private Point firstPanPoint;
         private bool isPanning;
         private int previousMoveTimestamp;
+        private double zoomWidthDeltaPercentSpeed;
 
         public ZoomPanControl(CartesianPlane cartesianPlane)
         {
@@ -24,8 +26,11 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
             this.isEnabled = true;
             this.isPanning = false;
             this.previousMoveTimestamp = 0;
-            this.ZoomWidthSpeed = 5;
+            this.zoomWidthDeltaPercentSpeed = 0.1;
             this.MoveDeltaTime = 20;
+            this.HandleLeftButtonDown = true;
+            this.HandleMiddleButtonDown = true;
+            this.HandleRightButtonDown = true;
         }
 
         public string Name
@@ -51,10 +56,27 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
             }
         }
 
-        public double ZoomWidthSpeed
+        public bool HandleLeftButtonDown { get; set; }
+
+        public bool HandleRightButtonDown { get; set; }
+
+        public bool HandleMiddleButtonDown { get; set; }
+
+        public double ZoomWidthDeltaPercentSpeed
         {
-            get;
-            set;
+            get
+            {
+                return this.zoomWidthDeltaPercentSpeed;
+            }
+            set
+            {
+                Guard.ThrowExceptionIfLessThan(value, 0, "ZoomWidthDeltaPercentSpeed");
+
+                if (this.zoomWidthDeltaPercentSpeed != value)
+                {
+                    this.zoomWidthDeltaPercentSpeed = value;
+                }
+            }
         }
 
         public int MoveDeltaTime
@@ -65,10 +87,15 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
 
         public bool TryHandleMouseDown(MouseButtonEventArgs e)
         {
-            this.firstPanPoint = this.cartesianPlane.GetCartesianPointFromMousePosition(e);
-            this.isPanning = true;
+            if (this.ShouldHandleMouseDown(e))
+            {
+                this.firstPanPoint = this.cartesianPlane.GetCartesianPointFromMousePosition(e);
+                this.isPanning = true;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryHandleMouseUp(MouseButtonEventArgs e)
@@ -95,14 +122,24 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
 
         public bool TryHandleMouseWheel(MouseWheelEventArgs e)
         {
-            double zoomAmount = (this.ZoomWidthSpeed * e.Delta) / WheelSingleDelta;
-            double width = this.cartesianPlane.ViewportInfo.VisibleWidth - zoomAmount;
-            
-            //double scale = this.cartesianPlane.ViewportInfo.VisibleWidth / width;
+            double zoomAmount = 1 + Math.Abs(this.ZoomWidthDeltaPercentSpeed * e.Delta) / WheelSingleDelta;
+            double width = e.Delta < 0 ? this.cartesianPlane.ViewportInfo.VisibleWidth * zoomAmount : this.cartesianPlane.ViewportInfo.VisibleWidth / zoomAmount;
 
-            this.cartesianPlane.ViewportInfo = new ViewportInfo(this.cartesianPlane.ViewportInfo.Center, width);
+            double scale = this.cartesianPlane.ViewportInfo.VisibleWidth / width;
+            Point zoomPosition = this.cartesianPlane.GetCartesianPointFromMousePosition(e);
+            Vector translation = (1 - scale) * (this.cartesianPlane.ViewportInfo.Center - zoomPosition);
+            Point center = this.cartesianPlane.ViewportInfo.Center + translation;
+
+            this.cartesianPlane.ViewportInfo = new ViewportInfo(center, width);
 
             return true;
+        }
+
+        private bool ShouldHandleMouseDown(MouseEventArgs e)
+        {
+            return (e.MouseDevice.LeftButton == MouseButtonState.Pressed && this.HandleLeftButtonDown) ||
+                (e.MouseDevice.MiddleButton == MouseButtonState.Pressed && this.HandleMiddleButtonDown) ||
+                (e.MouseDevice.RightButton == MouseButtonState.Pressed && this.HandleRightButtonDown);
         }
     }
 }
