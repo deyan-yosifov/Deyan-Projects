@@ -19,6 +19,7 @@ namespace Deyo.Controls.Charts
     public class CartesianPlane : FrameworkElement
     {
         private readonly Canvas container;
+        private readonly Canvas transformedContainer;
         private readonly RectangleGeometry viewportRectangle;
         private readonly MatrixTransform viewportTransform;
         private readonly PreservableState<GraphicProperties> graphicState;
@@ -32,6 +33,10 @@ namespace Deyo.Controls.Charts
         {
             this.IsHitTestVisible = true;
             this.container = new Canvas() { IsHitTestVisible = true, Background = new SolidColorBrush(Colors.Transparent) };
+            this.container.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            this.container.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+            this.transformedContainer = new Canvas();
+            this.container.Children.Add(this.transformedContainer);
             this.viewportRectangle = new RectangleGeometry();
             this.viewportTransform = new MatrixTransform();
             this.graphicState = new PreservableState<GraphicProperties>();
@@ -40,10 +45,10 @@ namespace Deyo.Controls.Charts
 
             this.isListeningToMouseEvents = false;
             this.inverseMatrix = null;
-            this.container.Clip = this.viewportRectangle;
-            this.container.RenderTransform = this.viewportTransform;
-            this.container.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-            this.container.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+            this.transformedContainer.Clip = this.viewportRectangle;
+            this.transformedContainer.RenderTransform = this.viewportTransform;
+            this.transformedContainer.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            this.transformedContainer.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 
             this.ViewportInfo = new ViewportInfo(new Point(0, 0), 10);
         }
@@ -213,19 +218,19 @@ namespace Deyo.Controls.Charts
 
         public void AddElement(UIElement element)
         {
-            this.container.Children.Add(element);
+            this.transformedContainer.Children.Add(element);
             this.InvalidateLayout();
         }
 
         public void RemoveElement(UIElement element)
         {
-            this.container.Children.Remove(element);
+            this.transformedContainer.Children.Remove(element);
             this.InvalidateLayout();
         }
 
         public void ClearAllElements()
         {
-            this.container.Children.Clear();
+            this.transformedContainer.Children.Clear();
             this.InvalidateLayout();
         }
 
@@ -258,17 +263,7 @@ namespace Deyo.Controls.Charts
 
         public Point GetCartesianPointFromMousePosition(MouseEventArgs mouseArgs)
         {
-            return this.GetCartesianPointFromMousePosition(mouseArgs.GetPosition(this));
-        }
-
-        public Point GetCartesianPointFromMousePosition(Point mousePosition)
-        {
-            return this.InverseMatrix.Transform(mousePosition);
-        }
-
-        public Point GetMousePositionFromCartesianPoint(Point cartesianPoint)
-        {
-            return this.ViewportTransform.Transform(cartesianPoint);
+            return this.InverseMatrix.Transform(mouseArgs.GetPosition(this)); 
         }
 
         public void StartListeningToMouseEvents()
