@@ -83,8 +83,12 @@ namespace Deyo.Core.Mathematics.Geometry
             }
 
             intersection = IntersectLines(firstStart, firstVector, secondStart, secondVector);
-            double tFirst = (intersection.X - firstStart.X) / firstVector.X;
-            double tSecond = (intersection.X - secondStart.X) / secondVector.X;
+
+            Vector firstDelta = intersection - firstStart;
+            double tFirst = Vector.Multiply(firstDelta, firstVector) / firstVector.LengthSquared;
+
+            Vector secondDelta = intersection - secondStart;
+            double tSecond = Vector.Multiply(secondDelta, secondVector) / secondVector.LengthSquared;
 
             if (0 <= tFirst && tFirst <= 1 && 0 <= tSecond && tSecond <= 1)
             {

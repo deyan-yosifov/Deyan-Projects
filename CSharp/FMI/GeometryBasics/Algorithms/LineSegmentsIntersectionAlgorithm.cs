@@ -21,9 +21,33 @@ namespace GeometryBasics.Algorithms
 
         private class SegmentPoint
         {
+            private static readonly Vector horizontal = new Vector(1, 0);
+
             public PointType PointType { get; set; }
             public Point Point { get; set; }
             public LineSegment Line { get; set; }
+
+            public double HorizontalDirectiveCosine
+            {
+                get
+                {
+                    Vector vector = this.Line.End - this.Line.Start;
+
+                    if (vector.Y < 0)
+                    {
+                        vector *= -1;
+                    }
+
+                    vector.Normalize();
+
+                    return Vector.Multiply(vector, horizontal);
+                }
+            }
+
+            public override string ToString()
+            {
+                return string.Format("({0},{1}) - {2} - {3}", this.Point.X, this.Point.Y, this.PointType, this.Line);
+            }
         }
 
         private bool hasEnded;
@@ -80,14 +104,17 @@ namespace GeometryBasics.Algorithms
         {
             for (int i = 0; i < this.neighbouringPoints.Count; i++)
             {
-                foreach (SegmentPoint intersection in FindLeftIntersections(i))
+                if (this.neighbouringPoints[i].Point.Y.IsEqualTo(this.currentY))
                 {
-                    yield return intersection;
-                }
+                    foreach (SegmentPoint intersection in FindLeftIntersections(i))
+                    {
+                        yield return intersection;
+                    }
 
-                foreach (SegmentPoint intersection in FindRightIntersections(i))
-                {
-                    yield return intersection;
+                    foreach (SegmentPoint intersection in FindRightIntersections(i))
+                    {
+                        yield return intersection;
+                    }
                 }
             }
         }
@@ -146,8 +173,11 @@ namespace GeometryBasics.Algorithms
         {
             foreach (SegmentPoint intersection in intersections)
             {
-                this.DrawIntersection(intersection.Point);
-                InsertPointInOrderedList(this.sortedPoints, intersection);
+                if (intersection.Point.Y > this.currentY)
+                {
+                    this.DrawIntersection(intersection.Point);
+                    this.InsertInSortedList(intersection);
+                }
             }
         }
 
@@ -182,13 +212,13 @@ namespace GeometryBasics.Algorithms
         private void AddStartPointToNeighbours(SegmentPoint point)
         {
             this.DrawLineSegment(point.Line);
-            InsertPointInOrderedList(this.neighbouringPoints, point);
+            this.InsertInNeighbouringList(point);
         }
 
         private void AddMiddlePointToNeighbours(SegmentPoint point)
         {
             this.RemoveLowerPointFromSameSegment(point);
-            InsertPointInOrderedList(this.neighbouringPoints, point);
+            this.InsertInNeighbouringList(point);
         }
 
         private void AddEndPointToNeighbours(SegmentPoint point)
@@ -208,15 +238,49 @@ namespace GeometryBasics.Algorithms
             }
         }
 
-        private static void InsertPointInOrderedList(List<SegmentPoint> orderedList, SegmentPoint point)
+        private void InsertInNeighbouringList(SegmentPoint point)
+        {
+            double horizontalProjection = point.HorizontalDirectiveCosine;
+
+            InsertPointInOrderedList(this.neighbouringPoints, point, (other) =>
+                {
+                    if(other.Point.X.IsEqualTo(point.Point.X))
+                    {
+                        double otherHorizontalProjection = other.HorizontalDirectiveCosine;
+
+                        return otherHorizontalProjection < horizontalProjection;
+                    }
+                    else
+                    {
+                        return (other.Point.X < point.Point.X);
+                    }
+                });
+        }
+
+        private void InsertInSortedList(SegmentPoint point)
+        {
+            InsertPointInOrderedList(this.sortedPoints, point, (other) =>
+            {
+                if(other.Point.Y.IsEqualTo(point.Point.Y))
+                {
+                    return (other.Point.X.IsEqualTo(point.Point.X) || other.Point.X < point.Point.X);
+                }
+                else
+                {
+                    return (other.Point.Y < point.Point.Y);
+                }
+            });
+        }
+
+        private static void InsertPointInOrderedList(List<SegmentPoint> orderedList, SegmentPoint point, Func<SegmentPoint, bool> isLessOrEqual)
         {
             int i = 0;
 
             while (i < orderedList.Count)
             {
-                SegmentPoint neighbour = orderedList[i];
+                SegmentPoint element = orderedList[i];
 
-                if (neighbour.Point.X.IsEqualTo(point.Point.X) || neighbour.Point.X < point.Point.X)
+                if (isLessOrEqual(element))
                 {
                     i++;
                 }
@@ -322,7 +386,7 @@ namespace GeometryBasics.Algorithms
             {
                 this.CartesianPlane.GraphicProperties.IsStroked = true;
                 this.CartesianPlane.GraphicProperties.Thickness = 0.1;
-                this.CartesianPlane.GraphicProperties.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Orange);
+                this.CartesianPlane.GraphicProperties.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red);
 
                 line = this.CartesianPlane.AddLine(new Point(xStart, this.currentY), new Point(xEnd, this.currentY));
             }

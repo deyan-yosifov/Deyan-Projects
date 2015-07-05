@@ -29,5 +29,10 @@ namespace GeometryBasics.Models
                 return this.end;
             }
         }
+
+        public override string ToString()
+        {
+            return string.Format("({0},{1}):({2},{3})", this.Start.X, this.Start.Y, this.End.X, this.End.Y);
+        }
     }
 }
