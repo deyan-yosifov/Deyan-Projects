@@ -109,7 +109,7 @@ namespace GeometryBasics.Algorithms
             Vector firstNext = this.GetPointFromRotationalIndex(this.pointIndex + 2) - this.GetPointFromRotationalIndex(this.pointIndex + 1);
             double firstAngle = Vector.AngleBetween(firstCurrent, firstNext);
 
-            Vector oppositeCurrent = this.positivePolygon[this.opositePointIndex] - this.GetPointFromRotationalIndex(this.opositePointIndex - 1);
+            Vector oppositeCurrent = -1 * firstCurrent;
             Vector oppositeNext = this.GetPointFromRotationalIndex(this.opositePointIndex + 1) - this.positivePolygon[this.opositePointIndex];
             double oppositeAngle = Vector.AngleBetween(oppositeCurrent, oppositeNext);
 
@@ -127,9 +127,9 @@ namespace GeometryBasics.Algorithms
             else
             {
                 this.angle += oppositeAngle;
-                int swap = this.pointIndex;
-                this.pointIndex = this.opositePointIndex;
-                this.opositePointIndex = swap;
+                int swap = this.opositePointIndex;
+                this.opositePointIndex = this.GetValidIndex(this.pointIndex + 1);
+                this.pointIndex = swap;
             }
 
             this.DrawRotatedCaliperAndCalculateDiameters();
