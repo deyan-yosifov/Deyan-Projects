@@ -70,6 +70,32 @@ namespace Deyo.Core.Mathematics.Geometry
             return intersection;
         }
 
+        public static bool TryIntersectLineSegments(Point firstStart, Point firstEnd, Point secondStart, Point secondEnd, out Point intersection)
+        {
+            Vector firstVector = firstEnd - firstStart;
+            Vector secondVector = secondEnd - secondStart;
+            IntersectionType type = FindIntersectionTypeBetweenLines(firstStart, firstVector, secondStart, secondVector);
+
+            if (type != IntersectionType.SinglePointSet)
+            {
+                intersection = new Point();
+                return false;
+            }
+
+            intersection = IntersectLines(firstStart, firstVector, secondStart, secondVector);
+            double tFirst = (intersection.X - firstStart.X) / firstVector.X;
+            double tSecond = (intersection.X - secondStart.X) / secondVector.X;
+
+            if (0 <= tFirst && tFirst <= 1 && 0 <= tSecond && tSecond <= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static Point3D IntersectLineAndPlane(Point3D linePoint, Vector3D lineVector, Point3D planePoint, Vector3D planeNormal)
         {
             Vector3D connection = planePoint - linePoint;
