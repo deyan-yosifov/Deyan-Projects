@@ -8,7 +8,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GeometryBasics.ViewModels
 {
@@ -22,6 +24,7 @@ namespace GeometryBasics.ViewModels
         private bool isExampleSelected;
         private bool isDescriptionExpanded;
         private string descriptionExpanderHeader;
+        private ICommand helpCommand;
 
         public MainViewModel(Action<ExampleUserControl> onExampleViewChanged)
         {
@@ -31,6 +34,7 @@ namespace GeometryBasics.ViewModels
             this.isDescriptionExpanded = false;
             this.descriptionExpanderHeader = ExpandDescriptionHeaderText;
             this.onExampleViewChanged = onExampleViewChanged;
+            this.helpCommand = new DelegateCommand((parameter) => { this.Help(); });
             this.GenerateExamples();
         }
 
@@ -110,6 +114,18 @@ namespace GeometryBasics.ViewModels
             }
         }
 
+        public ICommand HelpCommand
+        {
+            get
+            {
+                return this.helpCommand;
+            }
+            set
+            {
+                this.SetProperty(ref this.helpCommand, value);
+            }
+        }
+
         public void InitializeExamples()
         {
             this.SelectedExample = null;
@@ -130,6 +146,15 @@ namespace GeometryBasics.ViewModels
             this.examples.Add(new ClippingAlgorithmModel());
             this.examples.Add(new OrthographicVisibilityModel());
             this.examples.Add(new PerspectiveVisibilityModel());
+        }
+
+        private void Help()
+        {
+            MessageBox.Show(@"Може да манипулирате по следните начини демонстрационното поле:
+ - ПРЕМЕСТВАНЕ => Може да местите видимата област, задържайки произволен бутон на мишката и движейки мишката.
+ - МАЩАБИРАНЕ => Може да променята мащабирането на видимата област, въртейки колелцето на мишката.
+ - ДОБАВЯНЕ НА ТОЧКИ => Когато сте в режим ""Селекция"" може да добавяте точки в полето с левия бутон на мишката.",
+"Помощ");
         }
     }
 }
