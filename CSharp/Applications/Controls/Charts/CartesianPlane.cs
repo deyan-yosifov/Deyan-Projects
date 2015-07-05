@@ -100,13 +100,13 @@ namespace Deyo.Controls.Charts
             }
         }
 
-        private Rect VisibleRange
+        public Rect VisibleRange
         {
             get
             {
                 return this.viewportRectangle.Rect;
             }
-            set
+            private set
             {
                 this.viewportRectangle.Rect = value;
             }

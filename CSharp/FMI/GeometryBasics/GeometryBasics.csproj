@@ -54,9 +54,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Algorithms\CartesianPlaneAlgorithmBase.cs" />
+    <Compile Include="Algorithms\ConvexPolygonValidator.cs" />
     <Compile Include="Algorithms\GrahamConvexHullAlgorithm.cs" />
     <Compile Include="Algorithms\ICartesianPlaneAlgorithm.cs" />
     <Compile Include="Algorithms\LineSegmentsIntersectionAlgorithm.cs" />
+    <Compile Include="Algorithms\RotatingCalipersAlgorithm.cs" />
     <Compile Include="Common\CartesianPlaneRenderer.cs" />
     <Compile Include="Common\ExampleUserControl.cs" />
     <Compile Include="Common\IReleasable.cs" />
