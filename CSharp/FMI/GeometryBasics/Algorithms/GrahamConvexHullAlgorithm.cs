@@ -20,19 +20,19 @@ namespace GeometryBasics.Algorithms
         public GrahamConvexHullAlgorithm(CartesianPlane cartesianPlane, IEnumerable<Point> points)
             : base(cartesianPlane)
         {
+            this.convexHullPoints = new List<Point>();
+
             if (points.Any())
             {
                 this.hasEnded = false;
                 Point firstPoint = GrahamConvexHullAlgorithm.FindBottomMostLeftMostPoint(points);
                 this.sortedPoints = GetSortedPoints(points, firstPoint);
-                this.convexHullPoints = new List<Point>();
                 this.lines = new List<Line>();
                 this.currentPointIndex = 0;
             }
             else
             {
                 this.hasEnded = true;
-                this.convexHullPoints = null;
                 this.sortedPoints = null;
                 this.lines = null;
             }
@@ -48,12 +48,12 @@ namespace GeometryBasics.Algorithms
 
         public override void DrawNextStep()
         {
-            if (this.TryEndAlgorithm())
+            if (this.TryRemovePointsFromConvexHull())
             {
                 return;
             }
 
-            if (this.TryRemovePointsFromConvexHull())
+            if (this.TryEndAlgorithm())
             {
                 return;
             }

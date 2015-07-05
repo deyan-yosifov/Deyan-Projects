@@ -169,12 +169,17 @@ namespace GeometryBasics.ViewModels
 
         public void Release()
         {
+            if (this.IsSelectingPoints)
+            {
+                this.DetachFromMouseSelectionEvents();
+                this.isFirstPointSelection = false;
+                this.CartesianPlane.ZoomPanControl.HandleLeftButtonDown = true;
+                this.OnSelectionCanceledOverride();
+                this.IsSelectingPoints = false;
+            }
+
             this.IsAnimating = false;
-            this.IsSelectingPoints = false;
-            this.isFirstPointSelection = false;
-            this.CartesianPlane.ZoomPanControl.HandleLeftButtonDown = true;
             this.cartesianPlane.StopListeningToMouseEvents();
-            this.DetachFromMouseSelectionEvents();
             this.StopAnimationTimer();
 
             this.ClearCartesianPlane();
@@ -188,7 +193,11 @@ namespace GeometryBasics.ViewModels
 
         protected abstract void OnPointSelectedOverride(Point point, bool isFirstPointSelection);
 
-        protected abstract void OnSelectionMoveOverride(Point point);
+        protected abstract void OnSelectionCanceledOverride();
+
+        protected virtual void OnSelectionMoveOverride(Point point)
+        {
+        }
 
         protected void DrawPointsInContext(Action pointsDrawingAction)
         {
@@ -250,6 +259,10 @@ namespace GeometryBasics.ViewModels
             this.isFirstPointSelection = false;
             this.IsAnimating = false;
             this.IsSelectingPoints = false;
+
+            this.OnSelectionCanceledOverride();
+            this.ClearCartesianPlane();
+            this.RenderInputData();
         }
 
         private void RenderInputData()

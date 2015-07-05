@@ -36,5 +36,9 @@ namespace GeometryBasics.ViewModels
         protected override void OnSelectionMoveOverride(Point point)
         {
         }
+
+        protected override void OnSelectionCanceledOverride()
+        {
+        }
     }
 }

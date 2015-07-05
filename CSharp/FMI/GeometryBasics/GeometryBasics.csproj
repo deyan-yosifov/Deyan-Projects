@@ -56,13 +56,16 @@
     <Compile Include="Algorithms\CartesianPlaneAlgorithmBase.cs" />
     <Compile Include="Algorithms\GrahamConvexHullAlgorithm.cs" />
     <Compile Include="Algorithms\ICartesianPlaneAlgorithm.cs" />
+    <Compile Include="Algorithms\LineSegmentsIntersectionAlgorithm.cs" />
     <Compile Include="Common\CartesianPlaneRenderer.cs" />
     <Compile Include="Common\ExampleUserControl.cs" />
     <Compile Include="Common\IReleasable.cs" />
+    <Compile Include="Common\LineSegmentConverter.cs" />
     <Compile Include="Common\PointConverter.cs" />
     <Compile Include="Models\ClippingAlgorithmModel.cs" />
     <Compile Include="Models\ConvexPolygonesIntersectionModel.cs" />
     <Compile Include="Models\GrahamConvexHullModel.cs" />
+    <Compile Include="Models\LineSegment.cs" />
     <Compile Include="Models\LineSegmentsIntersectionModel.cs" />
     <Compile Include="Models\OrthographicVisibilityModel.cs" />
     <Compile Include="Models\PerspectiveVisibilityModel.cs" />
@@ -89,6 +92,9 @@
     </Compile>
     <Compile Include="Views\LineSegmentsIntersection.xaml.cs">
       <DependentUpon>LineSegmentsIntersection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LineSegmentsList.xaml.cs">
+      <DependentUpon>LineSegmentsList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OrthographicVisibility.xaml.cs">
       <DependentUpon>OrthographicVisibility.xaml</DependentUpon>
@@ -130,6 +136,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LineSegmentsIntersection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LineSegmentsList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

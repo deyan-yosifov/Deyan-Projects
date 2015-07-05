@@ -9,7 +9,7 @@ namespace GeometryBasics.Models
 {
     public class ConvexPolygonesIntersectionModel : ExampleModelBase
     {
-        private const string name = "Алгоритъм за пресичане на множество многоъгълници.";
+        private const string name = "Алгоритъм за пресичане на изпъкнали многоъгълници.";
         private const string description = @"Алгоритъмът ....";
 
         public ConvexPolygonesIntersectionModel()

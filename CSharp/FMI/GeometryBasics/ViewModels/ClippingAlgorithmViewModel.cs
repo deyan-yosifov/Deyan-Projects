@@ -36,5 +36,9 @@ namespace GeometryBasics.ViewModels
         {
             throw new NotImplementedException();
         }
+
+        protected override void OnSelectionCanceledOverride()
+        {
+        }
     }
 }
