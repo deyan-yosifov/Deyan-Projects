@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Charts;
+using GeometryBasics.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace GeometryBasics.ViewModels
@@ -27,12 +29,9 @@ namespace GeometryBasics.ViewModels
             }
         }
 
-        protected override void AnimationTickOverride()
+        protected override ICartesianPlaneAlgorithm StartAlgorithm()
         {
-        }
-
-        protected override void OnPointSelectedOverride(Point point)
-        {
+            return new GrahamConvexHullAlgorithm(this.CartesianPlane, this.Points);
         }
 
         protected override void InitializeFieldsOverride()
@@ -53,31 +52,30 @@ namespace GeometryBasics.ViewModels
             this.Points.Add(new Point(11, 3));
         }
 
-        protected override void RenderSampleDataOverride()
+        protected override void RenderInputDataOverride()
         {
-            using (this.CartesianPlane.SaveGraphicProperties())
-            {
-                this.CartesianPlane.GraphicProperties.IsFilled = true;
-                this.CartesianPlane.GraphicProperties.Fill = new SolidColorBrush(Colors.Red);
-                this.CartesianPlane.GraphicProperties.Thickness = 0.5;
-
-                foreach (Point point in this.Points)
+            base.DrawPointsInContext(() =>
                 {
-                    this.CartesianPlane.AddPoint(point, string.Format("({0})", point));
-                }
-            }
+                    foreach (Point point in this.Points)
+                    {
+                        this.CartesianPlane.AddPoint(point);
+                    }
+                });
         }
 
         protected override void OnPointSelectedOverride(Point point, bool isFirstPointSelection)
         {
-            using (this.CartesianPlane.SaveGraphicProperties())
+            if (isFirstPointSelection)
             {
-                this.CartesianPlane.GraphicProperties.Thickness = 0.5;
-                this.CartesianPlane.GraphicProperties.IsFilled = true;
-                this.CartesianPlane.GraphicProperties.Fill = new SolidColorBrush(Colors.Black);
-
-                this.CartesianPlane.AddPoint(point);
+                this.Points.Clear();
+                this.CartesianPlane.ClearAllElements();
             }
+
+            this.DrawPointsInContext(() =>
+            {
+                this.CartesianPlane.AddPoint(point);
+                this.Points.Add(point);
+            });
         }
 
         protected override void OnSelectionMoveOverride(Point point)

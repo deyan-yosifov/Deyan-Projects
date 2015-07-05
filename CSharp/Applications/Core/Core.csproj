@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\DisposableAction.cs" />
+    <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\ICloneable.cs" />
     <Compile Include="Common\INotifyPropertiesChanged.cs" />
     <Compile Include="Common\PreservableState.cs" />

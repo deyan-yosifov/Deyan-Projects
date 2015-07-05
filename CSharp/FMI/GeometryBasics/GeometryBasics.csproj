@@ -53,8 +53,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Algorithms\CartesianPlaneAlgorithmBase.cs" />
+    <Compile Include="Algorithms\GrahamConvexHullAlgorithm.cs" />
+    <Compile Include="Algorithms\ICartesianPlaneAlgorithm.cs" />
+    <Compile Include="Common\CartesianPlaneRenderer.cs" />
     <Compile Include="Common\ExampleUserControl.cs" />
     <Compile Include="Common\IReleasable.cs" />
+    <Compile Include="Common\PointConverter.cs" />
     <Compile Include="Models\ClippingAlgorithmModel.cs" />
     <Compile Include="Models\ConvexPolygonesIntersectionModel.cs" />
     <Compile Include="Models\GrahamConvexHullModel.cs" />

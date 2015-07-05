@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Charts;
 using Deyo.Controls.Common;
+using GeometryBasics.Algorithms;
 using GeometryBasics.Common;
 using System;
 using System.Collections.Generic;
@@ -16,32 +17,117 @@ namespace GeometryBasics.ViewModels
     public abstract class CartesianPlaneViewModelBase : ViewModelBase, IReleasable
     {
         private const int MoveDeltaTime = 20;
-        private CartesianPlane cartesianPlane;
-        private DispatcherTimer timer;
+        private readonly CartesianPlane cartesianPlane;
+        private readonly DispatcherTimer timer;
+        private readonly CartesianPlaneRenderer renderer;
         private int previousMoveTimestamp;
-        private bool areFieldInitialized;
         private bool isSelectingPoints;
         private bool isAnimating;
         private bool isFirstPointSelection;
         private bool isAttachedToMouseEvents;
+        private ICartesianPlaneAlgorithm algorithm;
+        private ICommand startAnimationCommand;
+        private ICommand stopAnimationCommand;
+        private ICommand startSelectionCommand;
+        private ICommand stopSelectionCommand;
 
         public CartesianPlaneViewModelBase(CartesianPlane cartesianPlane)
         {
             this.isAttachedToMouseEvents = false;
-            this.areFieldInitialized = false;
-            this.InitializeFields(cartesianPlane);
             this.previousMoveTimestamp = 0;
+            
+            this.cartesianPlane = cartesianPlane;
+            this.renderer = new CartesianPlaneRenderer(cartesianPlane);
+            this.cartesianPlane.ViewportInfo = this.ViewportInfo;
+            this.timer = new DispatcherTimer();
+            this.timer.Interval = TimeSpan.FromSeconds(this.AnimationTickSeconds);
+            this.timer.Tick += TimerTick;
 
-            this.cartesianPlane.ZoomPanControl.HandleLeftButtonDown = false;
-            this.Initialize();
-            this.AttachToMouseEvents();
+            this.StartAnimationCommand = new DelegateCommand((parameter) => { this.DoOnAnimationStart(); });
+            this.StopAnimationCommand = new DelegateCommand((parameter) => { this.DoOnAnimationEnd(); });
+            this.StartSelectionCommand = new DelegateCommand((parameter) => { this.DoOnSelectionStart(); });
+            this.StopSelectionCommand = new DelegateCommand((parameter) => { this.DoOnSelectionEnd(); });
+
+            this.InitializeFieldsOverride();
+        }
+
+        public ICommand StartSelectionCommand
+        {
+            get
+            {
+                return this.startSelectionCommand;
+            }
+            set
+            {
+                this.SetProperty(ref this.startSelectionCommand, value);
+            }
+        }
+
+        public ICommand StartAnimationCommand
+        {
+            get
+            {
+                return this.startAnimationCommand;
+            }
+            set
+            {
+                this.SetProperty(ref this.startAnimationCommand, value);
+            }
+        }
+
+        public ICommand StopSelectionCommand
+        {
+            get
+            {
+                return this.stopSelectionCommand;
+            }
+            set
+            {
+                this.SetProperty(ref this.stopSelectionCommand, value);
+            }
+        }
+
+        public ICommand StopAnimationCommand
+        {
+            get
+            {
+                return this.stopAnimationCommand;
+            }
+            set
+            {
+                this.SetProperty(ref this.stopAnimationCommand, value);
+            }
+        }
+
+        public bool IsAnimating
+        {
+            get
+            {
+                return this.isAnimating;
+            }
+            set
+            {
+                this.SetProperty(ref this.isAnimating, value);
+            }
+        }
+
+        public bool IsSelectingPoints
+        {
+            get
+            {
+                return this.isSelectingPoints;
+            }
+            set
+            {
+                this.SetProperty(ref this.isSelectingPoints, value);
+            }
         }
 
         protected virtual double AnimationTickSeconds
         {
             get
             {
-                return 0.1;
+                return 0.2;
             }
         }
 
@@ -61,41 +147,6 @@ namespace GeometryBasics.ViewModels
             }
         }
 
-        public bool IsAnimating
-        {
-            get
-            {
-                return this.isAnimating;
-            }
-            set
-            {
-                if (this.SetProperty(ref this.isAnimating, value))
-                {
-                    if (value)
-                    {
-                        this.StartAnimation();
-                    }
-                    else
-                    {
-                        this.FinishAnimation();
-                        this.RenderSampleData();
-                    }
-                }
-            }
-        }
-
-        public bool IsSelectingPoints
-        {
-            get
-            {
-                return this.isSelectingPoints;
-            }
-            set
-            {
-                this.SetProperty(ref this.isSelectingPoints, value);
-            }
-        }
-
         protected virtual bool HandleSelectionMove
         {
             get
@@ -104,75 +155,112 @@ namespace GeometryBasics.ViewModels
             }
         }
 
+        public void Initialize()
+        {
+            this.IsAnimating = false;
+            this.IsSelectingPoints = false;
+            this.isFirstPointSelection = false;
+            this.CartesianPlane.ZoomPanControl.HandleLeftButtonDown = true;
+            this.cartesianPlane.StartListeningToMouseEvents();
+
+            this.ClearCartesianPlane();
+            this.RenderInputData();
+        }
+
+        public void Release()
+        {
+            this.IsAnimating = false;
+            this.IsSelectingPoints = false;
+            this.isFirstPointSelection = false;
+            this.CartesianPlane.ZoomPanControl.HandleLeftButtonDown = true;
+            this.cartesianPlane.StopListeningToMouseEvents();
+            this.DetachFromMouseSelectionEvents();
+            this.StopAnimationTimer();
+
+            this.ClearCartesianPlane();
+        }
+
         protected abstract void InitializeFieldsOverride();
 
-        protected abstract void RenderSampleDataOverride();
+        protected abstract void RenderInputDataOverride();
 
-        protected abstract void AnimationTickOverride();
-
-        protected abstract void OnPointSelectedOverride(Point point);
+        protected abstract ICartesianPlaneAlgorithm StartAlgorithm();
 
         protected abstract void OnPointSelectedOverride(Point point, bool isFirstPointSelection);
 
         protected abstract void OnSelectionMoveOverride(Point point);
 
-        private void StartAnimation()
+        protected void DrawPointsInContext(Action pointsDrawingAction)
         {
-            if (!this.timer.IsEnabled)
-            {
-                using (this.cartesianPlane.SuspendLayoutUpdate())
-                {
-                    this.cartesianPlane.ClearAllElements();
-                }
-
-                this.timer.Start();
-            }
+            this.renderer.RenderPointsInContext(pointsDrawingAction);
         }
 
-        protected void FinishAnimation()
+        protected void DrawLinesInContext(Action linesDrawingAction)
         {
-            if (this.timer.IsEnabled)
-            {
-                this.timer.Stop();
-            }
+            this.renderer.RenderLinesInContext(linesDrawingAction);
         }
 
         private void TimerTick(object sender, EventArgs e)
         {
             using(this.cartesianPlane.SuspendLayoutUpdate())
             {
-                this.AnimationTickOverride();
+                this.algorithm.DrawNextStep();
+            }
+
+            if (algorithm.HasEnded)
+            {
+                this.StopAnimationTimer();
             }
         }
 
-        private void RenderSampleData()
+        private void DoOnAnimationStart()
+        {
+            this.ClearCartesianPlane();
+            this.IsAnimating = true;
+            this.IsSelectingPoints = false;
+            this.algorithm = this.StartAlgorithm();
+
+            this.StartAnimationTimer();
+        }
+
+        private void DoOnAnimationEnd()
+        {
+            this.StopAnimationTimer();
+            this.ClearCartesianPlane();
+            this.IsAnimating = false;
+            this.IsSelectingPoints = false;
+            this.algorithm = null;
+
+            this.RenderInputData();
+        }
+
+        private void DoOnSelectionStart()
+        {
+            this.IsAnimating = false;
+            this.IsSelectingPoints = true;
+            this.isFirstPointSelection = true;
+            this.CartesianPlane.ZoomPanControl.HandleLeftButtonDown = false;
+            this.AttachToMouseSelectionEvents();
+        }
+
+        private void DoOnSelectionEnd()
+        {
+            this.DetachFromMouseSelectionEvents();
+            this.CartesianPlane.ZoomPanControl.HandleLeftButtonDown = true;
+            this.isFirstPointSelection = false;
+            this.IsAnimating = false;
+            this.IsSelectingPoints = false;
+        }
+
+        private void RenderInputData()
         {
             using (this.cartesianPlane.SuspendLayoutUpdate())
             {
-                this.cartesianPlane.ClearAllElements();
-                this.RenderSampleDataOverride();
+                this.RenderInputDataOverride();
             }
         }
 
-        private void InitializeFields(CartesianPlane cartesianPlane)
-        {
-            if (this.areFieldInitialized)
-            {
-                throw new InvalidOperationException("Cannot initialize fields more than once!");
-            }
-
-            this.areFieldInitialized = true;
-
-            this.cartesianPlane = cartesianPlane;
-            this.cartesianPlane.ViewportInfo = this.ViewportInfo;
-            this.timer = new DispatcherTimer();
-            this.timer.Interval = TimeSpan.FromSeconds(this.AnimationTickSeconds);
-            this.timer.Tick += TimerTick;
-
-            this.InitializeFieldsOverride();
-        }
-
-        private void AttachToMouseEvents()
+        private void AttachToMouseSelectionEvents()
         {
             if (!this.isAttachedToMouseEvents)
             {
@@ -183,7 +271,7 @@ namespace GeometryBasics.ViewModels
             }
         }
 
-        private void DetachFromMouseEvents()
+        private void DetachFromMouseSelectionEvents()
         {
             if (this.isAttachedToMouseEvents)
             {
@@ -211,27 +299,29 @@ namespace GeometryBasics.ViewModels
                 using (this.CartesianPlane.SuspendLayoutUpdate())
                 {
                     this.OnPointSelectedOverride(this.CartesianPlane.GetCartesianPointFromMousePosition(e), this.isFirstPointSelection);
+                    this.isFirstPointSelection = false;
                 }
             }
         }
 
-        public void Initialize()
+        private void StartAnimationTimer()
         {
-            this.IsAnimating = false;
-            this.IsSelectingPoints = false;
-            this.isFirstPointSelection = false;
-            this.cartesianPlane.StartListeningToMouseEvents();
-
-            this.RenderSampleData();
+            if (!this.timer.IsEnabled)
+            {
+                this.timer.Start();
+            }
         }
 
-        public void Release()
+        private void StopAnimationTimer()
         {
-            this.IsAnimating = false;
-            this.IsSelectingPoints = false;
-            this.isFirstPointSelection = false;
-            this.cartesianPlane.StopListeningToMouseEvents();
+            if (this.timer.IsEnabled)
+            {
+                this.timer.Stop();
+            }
+        }
 
+        private void ClearCartesianPlane()
+        {
             using (this.cartesianPlane.SuspendLayoutUpdate())
             {
                 this.cartesianPlane.ClearAllElements();

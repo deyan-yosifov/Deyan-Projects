@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Charts;
+using GeometryBasics.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,7 @@ namespace GeometryBasics.ViewModels
         {
         }
 
-        protected override void AnimationTickOverride()
-        {
-        }
-
-        protected override void OnPointSelectedOverride(Point point)
-        {
-        }
-
-        protected override void RenderSampleDataOverride()
+        protected override void RenderInputDataOverride()
         {
         }
 
@@ -37,6 +30,11 @@ namespace GeometryBasics.ViewModels
 
         protected override void OnSelectionMoveOverride(Point point)
         {
+        }
+
+        protected override ICartesianPlaneAlgorithm StartAlgorithm()
+        {
+            throw new NotImplementedException();
         }
     }
 }

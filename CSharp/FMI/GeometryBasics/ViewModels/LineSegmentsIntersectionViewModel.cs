@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Charts;
+using GeometryBasics.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,12 @@ namespace GeometryBasics.ViewModels
         {
         }
 
-        protected override void AnimationTickOverride()
+        protected override ICartesianPlaneAlgorithm StartAlgorithm()
         {
+            throw new NotImplementedException();
         }
 
-        protected override void OnPointSelectedOverride(Point point)
-        {
-        }
-
-        protected override void RenderSampleDataOverride()
+        protected override void RenderInputDataOverride()
         {
         }
 

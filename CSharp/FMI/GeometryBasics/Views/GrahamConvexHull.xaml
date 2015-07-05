@@ -35,23 +35,23 @@
             <charts:CartesianPlane x:Name="cartesianPlane" />
         </Border>
         <StackPanel Grid.Row="0" Grid.Column="1">
-            <StackPanel>
+            <StackPanel Visibility="{Binding IsSelectingPoints, Converter={StaticResource inverseBooleanToHiddenConverter}}">
                 <TextBlock Text="Анимация" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0 ">
-                    <buttons:ImageButton Command="{Binding PlayAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Play-icon.png"
-                                                   ToolTip="Покажи анимация на алгоритъма." />
+                    <buttons:ImageButton Command="{Binding StartAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Play-icon.png"
+                        ToolTip="Покажи анимация на алгоритъма." Visibility="{Binding IsAnimating, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
                     <buttons:ImageButton Command="{Binding StopAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
-                                                   ToolTip="Спри анимацията на алгоритъма." />
+                        ToolTip="Спри анимацията на алгоритъма." Visibility="{Binding IsAnimating, Converter={StaticResource booleanToVisibilityConverter}}" />
                 </StackPanel>
             </StackPanel>
             
             <StackPanel Margin="0 10 0 0">                
                 <TextBlock Text="Точки" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0">
-                    <buttons:ImageButton Command="{Binding SelectPointsCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Select-icon.png"
-                                                       ToolTip="Избери нови точки." />
-                    <buttons:ImageButton Command="{Binding StopPointsSelectionCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
-                                                       ToolTip="Спри избирането на точки." />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Visibility="{Binding IsAnimating, Converter={StaticResource inverseBooleanToHiddenConverter}}">
+                    <buttons:ImageButton Command="{Binding StartSelectionCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Select-icon.png"
+                        ToolTip="Избери нови точки." Visibility="{Binding IsSelectingPoints, Converter={StaticResource inverseBooleanToVisibilityConverter}}"/>
+                    <buttons:ImageButton Command="{Binding StopSelectionCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
+                        ToolTip="Спри избирането на точки." Visibility="{Binding IsSelectingPoints, Converter={StaticResource booleanToVisibilityConverter}}" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

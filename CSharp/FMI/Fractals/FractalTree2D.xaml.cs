@@ -102,6 +102,7 @@ namespace Fractals
         {
             this.counter = -1;
             this.cartesianPlane.ViewportInfo = new ViewportInfo(new Point(0, 0.85), 3);
+            this.cartesianPlane.StartListeningToMouseEvents();
             this.cartesianPlane.GraphicProperties.Thickness = 0.2;
             this.cartesianPlane.GraphicProperties.IsFilled = false;
             this.cartesianPlane.GraphicProperties.IsStroked = true;
