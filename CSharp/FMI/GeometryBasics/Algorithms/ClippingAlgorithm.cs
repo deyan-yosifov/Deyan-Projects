@@ -64,7 +64,6 @@ namespace GeometryBasics.Algorithms
         {
             Models.LineSegment clipSegment = this.GetCurrentClippingSegment();
             Vector direction = clipSegment.End - clipSegment.Start;
-            Point? previousIntersection = null;
 
             for (int i = 0; i < this.polygon.Count; i++)
             {
@@ -83,45 +82,22 @@ namespace GeometryBasics.Algorithms
 
                 if (isSegmentOutSide)
                 {
-                    this.RemovePolygonSide(i);
-
-                    if (isFirstInside)
-                    {
-                        previousIntersection = first;
-                    }
+                    this.RemovePolygonSide(i--);
                 }
-                else if (isSegmentInside)
-                {
-                    if (previousIntersection.HasValue)
-                    {
-                        this.InsertPolygonSide(i, previousIntersection.Value, first);
-                        previousIntersection = null;
-                    }
-                }
-                else
+                else if (!isSegmentInside)
                 {
                     Point intersection = IntersectionsHelper.IntersectLines(first, second - first, clipSegment.Start, direction);
-                    if (previousIntersection.HasValue)
+                    if (isFirstInside)
                     {
-                        this.InsertPolygonSide(i, previousIntersection.Value, intersection);
-                        previousIntersection = null;
-                        line.X1 = intersection.X;
-                        line.Y1 = intersection.Y;
-                    }
-                    else
-                    {
-                        previousIntersection = intersection;
                         line.X2 = intersection.X;
                         line.Y2 = intersection.Y;
                     }
+                    else if (isSecondInside)
+                    {
+                        line.X1 = intersection.X;
+                        line.Y1 = intersection.Y;
+                    }
                 }
-            }
-
-            if (previousIntersection.HasValue)
-            {
-                Point firstPoint = new Point(this.polygon[0].X1, this.polygon[0].Y1);
-                this.InsertPolygonSide(0, previousIntersection.Value, firstPoint);
-                previousIntersection = null;
             }
         }
 
@@ -130,14 +106,6 @@ namespace GeometryBasics.Algorithms
             Line line = this.polygon[index];
             this.CartesianPlane.RemoveElement(line);
             this.polygon.RemoveAt(index);
-        }
-
-        private void InsertPolygonSide(int index, Point start, Point end)
-        {
-            base.DrawLinesInContext(() =>
-            {
-                this.polygon.Insert(index, (this.CartesianPlane.AddLine(start, end)));
-            });
         }
 
         private List<Line> DrawPolygon(IEnumerable<Point> polygonToClip)

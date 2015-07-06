@@ -35,6 +35,7 @@ namespace GeometryBasics.Algorithms
 
             this.point = pointToLocalize;
             this.onResultChanged = onResultChanged;
+            this.onResultChanged("");
             this.hasEnded = false;
             this.isLayingOnPolygonSide = false;
             this.currentIndex = 0;

@@ -105,7 +105,7 @@ namespace GeometryBasics.ViewModels
         {
             get
             {
-                return new ViewportInfo(new Point(10, 10), 22);
+                return new ViewportInfo(new Point(9, 9), 22);
             }
         }
 
