@@ -53,7 +53,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Algorithms\AlgorithmHelper.cs" />
     <Compile Include="Algorithms\CartesianPlaneAlgorithmBase.cs" />
+    <Compile Include="Algorithms\ClippingAlgorithm.cs" />
     <Compile Include="Algorithms\ConvexPolygonValidator.cs" />
     <Compile Include="Algorithms\GrahamConvexHullAlgorithm.cs" />
     <Compile Include="Algorithms\ICartesianPlaneAlgorithm.cs" />

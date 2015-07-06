@@ -40,7 +40,7 @@ namespace GeometryBasics.Algorithms
         public RotatingCalipersAlgorithm(CartesianPlane cartesianPlane, IEnumerable<Point> convexPolygon)
             : base(cartesianPlane)
         {
-            this.positivePolygon = RotatingCalipersAlgorithm.GetPositiveOrientedPolygon(convexPolygon);
+            this.positivePolygon = AlgorithmHelper.GetPositiveOrientedPolygon(convexPolygon);
 
             if (this.positivePolygon.Count < 3)
             {
@@ -206,18 +206,9 @@ namespace GeometryBasics.Algorithms
             }
         }
 
-        private void CreateBoundingIntersectingRedLine(Point point, Vector vector)
+        public void CreateBoundingIntersectingRedLine(Point point, Vector vector)
         {
-            if (vector.X.IsZero())
-            {
-                this.CreateRedLine(new Point(point.X, this.CartesianPlane.VisibleRange.Top), new Point(point.X, this.CartesianPlane.VisibleRange.Bottom));
-            }
-            else
-            {
-                Point left = IntersectionsHelper.IntersectLines(point, vector, this.CartesianPlane.VisibleRange.TopLeft, new Vector(0, 1));
-                Point right = IntersectionsHelper.IntersectLines(point, vector, this.CartesianPlane.VisibleRange.TopRight, new Vector(0, 1));
-                this.CreateRedLine(left, right);
-            }
+            this.redLines.Add(AlgorithmHelper.CreateBoundingIntersectingRedLine(this.CartesianPlane, point, vector));
         }
 
         private Point GetPointFromRotationalIndex(int rotationalIndex)
@@ -237,25 +228,6 @@ namespace GeometryBasics.Algorithms
             return index;
         }
 
-        private static List<Point> GetPositiveOrientedPolygon(IEnumerable<Point> convexPolygon)
-        {
-            List<Point> polygon = new List<Point>(convexPolygon);
-
-            if (polygon.Count < 3)
-            {
-                return polygon;
-            }
-
-            double faceProduct = Vector.CrossProduct(polygon[1] - polygon[0], polygon[2] - polygon[0]);
-
-            if (faceProduct < 0)
-            {
-                polygon.Reverse();
-            }
-
-            return polygon;
-        }
-
         private bool TryEndAlgorithm()
         {
             if (!this.HasEnded && this.angle >= FinalAngle)
@@ -269,6 +241,11 @@ namespace GeometryBasics.Algorithms
             return this.hasEnded;
         }
 
+        private void CreateRedLine(Point start, Point end)
+        {
+            this.redLines.Add(AlgorithmHelper.CreateRedLine(this.CartesianPlane, start, end));
+        }
+
         private void ClearRedLines()
         {
             foreach (Line line in this.redLines)
@@ -277,19 +254,6 @@ namespace GeometryBasics.Algorithms
             }
 
             this.redLines.Clear();
-        }
-        
-        private void CreateRedLine(Point start, Point end)
-        {
-            using (this.CartesianPlane.SaveGraphicProperties())
-            {
-                this.CartesianPlane.GraphicProperties.IsStroked = true;
-                this.CartesianPlane.GraphicProperties.Stroke = new SolidColorBrush(Colors.Red);
-                this.CartesianPlane.GraphicProperties.Thickness = 0.1;
-
-                Line line = this.CartesianPlane.AddLine(start, end);
-                this.redLines.Add(line);
-            }
         }
 
         private void UpdateMinMax(Point point)

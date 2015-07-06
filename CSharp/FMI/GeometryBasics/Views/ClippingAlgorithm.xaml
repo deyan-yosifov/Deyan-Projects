@@ -4,11 +4,85 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:common="clr-namespace:GeometryBasics.Common"
+             xmlns:views="clr-namespace:GeometryBasics.Views"
              xmlns:charts="clr-namespace:Deyo.Controls.Charts;assembly=Deyo.Controls"
+             xmlns:buttons="clr-namespace:Deyo.Controls.Buttons;assembly=Deyo.Controls"
+             xmlns:converters="clr-namespace:Deyo.Controls.Common.Converters;assembly=Deyo.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>           
-        <TextBlock Text="Алгоритъм за отрязване на многоъгълник (clipping algorithm)." />
-        <charts:CartesianPlane x:Name="cartesianPlane" />
+    <common:ExampleUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Deyo.Controls;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter" />
+            <converters:BooleanToHiddenConverter x:Key="booleanToHiddenConverter" />
+            <converters:InverseBooleanToHiddenConverter x:Key="inverseBooleanToHiddenConverter" />
+        </ResourceDictionary>
+    </common:ExampleUserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="1.5*" />
+        </Grid.ColumnDefinitions>
+        <Border Grid.RowSpan="2" BorderBrush="Black" BorderThickness="2">
+            <charts:CartesianPlane x:Name="cartesianPlane" />
+        </Border>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <StackPanel Visibility="{Binding IsSelectingPoints, Converter={StaticResource inverseBooleanToHiddenConverter}}">
+                <TextBlock Text="Анимация" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0 ">
+                    <buttons:ImageButton Command="{Binding StartAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Play-icon.png"
+                        ToolTip="Покажи анимация на алгоритъма." Visibility="{Binding IsAnimating, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
+                    <buttons:ImageButton Command="{Binding StopAnimationCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
+                        ToolTip="Спри анимацията на алгоритъма." Visibility="{Binding IsAnimating, Converter={StaticResource booleanToVisibilityConverter}}" />
+                </StackPanel>
+            </StackPanel>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0 10 0 0">
+                    <TextBlock Text="Клипинг" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Visibility="{Binding IsAnimating, Converter={StaticResource inverseBooleanToHiddenConverter}}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0" Visibility="{Binding IsSelectingPolygon, Converter={StaticResource inverseBooleanToHiddenConverter}}" >
+                            <buttons:ImageButton Command="{Binding SelectClipCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Select-icon.png"
+                            ToolTip="Избери нов клипиращ многоъгълник." Visibility="{Binding IsSelectingPoints, Converter={StaticResource inverseBooleanToVisibilityConverter}}"/>
+                            <buttons:ImageButton Command="{Binding StopSelectionCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
+                            ToolTip="Спри избирането на клипиращ многоъгълник." Visibility="{Binding IsSelectingPoints, Converter={StaticResource booleanToVisibilityConverter}}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="0 10 0 0">
+                    <TextBlock Text="Многоъгълник" FontWeight="Bold" FontSize="12" HorizontalAlignment="Stretch" TextAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 5 0 0" Visibility="{Binding IsAnimating, Converter={StaticResource inverseBooleanToHiddenConverter}}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0" Visibility="{Binding IsSelectingClip, Converter={StaticResource inverseBooleanToHiddenConverter}}" >
+                            <buttons:ImageButton Command="{Binding SelectPolygonCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Select-icon.png"
+                            ToolTip="Избери нови точки за многоъгълника." Visibility="{Binding IsSelectingPoints, Converter={StaticResource inverseBooleanToVisibilityConverter}}"/>
+                            <buttons:ImageButton Command="{Binding StopSelectionCommand}" ButtonImageSource="/GeometryBasics;component/Resources/Stop-icon.png"
+                            ToolTip="Спри избирането на точки." Visibility="{Binding IsSelectingPoints, Converter={StaticResource booleanToVisibilityConverter}}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>            
+        </StackPanel>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <views:PointsList Grid.Column="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" DataContext="{Binding Path=ClipPoints}" />
+            <views:PointsList Grid.Column="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" DataContext="{Binding Path=Polygon}" />
+        </Grid>
     </Grid>
 </common:ExampleUserControl>
