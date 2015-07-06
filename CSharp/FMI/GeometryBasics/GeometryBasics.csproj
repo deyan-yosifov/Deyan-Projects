@@ -58,6 +58,8 @@
     <Compile Include="Algorithms\GrahamConvexHullAlgorithm.cs" />
     <Compile Include="Algorithms\ICartesianPlaneAlgorithm.cs" />
     <Compile Include="Algorithms\LineSegmentsIntersectionAlgorithm.cs" />
+    <Compile Include="Algorithms\NonIntersectingPolygonValidator.cs" />
+    <Compile Include="Algorithms\PointLocalizationAlgorithm.cs" />
     <Compile Include="Algorithms\RotatingCalipersAlgorithm.cs" />
     <Compile Include="Common\CartesianPlaneRenderer.cs" />
     <Compile Include="Common\ExampleUserControl.cs" />

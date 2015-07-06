@@ -70,6 +70,32 @@ namespace Deyo.Core.Mathematics.Geometry
             return intersection;
         }
 
+        public static bool AreLineSegmentsIntersecting(Point firstStart, Point firstEnd, Point secondStart, Point secondEnd)
+        {
+            double firstIntersectionProduct = Vector.CrossProduct(secondEnd - secondStart, firstStart - secondStart) * Vector.CrossProduct(secondEnd - secondStart, firstEnd - secondStart);
+            double secondIntersectionProduct = Vector.CrossProduct(firstEnd - firstStart, secondStart - firstStart) * Vector.CrossProduct(firstEnd - firstStart, secondEnd - firstStart);
+
+            if(firstIntersectionProduct == 0 && secondIntersectionProduct == 0)
+            {
+                Vector firstVector = firstEnd - firstStart;
+                double length2 = firstVector.LengthSquared;
+                double firstDot = Vector.Multiply(firstVector, secondStart - firstStart);
+                double secondDot = Vector.Multiply(firstVector, secondEnd - firstStart);
+
+                double tFirst = firstDot / length2;
+                double tSecond = secondDot / length2;
+
+                return (0 <= tFirst && tFirst <= 1) || (0 <= tSecond && tSecond <= 1) || (tFirst * tSecond <= 0);
+            }
+            else
+            {
+                bool isFirstIntersectingSecondLine = firstIntersectionProduct <= 0;
+                bool isSecondIntersectionFirstLine = secondIntersectionProduct <= 0;
+
+                return isFirstIntersectingSecondLine && isSecondIntersectionFirstLine;
+            }
+        }
+
         public static bool TryIntersectLineSegments(Point firstStart, Point firstEnd, Point secondStart, Point secondEnd, out Point intersection)
         {
             Vector firstVector = firstEnd - firstStart;

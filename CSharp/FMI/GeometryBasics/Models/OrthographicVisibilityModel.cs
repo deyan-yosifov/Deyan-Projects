@@ -9,7 +9,7 @@ namespace GeometryBasics.Models
 {
     public class OrthographicVisibilityModel : ExampleModelBase
     {
-        private const string name = "Алгоритъм за видимост при аксомонетрична проекция.";
+        private const string name = "Алгоритъм за видимост при аксонометрична проекция.";
         private const string description = @"Алгоритъмът ....";
 
         public OrthographicVisibilityModel()
