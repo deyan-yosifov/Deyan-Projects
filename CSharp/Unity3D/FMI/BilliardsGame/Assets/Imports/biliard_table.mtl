@@ -1,0 +1,38 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2006 Google, Inc.
+
+newmtl Color_006
+Ka 0.000000 0.000000 0.000000
+Kd 0.337255 0.337255 0.337255
+Ks 0.330000 0.330000 0.330000
+
+newmtl Carpet_Aqua
+Ka 0.000000 0.000000 0.000000
+Kd 0.160784 0.627451 0.262745
+Ks 0.330000 0.330000 0.330000
+map_Kd biliard_table/Carpet_Aqua.jpg
+
+newmtl Metal_Aluminum_Anodized
+Ka 0.000000 0.000000 0.000000
+Kd 0.792157 0.819608 0.858824
+Ks 0.330000 0.330000 0.330000
+map_Kd biliard_table/Metal_Aluminum_Anodized.jpg
+
+newmtl Wood_Bamboo_Dark
+Ka 0.000000 0.000000 0.000000
+Kd 0.588235 0.286275 0.113725
+Ks 0.330000 0.330000 0.330000
+map_Kd biliard_table/Wood_Bamboo_Dark.jpg
+
+newmtl _Black_
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl Translucent_Glass_Gray
+Ka 0.000000 0.000000 0.000000
+Kd 0.501961 0.501961 0.501961
+Ks 0.330000 0.330000 0.330000
+d 0.500000
+
