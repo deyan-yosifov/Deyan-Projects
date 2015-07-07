@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\_Scripts\CameraOrbitScript.cs" />
+     <Compile Include="Assets\_Scripts\ObjectTags.cs" />
+     <Compile Include="Assets\_Scripts\TriggerPlaneScript.cs" />
      <Compile Include="Assets\_Scripts\WhiteBallScript.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
