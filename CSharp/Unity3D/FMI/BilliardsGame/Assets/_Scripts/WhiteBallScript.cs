@@ -4,11 +4,11 @@ using System.Collections;
 public class WhiteBallScript : MonoBehaviour {
 
     public float ballSpeed;
-    private Rigidbody rigidbody;
+    private Rigidbody body;
 
     void Start()
     {
-        this.rigidbody = this.GetComponent<Rigidbody>();
+        this.body = this.GetComponent<Rigidbody>();
     }
 
     void FixedUpdate()
@@ -16,6 +16,6 @@ public class WhiteBallScript : MonoBehaviour {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
-        this.rigidbody.AddForce(new Vector3(moveHorizontal, 0, moveVertical) * this.ballSpeed);
+        this.body.AddForce(new Vector3(moveHorizontal, 0, moveVertical) * this.ballSpeed);
     }
 }
