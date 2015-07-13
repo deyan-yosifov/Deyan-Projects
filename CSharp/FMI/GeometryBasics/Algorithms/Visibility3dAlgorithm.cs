@@ -175,8 +175,10 @@ namespace GeometryBasics.Algorithms
             Point3D sideVertex = Visibility3dAlgorithm.GetSideVertex(polyhedron, sideIndex, 0);
 
             Vector3D innerVector = innerPoint - sideVertex;
+            double innerVectorOnSideNormal = Vector3D.DotProduct(innerVector, sideNormal);
+            double projectionVectorOnSideNormal = Vector3D.DotProduct(projectionVector, sideNormal);
 
-            bool isVisibleSide = Vector3D.DotProduct(innerVector, sideNormal) * Vector3D.DotProduct(projectionVector, sideNormal) > 0;
+            bool isVisibleSide = innerVectorOnSideNormal * projectionVectorOnSideNormal > 0;
 
             return isVisibleSide;
         }
@@ -195,7 +197,15 @@ namespace GeometryBasics.Algorithms
 
         private static Point3D GetSideVertex(Polyhedron polyhedron, int sideIndex, int vertexIndexInSide)
         {
-            return polyhedron.Vertices[polyhedron.GetEdgeVertices(polyhedron.GetSideEdges(sideIndex).Skip(vertexIndexInSide).First()).Item1];
+            HashSet<int> sideVertices = new HashSet<int>();
+            foreach(int edgeIndex in polyhedron.GetSideEdges(sideIndex))
+            {
+                Tuple<int, int> vertices = polyhedron.GetEdgeVertices(edgeIndex);
+                sideVertices.Add(vertices.Item1);
+                sideVertices.Add(vertices.Item2);
+            }
+
+            return polyhedron.Vertices[sideVertices.Skip(vertexIndexInSide).First()];
         }
 
         private static Point3D GetInnerPoint(Polyhedron polyhedron)
