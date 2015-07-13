@@ -14,6 +14,7 @@ namespace GeometryBasics.ViewModels
 {
     public class OrthographicVisibilityViewModel : CartesianPlaneViewModelBase
     {
+        public const double EdgeThickness = 0.05;
         private string description;
         private Polyhedron polyhedron;
         private Matrix3D projectionMatrix;
@@ -45,14 +46,22 @@ namespace GeometryBasics.ViewModels
             }
         }
 
+        protected override double AnimationTickSeconds
+        {
+            get
+            {
+                return base.AnimationTickSeconds * 2;
+            }
+        }
+
         protected override ICartesianPlaneAlgorithm StartAlgorithm()
         {
-            return new Visibility3dAlgorithm(this.CartesianPlane, this.projectionVector, this.projectionMatrix, this.projectionPlaneNormalDirection, this.polyhedron);
+            return new Visibility3dAlgorithm(this.CartesianPlane, this.projectionVector, this.projectionMatrix, this.projectionPlaneNormalDirection, this.polyhedron) { EdgeThickness = EdgeThickness };
         }
 
         protected override void RenderInputDataOverride()
         {
-            this.Renderer.RenderProjectedPolyhedron(this.polyhedron, this.projectionMatrix, this.projectionPlaneNormalDirection, 0.05);
+            this.Renderer.RenderProjectedPolyhedron(this.polyhedron, this.projectionMatrix, this.projectionPlaneNormalDirection, EdgeThickness);
         }
 
         protected override void InitializeFieldsOverride()
@@ -68,7 +77,7 @@ namespace GeometryBasics.ViewModels
 || 1 -0.35 0 0 ||
 || 0   0   0 0 ||
 || 0 -0.35 1 0 ||
-|| 0   0   0 1 || 
+|| 0   0   0 1 ||
 Координатите са спрямо ортонормирана координатна система К = (O e1 e2 e3).";
         }
 

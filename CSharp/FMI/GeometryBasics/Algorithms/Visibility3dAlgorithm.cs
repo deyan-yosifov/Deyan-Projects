@@ -45,6 +45,7 @@ namespace GeometryBasics.Algorithms
             this.visibleEdgesCache = new bool[polyhedron.EdgesCount];
             this.renderedEdgesCache = new Line[polyhedron.EdgesCount];
             this.verticesCache = new Point[polyhedron.Vertices.Count];
+            this.EdgeThickness = 0.5;
 
             if (polyhedron.SidesCount < 4)
             {
@@ -67,6 +68,13 @@ namespace GeometryBasics.Algorithms
             {
                 return this.hasEnded;
             }
+        }
+
+
+        public double EdgeThickness
+        {
+            get;
+            set;
         }
 
         public override void DrawNextStep()
@@ -108,9 +116,13 @@ namespace GeometryBasics.Algorithms
 
         private void MakeEdgeVisible(int edgeIndex)
         {
-            Line line = this.renderedEdgesCache[edgeIndex];
-            line.Stroke = new SolidColorBrush(Colors.Red);
-            this.visibleEdgesCache[edgeIndex] = true;
+            using (this.CartesianPlane.SuspendLayoutUpdate())
+            {
+                Line line = this.renderedEdgesCache[edgeIndex];
+                line.StrokeThickness = this.EdgeThickness;
+                line.StrokeDashArray = new DoubleCollection();
+                this.visibleEdgesCache[edgeIndex] = true;
+            }
         }
 
         private void RenderEdge(int edgeIndex, bool isVisibleEdge)
@@ -119,7 +131,10 @@ namespace GeometryBasics.Algorithms
 
             base.DrawLinesInContext(() =>
             {
+                this.CartesianPlane.GraphicProperties.Thickness = this.EdgeThickness / 2;
+
                 Line line = this.CartesianPlane.AddLine(this.verticesCache[vertices.Item1], this.verticesCache[vertices.Item2]);
+                line.StrokeDashArray = new DoubleCollection() { 0.1, 0.1 };
                 this.visibleEdgesCache[edgeIndex] = isVisibleEdge;
                 this.renderedEdgesCache[edgeIndex] = line;
             });

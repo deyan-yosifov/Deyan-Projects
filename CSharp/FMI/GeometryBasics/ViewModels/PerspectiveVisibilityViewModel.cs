@@ -14,6 +14,7 @@ namespace GeometryBasics.ViewModels
 {
     public class PerspectiveVisibilityViewModel : CartesianPlaneViewModelBase
     {
+        public const double EdgeThickness = 0.015;
         private string description;
         private Polyhedron polyhedron;
         private Matrix3D projectionMatrix;
@@ -45,14 +46,22 @@ namespace GeometryBasics.ViewModels
             }
         }
 
+        protected override double AnimationTickSeconds
+        {
+            get
+            {
+                return base.AnimationTickSeconds * 2;
+            }
+        }
+
         protected override ICartesianPlaneAlgorithm StartAlgorithm()
         {
-            return new Visibility3dAlgorithm(this.CartesianPlane, this.perspectiveCenter, this.projectionMatrix, this.projectionPlaneNormalDirection, this.polyhedron);
+            return new Visibility3dAlgorithm(this.CartesianPlane, this.perspectiveCenter, this.projectionMatrix, this.projectionPlaneNormalDirection, this.polyhedron) { EdgeThickness = EdgeThickness };
         }
 
         protected override void RenderInputDataOverride()
         {
-            this.Renderer.RenderProjectedPolyhedron(this.polyhedron, this.projectionMatrix, this.projectionPlaneNormalDirection, 0.015);
+            this.Renderer.RenderProjectedPolyhedron(this.polyhedron, this.projectionMatrix, this.projectionPlaneNormalDirection, EdgeThickness);
         }
 
         protected override void InitializeFieldsOverride()

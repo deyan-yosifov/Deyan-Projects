@@ -119,6 +119,9 @@
     <Compile Include="Views\RotatingCalipers.xaml.cs">
       <DependentUpon>RotatingCalipers.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ScrollableDescription.xaml.cs">
+      <DependentUpon>ScrollableDescription.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -168,6 +171,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RotatingCalipers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ScrollableDescription.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
