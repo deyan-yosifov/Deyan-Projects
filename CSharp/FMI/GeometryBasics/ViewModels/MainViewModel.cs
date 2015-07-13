@@ -144,8 +144,8 @@ namespace GeometryBasics.ViewModels
             this.examples.Add(new PointLocalizationModel());
             this.examples.Add(new LineSegmentsIntersectionModel());
             this.examples.Add(new ClippingAlgorithmModel());
-            //this.examples.Add(new OrthographicVisibilityModel());
-            //this.examples.Add(new PerspectiveVisibilityModel());
+            this.examples.Add(new OrthographicVisibilityModel());
+            this.examples.Add(new PerspectiveVisibilityModel());
         }
 
         private void Help()

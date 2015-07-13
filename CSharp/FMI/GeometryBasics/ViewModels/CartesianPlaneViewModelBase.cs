@@ -147,6 +147,14 @@ namespace GeometryBasics.ViewModels
             }
         }
 
+        protected CartesianPlaneRenderer Renderer
+        {
+            get
+            {
+                return this.renderer;
+            }
+        }
+
         protected virtual bool HandleSelectionMove
         {
             get

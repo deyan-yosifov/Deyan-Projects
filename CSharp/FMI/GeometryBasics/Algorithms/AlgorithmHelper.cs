@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Charts;
+using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Core.Mathematics.Algebra;
 using Deyo.Core.Mathematics.Geometry;
 using System;
@@ -8,12 +9,30 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 
 namespace GeometryBasics.Algorithms
 {
     public static class AlgorithmHelper
     {
+        public static Point GetProjectedPoint(Point3D point, Matrix3D projection2dMatrix, AxisDirection projectionPlaneNormalDirection)
+        {
+            Point3D projection = projection2dMatrix.Transform(point);
+
+            switch (projectionPlaneNormalDirection)
+            {
+                case AxisDirection.X:
+                    return new Point(projection.Y, projection.Z);
+                case AxisDirection.Y:
+                    return new Point(projection.X, projection.Z);
+                case AxisDirection.Z:
+                    return new Point(projection.X, projection.Y);
+                default:
+                    throw new NotSupportedException(string.Format("Not supported axis direction: {0}", projectionPlaneNormalDirection));
+            } 
+        }
+
         public static List<Point> GetPositiveOrientedPolygon(IEnumerable<Point> convexPolygon)
         {
             List<Point> polygon = new List<Point>(convexPolygon);

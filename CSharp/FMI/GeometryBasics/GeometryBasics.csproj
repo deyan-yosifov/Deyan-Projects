@@ -63,11 +63,13 @@
     <Compile Include="Algorithms\NonIntersectingPolygonValidator.cs" />
     <Compile Include="Algorithms\PointLocalizationAlgorithm.cs" />
     <Compile Include="Algorithms\RotatingCalipersAlgorithm.cs" />
+    <Compile Include="Algorithms\Visibility3dAlgorithm.cs" />
     <Compile Include="Common\CartesianPlaneRenderer.cs" />
     <Compile Include="Common\ExampleUserControl.cs" />
     <Compile Include="Common\IReleasable.cs" />
     <Compile Include="Common\LineSegmentConverter.cs" />
     <Compile Include="Common\PointConverter.cs" />
+    <Compile Include="Common\Polyhedron.cs" />
     <Compile Include="Models\ClippingAlgorithmModel.cs" />
     <Compile Include="Models\ConvexPolygonesIntersectionModel.cs" />
     <Compile Include="Models\GrahamConvexHullModel.cs" />
