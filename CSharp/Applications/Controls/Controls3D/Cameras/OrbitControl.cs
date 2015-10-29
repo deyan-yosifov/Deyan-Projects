@@ -132,7 +132,7 @@ namespace Deyo.Controls.Controls3D.Cameras
         {
             if (this.dragAction != DragAction.NoAction)
             {
-                if (e.Timestamp - this.previousMoveTimestamp > this.MoveDeltaTime)
+                if (Math.Abs(e.Timestamp - this.previousMoveTimestamp) > this.MoveDeltaTime)
                 {
                     this.previousMoveTimestamp = e.Timestamp;
                     Point position = OrbitControl.GetPosition(e);

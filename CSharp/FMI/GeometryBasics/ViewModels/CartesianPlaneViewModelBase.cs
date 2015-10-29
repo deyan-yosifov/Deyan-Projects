@@ -305,7 +305,7 @@ namespace GeometryBasics.ViewModels
 
         private void CartesianPlane_MouseMove(object sender, MouseEventArgs e)
         {
-            if (this.HandleSelectionMove && (e.Timestamp - this.previousMoveTimestamp > CartesianPlaneViewModelBase.MoveDeltaTime))
+            if (this.HandleSelectionMove && (Math.Abs(e.Timestamp - this.previousMoveTimestamp) > CartesianPlaneViewModelBase.MoveDeltaTime))
             {
                 this.previousMoveTimestamp = e.Timestamp;
 

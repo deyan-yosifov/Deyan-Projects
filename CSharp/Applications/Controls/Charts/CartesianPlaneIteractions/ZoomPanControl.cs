@@ -107,7 +107,7 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
 
         public bool TryHandleMouseMove(MouseEventArgs e)
         {
-            if(this.isPanning && (e.Timestamp - this.previousMoveTimestamp > this.MoveDeltaTime))
+            if(this.isPanning && (Math.Abs(e.Timestamp - this.previousMoveTimestamp) > this.MoveDeltaTime))
             {
                 this.previousMoveTimestamp = e.Timestamp;
 
