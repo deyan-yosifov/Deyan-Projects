@@ -1,0 +1,24 @@
+﻿<Window x:Class="LobelFrames.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lobelFames="clr-namespace:LobelFrames.Views"
+        Title="Дипломна работа към ФМИ" Height="800" Width="1300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Margin="10" BorderBrush="Black" BorderThickness="3">
+            <StackPanel>
+                <Image Width="400" Margin="5" Source="Resources/fmi-logo.png" />
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 0 10 0" FontWeight="Bold" FontSize="18">Дипломна работа на тема "Моделиране на повърхини на Лобел."</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="10 5 10 0" FontWeight="Bold" FontSize="14">Изготвил: Деян Йосифов, Ф.Н. М24906, Магистърска програма "Компютърна графика"</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Stretch" Margin="5 0 5 10" FontWeight="Bold" FontSize="14">Ръководител на проекта: доц. д-р Красимира Влъчкова</TextBlock>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" Margin="10" BorderBrush="Black" BorderThickness="3">
+            <lobelFames:SurfaceModelingView />
+        </Border>
+    </Grid>
+</Window>
