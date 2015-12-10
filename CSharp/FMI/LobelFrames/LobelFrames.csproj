@@ -53,6 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStructures\Edge.cs" />
+    <Compile Include="DataStructures\Triangle.cs" />
+    <Compile Include="DataStructures\TriangularMesh.cs" />
+    <Compile Include="DataStructures\Vertex.cs" />
+    <Compile Include="Editing\SceneMeshEditor.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
     <Compile Include="Views\SurfaceModelingView.xaml.cs">
       <DependentUpon>SurfaceModelingView.xaml</DependentUpon>
@@ -104,9 +109,7 @@
   <ItemGroup>
     <Resource Include="Resources\fmi-logo.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataStructures\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Applications\Controls\Controls.csproj">
       <Project>{2284d4fb-bc90-46db-af31-be77a991a39e}</Project>
