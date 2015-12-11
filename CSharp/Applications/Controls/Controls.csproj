@@ -88,6 +88,7 @@
     <Compile Include="Common\INamedObject.cs" />
     <Compile Include="Common\NamedObjectsCollection.cs" />
     <Compile Include="Common\ObjectPool.cs" />
+    <Compile Include="ContentControls\Toolbar.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />

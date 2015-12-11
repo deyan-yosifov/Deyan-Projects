@@ -58,6 +58,7 @@
     <Compile Include="DataStructures\TriangularMesh.cs" />
     <Compile Include="DataStructures\Vertex.cs" />
     <Compile Include="Editing\SceneMeshEditor.cs" />
+    <Compile Include="ViewModels\Commands\CommandDescriptor.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
     <Compile Include="Views\SurfaceModelingView.xaml.cs">
       <DependentUpon>SurfaceModelingView.xaml</DependentUpon>
