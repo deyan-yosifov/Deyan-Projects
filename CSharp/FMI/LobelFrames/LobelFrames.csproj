@@ -59,6 +59,11 @@
     <Compile Include="DataStructures\Vertex.cs" />
     <Compile Include="Editing\SceneMeshEditor.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptor.cs" />
+    <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />
+    <Compile Include="ViewModels\Commands\CommandType.cs" />
+    <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
+    <Compile Include="ViewModels\Commands\UndoableAction.cs" />
+    <Compile Include="ViewModels\Commands\UndoRedoStack.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
     <Compile Include="Views\SurfaceModelingView.xaml.cs">
       <DependentUpon>SurfaceModelingView.xaml</DependentUpon>
@@ -110,7 +115,9 @@
   <ItemGroup>
     <Resource Include="Resources\fmi-logo.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Open-icon.png" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Applications\Controls\Controls.csproj">
       <Project>{2284d4fb-bc90-46db-af31-be77a991a39e}</Project>
@@ -120,6 +127,20 @@
       <Project>{d0aed8a4-81ef-4ee6-a63d-4488e7ebda99}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Delete-icon.png" />
+    <Resource Include="Resources\Help-icon.png" />
+    <Resource Include="Resources\Stop-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Point-icon.png" />
+    <Resource Include="Resources\Select-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Redo-icon.png" />
+    <Resource Include="Resources\Save-icon.png" />
+    <Resource Include="Resources\Undo-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -31,7 +31,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="buttons:ImageButton">
                     <Border x:Name="border" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Image x:Name="buttonImage" Stretch="Fill" />
+                        <Grid>
+                            <Image x:Name="buttonImage" Stretch="Fill" />
+                            <Rectangle x:Name="overlay" Stretch="Fill" Fill="#aaffffff" Visibility="Collapsed" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -39,6 +42,9 @@
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background" TargetName="border" Value="#990000ff" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"  Value="False">
+                            <Setter Property="Visibility" TargetName="overlay" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
