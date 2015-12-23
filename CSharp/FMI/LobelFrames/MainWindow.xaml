@@ -8,6 +8,7 @@
         Title="Дипломна работа към ФМИ" Height="800" Width="1000">
     <Window.Resources>
         <commands:CommandTypeToDescriptorConverter x:Key="commandConverter" />
+        <BooleanToVisibilityConverter x:Key="visibilityConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -28,38 +29,61 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0" Background="Transparent" Margin="5 5 5 0">
                     <deyoContentControls:Toolbar Padding="2" HorizontalAlignment="Center" Background="Transparent" 
-                                                 DataContext="{Binding ElementName=surface, Path=CommandDescriptors}" >
-                        <ToolBar.Resources>
-                            <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" TargetType="{x:Type Button}" >
-                                <Setter Property="Padding" Value="0" />
-                                <Setter Property="Margin" Value="2 0" />
-                                <Setter Property="BorderBrush" Value="Black" />
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </ToolBar.Resources>
-                        <buttons:ImageButton ToolTip="Open" ButtonImageSource="/LobelFrames;component/Resources/Open-icon.png"
-                            DataContext="{Binding ConverterParameter=Open, Converter={StaticResource commandConverter}}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" />
-                        <buttons:ImageButton ToolTip="Save" ButtonImageSource="/LobelFrames;component/Resources/Save-icon.png"
-                            DataContext="{Binding ConverterParameter=Save, Converter={StaticResource commandConverter}}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" />
-                        <buttons:ImageButton ToolTip="Undo" ButtonImageSource="/LobelFrames;component/Resources/Undo-icon.png"
-                            DataContext="{Binding ConverterParameter=Undo, Converter={StaticResource commandConverter}}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" />
-                        <buttons:ImageButton ToolTip="Redo" ButtonImageSource="/LobelFrames;component/Resources/Redo-icon.png"
-                            DataContext="{Binding ConverterParameter=Redo, Converter={StaticResource commandConverter}}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" />
+                                                 DataContext="{Binding ElementName=surface, Path=CommandDescriptors}" >                        
+                        <buttons:ImageButton ToolTip="Отвори" ButtonImageSource="/LobelFrames;component/Resources/Open-icon.png"
+                            DataContext="{Binding ConverterParameter=Open, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Запиши" ButtonImageSource="/LobelFrames;component/Resources/Save-icon.png"
+                            DataContext="{Binding ConverterParameter=Save, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Назад" ButtonImageSource="/LobelFrames;component/Resources/Undo-icon.png"
+                            DataContext="{Binding ConverterParameter=Undo, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Напред" ButtonImageSource="/LobelFrames;component/Resources/Redo-icon.png"
+                            DataContext="{Binding ConverterParameter=Redo, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <Separator />
-                        
-                        <Button Content="Test"
-                            DataContext="{Binding ConverterParameter=Test, Converter={StaticResource commandConverter}}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" />
+
+                        <buttons:ImageButton ToolTip="Селектирай" ButtonImageSource="/LobelFrames;component/Resources/Select-icon.png"
+                            DataContext="{Binding ConverterParameter=SelectMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Деселектирай" ButtonImageSource="/LobelFrames;component/Resources/Deselect-icon.png"
+                            DataContext="{Binding ConverterParameter=DeselectMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Премести" ButtonImageSource="/LobelFrames;component/Resources/Move-icon.png"
+                            DataContext="{Binding ConverterParameter=MoveMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Изтрии" ButtonImageSource="/LobelFrames;component/Resources/Delete-icon.png"
+                            DataContext="{Binding ConverterParameter=DeleteMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <Separator />
-                        
-                        <buttons:ImageButton ToolTip="Help" ButtonImageSource="/LobelFrames;component/Resources/Help-icon.png"
-                            DataContext="{Binding ConverterParameter=Help, Converter={StaticResource commandConverter}}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" />
+
+                        <Button Content="Test" ToolTip="Тествай"
+                            DataContext="{Binding ConverterParameter=Test, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />                       
                     </deyoContentControls:Toolbar>
                 </Border>
                           
                 <lobelFames:SurfaceModelingView Grid.Row="1" x:Name="surface" />
+
+                <Border Grid.Row="2" Background="Transparent" Margin="10 0 5 5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <buttons:ImageButton Width="15" Height="15" ToolTip="Помощ" ButtonImageSource="/LobelFrames;component/Resources/Help-icon.png"
+                            DataContext="{Binding ElementName=surface, Path=CommandDescriptors, ConverterParameter=Help, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <TextBlock Margin="10 0 0 0" Grid.Column="1" TextWrapping="Wrap" >
+                            <Run FontStyle="Italic" Text="{Binding ElementName=surface, Path=Hint}" />
+                        </TextBlock>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
     </Grid>

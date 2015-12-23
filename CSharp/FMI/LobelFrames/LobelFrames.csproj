@@ -62,6 +62,7 @@
     <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />
     <Compile Include="ViewModels\Commands\CommandType.cs" />
     <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
+    <Compile Include="ViewModels\Commands\HintsManager.cs" />
     <Compile Include="ViewModels\Commands\UndoableAction.cs" />
     <Compile Include="ViewModels\Commands\UndoRedoStack.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
@@ -141,6 +142,12 @@
     <Resource Include="Resources\Redo-icon.png" />
     <Resource Include="Resources\Save-icon.png" />
     <Resource Include="Resources\Undo-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Deselect-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Move-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,13 +6,15 @@ namespace LobelFrames.ViewModels.Commands
 {
     public class CommandDescriptor : ViewModelBase
     {
-        private readonly ICommand command;
         private bool isEnabled;
+        private bool isVisible;
+        private readonly ICommand command;
 
-        public CommandDescriptor(ICommand command, bool isEnabled)
+        public CommandDescriptor(ICommand command, bool initialIsEnabledState, bool initialIsVisibleState)
         {
             this.command = command;
-            this.isEnabled = isEnabled;
+            this.isEnabled = initialIsEnabledState;
+            this.isVisible = initialIsVisibleState;
         }
 
         public ICommand Command
@@ -32,6 +34,18 @@ namespace LobelFrames.ViewModels.Commands
             set
             {
                 this.SetProperty(ref this.isEnabled, value);
+            }
+        }
+
+        public bool IsVisible
+        {
+            get
+            {
+                return this.isVisible;
+            }
+            set
+            {
+                this.SetProperty(ref this.isVisible, value);
             }
         }
     }
