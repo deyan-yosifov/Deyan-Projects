@@ -29,6 +29,8 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.MoveMesh, null, false);
             this.RegisterCommandDescriptor(CommandType.DeleteMesh, null, false);
 
+            this.RegisterCommandDescriptor(CommandType.AddLobelMesh, null);
+
             this.RegisterCommandDescriptor(CommandType.Test, new DelegateCommand(TestAction)); 
 
             this.RegisterCommandDescriptor(CommandType.Help, new DelegateCommand(ShowHelpMessage));

@@ -149,6 +149,14 @@
   <ItemGroup>
     <Resource Include="Resources\Move-icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Point-icon-green.png" />
+    <Resource Include="Resources\Point-icon-orange.png" />
+    <Resource Include="Resources\Point-icon-red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\AddLobelMesh-icon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -62,6 +62,11 @@
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <Separator />
 
+                        <buttons:ImageButton ToolTip="Добави повърхнина на Лобел" ButtonImageSource="/LobelFrames;component/Resources/AddLobelMesh-icon.png"
+                            DataContext="{Binding ConverterParameter=AddLobelMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <Separator />
+
                         <Button Content="Test" ToolTip="Тествай"
                             DataContext="{Binding ConverterParameter=Test, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />                       
