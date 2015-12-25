@@ -117,9 +117,6 @@
     <Resource Include="Resources\fmi-logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Open-icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Applications\Controls\Controls.csproj">
       <Project>{2284d4fb-bc90-46db-af31-be77a991a39e}</Project>
       <Name>Controls</Name>
@@ -130,24 +127,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Delete-icon.png" />
     <Resource Include="Resources\Help-icon.png" />
-    <Resource Include="Resources\Stop-icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Point-icon.png" />
-    <Resource Include="Resources\Select-icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Redo-icon.png" />
-    <Resource Include="Resources\Save-icon.png" />
-    <Resource Include="Resources\Undo-icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Deselect-icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Move-icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Point-icon-green.png" />
@@ -155,7 +138,26 @@
     <Resource Include="Resources\Point-icon-red.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Cancel-icon.png" />
+    <Resource Include="Resources\Delete-icon.png" />
+    <Resource Include="Resources\Move-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Select-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\AddLobelMesh-icon.png" />
+    <Resource Include="Resources\Open-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Save-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Redo-icon.png" />
+    <Resource Include="Resources\Undo-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\CutMesh-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -30,6 +30,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.DeleteMesh, null, false);
 
             this.RegisterCommandDescriptor(CommandType.AddLobelMesh, null);
+            this.RegisterCommandDescriptor(CommandType.CutMesh, null, false);
 
             this.RegisterCommandDescriptor(CommandType.Test, new DelegateCommand(TestAction)); 
 

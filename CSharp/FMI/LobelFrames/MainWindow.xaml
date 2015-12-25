@@ -51,11 +51,11 @@
                         <buttons:ImageButton ToolTip="Селектирай" ButtonImageSource="/LobelFrames;component/Resources/Select-icon.png"
                             DataContext="{Binding ConverterParameter=SelectMesh, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
-                        <buttons:ImageButton ToolTip="Деселектирай" ButtonImageSource="/LobelFrames;component/Resources/Deselect-icon.png"
-                            DataContext="{Binding ConverterParameter=DeselectMesh, Converter={StaticResource commandConverter}}" 
-                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <buttons:ImageButton ToolTip="Премести" ButtonImageSource="/LobelFrames;component/Resources/Move-icon.png"
                             DataContext="{Binding ConverterParameter=MoveMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Деселектирай" ButtonImageSource="/LobelFrames;component/Resources/Cancel-icon.png"
+                            DataContext="{Binding ConverterParameter=DeselectMesh, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <buttons:ImageButton ToolTip="Изтрии" ButtonImageSource="/LobelFrames;component/Resources/Delete-icon.png"
                             DataContext="{Binding ConverterParameter=DeleteMesh, Converter={StaticResource commandConverter}}" 
@@ -64,6 +64,9 @@
 
                         <buttons:ImageButton ToolTip="Добави повърхнина на Лобел" ButtonImageSource="/LobelFrames;component/Resources/AddLobelMesh-icon.png"
                             DataContext="{Binding ConverterParameter=AddLobelMesh, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Изрежи" ButtonImageSource="/LobelFrames;component/Resources/CutMesh-icon.png"
+                            DataContext="{Binding ConverterParameter=CutMesh, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <Separator />
 
