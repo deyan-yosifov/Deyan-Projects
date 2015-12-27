@@ -2,22 +2,24 @@
 using Deyo.Controls.Controls3D;
 using LobelFrames.ViewModels.Commands;
 using System;
+using System.Windows;
 
 namespace LobelFrames.ViewModels
 {
     public class SurfaceModelingViewModel : ViewModelBase
     {
         private readonly Scene3D scene;
-        private readonly HintsManager hintsManager;
+        private readonly HintManager hintManager;
+        private readonly InputManager inputManager;
         private readonly CommandDescriptors commandDescriptors;
-        private string hint;
 
         public SurfaceModelingViewModel(Scene3D scene)
         {
             this.scene = scene;
-            this.hintsManager = new HintsManager();
+            this.hintManager = new HintManager();
+            this.inputManager = new InputManager();
             this.commandDescriptors = new CommandDescriptors(this);
-            this.hint = this.HintsManager.DefaultHint;
+            this.inputManager.ParameterInputed += InputManager_ParameterInputed;
         }
 
         public CommandDescriptors CommandDescriptors
@@ -28,24 +30,25 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public HintsManager HintsManager
+        public HintManager HintManager
         {
             get
             {
-                return this.hintsManager;
+                return this.hintManager;
             }
         }
 
-        public string Hint
+        public InputManager InputManager
         {
             get
             {
-                return this.hint;
+                return this.inputManager;
             }
-            set
-            {
-                this.SetProperty(ref this.hint, value);
-            }
+        }
+
+        private void InputManager_ParameterInputed(object sender, ParameterInputedEventArgs e)
+        {
+            MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
         }
     }
 }

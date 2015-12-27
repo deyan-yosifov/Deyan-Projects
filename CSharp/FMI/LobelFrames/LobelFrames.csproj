@@ -62,7 +62,12 @@
     <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />
     <Compile Include="ViewModels\Commands\CommandType.cs" />
     <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
-    <Compile Include="ViewModels\Commands\HintsManager.cs" />
+    <Compile Include="ViewModels\Commands\HintManager.cs" />
+    <Compile Include="ViewModels\Commands\Hints.cs" />
+    <Compile Include="ViewModels\Commands\InputManager.cs" />
+    <Compile Include="ViewModels\Commands\IsEnabledToColorConverter.cs" />
+    <Compile Include="ViewModels\Commands\Labels.cs" />
+    <Compile Include="ViewModels\Commands\ParameterInputedEventArgs.cs" />
     <Compile Include="ViewModels\Commands\UndoableAction.cs" />
     <Compile Include="ViewModels\Commands\UndoRedoStack.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
@@ -158,6 +163,21 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\CutMesh-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Fold-icon.png" />
+    <Resource Include="Resources\Glue-icon.png" />
+    <Resource Include="Resources\LobelSettings-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\BezierSettings-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\AddBezierMesh-icon.png" />
+    <Resource Include="Resources\Approximate-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icosahedron-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

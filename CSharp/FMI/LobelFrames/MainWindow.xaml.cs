@@ -23,6 +23,11 @@ namespace LobelFrames
         public MainWindow()
         {
             InitializeComponent();
+
+            this.PreviewTextInput += (s, e) =>
+                {
+                    this.surface.InputManager.HandleInput(e);
+                };
         }
     }
 }

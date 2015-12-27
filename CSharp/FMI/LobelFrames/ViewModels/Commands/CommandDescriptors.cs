@@ -31,8 +31,15 @@ namespace LobelFrames.ViewModels.Commands
 
             this.RegisterCommandDescriptor(CommandType.AddLobelMesh, null);
             this.RegisterCommandDescriptor(CommandType.CutMesh, null, false);
+            this.RegisterCommandDescriptor(CommandType.FoldMesh, null, false);
+            this.RegisterCommandDescriptor(CommandType.GlueMesh, null, false);
+            this.RegisterCommandDescriptor(CommandType.LobelSettings, null);
 
-            this.RegisterCommandDescriptor(CommandType.Test, new DelegateCommand(TestAction)); 
+            this.RegisterCommandDescriptor(CommandType.AddBezierSurface, null);
+            this.RegisterCommandDescriptor(CommandType.ApproximateWithLobelMesh, null, false);
+            this.RegisterCommandDescriptor(CommandType.BezierSettings, null);
+
+            this.RegisterCommandDescriptor(CommandType.Test, new DelegateCommand(TestAction), true, false); 
 
             this.RegisterCommandDescriptor(CommandType.Help, new DelegateCommand(ShowHelpMessage));
         }
@@ -74,7 +81,8 @@ namespace LobelFrames.ViewModels.Commands
         private void TestAction(object obj)
         {
             MessageBox.Show("Test action!");
-            this.viewModel.Hint = "Hint changed!";
+            this.viewModel.HintManager.Hint = "Подсказка сменена!";
+            this.viewModel.InputManager.IsEnabled = true;
         }
     }
 }

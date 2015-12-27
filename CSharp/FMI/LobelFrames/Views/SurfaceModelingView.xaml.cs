@@ -20,15 +20,19 @@ namespace LobelFrames.Views
             InitializeComponent();
             this.viewModel = new SurfaceModelingViewModel(this.scene);
             this.CommandDescriptors = this.viewModel.CommandDescriptors;
-            BindingOperations.SetBinding(this, SurfaceModelingView.HintProperty, new Binding() { Source = this.viewModel, Path = new PropertyPath("Hint") });
+            this.InputManager = this.viewModel.InputManager;
+            this.HintManager = this.viewModel.HintManager;
             this.DataContext = this.viewModel;
         }
 
         public static readonly DependencyProperty CommandDescriptorsProperty = DependencyProperty.Register("CommandDescriptors",
             typeof(CommandDescriptors), typeof(SurfaceModelingView));
 
-        public static readonly DependencyProperty HintProperty = DependencyProperty.Register("Hint",
-            typeof(string), typeof(SurfaceModelingView));
+        public static readonly DependencyProperty HintManagerProperty = DependencyProperty.Register("HintManager",
+            typeof(HintManager), typeof(SurfaceModelingView));
+
+        public static readonly DependencyProperty InputManagerProperty = DependencyProperty.Register("InputManager",
+            typeof(InputManager), typeof(SurfaceModelingView));
 
         public CommandDescriptors CommandDescriptors
         {
@@ -36,10 +40,16 @@ namespace LobelFrames.Views
             set { SetValue(CommandDescriptorsProperty, value); }
         }
 
-        public string Hint
+        public HintManager HintManager
         {
-            get { return (string)GetValue(HintProperty); }
-            set { SetValue(HintProperty, value); }
+            get { return (HintManager)GetValue(HintManagerProperty); }
+            set { SetValue(HintManagerProperty, value); }
+        }
+
+        public InputManager InputManager
+        {
+            get { return (InputManager)GetValue(InputManagerProperty); }
+            set { SetValue(InputManagerProperty, value); }
         }
     }
 }

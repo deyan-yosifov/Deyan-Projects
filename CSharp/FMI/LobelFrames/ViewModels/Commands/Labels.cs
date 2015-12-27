@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace LobelFrames.ViewModels.Commands
 {
-    public class HintsManager
+    internal static class Labels
     {
-        public string DefaultHint
-        {
-            get
-            {
-                return "Select command!";
-            }
-        }
+        public const string Default = "Въведи параметър";
     }
 }
