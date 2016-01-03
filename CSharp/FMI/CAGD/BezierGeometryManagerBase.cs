@@ -25,10 +25,10 @@ namespace CAGD
         protected BezierGeometryManagerBase(Scene3D scene)
         {
             this.scene = scene;
-            this.controlPointsPool = new Visual3DPool<PointVisual>(this.SceneEditor.Viewport);
-            this.controlLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
-            this.surfaceLinesPool = new Visual3DPool<LineVisual>(this.SceneEditor.Viewport);
-            this.surfaceGeometryPool = new Visual3DPool<VisualOwner>(this.SceneEditor.Viewport);
+            this.controlPointsPool = new Visual3DPool<PointVisual>(scene);
+            this.controlLinesPool = new Visual3DPool<LineVisual>(scene);
+            this.surfaceLinesPool = new Visual3DPool<LineVisual>(scene);
+            this.surfaceGeometryPool = new Visual3DPool<VisualOwner>(scene);
             this.visibleControlPoints = new Queue<PointVisual>();
             this.visibleControlLines = new List<LineVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();

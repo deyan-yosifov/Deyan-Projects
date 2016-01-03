@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
+using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.ViewModels.Commands;
 using System;
 using System.Windows;
@@ -12,6 +13,7 @@ namespace LobelFrames.ViewModels
         private readonly HintManager hintManager;
         private readonly InputManager inputManager;
         private readonly CommandDescriptors commandDescriptors;
+        private readonly SceneElementsPool elementsPool;
 
         public SurfaceModelingViewModel(Scene3D scene)
         {
@@ -19,7 +21,16 @@ namespace LobelFrames.ViewModels
             this.hintManager = new HintManager();
             this.inputManager = new InputManager();
             this.commandDescriptors = new CommandDescriptors(this);
+            this.elementsPool = new SceneElementsPool(scene);
             this.inputManager.ParameterInputed += InputManager_ParameterInputed;
+        }
+
+        public SceneElementsPool ElementsPool
+        {
+            get
+            {
+                return this.elementsPool;
+            }
         }
 
         public CommandDescriptors CommandDescriptors
@@ -50,5 +61,7 @@ namespace LobelFrames.ViewModels
         {
             MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
         }
+
+        
     }
 }

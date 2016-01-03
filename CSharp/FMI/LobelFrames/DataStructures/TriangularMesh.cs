@@ -15,7 +15,5 @@ namespace LobelFrames.DataStructures
             this.vertices = new List<Vertex>();
             this.triangles = new List<Triangle>();
         }
-
-        //public Triangle AddTriangle(
     }
 }

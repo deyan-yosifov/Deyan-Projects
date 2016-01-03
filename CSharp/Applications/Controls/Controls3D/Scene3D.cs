@@ -26,7 +26,7 @@ namespace Deyo.Controls.Controls3D
         {
             this.viewport2D = new Canvas() { IsHitTestVisible = true, Background = new SolidColorBrush(Colors.Transparent) };
             this.viewport3D = new Viewport3D() { IsHitTestVisible = false };
-            this.editor = new SceneEditor(this.viewport3D);
+            this.editor = new SceneEditor(this);
             this.pointerHandlersControler = new PointerHandlersController();
             this.pointerHandlersControler.Handlers.AddLast(new IteractivePointsHandler(this.editor));
             this.pointerHandlersControler.Handlers.AddLast(new OrbitControl(this.editor));
@@ -44,14 +44,6 @@ namespace Deyo.Controls.Controls3D
             get
             {
                 return this.editor;
-            }
-        }
-
-        public Canvas Viewport2D
-        {
-            get
-            {
-                return this.viewport2D;
             }
         }
 
@@ -91,7 +83,15 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
-        protected Viewport3D Viewport
+        internal Canvas Viewport2D
+        {
+            get
+            {
+                return this.viewport2D;
+            }
+        }
+
+        internal Viewport3D Viewport
         {
             get
             {

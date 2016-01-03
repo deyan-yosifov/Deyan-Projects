@@ -88,7 +88,9 @@
     <Compile Include="Common\INamedObject.cs" />
     <Compile Include="Common\NamedObjectsCollection.cs" />
     <Compile Include="Common\ObjectPool.cs" />
+    <Compile Include="Common\UIElementPool.cs" />
     <Compile Include="ContentControls\Toolbar.cs" />
+    <Compile Include="Controls3D\CameraState.cs" />
     <Compile Include="Controls3D\Cameras\CameraHelper.cs" />
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
@@ -100,12 +102,13 @@
     <Compile Include="Controls3D\Iteractions\IteractivePointsHandler.cs" />
     <Compile Include="Controls3D\Iteractions\PointIteractionPositionInfo.cs" />
     <Compile Include="Controls3D\MaterialsManager.cs" />
+    <Compile Include="Controls3D\OrthographicCameraState.cs" />
+    <Compile Include="Controls3D\PerspectiveCameraState.cs" />
     <Compile Include="Controls3D\Position3D.cs" />
     <Compile Include="Controls3D\Scene3D.cs" />
     <Compile Include="Controls3D\Scene3DMouseHandlerNames.cs" />
     <Compile Include="Controls3D\SceneEditor.cs" />
     <Compile Include="Common\DelegateCommand.cs" />
-    <Compile Include="Common\Guard.cs" />
     <Compile Include="Common\ResourceHelper.cs" />
     <Compile Include="Common\ViewModelBase.cs" />
     <Compile Include="Controls3D\Shapes\Cube.cs" />
@@ -117,9 +120,12 @@
     <Compile Include="Controls3D\Shapes\ShapeFactory.cs" />
     <Compile Include="Controls3D\Shapes\Sphere.cs" />
     <Compile Include="Controls3D\Visuals\CubePointVisual.cs" />
+    <Compile Include="Controls3D\Visuals\Overlays2D\IVisual2DOwner.cs" />
     <Compile Include="Controls3D\Visuals\IVisual3DOwner.cs" />
     <Compile Include="Controls3D\Visuals\LineVisual.cs" />
+    <Compile Include="Controls3D\Visuals\Overlays2D\LineOverlay.cs" />
     <Compile Include="Controls3D\Visuals\PointVisual.cs" />
+    <Compile Include="Controls3D\Visuals\Overlays2D\Visual2DPool.cs" />
     <Compile Include="Controls3D\Visuals\Visual3DPool.cs" />
     <Compile Include="Controls3D\Visuals\VisualOwner.cs" />
     <Compile Include="Controls3D\Visuals\VisualsFactory.cs" />

@@ -5,10 +5,6 @@ using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Core.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -18,20 +14,25 @@ namespace Deyo.Controls.Controls3D
 {
     public class SceneEditor
     {
+        private readonly BeginEndUpdateCounter cameraChangesUpdater;
+        private readonly Canvas viewport2D;
         private readonly Viewport3D viewport;
         private readonly PreservableState<Position3D> positionState;
         private readonly GraphicState graphicState;
         private readonly ShapeFactory shapeFactory;
         private readonly VisualsFactory visualsFactory;
 
-        public SceneEditor(Viewport3D viewport)
+        public SceneEditor(Scene3D scene)
         {
-            this.viewport = viewport;
+            this.viewport = scene.Viewport;
+            this.viewport2D = scene.Viewport2D;
             this.positionState = new PreservableState<Position3D>();
             this.graphicState = new GraphicState();
             this.shapeFactory = new ShapeFactory(this.graphicState);
             this.visualsFactory = new VisualsFactory(this.shapeFactory, this.positionState);
-            this.viewport.Camera = new PerspectiveCamera(new Point3D(), new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 45);
+            this.cameraChangesUpdater = new BeginEndUpdateCounter(this.UpdateActionOnCameraChanged);
+
+            this.Camera = new PerspectiveCamera(new Point3D(), new Vector3D(0, 0, -1), new Vector3D(0, 1, 0), 45);
         }
 
         public Position3D Position
@@ -58,15 +59,32 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
-        private VisualsFactory VisualsFactory
+        public Camera Camera
+        {
+            private get
+            {
+                return this.viewport.Camera;
+            }
+            set
+            {
+                if (this.viewport.Camera != value)
+                {
+                    Guard.ThrowExceptionIfNull(value, "value");
+                    this.viewport.Camera = value;
+                    this.CameraChangesUpdater.Update();
+                }
+            }
+        }
+
+        internal Canvas Viewport2D
         {
             get
             {
-                return this.visualsFactory;
+                return this.viewport2D;
             }
         }
         
-        public Viewport3D Viewport
+        internal Viewport3D Viewport
         {
             get
             {
@@ -74,12 +92,23 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
-        public bool TryGetCamera<T>(out T camera)
-            where T : Camera
+        private VisualsFactory VisualsFactory
         {
-            camera = this.viewport.Camera as T;
-            return camera != null;
+            get
+            {
+                return this.visualsFactory;
+            }
         }
+
+        private BeginEndUpdateCounter CameraChangesUpdater
+        {
+            get
+            {
+                return this.cameraChangesUpdater;
+            }
+        }
+
+        public EventHandler CameraChanged;
 
         public PointVisual AddPointVisual(Point3D position)
         {
@@ -176,21 +205,48 @@ namespace Deyo.Controls.Controls3D
             this.positionState.Restore();
         }
 
-        internal void DoActionOnCamera(Action<PerspectiveCamera> actionOnPerspective, Action<OrthographicCamera> actionOnOrthographic)
+        public void DoActionOnCamera(Action<PerspectiveCamera> actionOnPerspective, Action<OrthographicCamera> actionOnOrthographic)
         {
             PerspectiveCamera perspectiveCamera;
             OrthographicCamera orthographicCamera;
+            CameraState stateBefore = null;
+            CameraState stateAfter = null;
+
             if (this.TryGetCamera<PerspectiveCamera>(out perspectiveCamera))
             {
+                stateBefore = new PerspectiveCameraState(perspectiveCamera);
                 actionOnPerspective(perspectiveCamera);
+                stateAfter = new PerspectiveCameraState(perspectiveCamera);
             }
             else if (this.TryGetCamera<OrthographicCamera>(out orthographicCamera))
             {
+                stateBefore = new OrthographicCameraState(orthographicCamera);
                 actionOnOrthographic(orthographicCamera);
+                stateAfter = new OrthographicCameraState(orthographicCamera);
             }
             else
             {
                 Guard.ThrowNotSupportedCameraException();
+            }
+
+            if (!stateBefore.Equals(stateAfter))
+            {
+                this.CameraChangesUpdater.Update();
+            }
+        }
+
+        private bool TryGetCamera<T>(out T camera)
+            where T : Camera
+        {
+            camera = this.viewport.Camera as T;
+            return camera != null;
+        }
+
+        private void UpdateActionOnCameraChanged()
+        {
+            if (this.CameraChanged != null)
+            {
+                this.CameraChanged(this, new EventArgs());
             }
         }
     }

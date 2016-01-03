@@ -54,10 +54,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataStructures\Edge.cs" />
+    <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
+    <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />
+    <Compile Include="DataStructures\Surfaces\SceneElementsPool.cs" />
     <Compile Include="DataStructures\Triangle.cs" />
     <Compile Include="DataStructures\TriangularMesh.cs" />
     <Compile Include="DataStructures\Vertex.cs" />
-    <Compile Include="Editing\SceneMeshEditor.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptor.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />
     <Compile Include="ViewModels\Commands\CommandType.cs" />

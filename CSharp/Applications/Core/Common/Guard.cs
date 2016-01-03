@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Windows.Media.Media3D;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Deyo.Controls.Common
+namespace Deyo.Core.Common
 {
     public static class Guard
     {

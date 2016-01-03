@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.MouseHandlers;
+using Deyo.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;

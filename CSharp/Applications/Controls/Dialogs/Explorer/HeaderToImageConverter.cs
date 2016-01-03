@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Common;
+using Deyo.Core.Common;
 using System;
 using System.Globalization;
 using System.Windows.Data;

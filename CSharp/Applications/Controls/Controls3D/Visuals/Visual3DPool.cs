@@ -11,6 +11,11 @@ namespace Deyo.Controls.Controls3D.Visuals
     public class Visual3DPool<T> : ObjectPool<T>
         where T : IVisual3DOwner
     {
+        public Visual3DPool(Scene3D scene)
+            : this(scene.Viewport)
+        {
+        }
+
         public Visual3DPool(Viewport3D viewport)
             : base((element) => ShowElement(element, viewport), (element) => HideElement(element, viewport))
         {
