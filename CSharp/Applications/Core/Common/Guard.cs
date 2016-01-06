@@ -16,6 +16,23 @@ namespace Deyo.Core.Common
             }
         }
 
+        public static void ThrowExceptionInNotEqual(object value, object expectedValue, string parameterName)
+        {
+            if (value != expectedValue)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("{0} should not be equal to {1}!", parameterName, expectedValue));
+            }
+        }
+
+        public static void ThrowExceptionInNotInRange<T>(T value, T minValue, T maxValue, string parameterName)
+            where T : IComparable
+        {
+            if (value.CompareTo(minValue) < 0 || value.CompareTo(maxValue) > 0)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("{0} should not be in range [{1}; {2}]!", parameterName, minValue, maxValue));
+            }
+        }
+
         public static void ThrowExceptionIfLessThan<T>(T value, T minimumValue, string parameterName)
             where T : IComparable
         {

@@ -35,7 +35,7 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             direction.Normalize();
 
-            // TODO:
+
         }        
     }
 }
