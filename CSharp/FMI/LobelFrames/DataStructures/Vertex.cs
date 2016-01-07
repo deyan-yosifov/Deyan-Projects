@@ -5,6 +5,11 @@ namespace LobelFrames.DataStructures
 {
     public class Vertex
     {
-        Point3D Point { get; set; }
+        public Vertex(Point3D point)
+        {
+            this.Point = point;
+        }
+
+        public Point3D Point { get; set; }
     }
 }

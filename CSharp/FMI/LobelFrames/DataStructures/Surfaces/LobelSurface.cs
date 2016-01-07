@@ -26,16 +26,43 @@ namespace LobelFrames.DataStructures.Surfaces
             double width = columns * sideSize;
             double height = rows * sideSize * LobelSurface.Sin;
 
-            this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), new Vector3D(1, 0, 0), columns);
+            Vertex first, last;
+            this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), new Vector3D(1, 0, 0), columns, out first, out last);
 
             // TODO: Add triangles.
         }
 
-        private void AddFirstEdges(Point3D start, Vector3D direction, int edgesCount)
+        public double SideSize
+        {
+            get
+            {
+                return this.sideSize;
+            }
+        }
+
+        public TriangularMesh Mesh
+        {
+            get
+            {
+                return this.mesh;
+            }
+        }
+
+        private void AddFirstEdges(Point3D start, Vector3D direction, int edgesCount, out Vertex firstVertex, out Vertex lastVertex)
         {
             direction.Normalize();
+            direction = direction * this.SideSize;
+            firstVertex = new Vertex(start);
+            Vertex previousVertex = firstVertex;
 
+            for (int i = 0; i < edgesCount; i += 1)
+            {
+                Vertex nextVertex = new Vertex(previousVertex.Point + direction);
+                this.Mesh.AddEdge(new Edge(previousVertex, nextVertex), true);
+                previousVertex = nextVertex;
+            }
 
+            lastVertex = previousVertex;
         }        
     }
 }
