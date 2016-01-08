@@ -48,6 +48,11 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
+        private void AddTrianglesToLobelMesh(Vertex start, Vertex end, int numberOfRows)
+        {
+            // TODO:
+        }
+
         private void AddFirstEdges(Point3D start, Vector3D direction, int edgesCount, out Vertex firstVertex, out Vertex lastVertex)
         {
             direction.Normalize();
