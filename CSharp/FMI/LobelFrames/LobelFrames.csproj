@@ -58,6 +58,7 @@
     <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
     <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />
     <Compile Include="DataStructures\Surfaces\SceneElementsPool.cs" />
+    <Compile Include="DataStructures\Surfaces\VertexConnectionInfo.cs" />
     <Compile Include="DataStructures\Triangle.cs" />
     <Compile Include="DataStructures\TriangularMesh.cs" />
     <Compile Include="DataStructures\Vertex.cs" />

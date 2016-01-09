@@ -54,6 +54,14 @@ namespace LobelFrames.DataStructures
             return TriangularMesh.EnumerateSet(this.vertexToEdges[vertex]);
         }
 
+        public IEnumerable<Vertex> GetVertexNeighbours(Vertex vertex)
+        {
+            foreach(Edge edge in this.GetEdges(vertex))
+            {
+                yield return edge.Start == vertex ? edge.End : edge.Start;
+            }
+        }
+
         public IEnumerable<Vertex> GetVertices()
         {
             return TriangularMesh.EnumerateSet(this.vertices);

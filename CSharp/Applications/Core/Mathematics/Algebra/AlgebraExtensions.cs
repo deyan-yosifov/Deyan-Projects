@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace Deyo.Core.Mathematics.Algebra
 {
@@ -18,6 +19,16 @@ namespace Deyo.Core.Mathematics.Algebra
             return Math.Abs(a - b) < epsilon;
         }
 
+        public static bool IsGreaterThan(this double a, double b, double epsilon = Epsilon)
+        {
+            return !a.IsLessThanOrEqualTo(b, epsilon);
+        }
+
+        public static bool IsLessThan(this double a, double b, double epsilon = Epsilon)
+        {
+            return !a.IsGreaterThanOrEqualTo(b, epsilon);
+        }
+
         public static bool IsGreaterThanOrEqualTo(this double a, double b, double epsilon = Epsilon)
         {
             return a > b || a.IsEqualTo(b, epsilon);
@@ -26,6 +37,11 @@ namespace Deyo.Core.Mathematics.Algebra
         public static bool IsLessThanOrEqualTo(this double a, double b, double epsilon = Epsilon)
         {
             return a < b || a.IsEqualTo(b, epsilon);
+        }
+
+        public static bool IsInteger(this double a, double epsilon = Epsilon)
+        {
+            return a.IsEqualTo(Math.Round(a), epsilon);
         }
 
         public static Point Plus(this Point first, Point second)
@@ -115,6 +131,37 @@ namespace Deyo.Core.Mathematics.Algebra
             var det = (m.M11 * m.M22) - (m.M12 * m.M21);
             var det1 = 1 / det;
             return new Matrix(m.M22 * det1, -m.M12 * det1, -m.M21 * det1, m.M11 * det1, ((m.M21 * m.OffsetY) - (m.OffsetX * m.M22)) * det1, ((m.OffsetX * m.M12) - (m.M11 * m.OffsetY)) * det1);
+        }
+
+        public static bool IsColinearWithOpositeDirection(this Vector3D a, Vector3D b, double epsilon = Epsilon)
+        {
+            if (a.IsColinear(b, epsilon))
+            {
+                double dotProduct = Vector3D.DotProduct(a, b);
+
+                return dotProduct.IsLessThanOrEqualTo(0, epsilon);
+            }
+
+            return false;
+        }
+
+        public static bool IsColinearWithSameDirection(this Vector3D a, Vector3D b, double epsilon = Epsilon)
+        {
+            if (a.IsColinear(b, epsilon))
+            {
+                double dotProduct = Vector3D.DotProduct(a, b);
+
+                return dotProduct.IsGreaterThanOrEqualTo(0, epsilon);
+            }
+
+            return false;
+        }
+
+        public static bool IsColinear(this Vector3D a, Vector3D b, double epsilon = Epsilon)
+        {
+            double crossProductLength = Vector3D.CrossProduct(a, b).LengthSquared;
+
+            return crossProductLength.IsZero(epsilon);
         }
 
         private static Matrix GetTransformationAt(this Matrix zeroCenteredTransform, double centerX, double centerY)
