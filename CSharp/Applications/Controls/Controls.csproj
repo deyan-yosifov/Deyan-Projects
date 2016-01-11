@@ -120,6 +120,7 @@
     <Compile Include="Controls3D\Shapes\ShapeFactory.cs" />
     <Compile Include="Controls3D\Shapes\Sphere.cs" />
     <Compile Include="Controls3D\Visuals\CubePointVisual.cs" />
+    <Compile Include="Controls3D\Visuals\MeshVisual.cs" />
     <Compile Include="Controls3D\Visuals\Overlays2D\IVisual2DOwner.cs" />
     <Compile Include="Controls3D\Visuals\IVisual3DOwner.cs" />
     <Compile Include="Controls3D\Visuals\LineVisual.cs" />

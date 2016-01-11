@@ -76,6 +76,7 @@
     <Compile Include="ViewModels\Commands\ParameterInputedEventArgs.cs" />
     <Compile Include="ViewModels\Commands\UndoableAction.cs" />
     <Compile Include="ViewModels\Commands\UndoRedoStack.cs" />
+    <Compile Include="ViewModels\SceneConstants.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
     <Compile Include="Views\SurfaceModelingView.xaml.cs">

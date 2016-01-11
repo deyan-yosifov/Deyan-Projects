@@ -134,6 +134,14 @@ namespace Deyo.Controls.Controls3D
             return lineVisual;
         }
 
+        public MeshVisual AddMeshVisual(Mesh mesh)
+        {
+            MeshVisual meshVisual = new MeshVisual(mesh);
+            this.Viewport.Children.Add(meshVisual.Visual);
+
+            return meshVisual;
+        }
+
         public VisualOwner AddShapeVisual(ShapeBase shape)
         {
             ModelVisual3D visual = new ModelVisual3D() { Content = shape.GeometryModel };

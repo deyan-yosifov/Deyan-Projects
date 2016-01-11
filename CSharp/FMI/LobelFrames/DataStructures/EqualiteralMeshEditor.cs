@@ -12,6 +12,8 @@ namespace LobelFrames.DataStructures
         private static readonly double Cos;
         private static readonly double Sin;
         private static readonly double Angle;
+        private static readonly Vector3D InitialX = new Vector3D(1, 0, 0);
+        private static readonly Vector3D InitialZ = new Vector3D(0, 0, -1);
         private readonly TriangularMesh mesh;
         private double sideSize;
 
@@ -31,9 +33,8 @@ namespace LobelFrames.DataStructures
             double height = rows * sideSize * EqualiteralMeshEditor.Sin;
 
             Vertex first, last;
-            this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), new Vector3D(1, 0, 0), columns, out first, out last);
-
-            // TODO: Add triangles.
+            this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), EqualiteralMeshEditor.InitialX, columns, out first, out last);
+            this.AddTrianglesToLobelMesh(first, last, rows);
         }
 
         public double SideSize
@@ -49,6 +50,30 @@ namespace LobelFrames.DataStructures
                     this.OnSizeChanging(value);
                     this.sideSize = value;
                 }
+            }
+        }
+
+        public IEnumerable<Triangle> Triangles
+        {
+            get
+            {
+                return this.Mesh.GetTriangles();
+            }
+        }
+
+        public IEnumerable<Edge> Edges
+        {
+            get
+            {
+                return this.Mesh.GetEdges();
+            }
+        }
+
+        public IEnumerable<Vertex> Vertices
+        {
+            get
+            {
+                return this.Mesh.GetVertices();
             }
         }
 
@@ -241,7 +266,7 @@ namespace LobelFrames.DataStructures
             {
                 case 0:
                     hasNoTriangles = true;
-                    normal = new Vector3D(0, 0, 1);
+                    normal = EqualiteralMeshEditor.InitialZ;
                     break;
                 case 1:
                     normal = normals.First();
