@@ -133,6 +133,16 @@ namespace Deyo.Core.Mathematics.Algebra
             return new Matrix(m.M22 * det1, -m.M12 * det1, -m.M21 * det1, m.M11 * det1, ((m.M21 * m.OffsetY) - (m.OffsetX * m.M22)) * det1, ((m.OffsetX * m.M12) - (m.M11 * m.OffsetY)) * det1);
         }
 
+        public static Vector3D ToVector(this Point3D point)
+        {
+            return new Vector3D(point.X, point.Y, point.Z);
+        }
+
+        public static Point3D ToPoint(this Vector3D vector)
+        {
+            return new Point3D(vector.X, vector.Y, vector.Z);
+        }
+
         public static bool IsColinearWithOpositeDirection(this Vector3D a, Vector3D b, double epsilon = Epsilon)
         {
             if (a.IsColinear(b, epsilon))
@@ -149,9 +159,7 @@ namespace Deyo.Core.Mathematics.Algebra
         {
             if (a.IsColinear(b, epsilon))
             {
-                double dotProduct = Vector3D.DotProduct(a, b);
-
-                return dotProduct.IsGreaterThanOrEqualTo(0, epsilon);
+                return a.IsSameSemiSpaceDirection(b, epsilon);
             }
 
             return false;
@@ -162,6 +170,13 @@ namespace Deyo.Core.Mathematics.Algebra
             double crossProductLength = Vector3D.CrossProduct(a, b).LengthSquared;
 
             return crossProductLength.IsZero(epsilon);
+        }
+
+        public static bool IsSameSemiSpaceDirection(this Vector3D a, Vector3D b, double epsilon = Epsilon)
+        {
+            double dotProduct = Vector3D.DotProduct(a, b);
+
+            return dotProduct.IsGreaterThanOrEqualTo(0, epsilon);
         }
 
         private static Matrix GetTransformationAt(this Matrix zeroCenteredTransform, double centerX, double centerY)

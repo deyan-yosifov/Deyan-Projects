@@ -54,6 +54,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataStructures\Edge.cs" />
+    <Compile Include="DataStructures\EqualiteralMeshEditor.cs" />
+    <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
     <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />

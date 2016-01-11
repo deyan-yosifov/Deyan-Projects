@@ -6,14 +6,14 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public class VertexConnectionInfo
     {
-        public VertexConnectionInfo(IEnumerable<Edge> connectingEdges, bool hasEdgesOnBothSides, Vector3D firstPlaneNormal)
+        public VertexConnectionInfo(Edge[] connectingEdges, bool hasEdgesOnBothSides, Vector3D firstPlaneNormal)
         {
             this.ConnectingEdges = connectingEdges;
             this.HasEdgesOnBothSides = hasEdgesOnBothSides;
             this.FirstPlaneNormal = firstPlaneNormal;
         }
 
-        public IEnumerable<Edge> ConnectingEdges { get; private set; }
+        public Edge[] ConnectingEdges { get; private set; }
         public bool HasEdgesOnBothSides { get; private set; }
         public Vector3D FirstPlaneNormal { get; private set; }
     }
