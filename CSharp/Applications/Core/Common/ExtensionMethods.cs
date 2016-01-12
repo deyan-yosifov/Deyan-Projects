@@ -42,5 +42,15 @@ namespace Deyo.Core.Common
 
             return element;
         }
+
+        public static bool IsEqualTo(this object a, object other)
+        {
+            if (a == null)
+            {
+                return other == null;
+            }
+
+            return a.Equals(other);
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace LobelFrames.DataStructures.Surfaces
             this.meshVisual.Mesh.Geometry = this.GenerateMeshGeometry();
 
             int lineIndex = 0;
-            foreach(Edge edge in this.ElementsProvider.Edges)
+            foreach (Edge edge in this.ElementsProvider.Edges)
             {
                 if (lineIndex == this.visibleSurfaceLines.Count)
                 {

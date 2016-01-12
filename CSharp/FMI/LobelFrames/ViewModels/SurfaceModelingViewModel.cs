@@ -4,6 +4,8 @@ using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.ViewModels.Commands;
 using System;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels
 {
@@ -25,6 +27,8 @@ namespace LobelFrames.ViewModels
             this.elementsPool = new SceneElementsPool(scene);
             this.commandDescriptors = new CommandDescriptors(this);
             this.inputManager.ParameterInputed += InputManager_ParameterInputed;
+
+            this.InitializeScene();
         }
 
         public SceneElementsPool ElementsPool
@@ -74,7 +78,7 @@ namespace LobelFrames.ViewModels
 
         public void AddLobelMesh()
         {
-            LobelSurface surface = new LobelSurface(this.ElementsPool, 10, 20, 2);
+            LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
             this.Context.Surfaces.Add(surface);
             this.Context.SelectedSurface = surface;
         }
@@ -82,6 +86,17 @@ namespace LobelFrames.ViewModels
         private void InputManager_ParameterInputed(object sender, ParameterInputedEventArgs e)
         {
             MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
+        }
+
+        private void InitializeScene()
+        {
+            byte directionIntensity = 250;
+            byte ambientIntensity = 125;
+            this.scene.Editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
+            this.scene.Editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
+            this.scene.Editor.Look(new Point3D(25, 25, 35), new Point3D());
+
+            this.scene.StartListeningToMouseEvents();
         }
     }
 }

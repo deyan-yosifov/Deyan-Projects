@@ -18,7 +18,7 @@ namespace Deyo.Core.Common
 
         public static void ThrowExceptionInNotEqual(object value, object expectedValue, string parameterName)
         {
-            if (value != expectedValue)
+            if (!value.IsEqualTo(expectedValue))
             {
                 throw new ArgumentOutOfRangeException(string.Format("{0} should not be equal to {1}!", parameterName, expectedValue));
             }

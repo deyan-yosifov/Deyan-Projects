@@ -142,5 +142,10 @@ namespace LobelFrames.DataStructures
             vertices.Add(sideB.End);
             vertices.Add(sideC.End);
         }
+
+        public override string ToString()
+        {
+            return string.Format("<{0}; {1}; {2}>", this.A, this.B, this.C);
+        }
     }
 }

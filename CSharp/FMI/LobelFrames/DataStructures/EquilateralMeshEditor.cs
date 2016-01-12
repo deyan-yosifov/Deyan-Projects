@@ -127,25 +127,29 @@ namespace LobelFrames.DataStructures
             bool isNextEdgeTriangle = isIncreasing;
             Vector3D columnWidth = this.SideSize * EquilateralMeshEditor.GetUnitDirectionVectorFromColinearEdges(firstEdges);
             Vertex previousNextVertex = this.CreateFirstNextVertex(firstEdges[0], rowHeight, columnWidth, isIncreasing);
-            Edge previousSideEdge = this.CreateEdge(firstEdges[0].GetFirstVertex(columnWidth), previousNextVertex, false);
+            Vertex previousFirstVertex = firstEdges[0].GetFirstVertex(columnWidth);
+            Edge previousSideEdge = this.CreateEdge(previousFirstVertex, previousNextVertex, false);
 
             int firstEdgeIndex = 0;
+            int nextEdgeIndex = 0;
 
             for (int i = 0; i < trianlgesCount; i++)
             {
                 if (isNextEdgeTriangle)
                 {
                     Vertex nextVertex = this.CreateVertex(previousNextVertex.Point + columnWidth);
-                    Edge sideEdge = this.CreateEdge(firstEdges[firstEdgeIndex].GetFirstVertex(columnWidth), nextVertex, false);
+                    Edge sideEdge = this.CreateEdge(previousFirstVertex, nextVertex, false);
                     Edge topEdge = this.CreateEdge(previousNextVertex, nextVertex, false);
                     this.CreateTriangle(topEdge, previousSideEdge, sideEdge, false);
+                    nextEdges[nextEdgeIndex++] = topEdge;
                     previousNextVertex = nextVertex;
                     previousSideEdge = sideEdge;
                 }
                 else
                 {
                     Edge bottomEdge = firstEdges[firstEdgeIndex];
-                    Edge sideEdge = this.CreateEdge(bottomEdge.GetLastVertex(columnWidth), previousNextVertex, false);
+                    previousFirstVertex = bottomEdge.GetLastVertex(columnWidth);
+                    Edge sideEdge = this.CreateEdge(previousFirstVertex, previousNextVertex, false);
                     this.CreateTriangle(bottomEdge, sideEdge, previousSideEdge, false);
                     previousSideEdge = sideEdge;
                     firstEdgeIndex++;

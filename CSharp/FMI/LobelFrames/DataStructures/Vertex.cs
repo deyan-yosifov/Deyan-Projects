@@ -11,5 +11,10 @@ namespace LobelFrames.DataStructures
         }
 
         public Point3D Point { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("<{0}; {1}; {2}>", this.Point.X, this.Point.Y, this.Point.Z);
+        }
     }
 }
