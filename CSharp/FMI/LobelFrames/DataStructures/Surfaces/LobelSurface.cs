@@ -1,18 +1,20 @@
-﻿using System;
+﻿using Deyo.Controls.Controls3D.Visuals;
+using System;
 
 namespace LobelFrames.DataStructures.Surfaces
 {
     public class LobelSurface : IteractiveSurface
     {
-        private readonly EqualiteralMeshEditor meshEditor;
+        private readonly EquilateralMeshEditor meshEditor;
 
-        public LobelSurface(int rows, int columns, double sideSize)
+        public LobelSurface(ISceneElementsManager sceneManager, int rows, int columns, double sideSize)
+            : base(sceneManager)
         {
-            this.meshEditor = new EqualiteralMeshEditor(rows, columns, sideSize);
-            // TODO: generate 3D UIElements
+            this.meshEditor = new EquilateralMeshEditor(rows, columns, sideSize);
+            base.Render();
         }
 
-        public EqualiteralMeshEditor MeshEditor
+        protected override IMeshElementsProvider ElementsProvider
         {
             get
             {

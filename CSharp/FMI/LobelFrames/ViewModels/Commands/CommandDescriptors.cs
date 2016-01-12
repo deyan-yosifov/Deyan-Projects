@@ -29,7 +29,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.MoveMesh, null, false);
             this.RegisterCommandDescriptor(CommandType.DeleteMesh, null, false);
 
-            this.RegisterCommandDescriptor(CommandType.AddLobelMesh, null);
+            this.RegisterCommandDescriptor(CommandType.AddLobelMesh, new DelegateCommand((p) => this.viewModel.AddLobelMesh()));
             this.RegisterCommandDescriptor(CommandType.CutMesh, null, false);
             this.RegisterCommandDescriptor(CommandType.FoldMesh, null, false);
             this.RegisterCommandDescriptor(CommandType.GlueMesh, null, false);

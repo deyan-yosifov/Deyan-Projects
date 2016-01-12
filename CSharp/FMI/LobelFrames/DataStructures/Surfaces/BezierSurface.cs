@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Deyo.Controls.Controls3D.Visuals;
+using System;
 
 namespace LobelFrames.DataStructures.Surfaces
 {
     public class BezierSurface : IteractiveSurface
     {
+        public BezierSurface(ISceneElementsManager sceneManager)
+            : base(sceneManager)
+        {
+        }
+
+        // TODO:
+        protected override IMeshElementsProvider ElementsProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

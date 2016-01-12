@@ -7,7 +7,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures
 {
-    public class EqualiteralMeshEditor
+    public class EquilateralMeshEditor : IMeshElementsProvider
     {
         private static readonly double Cos;
         private static readonly double Sin;
@@ -17,23 +17,23 @@ namespace LobelFrames.DataStructures
         private readonly TriangularMesh mesh;
         private double sideSize;
 
-        static EqualiteralMeshEditor()
+        static EquilateralMeshEditor()
         {
-            EqualiteralMeshEditor.Angle = Math.PI / 3;
-            EqualiteralMeshEditor.Sin = Math.Sin(EqualiteralMeshEditor.Angle);
-            EqualiteralMeshEditor.Cos = Math.Cos(EqualiteralMeshEditor.Angle);
+            EquilateralMeshEditor.Angle = Math.PI / 3;
+            EquilateralMeshEditor.Sin = Math.Sin(EquilateralMeshEditor.Angle);
+            EquilateralMeshEditor.Cos = Math.Cos(EquilateralMeshEditor.Angle);
         }
 
-        public EqualiteralMeshEditor(int rows, int columns, double sideSize)
+        public EquilateralMeshEditor(int rows, int columns, double sideSize)
         {
             this.sideSize = sideSize;
             this.mesh = new TriangularMesh();
 
             double width = columns * sideSize;
-            double height = rows * sideSize * EqualiteralMeshEditor.Sin;
+            double height = rows * sideSize * EquilateralMeshEditor.Sin;
 
             Vertex first, last;
-            this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), EqualiteralMeshEditor.InitialX, columns, out first, out last);
+            this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), EquilateralMeshEditor.InitialX, columns, out first, out last);
             this.AddTrianglesToLobelMesh(first, last, rows);
         }
 
@@ -109,7 +109,7 @@ namespace LobelFrames.DataStructures
         private void AddTrianglesToLobelMesh(Edge[] firstEdges, Vector3D yAxis, int numberOfRows)
         {
             yAxis.Normalize();
-            Vector3D rowHeight = yAxis * (this.SideSize * EqualiteralMeshEditor.Sin);
+            Vector3D rowHeight = yAxis * (this.SideSize * EquilateralMeshEditor.Sin);
             bool isIncreasing = false;
 
             for (int i = 0; i < numberOfRows; i++)
@@ -125,7 +125,7 @@ namespace LobelFrames.DataStructures
             Edge[] nextEdges = new Edge[firstEdges.Length + deltaEdges];
             int trianlgesCount = firstEdges.Length + nextEdges.Length;
             bool isNextEdgeTriangle = isIncreasing;
-            Vector3D columnWidth = this.SideSize * EqualiteralMeshEditor.GetUnitDirectionVectorFromColinearEdges(firstEdges);
+            Vector3D columnWidth = this.SideSize * EquilateralMeshEditor.GetUnitDirectionVectorFromColinearEdges(firstEdges);
             Vertex previousNextVertex = this.CreateFirstNextVertex(firstEdges[0], rowHeight, columnWidth, isIncreasing);
             Edge previousSideEdge = this.CreateEdge(firstEdges[0].GetFirstVertex(columnWidth), previousNextVertex, false);
 
@@ -266,7 +266,7 @@ namespace LobelFrames.DataStructures
             {
                 case 0:
                     hasNoTriangles = true;
-                    normal = EqualiteralMeshEditor.InitialZ;
+                    normal = EquilateralMeshEditor.InitialZ;
                     break;
                 case 1:
                     normal = normals.First();

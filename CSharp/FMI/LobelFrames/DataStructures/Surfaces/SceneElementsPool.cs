@@ -4,16 +4,12 @@ using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces
 {
-    public class SceneElementsPool
+    public class SceneElementsPool : ISceneElementsManager
     {
         private readonly Scene3D scene;
         private readonly Visual3DPool<PointVisual> controlPointsPool;

@@ -72,6 +72,13 @@ namespace LobelFrames.ViewModels
             return this.Context.Clone();
         }
 
+        public void AddLobelMesh()
+        {
+            LobelSurface surface = new LobelSurface(this.ElementsPool, 10, 20, 2);
+            this.Context.Surfaces.Add(surface);
+            this.Context.SelectedSurface = surface;
+        }
+
         private void InputManager_ParameterInputed(object sender, ParameterInputedEventArgs e)
         {
             MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
