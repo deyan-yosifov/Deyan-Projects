@@ -5,6 +5,7 @@ using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.ViewModels;
 using System;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces
@@ -34,6 +35,23 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
+        public LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint)
+        {
+            LineOverlay visual;
+            if (!lineOverlaysPool.TryPopElementFromPool(out visual))
+            {
+                using (this.SceneEditor.SaveGraphicProperties())
+                {
+                    this.SceneEditor.GraphicProperties.Graphics2D.Stroke = SceneConstants.LineOverlaysColor;
+                    this.SceneEditor.GraphicProperties.Graphics2D.StrokeThickness = SceneConstants.LineOverlaysThickness;
+
+                    this.SceneEditor.AddLineOverlay(fromPoint, toPoint);
+                }
+            }
+
+            return visual;
+        }
+
         public LineVisual CreateSurfaceLine(Point3D fromPoint, Point3D toPoint)
         {
             LineVisual visual;
@@ -60,9 +78,8 @@ namespace LobelFrames.DataStructures.Surfaces
                 using (this.SceneEditor.SaveGraphicProperties())
                 {
                     this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceGeometryColor);
-                    this.SceneEditor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(SceneConstants.SurfaceGeometryColor);
-                    Mesh mesh = this.SceneEditor.ShapeFactory.CreateMesh();
-                    visual = this.SceneEditor.AddMeshVisual(mesh);
+                    this.SceneEditor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(SceneConstants.SurfaceGeometryColor);                    
+                    visual = this.SceneEditor.AddMeshVisual();
                 }
             }
 
@@ -77,6 +94,11 @@ namespace LobelFrames.DataStructures.Surfaces
         public void DeleteMesh(MeshVisual visual)
         {
             this.meshPool.PushElementToPool(visual);
+        }
+
+        public void DeleteLine(LineOverlay visual)
+        {
+            this.lineOverlaysPool.PushElementToPool(visual);
         }
     }
 }

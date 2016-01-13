@@ -53,6 +53,8 @@ namespace LobelFrames.DataStructures.Surfaces
 
                 lineIndex++;
             }
+
+            this.SceneManager.CreateLineOverlay(new Point3D(), new Point3D());
         }
 
         private Geometry3D GenerateMeshGeometry()

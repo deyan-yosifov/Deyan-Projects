@@ -13,5 +13,8 @@ namespace Deyo.Controls.Controls3D
         public const string IsSmooth = "IsSmooth";
         public const string FrontMaterial = "FrontMaterial";
         public const string BackMaterial = "BackMaterial";
+        public const string Stroke2D = "Stroke2D";
+        public const string Fill2D = "Fill2D";
+        public const string StrokeThickness2D = "StrokeThickness2D";
     }
 }

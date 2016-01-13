@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Controls3D.Shapes;
+using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using Deyo.Core.Common;
 using System;
 using System.Collections.Generic;

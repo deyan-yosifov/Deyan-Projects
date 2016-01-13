@@ -8,29 +8,11 @@ using System.Windows.Media.Media3D;
 
 namespace Deyo.Controls.Controls3D.Shapes
 {
-    public class ShapeFactory
+    public class ShapeFactory : GraphicStateFactory
     {
-        private readonly GraphicState graphicState;
-
         internal ShapeFactory(GraphicState graphicState)
+            : base(graphicState)
         {
-            this.graphicState = graphicState;
-        }
-
-        internal GraphicState GraphicState
-        {
-            get
-            {
-                return this.graphicState;
-            }
-        }
-
-        private GraphicProperties GraphicProperties
-        {
-            get
-            {
-                return this.graphicState.Value;
-            }
         }
 
         public Cube CreateCube()

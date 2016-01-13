@@ -3,6 +3,7 @@ using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Cameras;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
+using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using Deyo.Core.Common;
 using System;
 using System.Windows;
@@ -21,6 +22,7 @@ namespace Deyo.Controls.Controls3D
         private readonly GraphicState graphicState;
         private readonly ShapeFactory shapeFactory;
         private readonly VisualsFactory visualsFactory;
+        private readonly Overlays2DFactory overlaysFactory;
 
         public SceneEditor(Scene3D scene)
         {
@@ -29,6 +31,7 @@ namespace Deyo.Controls.Controls3D
             this.positionState = new PreservableState<Position3D>();
             this.graphicState = new GraphicState();
             this.shapeFactory = new ShapeFactory(this.graphicState);
+            this.overlaysFactory = new Overlays2DFactory(this.graphicState);
             this.visualsFactory = new VisualsFactory(this.shapeFactory, this.positionState);
             this.cameraChangesUpdater = new BeginEndUpdateCounter(this.UpdateActionOnCameraChanged);
 
@@ -56,6 +59,14 @@ namespace Deyo.Controls.Controls3D
             get
             {
                 return this.shapeFactory;
+            }
+        }
+
+        public Overlays2DFactory OverlaysFactory
+        {
+            get
+            {
+                return this.overlaysFactory;
             }
         }
 
@@ -110,6 +121,19 @@ namespace Deyo.Controls.Controls3D
 
         public EventHandler CameraChanged;
 
+        public LineOverlay AddLineOverlay(Point3D fromPoint, Point3D toPoint)
+        {
+            LineOverlay line = this.OverlaysFactory.CreateLine();
+            // TODO: adjust line position.
+            line.Line.X1 = 50;
+            line.Line.Y1 = 50;
+            line.Line.X2 = 200;
+            line.Line.Y2 = 300;
+            this.Viewport2D.Children.Add(line.Line);
+
+            return line;
+        }
+
         public PointVisual AddPointVisual(Point3D position)
         {
             PointVisual pointVisual = this.VisualsFactory.CreatePointVisual(position);
@@ -134,8 +158,9 @@ namespace Deyo.Controls.Controls3D
             return lineVisual;
         }
 
-        public MeshVisual AddMeshVisual(Mesh mesh)
+        public MeshVisual AddMeshVisual()
         {
+            Mesh mesh = this.ShapeFactory.CreateMesh();
             MeshVisual meshVisual = new MeshVisual(mesh);
             this.Viewport.Children.Add(meshVisual.Visual);
 

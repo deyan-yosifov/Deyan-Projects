@@ -97,7 +97,9 @@
     <Compile Include="Controls3D\Cameras\OrbitPositionInfo.cs" />
     <Compile Include="Controls3D\GraphicProperties.cs" />
     <Compile Include="Controls3D\GraphicPropertyNames.cs" />
+    <Compile Include="Controls3D\GraphicsManager2D.cs" />
     <Compile Include="Controls3D\GraphicState.cs" />
+    <Compile Include="Controls3D\GraphicStateFactory.cs" />
     <Compile Include="Controls3D\Iteractions\AxisDirection.cs" />
     <Compile Include="Controls3D\Iteractions\IteractivePointsHandler.cs" />
     <Compile Include="Controls3D\Iteractions\PointIteractionPositionInfo.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Controls3D\Visuals\IVisual3DOwner.cs" />
     <Compile Include="Controls3D\Visuals\LineVisual.cs" />
     <Compile Include="Controls3D\Visuals\Overlays2D\LineOverlay.cs" />
+    <Compile Include="Controls3D\Visuals\Overlays2D\Overlays2DFactory.cs" />
     <Compile Include="Controls3D\Visuals\PointVisual.cs" />
     <Compile Include="Controls3D\Visuals\Overlays2D\Visual2DPool.cs" />
     <Compile Include="Controls3D\Visuals\Visual3DPool.cs" />

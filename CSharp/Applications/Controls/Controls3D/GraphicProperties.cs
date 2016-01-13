@@ -15,6 +15,7 @@ namespace Deyo.Controls.Controls3D
         private readonly MaterialGroup frontMaterials;
         private readonly MaterialGroup backMaterials;
         private readonly MaterialsManager materialsManager;
+        private readonly GraphicsManager2D graphicsManager2d;
         private int arcResolution;
         private double thickness;
         private bool isSmooth;
@@ -24,7 +25,9 @@ namespace Deyo.Controls.Controls3D
             this.frontMaterials = new MaterialGroup();
             this.backMaterials = new MaterialGroup();
             this.materialsManager = new MaterialsManager(this.frontMaterials, this.backMaterials);
+            this.graphicsManager2d = new GraphicsManager2D();
             this.materialsManager.PropertiesChanged += this.MaterialsManagerPropertiesChanged;
+            this.graphicsManager2d.PropertiesChanged += GraphicsManager2dPropertiesChanged;
             this.Thickness = 1;
             this.ArcResolution = 10;
             this.IsSmooth = true;
@@ -33,7 +36,10 @@ namespace Deyo.Controls.Controls3D
         private GraphicProperties(GraphicProperties other)
             : this()
         {
-            this.Thickness = other.Thickness;
+            this.thickness = other.Thickness;
+            this.isSmooth = other.IsSmooth;
+            this.arcResolution = other.ArcResolution;
+            this.graphicsManager2d = other.graphicsManager2d.Clone();
 
             foreach(Material material in other.frontMaterials.Children)
             {
@@ -43,6 +49,14 @@ namespace Deyo.Controls.Controls3D
             foreach (Material material in other.backMaterials.Children)
             {
                 this.backMaterials.Children.Add(material);
+            }
+        }
+
+        public GraphicsManager2D Graphics2D
+        {
+            get
+            {
+                return this.graphicsManager2d;
             }
         }
 
@@ -129,7 +143,12 @@ namespace Deyo.Controls.Controls3D
 
         private void MaterialsManagerPropertiesChanged(object sender, PropertiesChangedEventArgs e)
         {
-            this.OnPropertiesChanged(sender, e);
+            this.OnPropertiesChanged(this, e);
+        }
+
+        private void GraphicsManager2dPropertiesChanged(object sender, PropertiesChangedEventArgs e)
+        {
+            this.OnPropertiesChanged(this, e);
         }
     }
 }
