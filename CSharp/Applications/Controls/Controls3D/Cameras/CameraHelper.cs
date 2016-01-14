@@ -1,5 +1,6 @@
 ﻿using Deyo.Core.Mathematics;
 using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Deyo.Controls.Controls3D.Cameras
 {
     public class CameraHelper
     {
+        public static readonly Point InfinityPoint = new Point(double.PositiveInfinity, double.PositiveInfinity);
+        
         public static void GetCameraPropertiesOnLook(Point3D fromPoint, Point3D toPoint, double rollAngleInDegrees, out Point3D position, out Vector3D lookVector, out Vector3D upDirection)
         {
             position = fromPoint;
@@ -51,14 +54,30 @@ namespace Deyo.Controls.Controls3D.Cameras
             canvasY = Vector3D.CrossProduct(canvasZ, canvasX);
         }
 
-        public static Point GetPointFromPoint3D(Point3D point, Size viewportSize, PerspectiveCamera camera)
+        public static bool TryGetVisiblePointFromPoint3D(Point3D point3D, Size viewportSize, PerspectiveCamera camera, out Point point)
         {
-            Vector3D i, j, k;
-            GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
-            //camera.T
-            //Vector3D coordinates
+            point = CameraHelper.InfinityPoint;
+            Vector3D projectionPlaneNormal = camera.LookDirection;
+            projectionPlaneNormal.Normalize();
+            Point3D nearestPlanePoint = camera.Position + projectionPlaneNormal * camera.NearPlaneDistance;
+            bool isInVisibleSemiSpace = Vector3D.DotProduct(projectionPlaneNormal, point3D - nearestPlanePoint).IsGreaterThanOrEqualTo(0);
 
-            throw new NotImplementedException();
+            if (isInVisibleSemiSpace)
+            {
+                Vector3D i, j, k;
+                GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
+                Point3D unitDistantPlaneCenter = camera.Position + k;
+                Vector3D intersectionDirection = point3D - camera.Position;
+                // TODO: check if vector normal should be normalized!
+                Point3D intersection = IntersectionsHelper.IntersectLineAndPlane(camera.Position, intersectionDirection, unitDistantPlaneCenter, k);
+                Vector3D projectedVectorDirection = intersection - unitDistantPlaneCenter;
+
+                point = new Point(Vector3D.DotProduct(i, projectedVectorDirection), Vector3D.DotProduct(j, projectedVectorDirection));
+
+                return true;
+            }
+
+            return false;
         }
 
         public static Vector3D GetLookDirectionFromPoint(Point pointOnViewport, Size viewportSize, PerspectiveCamera camera)

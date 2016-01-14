@@ -223,12 +223,12 @@ namespace Deyo.Controls.Controls3D
 
         public Point GetPointFromPoint3D(Point3D position)
         {
-            Point point = new Point(double.PositiveInfinity, double.PositiveInfinity);
+            Point point = CameraHelper.InfinityPoint;
 
             this.DoActionOnCamera(
                    (perspectiveCamera) =>
                    {
-                       point = CameraHelper.GetPointFromPoint3D(position, this.ViewportSize, perspectiveCamera);
+                       CameraHelper.TryGetVisiblePointFromPoint3D(position, this.ViewportSize, perspectiveCamera, out point);
                    },
                    (orthographicCamera) =>
                    {
