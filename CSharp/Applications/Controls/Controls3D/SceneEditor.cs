@@ -103,6 +103,14 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
+        private Size ViewportSize
+        {
+            get
+            {
+                return new Size(this.viewport2D.ActualWidth, this.viewport2D.ActualHeight);
+            }
+        }
+
         private VisualsFactory VisualsFactory
         {
             get
@@ -121,14 +129,9 @@ namespace Deyo.Controls.Controls3D
 
         public EventHandler CameraChanged;
 
-        public LineOverlay AddLineOverlay(Point3D fromPoint, Point3D toPoint)
+        public LineOverlay AddLineOverlay()
         {
             LineOverlay line = this.OverlaysFactory.CreateLine();
-            // TODO: adjust line position.
-            line.Line.X1 = 50;
-            line.Line.Y1 = 50;
-            line.Line.X2 = 200;
-            line.Line.Y2 = 300;
             this.Viewport2D.Children.Add(line.Line);
 
             return line;
@@ -216,6 +219,23 @@ namespace Deyo.Controls.Controls3D
                     orthographicCamera.LookDirection = lookVector;
                     orthographicCamera.UpDirection = upDirection;
                 });
+        }
+
+        public Point GetPointFromPoint3D(Point3D position)
+        {
+            Point point = new Point(double.PositiveInfinity, double.PositiveInfinity);
+
+            this.DoActionOnCamera(
+                   (perspectiveCamera) =>
+                   {
+                       point = CameraHelper.GetPointFromPoint3D(position, this.ViewportSize, perspectiveCamera);
+                   },
+                   (orthographicCamera) =>
+                   {
+                       throw new NotImplementedException();
+                   });
+
+            return point;
         }
 
         public IDisposable SaveGraphicProperties()

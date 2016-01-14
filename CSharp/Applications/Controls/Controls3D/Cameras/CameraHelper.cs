@@ -51,6 +51,16 @@ namespace Deyo.Controls.Controls3D.Cameras
             canvasY = Vector3D.CrossProduct(canvasZ, canvasX);
         }
 
+        public static Point GetPointFromPoint3D(Point3D point, Size viewportSize, PerspectiveCamera camera)
+        {
+            Vector3D i, j, k;
+            GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
+            //camera.T
+            //Vector3D coordinates
+
+            throw new NotImplementedException();
+        }
+
         public static Vector3D GetLookDirectionFromPoint(Point pointOnViewport, Size viewportSize, PerspectiveCamera camera)
         {
             Point3D point = GetPoint3DOnUnityDistantPlane(pointOnViewport, viewportSize, camera);

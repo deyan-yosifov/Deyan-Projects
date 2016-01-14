@@ -51,10 +51,11 @@ namespace LobelFrames.DataStructures.Surfaces
                     this.visibleSurfaceLines[lineIndex].MoveTo(edge.Start.Point, edge.End.Point);
                 }
 
+                // TODO: Remove drawing overlays!
+                this.SceneManager.CreateLineOverlay(edge.Start.Point, edge.End.Point);
+
                 lineIndex++;
             }
-
-            this.SceneManager.CreateLineOverlay(new Point3D(), new Point3D());
         }
 
         private Geometry3D GenerateMeshGeometry()
