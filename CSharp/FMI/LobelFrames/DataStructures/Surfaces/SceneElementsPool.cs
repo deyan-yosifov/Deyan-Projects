@@ -5,6 +5,7 @@ using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -19,6 +20,7 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly Visual2DPool<LineOverlay> lineOverlaysPool;
         private readonly Visual3DPool<PointVisual> controlPointsPool;
         private readonly Dictionary<LineOverlay, Tuple<Point3D, Point3D>> lineOverlayToSegment3D;
+        private readonly HashSet<LineOverlay> visibleLineOverlays;
 
         public SceneElementsPool(Scene3D scene)
         {
@@ -28,6 +30,7 @@ namespace LobelFrames.DataStructures.Surfaces
             this.meshPool = new Visual3DPool<MeshVisual>(scene);
             this.lineOverlaysPool = new Visual2DPool<LineOverlay>();
             this.lineOverlayToSegment3D = new Dictionary<LineOverlay, Tuple<Point3D, Point3D>>();
+            this.visibleLineOverlays = new HashSet<LineOverlay>();
 
             this.SceneEditor.CameraChanged += this.CameraChangedHandler;
         }
@@ -123,8 +126,23 @@ namespace LobelFrames.DataStructures.Surfaces
 
         private void MoveLineOverlay(LineOverlay overlay, Point3D start, Point3D end)
         {
-            overlay.Start = this.SceneEditor.GetPointFromPoint3D(start);
-            overlay.End = this.SceneEditor.GetPointFromPoint3D(end);
+            Point startPoint, endPoint;
+            if (this.SceneEditor.TryGetPointFromPoint3D(start, out startPoint) && this.SceneEditor.TryGetPointFromPoint3D(end, out endPoint))
+            {
+                overlay.Start = startPoint;
+                overlay.End = endPoint;
+                if (this.visibleLineOverlays.Add(overlay))
+                {
+                    overlay.Visual.Visibility = Visibility.Visible;
+                }
+            }
+            else
+            {
+                if (this.visibleLineOverlays.Remove(overlay))
+                {
+                    overlay.Visual.Visibility = Visibility.Collapsed;
+                }
+            }            
         }
     }
 }

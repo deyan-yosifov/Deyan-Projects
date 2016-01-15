@@ -68,13 +68,20 @@ namespace Deyo.Controls.Controls3D.Cameras
                 GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
                 Point3D unitDistantPlaneCenter = camera.Position + k;
                 Vector3D intersectionDirection = point3D - camera.Position;
-                // TODO: check if vector normal should be normalized!
                 Point3D intersection = IntersectionsHelper.IntersectLineAndPlane(camera.Position, intersectionDirection, unitDistantPlaneCenter, k);
                 Vector3D projectedVectorDirection = intersection - unitDistantPlaneCenter;
+                double unityPlaneWidth = GetUnityDistantPlaneWidth(camera.FieldOfView);
+                double scale = viewportSize.Width / unityPlaneWidth;
 
-                point = new Point(Vector3D.DotProduct(i, projectedVectorDirection), Vector3D.DotProduct(j, projectedVectorDirection));
+                double x = Vector3D.DotProduct(i, projectedVectorDirection) * scale + viewportSize.Width / 2;
+                double y = Vector3D.DotProduct(j, projectedVectorDirection) * scale + viewportSize.Height / 2;
 
-                return true;
+                if (x.IsGreaterThanOrEqualTo(0) && x.IsLessThanOrEqualTo(viewportSize.Width) && y.IsGreaterThanOrEqualTo(0) && y.IsLessThanOrEqualTo(viewportSize.Height))
+                {
+                    point = new Point(x, y);
+
+                    return true;
+                }
             }
 
             return false;

@@ -221,21 +221,24 @@ namespace Deyo.Controls.Controls3D
                 });
         }
 
-        public Point GetPointFromPoint3D(Point3D position)
+        public bool TryGetPointFromPoint3D(Point3D position, out Point point)
         {
-            Point point = CameraHelper.InfinityPoint;
+            bool success = false;
+            Point canvasPoint = CameraHelper.InfinityPoint;
 
             this.DoActionOnCamera(
                    (perspectiveCamera) =>
-                   {
-                       CameraHelper.TryGetVisiblePointFromPoint3D(position, this.ViewportSize, perspectiveCamera, out point);
+                   {                       
+                       success = CameraHelper.TryGetVisiblePointFromPoint3D(position, this.ViewportSize, perspectiveCamera, out canvasPoint);
                    },
                    (orthographicCamera) =>
                    {
                        throw new NotImplementedException();
                    });
 
-            return point;
+            point = canvasPoint;
+
+            return success;
         }
 
         public IDisposable SaveGraphicProperties()
