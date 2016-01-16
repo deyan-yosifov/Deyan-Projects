@@ -221,7 +221,30 @@ namespace Deyo.Controls.Controls3D
                 });
         }
 
-        public bool TryGetPointFromPoint3D(Point3D position, out Point point)
+        public bool TryGetLineSegmentInVisibleSemiSpace(Point3D start3D, Point3D end3D, out Point start, out Point end)
+        {
+            bool success = false;
+            Point canvasStart = CameraHelper.InfinityPoint;
+            Point canvasEnd = CameraHelper.InfinityPoint;
+
+            this.DoActionOnCamera(
+                   (perspectiveCamera) =>
+                   {
+                       success = CameraHelper.TryGetLineSegmentInVisibleSemiPlane(start3D, end3D, this.ViewportSize, perspectiveCamera,
+                           out canvasStart, out canvasEnd);
+                   },
+                   (orthographicCamera) =>
+                   {
+                       throw new NotImplementedException();
+                   });
+
+            start = canvasStart;
+            end = canvasEnd;
+
+            return success;
+        }
+
+        public bool TryGetVisiblePointFromPoint3D(Point3D position, out Point point)
         {
             bool success = false;
             Point canvasPoint = CameraHelper.InfinityPoint;

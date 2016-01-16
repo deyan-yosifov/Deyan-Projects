@@ -54,34 +54,38 @@ namespace Deyo.Controls.Controls3D.Cameras
             canvasY = Vector3D.CrossProduct(canvasZ, canvasX);
         }
 
+        public static bool TryGetLineSegmentInVisibleSemiPlane(Point3D start3D, Point3D end3D, Size viewportSize, PerspectiveCamera camera,
+            out Point start, out Point end)
+        {
+            start = CameraHelper.InfinityPoint;
+            end = CameraHelper.InfinityPoint;
+            bool isStartVisible = CameraHelper.IsPointInVisibleSemiSpace(start3D, camera);
+            bool isEndVisible = CameraHelper.IsPointInVisibleSemiSpace(end3D, camera);
+            bool isLineSegmentInVisibleSemiSpace = isStartVisible || isEndVisible;
+
+            if (isLineSegmentInVisibleSemiSpace)
+            {
+                start = isStartVisible ?
+                    CameraHelper.GetPointFromPoint3DWhenInVisibleSemiSpace(start3D, viewportSize, camera) :
+                    CameraHelper.GetFirstPointFromVisibleSemiSpace(start3D, end3D - start3D, viewportSize, camera);
+                end = isEndVisible ?
+                    CameraHelper.GetPointFromPoint3DWhenInVisibleSemiSpace(end3D, viewportSize, camera) :
+                    CameraHelper.GetFirstPointFromVisibleSemiSpace(start3D, end3D - start3D, viewportSize, camera);
+            }
+
+            return isLineSegmentInVisibleSemiSpace;
+        }
+
         public static bool TryGetVisiblePointFromPoint3D(Point3D point3D, Size viewportSize, PerspectiveCamera camera, out Point point)
         {
             point = CameraHelper.InfinityPoint;
-            Vector3D projectionPlaneNormal = camera.LookDirection;
-            projectionPlaneNormal.Normalize();
-            Point3D nearestPlanePoint = camera.Position + projectionPlaneNormal * camera.NearPlaneDistance;
-            bool isInVisibleSemiSpace = Vector3D.DotProduct(projectionPlaneNormal, point3D - nearestPlanePoint).IsGreaterThanOrEqualTo(0);
 
-            if (isInVisibleSemiSpace)
+            if (CameraHelper.IsPointInVisibleSemiSpace(point3D, camera))
             {
-                Vector3D i, j, k;
-                GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
-                Point3D unitDistantPlaneCenter = camera.Position + k;
-                Vector3D intersectionDirection = point3D - camera.Position;
-                Point3D intersection = IntersectionsHelper.IntersectLineAndPlane(camera.Position, intersectionDirection, unitDistantPlaneCenter, k);
-                Vector3D projectedVectorDirection = intersection - unitDistantPlaneCenter;
-                double unityPlaneWidth = GetUnityDistantPlaneWidth(camera.FieldOfView);
-                double scale = viewportSize.Width / unityPlaneWidth;
+                point = CameraHelper.GetPointFromPoint3DWhenInVisibleSemiSpace(point3D, viewportSize, camera);
 
-                double x = Vector3D.DotProduct(i, projectedVectorDirection) * scale + viewportSize.Width / 2;
-                double y = Vector3D.DotProduct(j, projectedVectorDirection) * scale + viewportSize.Height / 2;
-
-                if (x.IsGreaterThanOrEqualTo(0) && x.IsLessThanOrEqualTo(viewportSize.Width) && y.IsGreaterThanOrEqualTo(0) && y.IsLessThanOrEqualTo(viewportSize.Height))
-                {
-                    point = new Point(x, y);
-
-                    return true;
-                }
+                return point.X.IsGreaterThanOrEqualTo(0) && point.X.IsLessThanOrEqualTo(viewportSize.Width) &&
+                    point.Y.IsGreaterThanOrEqualTo(0) && point.Y.IsLessThanOrEqualTo(viewportSize.Height);
             }
 
             return false;
@@ -130,6 +134,43 @@ namespace Deyo.Controls.Controls3D.Cameras
             double unityPlaneWidth = 2 * Math.Tan(radians / 2);
 
             return unityPlaneWidth;
+        }
+
+        private static Point GetFirstPointFromVisibleSemiSpace(Point3D linePoint, Vector3D lineVector, Size viewportSize, PerspectiveCamera camera)
+        {
+            Vector3D nearestPlaneNormal = camera.LookDirection;
+            nearestPlaneNormal.Normalize();
+            Point3D nearestPlanePoint = camera.Position + nearestPlaneNormal;
+            Point3D intersection = IntersectionsHelper.IntersectLineAndPlane(linePoint, lineVector, nearestPlanePoint, nearestPlaneNormal);
+            Point projectedPoint = CameraHelper.GetPointFromPoint3DWhenInVisibleSemiSpace(intersection, viewportSize, camera);
+
+            return projectedPoint;
+        }
+
+        private static bool IsPointInVisibleSemiSpace(Point3D point, PerspectiveCamera camera)
+        {
+            Vector3D projectionPlaneNormal = camera.LookDirection;
+            projectionPlaneNormal.Normalize();
+            Point3D nearestPlanePoint = camera.Position + projectionPlaneNormal * camera.NearPlaneDistance;
+            bool isInVisibleSemiSpace = Vector3D.DotProduct(projectionPlaneNormal, point - nearestPlanePoint).IsGreaterThanOrEqualTo(0);
+
+            return isInVisibleSemiSpace;
+        }
+
+        private static Point GetPointFromPoint3DWhenInVisibleSemiSpace(Point3D point3D, Size viewportSize, PerspectiveCamera camera)
+        {
+            Vector3D i, j, k;
+            GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
+            double unityPlaneWidth = GetUnityDistantPlaneWidth(camera.FieldOfView);
+            double scale = viewportSize.Width / unityPlaneWidth;
+            Point3D actualProjectionPlaneTopLeftCenter = camera.Position + k * scale + i * (-viewportSize.Width / 2) + j * (-viewportSize.Height / 2);
+            Vector3D intersectionDirection = point3D - camera.Position;
+            Point3D intersection = IntersectionsHelper.IntersectLineAndPlane(camera.Position, intersectionDirection, actualProjectionPlaneTopLeftCenter, k);
+            Vector3D projectedVectorDirection = intersection - actualProjectionPlaneTopLeftCenter;
+            double x = Vector3D.DotProduct(i, projectedVectorDirection);
+            double y = Vector3D.DotProduct(j, projectedVectorDirection);
+
+            return new Point(x, y);
         }
     }
 }

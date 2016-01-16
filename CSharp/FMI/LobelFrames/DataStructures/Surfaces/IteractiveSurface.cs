@@ -19,7 +19,12 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             Guard.ThrowExceptionIfNull(sceneManager, "sceneManager");
             this.sceneManager = sceneManager;
-            this.meshVisual = this.SceneManager.CreateMesh();
+
+            using (this.SceneManager.BeginMeshesCreation())
+            {
+                this.meshVisual = this.SceneManager.CreateMesh();
+            }
+
             this.visiblePoints = new List<PointVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
             this.visibleLineOverlays = new List<LineOverlay>();
@@ -39,22 +44,27 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             this.meshVisual.Mesh.Geometry = this.GenerateMeshGeometry();
 
-            int lineIndex = 0;
-            foreach (Edge edge in this.ElementsProvider.Edges)
+            using (this.SceneManager.BeginSurfaceLinesCreation())
             {
-                if (lineIndex == this.visibleSurfaceLines.Count)
+                using (this.SceneManager.BeginLineOverlaysCreation())
                 {
-                    this.visibleSurfaceLines.Add(this.SceneManager.CreateSurfaceLine(edge.Start.Point, edge.End.Point));
-                }
-                else
-                {
-                    this.visibleSurfaceLines[lineIndex].MoveTo(edge.Start.Point, edge.End.Point);
-                }
+                    int lineIndex = 0;
+                    foreach (Edge edge in this.ElementsProvider.Edges)
+                    {
+                        if (lineIndex == this.visibleSurfaceLines.Count)
+                        {
+                            this.visibleSurfaceLines.Add(this.SceneManager.CreateSurfaceLine(edge.Start.Point, edge.End.Point));
+                        }
+                        else
+                        {
+                            this.visibleSurfaceLines[lineIndex].MoveTo(edge.Start.Point, edge.End.Point);
+                        }
 
-                // TODO: Remove drawing overlays!
-                this.SceneManager.CreateLineOverlay(edge.Start.Point, edge.End.Point);
+                        this.SceneManager.CreateLineOverlay(edge.Start.Point, edge.End.Point);
 
-                lineIndex++;
+                        lineIndex++;
+                    }
+                }
             }
         }
 

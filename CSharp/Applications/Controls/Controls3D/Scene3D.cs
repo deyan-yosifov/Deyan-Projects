@@ -24,7 +24,7 @@ namespace Deyo.Controls.Controls3D
 
         public Scene3D()
         {
-            this.viewport2D = new Canvas() { IsHitTestVisible = true, Background = new SolidColorBrush(Colors.Transparent) };
+            this.viewport2D = new Canvas() { IsHitTestVisible = true, Background = new SolidColorBrush(Colors.Transparent), ClipToBounds = true };
             this.viewport3D = new Viewport3D() { IsHitTestVisible = false };
             this.editor = new SceneEditor(this);
             this.pointerHandlersControler = new PointerHandlersController();

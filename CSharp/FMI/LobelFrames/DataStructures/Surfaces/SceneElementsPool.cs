@@ -32,7 +32,7 @@ namespace LobelFrames.DataStructures.Surfaces
             this.lineOverlayToSegment3D = new Dictionary<LineOverlay, Tuple<Point3D, Point3D>>();
             this.visibleLineOverlays = new HashSet<LineOverlay>();
 
-            this.SceneEditor.CameraChanged += this.CameraChangedHandler;
+            this.SceneEditor.CameraChanged += this.CameraChangedHandler;            
         }
 
         private SceneEditor SceneEditor
@@ -48,17 +48,11 @@ namespace LobelFrames.DataStructures.Surfaces
             LineOverlay visual;
             if (!lineOverlaysPool.TryPopElementFromPool(out visual))
             {
-                using (this.SceneEditor.SaveGraphicProperties())
-                {
-                    this.SceneEditor.GraphicProperties.Graphics2D.StrokeThickness = SceneConstants.LineOverlaysThickness;
-                    this.SceneEditor.GraphicProperties.Graphics2D.Stroke = SceneConstants.LineOverlaysColor;
-
-                    visual = this.SceneEditor.AddLineOverlay();
-                }
+                visual = this.SceneEditor.AddLineOverlay();
             }
 
             lineOverlayToSegment3D.Add(visual, new Tuple<Point3D, Point3D>(fromPoint, toPoint));
-            this.MoveLineOverlay(visual, fromPoint, toPoint);
+            this.UpdateLineOverlayPosition(visual, fromPoint, toPoint);
 
             return visual;
         }
@@ -68,14 +62,7 @@ namespace LobelFrames.DataStructures.Surfaces
             LineVisual visual;
             if (!this.surfaceLinesPool.TryPopElementFromPool(out visual))
             {
-                using (this.SceneEditor.SaveGraphicProperties())
-                {
-                    this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceLinesColor);
-                    this.SceneEditor.GraphicProperties.ArcResolution = SceneConstants.SurfaceLinesArcResolution;
-                    this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
-
-                    this.SceneEditor.AddLineVisual(fromPoint, toPoint);
-                }
+                visual = this.SceneEditor.AddLineVisual(fromPoint, toPoint);
             }
 
             return visual;
@@ -85,14 +72,8 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             MeshVisual visual;
             if (!this.meshPool.TryPopElementFromPool(out visual))
-            {
-                using (this.SceneEditor.SaveGraphicProperties())
-                {
-                    this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceGeometryColor);
-                    this.SceneEditor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(SceneConstants.SurfaceGeometryColor);  
-                  
-                    visual = this.SceneEditor.AddMeshVisual();
-                }
+            {                  
+                visual = this.SceneEditor.AddMeshVisual();
             }
 
             return visual;
@@ -112,6 +93,7 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             this.lineOverlayToSegment3D.Remove(visual);
             this.lineOverlaysPool.PushElementToPool(visual);
+            this.visibleLineOverlays.Remove(visual);
         }
 
         private void CameraChangedHandler(object sender, EventArgs e)
@@ -120,14 +102,14 @@ namespace LobelFrames.DataStructures.Surfaces
             {
                 LineOverlay line = lineToPoints.Key;
                 Tuple<Point3D, Point3D> points = lineToPoints.Value;
-                this.MoveLineOverlay(line, points.Item1, points.Item2);
+                this.UpdateLineOverlayPosition(line, points.Item1, points.Item2);
             }
         }
 
-        private void MoveLineOverlay(LineOverlay overlay, Point3D start, Point3D end)
+        private void UpdateLineOverlayPosition(LineOverlay overlay, Point3D start, Point3D end)
         {
-            Point startPoint, endPoint;
-            if (this.SceneEditor.TryGetPointFromPoint3D(start, out startPoint) && this.SceneEditor.TryGetPointFromPoint3D(end, out endPoint))
+            Point startPoint, endPoint;            
+            if (this.SceneEditor.TryGetLineSegmentInVisibleSemiSpace(start, end, out startPoint, out endPoint))
             {
                 overlay.Start = startPoint;
                 overlay.End = endPoint;
@@ -143,6 +125,50 @@ namespace LobelFrames.DataStructures.Surfaces
                     overlay.Visual.Visibility = Visibility.Collapsed;
                 }
             }            
+        }
+
+        public IDisposable BeginSurfaceLinesCreation()
+        {
+            return this.BeginGraphicPropertiesChanges(() =>
+            {
+                this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceLinesColor);
+                this.SceneEditor.GraphicProperties.ArcResolution = SceneConstants.SurfaceLinesArcResolution;
+                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
+            });
+        }
+
+        public IDisposable BeginLineOverlaysCreation()
+        {
+            return this.BeginGraphicPropertiesChanges(() =>
+            {
+                this.SceneEditor.GraphicProperties.Graphics2D.StrokeThickness = SceneConstants.LineOverlaysThickness;
+                this.SceneEditor.GraphicProperties.Graphics2D.Stroke = SceneConstants.LineOverlaysColor;
+            });
+        }
+
+        public IDisposable BeginMeshesCreation()
+        {
+            return this.BeginGraphicPropertiesChanges(() =>
+                {
+                    this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.SurfaceGeometryColor);
+                    this.SceneEditor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(SceneConstants.SurfaceGeometryColor); 
+                });
+        }
+
+        public IDisposable BeginPointsCreation()
+        {
+            return this.BeginGraphicPropertiesChanges(() =>
+            {
+                throw new NotImplementedException();
+            });
+        }
+
+        private IDisposable BeginGraphicPropertiesChanges(Action changeGraphicProperties)
+        {
+            IDisposable restoreState = this.SceneEditor.SaveGraphicProperties();
+            changeGraphicProperties();
+
+            return restoreState;
         }
     }
 }

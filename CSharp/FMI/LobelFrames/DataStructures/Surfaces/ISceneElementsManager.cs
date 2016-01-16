@@ -7,6 +7,14 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public interface ISceneElementsManager
     {
+        IDisposable BeginSurfaceLinesCreation();
+
+        IDisposable BeginLineOverlaysCreation();
+
+        IDisposable BeginMeshesCreation();
+
+        IDisposable BeginPointsCreation();
+
         LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint);
 
         LineVisual CreateSurfaceLine(Point3D fromPoint, Point3D toPoint);
