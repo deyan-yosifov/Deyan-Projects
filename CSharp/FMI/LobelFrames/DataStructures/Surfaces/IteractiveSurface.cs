@@ -19,12 +19,7 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             Guard.ThrowExceptionIfNull(sceneManager, "sceneManager");
             this.sceneManager = sceneManager;
-
-            using (this.SceneManager.BeginMeshesCreation())
-            {
-                this.meshVisual = this.SceneManager.CreateMesh();
-            }
-
+            this.meshVisual = this.SceneManager.CreateMesh();
             this.visiblePoints = new List<PointVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
             this.visibleLineOverlays = new List<LineOverlay>();
@@ -42,33 +37,48 @@ namespace LobelFrames.DataStructures.Surfaces
 
         protected void Render()
         {
-            this.meshVisual.Mesh.Geometry = this.GenerateMeshGeometry();
+            this.RenderMesh();
+            this.RenderSurfaceLines();
+            this.RenderSurfacePoints();
+        }
 
-            using (this.SceneManager.BeginSurfaceLinesCreation())
+        private void RenderSurfacePoints()
+        {
+            int pointIndex = 0;
+            foreach (Vertex vertex in this.ElementsProvider.Vertices)
             {
-                using (this.SceneManager.BeginLineOverlaysCreation())
+                if (pointIndex == this.visiblePoints.Count)
                 {
-                    int lineIndex = 0;
-                    foreach (Edge edge in this.ElementsProvider.Edges)
-                    {
-                        if (lineIndex == this.visibleSurfaceLines.Count)
-                        {
-                            this.visibleSurfaceLines.Add(this.SceneManager.CreateSurfaceLine(edge.Start.Point, edge.End.Point));
-                        }
-                        else
-                        {
-                            this.visibleSurfaceLines[lineIndex].MoveTo(edge.Start.Point, edge.End.Point);
-                        }
-
-                        this.SceneManager.CreateLineOverlay(edge.Start.Point, edge.End.Point);
-
-                        lineIndex++;
-                    }
+                    this.visiblePoints.Add(this.SceneManager.CreatePoint(vertex.Point));
                 }
+                else
+                {
+                    this.visiblePoints[pointIndex].Position = vertex.Point;
+                }
+
+                pointIndex++;
             }
         }
 
-        private Geometry3D GenerateMeshGeometry()
+        private void RenderSurfaceLines()
+        {
+            int lineIndex = 0;
+            foreach (Edge edge in this.ElementsProvider.Edges)
+            {
+                if (lineIndex == this.visibleSurfaceLines.Count)
+                {
+                    this.visibleSurfaceLines.Add(this.SceneManager.CreateSurfaceLine(edge.Start.Point, edge.End.Point));
+                }
+                else
+                {
+                    this.visibleSurfaceLines[lineIndex].MoveTo(edge.Start.Point, edge.End.Point);
+                }
+
+                lineIndex++;
+            }
+        }
+
+        private void RenderMesh()
         {
             MeshGeometry3D meshGeometry = new MeshGeometry3D();
 
@@ -88,7 +98,7 @@ namespace LobelFrames.DataStructures.Surfaces
                 meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.C]);
             }
 
-            return meshGeometry;
+            this.meshVisual.Mesh.Geometry = meshGeometry;
         }
     }
 }

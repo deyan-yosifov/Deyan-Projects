@@ -145,6 +145,14 @@ namespace Deyo.Controls.Controls3D
             return pointVisual;
         }
 
+        public PointVisual AddPointVisual(Point3D position, ShapeBase unitPointShape)
+        {
+            PointVisual pointVisual = this.VisualsFactory.CreatePointVisual(position, unitPointShape);
+            this.Viewport.Children.Add(pointVisual.Visual);
+
+            return pointVisual;
+        }
+
         public CubePointVisual AddCubePointVisual(Point3D position)
         {
             CubePointVisual cubePointVisual = this.VisualsFactory.CreateCubePointVisual(position);
@@ -156,6 +164,14 @@ namespace Deyo.Controls.Controls3D
         public LineVisual AddLineVisual(Point3D fromPoint, Point3D toPoint)
         {
             LineVisual lineVisual = this.VisualsFactory.CreateLineVisual(fromPoint, toPoint);
+            this.Viewport.Children.Add(lineVisual.Visual);
+
+            return lineVisual;
+        }
+
+        public LineVisual AddLineVisual(Point3D fromPoint, Point3D toPoint, Line shape)
+        {
+            LineVisual lineVisual = this.VisualsFactory.CreateLineVisual(fromPoint, toPoint, shape);
             this.Viewport.Children.Add(lineVisual.Visual);
 
             return lineVisual;

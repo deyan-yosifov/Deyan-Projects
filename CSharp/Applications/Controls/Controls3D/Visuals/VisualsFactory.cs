@@ -102,7 +102,12 @@ namespace Deyo.Controls.Controls3D.Visuals
 
         public LineVisual CreateLineVisual(Point3D fromPoint, Point3D toPoint)
         {
-            LineVisual lineVisual = new LineVisual(this.LineGeometry, this.GraphicProperties.Thickness);
+            return this.CreateLineVisual(fromPoint, toPoint, this.LineGeometry);
+        }
+
+        public LineVisual CreateLineVisual(Point3D fromPoint, Point3D toPoint, Line shape)
+        {
+            LineVisual lineVisual = new LineVisual(shape, this.GraphicProperties.Thickness);
             Point3D startPoint = this.TransformPointToCurrentPosition(fromPoint);
             Point3D endPoint = this.TransformPointToCurrentPosition(toPoint);
             lineVisual.MoveTo(startPoint, endPoint);
@@ -120,7 +125,12 @@ namespace Deyo.Controls.Controls3D.Visuals
 
         public PointVisual CreatePointVisual(Point3D position)
         {
-            PointVisual pointVisual = new PointVisual(this.SphereGeometry, this.GraphicProperties.Thickness);
+            return this.CreatePointVisual(position, this.SphereGeometry);
+        }
+
+        public PointVisual CreatePointVisual(Point3D position, ShapeBase unitPointShape)
+        {
+            PointVisual pointVisual = new PointVisual(unitPointShape, this.GraphicProperties.Thickness);
             pointVisual.Position = this.TransformPointToCurrentPosition(position);
 
             return pointVisual;

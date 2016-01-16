@@ -7,23 +7,19 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public interface ISceneElementsManager
     {
-        IDisposable BeginSurfaceLinesCreation();
-
-        IDisposable BeginLineOverlaysCreation();
-
-        IDisposable BeginMeshesCreation();
-
-        IDisposable BeginPointsCreation();
-
         LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint);
+
+        PointVisual CreatePoint(Point3D point);
 
         LineVisual CreateSurfaceLine(Point3D fromPoint, Point3D toPoint);
 
         MeshVisual CreateMesh();
 
-        void DeleteLine(LineOverlay visual);
+        void DeleteLineOverlay(LineOverlay visual);
 
-        void DeleteLine(LineVisual visual);
+        void DeletePoint(PointVisual visual);
+
+        void DeleteSurfaceLine(LineVisual visual);
 
         void DeleteMesh(MeshVisual visual);
     }
