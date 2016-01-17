@@ -73,9 +73,12 @@ namespace LobelFrames.ViewModels
 
         public void AddLobelMesh()
         {
-            LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
-            this.Context.Surfaces.Add(surface);
-            this.Context.SelectedSurface = surface;
+            using (this.Context.HistoryManager.BeginUndoGroup())
+            {
+                LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
+                this.Context.AddSurface(surface);
+                this.Context.SelectedSurface = surface;
+            }
         }
 
         private void InitializeScene()

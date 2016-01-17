@@ -38,25 +38,41 @@ namespace LobelFrames.ViewModels
                 {
                     if (this.selectedSurface != null)
                     {
-                        this.selectedSurface.Deselect();
+                        this.OnSurfaceDeselected(this.selectedSurface);
                     }
 
                     this.selectedSurface = value;
 
                     if (this.selectedSurface != null)
                     {
-                        this.selectedSurface.Select();
+                        this.OnSufaceSelected(this.selectedSurface);
                     }
                 }
             }
         }
 
-        public List<IteractiveSurface> Surfaces
+        public void AddSurface(IteractiveSurface surface)
         {
-            get
-            {
-                return this.surfaces;
-            }
+            this.surfaces.Add(surface);
+            this.OnSurfaceAdded(surface);
+        }
+
+        private void OnSufaceSelected(IteractiveSurface surface)
+        {
+            // Select surface history action
+            this.selectedSurface.Select();
+        }
+
+        private void OnSurfaceDeselected(IteractiveSurface surface)
+        {
+            // Select surface history action
+            this.selectedSurface.Deselect();
+
+        }
+
+        private void OnSurfaceAdded(IteractiveSurface surface)
+        {
+            // Add surface history action
         }
     }
 }

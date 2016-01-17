@@ -65,7 +65,10 @@ namespace Deyo.Core.Common.History
                 this.OnHistoryChanged();
             }
 
-            return this.undoGroupCounter.BeginUpdateGroup();
+            IDisposable endGroupAction = this.undoGroupCounter.BeginUpdateGroup();
+            this.undoGroupCounter.Update();
+
+            return endGroupAction;
         }
 
         public void PushUndoableAction(IUndoRedoAction action)
@@ -124,12 +127,17 @@ namespace Deyo.Core.Common.History
 
         private void EndUndoGroup()
         {
-            if (this.undoGroup != null && !this.undoGroup.IsEmpty)
-            {
-                this.PushUndoableAction(this.undoGroup);
-            }
-
+            UndoRedoGroup group = this.undoGroup;
             this.undoGroup = null;
+
+            if (group.IsEmpty)
+            {
+                this.OnHistoryChanged();
+            }
+            else
+            {
+                this.PushUndoableAction(group);
+            }
         }
 
         private void EnsureNoUndoRedoWhileInUndoGroup()
