@@ -26,8 +26,8 @@ namespace LobelFrames.ViewModels
             this.context = new SurfaceModelingContext();
             this.elementsPool = new SceneElementsPool(scene);
             this.commandDescriptors = new CommandDescriptors(this);
-            this.inputManager.ParameterInputed += InputManager_ParameterInputed;
 
+            this.AttachToEvents();
             this.InitializeScene();
         }
 
@@ -71,21 +71,11 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public SurfaceModelingContext GetContext()
-        {
-            return this.Context.Clone();
-        }
-
         public void AddLobelMesh()
         {
             LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
             this.Context.Surfaces.Add(surface);
             this.Context.SelectedSurface = surface;
-        }
-
-        private void InputManager_ParameterInputed(object sender, ParameterInputedEventArgs e)
-        {
-            MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
         }
 
         private void InitializeScene()
@@ -97,6 +87,25 @@ namespace LobelFrames.ViewModels
             this.scene.Editor.Look(new Point3D(25, 25, 35), new Point3D());
 
             this.scene.StartListeningToMouseEvents();
+        }
+
+        private void AttachToEvents()
+        {
+            this.InputManager.ParameterInputed += this.HandleInputManagerParameterInputed;
+            this.Context.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
+        }
+
+        private void HandleHistoryChanges(object sender, EventArgs e)
+        {
+            this.CommandDescriptors[CommandType.Undo].IsEnabled = this.Context.HistoryManager.CanUndo;
+            this.CommandDescriptors[CommandType.Undo].IsVisible = this.Context.HistoryManager.CanUndo;
+            this.CommandDescriptors[CommandType.Redo].IsEnabled = this.Context.HistoryManager.CanRedo;
+            this.CommandDescriptors[CommandType.Redo].IsVisible = this.Context.HistoryManager.CanRedo;
+        }
+
+        private void HandleInputManagerParameterInputed(object sender, ParameterInputedEventArgs e)
+        {
+            MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
         }
     }
 }

@@ -15,5 +15,15 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             get { throw new NotImplementedException(); }
         }
+
+        public override void Select()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Deselect()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

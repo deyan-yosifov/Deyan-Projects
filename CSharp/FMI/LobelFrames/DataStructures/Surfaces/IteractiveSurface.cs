@@ -35,14 +35,17 @@ namespace LobelFrames.DataStructures.Surfaces
 
         protected abstract IMeshElementsProvider ElementsProvider { get; }
 
-        protected void Render()
+        public abstract void Select();
+        public abstract void Deselect();
+
+        protected virtual void Render()
         {
-            this.RenderMesh();
+            this.RenderSurfaceMesh();
             this.RenderSurfaceLines();
             this.RenderSurfacePoints();
         }
 
-        private void RenderSurfacePoints()
+        protected void RenderSurfacePoints()
         {
             int pointIndex = 0;
             foreach (Vertex vertex in this.ElementsProvider.Vertices)
@@ -60,7 +63,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        private void RenderSurfaceLines()
+        protected void RenderSurfaceLines()
         {
             int lineIndex = 0;
             foreach (Edge edge in this.ElementsProvider.Edges)
@@ -78,7 +81,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        private void RenderMesh()
+        protected void RenderSurfaceMesh()
         {
             MeshGeometry3D meshGeometry = new MeshGeometry3D();
 
@@ -99,6 +102,16 @@ namespace LobelFrames.DataStructures.Surfaces
             }
 
             this.meshVisual.Mesh.Geometry = meshGeometry;
+        }
+
+        protected void HideSurfacePoints()
+        {
+            foreach (PointVisual point in this.visiblePoints)
+            {
+                this.SceneManager.DeletePoint(point);
+            }
+
+            this.visiblePoints.Clear();
         }
     }
 }

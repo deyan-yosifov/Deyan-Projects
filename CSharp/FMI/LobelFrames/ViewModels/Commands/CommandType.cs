@@ -28,6 +28,9 @@ namespace LobelFrames.ViewModels.Commands
         ApproximateWithLobelMesh,
         BezierSettings,
         
+        // General settings command
+        Settings,
+        
         // Test command.
         Test,
 

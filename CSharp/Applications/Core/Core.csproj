@@ -52,6 +52,10 @@
     <Compile Include="Common\DisposableAction.cs" />
     <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\Guard.cs" />
+    <Compile Include="Common\History\HistoryManager.cs" />
+    <Compile Include="Common\History\IUndoRedoAction.cs" />
+    <Compile Include="Common\History\UndoRedoActionBase.cs" />
+    <Compile Include="Common\History\UndoRedoGroup.cs" />
     <Compile Include="Common\ICloneable.cs" />
     <Compile Include="Common\INotifyPropertiesChanged.cs" />
     <Compile Include="Common\PreservableState.cs" />

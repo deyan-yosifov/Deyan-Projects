@@ -76,8 +76,6 @@
     <Compile Include="ViewModels\Commands\IsEnabledToColorConverter.cs" />
     <Compile Include="ViewModels\Commands\Labels.cs" />
     <Compile Include="ViewModels\Commands\ParameterInputedEventArgs.cs" />
-    <Compile Include="ViewModels\Commands\UndoableAction.cs" />
-    <Compile Include="ViewModels\Commands\UndoRedoStack.cs" />
     <Compile Include="ViewModels\SceneConstants.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
@@ -188,6 +186,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icosahedron-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\Commands\History\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Settings-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -61,6 +61,10 @@
                             DataContext="{Binding ConverterParameter=Redo, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                        <buttons:ImageButton ToolTip="Настройки" ButtonImageSource="/LobelFrames;component/Resources/Settings-icon.png"
+                            DataContext="{Binding ConverterParameter=Settings, Converter={StaticResource commandConverter}}" 
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
+                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <Separator />
 
                         <buttons:ImageButton ToolTip="Селектирай" ButtonImageSource="/LobelFrames;component/Resources/Select-icon.png"
@@ -97,7 +101,7 @@
                             DataContext="{Binding ConverterParameter=GlueMesh, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
-                        <buttons:ImageButton ToolTip="Настройки" ButtonImageSource="/LobelFrames;component/Resources/LobelSettings-icon.png"
+                        <buttons:ImageButton ToolTip="Настройки на повърхнините на Лобел" ButtonImageSource="/LobelFrames;component/Resources/LobelSettings-icon.png"
                             DataContext="{Binding ConverterParameter=LobelSettings, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
@@ -111,7 +115,7 @@
                             DataContext="{Binding ConverterParameter=ApproximateWithLobelMesh, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}"
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
-                        <buttons:ImageButton ToolTip="Настройки" ButtonImageSource="/LobelFrames;component/Resources/BezierSettings-icon.png"
+                        <buttons:ImageButton ToolTip="Настройки на повърхнините на Безие" ButtonImageSource="/LobelFrames;component/Resources/BezierSettings-icon.png"
                             DataContext="{Binding ConverterParameter=BezierSettings, Converter={StaticResource commandConverter}}" 
                             Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />

@@ -21,5 +21,15 @@ namespace LobelFrames.DataStructures.Surfaces
                 return this.meshEditor;
             }
         }
+
+        public override void Select()
+        {
+            base.RenderSurfacePoints();
+        }
+
+        public override void Deselect()
+        {
+            base.HideSurfacePoints();
+        }
     }
 }

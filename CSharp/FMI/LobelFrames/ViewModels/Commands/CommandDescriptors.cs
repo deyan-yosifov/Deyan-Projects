@@ -39,6 +39,8 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.ApproximateWithLobelMesh, null, false);
             this.RegisterCommandDescriptor(CommandType.BezierSettings, null);
 
+            this.RegisterCommandDescriptor(CommandType.Settings, null);
+
             this.RegisterCommandDescriptor(CommandType.Test, new DelegateCommand(TestAction), true, false); 
 
             this.RegisterCommandDescriptor(CommandType.Help, new DelegateCommand(ShowHelpMessage));
