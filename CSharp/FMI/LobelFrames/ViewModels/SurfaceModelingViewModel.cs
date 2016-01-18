@@ -2,7 +2,9 @@
 using Deyo.Controls.Controls3D;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.ViewModels.Commands;
+using LobelFrames.ViewModels.Commands.History;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -63,7 +65,7 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        private SurfaceModelingContext Context
+        internal SurfaceModelingContext Context
         {
             get
             {
@@ -76,9 +78,29 @@ namespace LobelFrames.ViewModels
             using (this.Context.HistoryManager.BeginUndoGroup())
             {
                 LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
-                this.Context.AddSurface(surface);
-                this.Context.SelectedSurface = surface;
+                this.Context.HistoryManager.PushUndoableAction(new AddSurfaceAction(surface, this.Context));
+                this.Context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(surface, this.Context));
             }
+        }
+
+        public void Undo()
+        {
+            this.Context.HistoryManager.Undo();
+        }
+
+        public void Redo()
+        {
+            this.Context.HistoryManager.Redo();
+        }
+
+        public void Deselect()
+        {
+            this.Context.HistoryManager.PushUndoableAction(new DeselectSurfaceAction(this.Context));
+        }
+
+        public void DeleteMesh()
+        {
+            this.Context.HistoryManager.PushUndoableAction(new DeleteSurfaceAction(this.Context));
         }
 
         private void InitializeScene()
@@ -100,10 +122,7 @@ namespace LobelFrames.ViewModels
 
         private void HandleHistoryChanges(object sender, EventArgs e)
         {
-            this.CommandDescriptors[CommandType.Undo].IsEnabled = this.Context.HistoryManager.CanUndo;
-            this.CommandDescriptors[CommandType.Undo].IsVisible = this.Context.HistoryManager.CanUndo;
-            this.CommandDescriptors[CommandType.Redo].IsEnabled = this.Context.HistoryManager.CanRedo;
-            this.CommandDescriptors[CommandType.Redo].IsVisible = this.Context.HistoryManager.CanRedo;
+            this.CommandDescriptors.UpdateCommandStates();
         }
 
         private void HandleInputManagerParameterInputed(object sender, ParameterInputedEventArgs e)

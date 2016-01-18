@@ -40,5 +40,10 @@ namespace Deyo.Core.Common.History
                 this.actions[i].Redo();
             }
         }
+
+        protected override void DoOverride()
+        {
+            // Do nothing
+        }
     }
 }

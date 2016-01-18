@@ -62,16 +62,24 @@
     <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
     <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />
     <Compile Include="DataStructures\Surfaces\SceneElementsPool.cs" />
+    <Compile Include="DataStructures\Surfaces\SurfaceType.cs" />
     <Compile Include="DataStructures\Surfaces\VertexConnectionInfo.cs" />
     <Compile Include="DataStructures\Triangle.cs" />
     <Compile Include="DataStructures\TriangularMesh.cs" />
     <Compile Include="DataStructures\Vertex.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptor.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />
+    <Compile Include="ViewModels\Commands\CommandStateEvaluator.cs" />
     <Compile Include="ViewModels\Commands\CommandType.cs" />
     <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
     <Compile Include="ViewModels\Commands\HintManager.cs" />
     <Compile Include="ViewModels\Commands\Hints.cs" />
+    <Compile Include="ViewModels\Commands\History\AddSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\ContextUndoableAction.cs" />
+    <Compile Include="ViewModels\Commands\History\DeleteSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\DeselectSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\IteractiveSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\SelectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\InputManager.cs" />
     <Compile Include="ViewModels\Commands\IsEnabledToColorConverter.cs" />
     <Compile Include="ViewModels\Commands\Labels.cs" />
@@ -187,9 +195,7 @@
   <ItemGroup>
     <Resource Include="Resources\Icosahedron-icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\Commands\History\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Settings-icon.png" />
   </ItemGroup>

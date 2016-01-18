@@ -11,7 +11,14 @@ namespace LobelFrames.DataStructures.Surfaces
             : base(sceneManager)
         {
             this.meshEditor = new EquilateralMeshEditor(rows, columns, sideSize);
-            base.Render();
+        }
+
+        public override SurfaceType Type
+        {
+            get
+            {
+                return SurfaceType.Lobel;
+            }
         }
 
         protected override IMeshElementsProvider ElementsProvider

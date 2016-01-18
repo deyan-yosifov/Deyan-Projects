@@ -17,13 +17,14 @@ namespace Deyo.Core.Common.History
             this.undoStack = new Stack<IUndoRedoAction>();
             this.redoStack = new Stack<IUndoRedoAction>();
             this.maxUndoSize = 5;
+            this.undoGroup = null;
         }
 
         public bool CanUndo
         {
             get
             {
-                return this.undoStack.Count > 0 && this.undoGroup == null;
+                return this.undoStack.Count > 0 && !this.IsCreatingUndoGroup;
             }
         }
 
@@ -31,7 +32,15 @@ namespace Deyo.Core.Common.History
         {
             get
             {
-                return this.redoStack.Count > 0 && this.undoGroup == null;
+                return this.redoStack.Count > 0 && !this.IsCreatingUndoGroup;
+            }
+        }
+
+        public bool IsCreatingUndoGroup
+        {
+            get
+            {
+                return this.undoGroup != null;
             }
         }
 
@@ -59,7 +68,7 @@ namespace Deyo.Core.Common.History
 
         public IDisposable BeginUndoGroup()
         {
-            if (this.undoGroup == null)
+            if (!this.IsCreatingUndoGroup)
             {
                 this.undoGroup = new UndoRedoGroup();
                 this.OnHistoryChanged();
@@ -73,16 +82,18 @@ namespace Deyo.Core.Common.History
 
         public void PushUndoableAction(IUndoRedoAction action)
         {
-            if (this.undoGroup == null)
+            action.Do();
+
+            if (this.IsCreatingUndoGroup)
+            {
+                this.undoGroup.AddAction(action);
+            }
+            else
             {
                 this.undoStack.Push(action);
                 this.EnsureUndoStackNotBiggerThanMaxSize();
                 this.redoStack.Clear();
                 this.OnHistoryChanged();
-            }
-            else
-            {
-                this.undoGroup.AddAction(action);
             }
         }
 
@@ -112,7 +123,8 @@ namespace Deyo.Core.Common.History
 
             IUndoRedoAction action = this.redoStack.Pop();
             action.Redo();
-            this.PushUndoableAction(action);
+            this.undoStack.Push(action);
+            this.OnHistoryChanged();
         }
 
         public EventHandler HistoryChanged;

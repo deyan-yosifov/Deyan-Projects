@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
@@ -9,41 +10,17 @@ namespace LobelFrames.ViewModels.Commands
     public class CommandDescriptors
     {
         private const string HelpText = @"Това приложение позволява моделирането на повърхнини състоящи се от еднакви равностранни триъгълници, наречени още повърхнини на Лобел.";
-        private const bool DefaultIsEnabledInitialState = true;
-        private const bool DefaultIsVisibleInitialState = true;
         private readonly Dictionary<CommandType, CommandDescriptor> descriptors;
         private readonly SurfaceModelingViewModel viewModel;
+        private readonly CommandStateEvaluator stateEvaluator;
 
         public CommandDescriptors(SurfaceModelingViewModel viewModel)
         {
             this.viewModel = viewModel;
+            this.stateEvaluator = new CommandStateEvaluator(this.viewModel.Context);
             this.descriptors = new Dictionary<CommandType, CommandDescriptor>();
-
-            this.RegisterCommandDescriptor(CommandType.Open, null);
-            this.RegisterCommandDescriptor(CommandType.Save, null);
-            this.RegisterCommandDescriptor(CommandType.Undo, null, false);
-            this.RegisterCommandDescriptor(CommandType.Redo, null, false);
-
-            this.RegisterCommandDescriptor(CommandType.SelectMesh, null);
-            this.RegisterCommandDescriptor(CommandType.DeselectMesh, null, false);
-            this.RegisterCommandDescriptor(CommandType.MoveMesh, null, false);
-            this.RegisterCommandDescriptor(CommandType.DeleteMesh, null, false);
-
-            this.RegisterCommandDescriptor(CommandType.AddLobelMesh, new DelegateCommand((p) => this.viewModel.AddLobelMesh()));
-            this.RegisterCommandDescriptor(CommandType.CutMesh, null, false);
-            this.RegisterCommandDescriptor(CommandType.FoldMesh, null, false);
-            this.RegisterCommandDescriptor(CommandType.GlueMesh, null, false);
-            this.RegisterCommandDescriptor(CommandType.LobelSettings, null);
-
-            this.RegisterCommandDescriptor(CommandType.AddBezierSurface, null);
-            this.RegisterCommandDescriptor(CommandType.ApproximateWithLobelMesh, null, false);
-            this.RegisterCommandDescriptor(CommandType.BezierSettings, null);
-
-            this.RegisterCommandDescriptor(CommandType.Settings, null);
-
-            this.RegisterCommandDescriptor(CommandType.Test, new DelegateCommand(TestAction), true, false); 
-
-            this.RegisterCommandDescriptor(CommandType.Help, new DelegateCommand(ShowHelpMessage));
+            this.RegisterCommandDescriptors();
+            this.UpdateCommandStates();
         }
 
         public CommandDescriptor this[CommandType type]
@@ -54,37 +31,70 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
-        private void RegisterCommandDescriptor(CommandType type, ICommand command)
+        public void UpdateCommandStates()
         {
-            this.RegisterCommandDescriptor(type, command, DefaultIsEnabledInitialState, DefaultIsVisibleInitialState);
+            foreach (KeyValuePair<CommandType, CommandDescriptor> commandTypeToDescriptor in this.descriptors)
+            {
+                commandTypeToDescriptor.Value.IsEnabled = this.stateEvaluator.EvaluateIsEnabled(commandTypeToDescriptor.Key);
+            }
         }
 
-        private void RegisterCommandDescriptor(CommandType type, ICommand command, bool initialIsEnabledState)
+        private void RegisterCommandDescriptors()
         {
-            this.RegisterCommandDescriptor(type, command, initialIsEnabledState, DefaultIsVisibleInitialState);
+            this.RegisterCommandDescriptor(CommandType.Open, null);
+            this.RegisterCommandDescriptor(CommandType.Save, null);
+            this.RegisterCommandDescriptor(CommandType.Undo, this.viewModel.Undo);
+            this.RegisterCommandDescriptor(CommandType.Redo, this.viewModel.Redo);
+            this.RegisterCommandDescriptor(CommandType.Settings, null);
+
+            this.RegisterCommandDescriptor(CommandType.SelectMesh, null);
+            this.RegisterCommandDescriptor(CommandType.DeselectMesh, this.viewModel.Deselect);
+            this.RegisterCommandDescriptor(CommandType.MoveMesh, null);
+            this.RegisterCommandDescriptor(CommandType.DeleteMesh, this.viewModel.DeleteMesh);
+
+            this.RegisterCommandDescriptor(CommandType.AddLobelMesh, this.viewModel.AddLobelMesh);
+            this.RegisterCommandDescriptor(CommandType.CutMesh, null);
+            this.RegisterCommandDescriptor(CommandType.FoldMesh, null);
+            this.RegisterCommandDescriptor(CommandType.GlueMesh, null);
+            this.RegisterCommandDescriptor(CommandType.LobelSettings, null);
+
+            this.RegisterCommandDescriptor(CommandType.AddBezierSurface, null);
+            this.RegisterCommandDescriptor(CommandType.ApproximateWithLobelMesh, null);
+            this.RegisterCommandDescriptor(CommandType.BezierSettings, null);
+
+            this.RegisterCommandDescriptor(CommandType.Test, this.TestAction, false);
+
+            this.RegisterCommandDescriptor(CommandType.Help, this.ShowHelpMessage);
         }
 
-        private void RegisterCommandDescriptor(CommandType type, ICommand command, bool initialIsEnabledState, bool initialIsVisibleState)
+        private void RegisterCommandDescriptor(CommandType type, Action commandAction)
         {
-            command = command ?? new DelegateCommand((p) => this.ShowNotImplementedCommand(type));
-            this.descriptors.Add(type, new CommandDescriptor(command, initialIsEnabledState, initialIsVisibleState));
+            this.RegisterCommandDescriptor(type, commandAction, true);
         }
 
-        private void ShowHelpMessage(object obj)
+        private void RegisterCommandDescriptor(CommandType type, Action commandAction, bool initialIsVisibleState)
+        {
+            ICommand command = commandAction == null ?
+                new DelegateCommand((p) => this.ShowNotImplementedCommand(type)) :
+                new DelegateCommand((p) => commandAction());
+            this.descriptors.Add(type, new CommandDescriptor(command) { IsVisible = initialIsVisibleState });
+        }
+
+        private void ShowHelpMessage()
         {
             MessageBox.Show(HelpText, "Помощ");
+        }
+
+        private void TestAction()
+        {
+            MessageBox.Show("Test action!");
+            this.viewModel.HintManager.Hint = "Подсказка сменена!";
+            this.viewModel.InputManager.IsEnabled = true;
         }
 
         private void ShowNotImplementedCommand(CommandType type)
         {
             MessageBox.Show(string.Format("Not Implemented Command: {0}", type));
-        }
-
-        private void TestAction(object obj)
-        {
-            MessageBox.Show("Test action!");
-            this.viewModel.HintManager.Hint = "Подсказка сменена!";
-            this.viewModel.InputManager.IsEnabled = true;
         }
     }
 }

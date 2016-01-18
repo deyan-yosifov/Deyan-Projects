@@ -10,7 +10,14 @@ namespace LobelFrames.DataStructures.Surfaces
         {
         }
 
-        // TODO:
+        public override SurfaceType Type
+        {
+            get
+            {
+                return SurfaceType.Bezier;
+            }
+        }
+
         protected override IMeshElementsProvider ElementsProvider
         {
             get { throw new NotImplementedException(); }

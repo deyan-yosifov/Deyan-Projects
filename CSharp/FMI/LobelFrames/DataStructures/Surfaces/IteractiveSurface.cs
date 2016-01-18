@@ -10,7 +10,7 @@ namespace LobelFrames.DataStructures.Surfaces
     public abstract class IteractiveSurface
     {
         private readonly ISceneElementsManager sceneManager;
-        private readonly MeshVisual meshVisual;
+        private MeshVisual meshVisual;
         private readonly List<PointVisual> visiblePoints;
         private readonly List<LineVisual> visibleSurfaceLines;
         private readonly List<LineOverlay> visibleLineOverlays;
@@ -19,11 +19,12 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             Guard.ThrowExceptionIfNull(sceneManager, "sceneManager");
             this.sceneManager = sceneManager;
-            this.meshVisual = this.SceneManager.CreateMesh();
             this.visiblePoints = new List<PointVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
             this.visibleLineOverlays = new List<LineOverlay>();
         }
+
+        public abstract SurfaceType Type { get; }
 
         protected ISceneElementsManager SceneManager
         {
@@ -38,11 +39,35 @@ namespace LobelFrames.DataStructures.Surfaces
         public abstract void Select();
         public abstract void Deselect();
 
-        protected virtual void Render()
+        public virtual void Render()
         {
             this.RenderSurfaceMesh();
             this.RenderSurfaceLines();
-            this.RenderSurfacePoints();
+        }
+
+        public virtual void Hide()
+        {
+            foreach (PointVisual point in this.visiblePoints)
+            {
+                this.SceneManager.DeletePoint(point);
+            }
+
+            foreach (LineVisual surfaceLine in this.visibleSurfaceLines)
+            {
+                this.SceneManager.DeleteSurfaceLine(surfaceLine);
+            }
+
+            foreach (LineOverlay lineOverlay in this.visibleLineOverlays)
+            {
+                this.SceneManager.DeleteLineOverlay(lineOverlay);
+            }
+
+            this.SceneManager.DeleteMesh(this.meshVisual);
+
+            this.meshVisual = null;
+            this.visibleLineOverlays.Clear();
+            this.visibleSurfaceLines.Clear();
+            this.visiblePoints.Clear();
         }
 
         protected void RenderSurfacePoints()
@@ -99,6 +124,11 @@ namespace LobelFrames.DataStructures.Surfaces
                 meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.A]);
                 meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.B]);
                 meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.C]);
+            }
+
+            if (this.meshVisual == null)
+            {
+                this.meshVisual = this.SceneManager.CreateMesh();
             }
 
             this.meshVisual.Mesh.Geometry = meshGeometry;

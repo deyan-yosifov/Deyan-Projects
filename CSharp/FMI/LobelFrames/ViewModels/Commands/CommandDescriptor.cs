@@ -10,11 +10,11 @@ namespace LobelFrames.ViewModels.Commands
         private bool isVisible;
         private readonly ICommand command;
 
-        public CommandDescriptor(ICommand command, bool initialIsEnabledState, bool initialIsVisibleState)
+        public CommandDescriptor(ICommand command)
         {
             this.command = command;
-            this.isEnabled = initialIsEnabledState;
-            this.isVisible = initialIsVisibleState;
+            this.isEnabled = true;
+            this.isVisible = true;
         }
 
         public ICommand Command

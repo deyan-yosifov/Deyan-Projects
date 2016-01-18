@@ -8,14 +8,13 @@ namespace LobelFrames.ViewModels
 {
     public class SurfaceModelingContext
     {
-        private IteractiveSurface selectedSurface;
         private readonly HistoryManager historyManager;
-        private readonly List<IteractiveSurface> surfaces;
+        private readonly HashSet<IteractiveSurface> surfaces;
 
         public SurfaceModelingContext()
         {
             this.historyManager = new HistoryManager();
-            this.surfaces = new List<IteractiveSurface>();
+            this.surfaces = new HashSet<IteractiveSurface>();
         }
 
         public HistoryManager HistoryManager
@@ -26,53 +25,24 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public IteractiveSurface SelectedSurface
+        public bool HasSurfaces
         {
             get
             {
-                return this.selectedSurface;
-            }
-            set
-            {
-                if (this.selectedSurface != value)
-                {
-                    if (this.selectedSurface != null)
-                    {
-                        this.OnSurfaceDeselected(this.selectedSurface);
-                    }
-
-                    this.selectedSurface = value;
-
-                    if (this.selectedSurface != null)
-                    {
-                        this.OnSufaceSelected(this.selectedSurface);
-                    }
-                }
+                return this.surfaces.Count > 0;
             }
         }
+
+        public IteractiveSurface SelectedSurface { get; set; }
 
         public void AddSurface(IteractiveSurface surface)
         {
             this.surfaces.Add(surface);
-            this.OnSurfaceAdded(surface);
         }
 
-        private void OnSufaceSelected(IteractiveSurface surface)
+        public void RemoveSurface(IteractiveSurface surface)
         {
-            // Select surface history action
-            this.selectedSurface.Select();
-        }
-
-        private void OnSurfaceDeselected(IteractiveSurface surface)
-        {
-            // Select surface history action
-            this.selectedSurface.Deselect();
-
-        }
-
-        private void OnSurfaceAdded(IteractiveSurface surface)
-        {
-            // Add surface history action
+            this.surfaces.Remove(surface);
         }
     }
 }
