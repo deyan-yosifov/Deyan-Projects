@@ -10,6 +10,7 @@ namespace LobelFrames.ViewModels
     {
         private readonly HistoryManager historyManager;
         private readonly HashSet<IteractiveSurface> surfaces;
+        private IteractiveSurface selectedSurface;
 
         public SurfaceModelingContext()
         {
@@ -33,16 +34,41 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public IteractiveSurface SelectedSurface { get; set; }
+        public IteractiveSurface SelectedSurface
+        {
+            get
+            {
+                return this.selectedSurface;
+            }
+            set
+            {
+                if (this.selectedSurface != value)
+                {
+                    if (this.selectedSurface != null)
+                    {
+                        this.selectedSurface.Deselect();
+                    }
+
+                    this.selectedSurface = value;
+
+                    if (this.selectedSurface != null)
+                    {
+                        this.selectedSurface.Select();
+                    }
+                }
+            }
+        }
 
         public void AddSurface(IteractiveSurface surface)
         {
             this.surfaces.Add(surface);
+            surface.Render();
         }
 
         public void RemoveSurface(IteractiveSurface surface)
         {
             this.surfaces.Remove(surface);
+            surface.Hide();
         }
     }
 }

@@ -15,24 +15,12 @@ namespace LobelFrames.ViewModels.Commands.History
 
         protected override void DoOverride()
         {
-            if (this.oldSelection != null)
-            {
-                this.oldSelection.Deselect();
-            }
-
             this.Context.SelectedSurface = base.Surface;
-            this.Context.SelectedSurface.Select();
         }
 
         protected override void UndoOverride()
         {
-            base.Surface.Deselect();
             this.Context.SelectedSurface = this.oldSelection;
-
-            if (this.oldSelection != null)
-            {
-                this.oldSelection.Select();
-            }
         }
     }
 }
