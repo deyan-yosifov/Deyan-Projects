@@ -18,7 +18,7 @@ namespace Deyo.Controls.Controls3D
         private readonly Canvas viewport2D;
         private readonly SceneEditor editor;
         private readonly Viewport3D viewport3D;
-        private readonly PointerHandlersController pointerHandlersControler;
+        private readonly PointerHandlersController pointerHandlersController;
         private readonly Grid container;
         private bool isListeningToMouseEvents;
 
@@ -27,9 +27,9 @@ namespace Deyo.Controls.Controls3D
             this.viewport2D = new Canvas() { IsHitTestVisible = true, Background = new SolidColorBrush(Colors.Transparent), ClipToBounds = true };
             this.viewport3D = new Viewport3D() { IsHitTestVisible = false };
             this.editor = new SceneEditor(this);
-            this.pointerHandlersControler = new PointerHandlersController();
-            this.pointerHandlersControler.Handlers.AddLast(new IteractivePointsHandler(this.editor));
-            this.pointerHandlersControler.Handlers.AddLast(new OrbitControl(this.editor));
+            this.pointerHandlersController = new PointerHandlersController();
+            this.pointerHandlersController.Handlers.AddLast(new IteractivePointsHandler(this.editor));
+            this.pointerHandlersController.Handlers.AddLast(new OrbitControl(this.editor));
             this.isListeningToMouseEvents = false;
             
             this.container = new Grid();
@@ -51,7 +51,7 @@ namespace Deyo.Controls.Controls3D
         {
             get
             {
-                return this.pointerHandlersControler;
+                return this.pointerHandlersController;
             }
         }
 
@@ -117,8 +117,8 @@ namespace Deyo.Controls.Controls3D
                 this.viewport2D.MouseUp += this.Viewport2D_MouseUp;
                 this.viewport2D.MouseMove += this.Viewport2D_MouseMove;
                 this.viewport2D.MouseWheel += this.Viewport2D_MouseWheel;
-                this.pointerHandlersControler.HandlerCaptured += this.PointerHandlersControler_HandlerCaptured;
-                this.pointerHandlersControler.HandlerReleased += this.PointerHandlersControler_HandlerReleased;
+                this.pointerHandlersController.HandlerCaptured += this.PointerHandlersControler_HandlerCaptured;
+                this.pointerHandlersController.HandlerReleased += this.PointerHandlersControler_HandlerReleased;
             }
         }
 
@@ -130,8 +130,8 @@ namespace Deyo.Controls.Controls3D
                 this.viewport2D.MouseUp -= this.Viewport2D_MouseUp;
                 this.viewport2D.MouseMove -= this.Viewport2D_MouseMove;
                 this.viewport2D.MouseWheel -= this.Viewport2D_MouseWheel;
-                this.pointerHandlersControler.HandlerCaptured -= this.PointerHandlersControler_HandlerCaptured;
-                this.pointerHandlersControler.HandlerReleased -= this.PointerHandlersControler_HandlerReleased;
+                this.pointerHandlersController.HandlerCaptured -= this.PointerHandlersControler_HandlerCaptured;
+                this.pointerHandlersController.HandlerReleased -= this.PointerHandlersControler_HandlerReleased;
 
                 this.isListeningToMouseEvents = false;
             }
@@ -149,22 +149,22 @@ namespace Deyo.Controls.Controls3D
 
         private void Viewport2D_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            this.pointerHandlersControler.TryHandleMouseWheel(e);
+            this.pointerHandlersController.TryHandleMouseWheel(e);
         }
 
         private void Viewport2D_MouseMove(object sender, MouseEventArgs e)
         {
-            this.pointerHandlersControler.TryHandleMouseMove(e);
+            this.pointerHandlersController.TryHandleMouseMove(e);
         }
 
         private void Viewport2D_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            this.pointerHandlersControler.TryHandleMouseUp(e);
+            this.pointerHandlersController.TryHandleMouseUp(e);
         }
 
         private void Viewport2D_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this.pointerHandlersControler.TryHandleMouseDown(e);
+            this.pointerHandlersController.TryHandleMouseDown(e);
         }
 
         protected override Visual GetVisualChild(int index)

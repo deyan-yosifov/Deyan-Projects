@@ -87,6 +87,14 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
+        public Size ViewportSize
+        {
+            get
+            {
+                return new Size(this.viewport2D.ActualWidth, this.viewport2D.ActualHeight);
+            }
+        }
+
         internal Canvas Viewport2D
         {
             get
@@ -100,14 +108,6 @@ namespace Deyo.Controls.Controls3D
             get
             {
                 return this.viewport;
-            }
-        }
-
-        private Size ViewportSize
-        {
-            get
-            {
-                return new Size(this.viewport2D.ActualWidth, this.viewport2D.ActualHeight);
             }
         }
 
@@ -209,6 +209,19 @@ namespace Deyo.Controls.Controls3D
             this.viewport.Children.Add(light);
 
             return new VisualOwner(light);
+        }
+
+        public bool TryHitVisual3D(Point viewportPosition, out Visual3D visual)
+        {
+            visual = null;
+            HitTestResult result = this.HitTest(viewportPosition);
+
+            if (result != null)
+            {
+                visual = result.VisualHit as Visual3D;
+            }
+
+            return visual != null;
         }
 
         public void Look(Point3D fromPoint, Point3D toPoint)
@@ -343,6 +356,11 @@ namespace Deyo.Controls.Controls3D
             {
                 this.CameraChanged(this, new EventArgs());
             }
+        }
+
+        private HitTestResult HitTest(Point viewportPosition)
+        {
+            return VisualTreeHelper.HitTest(this.Viewport, viewportPosition);
         }
     }
 }

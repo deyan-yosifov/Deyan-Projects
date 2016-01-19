@@ -82,32 +82,27 @@ namespace Deyo.Controls.Controls3D.Iteractions
 
         public bool TryHandleMouseDown(MouseButtonEventArgs e)
         {
+            Visual3D visual;
+            PointVisual point;
             this.ReleaseCapturedPoint();
-            Point viewportPosition = IteractivePointsHandler.GetPosition(e);
-            HitTestResult result = VisualTreeHelper.HitTest(this.editor.Viewport, viewportPosition);
+            Point viewportPosition = PointerHandlersController.GetPosition(e);
 
-            if (result != null)
+            if (this.editor.TryHitVisual3D(viewportPosition, out visual) && this.registeredPoints.TryGetValue(visual, out point))
             {
-                PointVisual point;
-                Visual3D visual = result.VisualHit as Visual3D;
+                this.CapturePoint(point);
+                Size viewportSize = this.editor.ViewportSize;
 
-                if (visual != null && this.registeredPoints.TryGetValue(visual, out point))
-                {
-                    this.CapturePoint(point);
-                    Size viewportSize = IteractivePointsHandler.GetViewportSize(e);
+                this.editor.DoActionOnCamera(
+                    (perspectiveCamera) =>
+                    {
+                        this.CalculateFirstIteractionInfo(perspectiveCamera, viewportPosition, viewportSize);
+                    },
+                    (orthographicCamera) =>
+                    {
+                        this.CalculateFirstIteractionInfo(orthographicCamera, viewportPosition, viewportSize);
+                    });
 
-                    this.editor.DoActionOnCamera(
-                        (perspectiveCamera) =>
-                        {
-                            this.CalculateFirstIteractionInfo(perspectiveCamera, viewportPosition, viewportSize);
-                        },
-                        (orthographicCamera) =>
-                        {
-                            this.CalculateFirstIteractionInfo(orthographicCamera, viewportPosition, viewportSize);
-                        });
-
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -252,9 +247,9 @@ namespace Deyo.Controls.Controls3D.Iteractions
         public bool TryHandleMouseMove(MouseEventArgs e)
         {
             if (this.capturedPoint != null && this.firstIteractionInfo != null)
-            {                
-                Point viewportPosition = IteractivePointsHandler.GetPosition(e);
-                Size viewportSize = IteractivePointsHandler.GetViewportSize(e);
+            {
+                Point viewportPosition = PointerHandlersController.GetPosition(e);
+                Size viewportSize = this.editor.ViewportSize;
 
                 this.editor.DoActionOnCamera(
                     (perspectiveCamera) =>
@@ -318,18 +313,6 @@ namespace Deyo.Controls.Controls3D.Iteractions
         {
             this.capturedPoint = null;
             this.firstIteractionInfo = null;
-        }
-
-        private static Point GetPosition(MouseEventArgs e)
-        {
-            return e.GetPosition((IInputElement)e.Source);
-        }        
-
-        private static Size GetViewportSize(MouseEventArgs e)
-        {
-            FrameworkElement element = (FrameworkElement)e.Source;
-
-            return new Size(element.ActualWidth, element.ActualHeight);
-        }
+        }  
     }
 }

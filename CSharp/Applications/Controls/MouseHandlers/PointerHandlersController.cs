@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Deyo.Controls.MouseHandlers
@@ -18,7 +19,10 @@ namespace Deyo.Controls.MouseHandlers
         {
             this.handlers = new NamedObjectsCollection<IPointerHandler>();
             this.capturedHandler = null;
+            this.HandleMoveWhenNoHandleIsCaptured = false;
         }
+
+        public bool HandleMoveWhenNoHandleIsCaptured { get; set; }
 
         public NamedObjectsCollection<IPointerHandler> Handlers
         {
@@ -63,6 +67,16 @@ namespace Deyo.Controls.MouseHandlers
             {
                 return this.capturedHandler.TryHandleMouseMove(e);
             }
+            else if (this.HandleMoveWhenNoHandleIsCaptured)
+            {
+                foreach (IPointerHandler handler in this.Handlers)
+                {
+                    if (handler.IsEnabled && handler.TryHandleMouseMove(e))
+                    {
+                        return true;
+                    }
+                }
+            }
 
             return false;
         }
@@ -84,6 +98,11 @@ namespace Deyo.Controls.MouseHandlers
 
             return false;
         }
+
+        public static Point GetPosition(MouseEventArgs e)
+        {
+            return e.GetPosition((IInputElement)e.Source);
+        }    
 
         public event EventHandler HandlerCaptured;
         public event EventHandler HandlerReleased;

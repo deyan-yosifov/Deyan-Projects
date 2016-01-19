@@ -1,4 +1,6 @@
 ﻿using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Cameras;
+using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
@@ -23,10 +25,14 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly Visual3DPool<PointVisual> controlPointsPool;
         private readonly Dictionary<LineOverlay, Tuple<Point3D, Point3D>> lineOverlayToSegment3D;
         private readonly HashSet<LineOverlay> visibleLineOverlays;
+        private readonly OrbitControl orbitControl;
+        private readonly IteractivePointsHandler iteractivePointsHandler;
 
         public SceneElementsPool(Scene3D scene)
         {
             this.scene = scene;
+            this.orbitControl = this.scene.OrbitControl;
+            this.iteractivePointsHandler = this.scene.IteractivePointsHandler;
             this.controlPointsPool = new Visual3DPool<PointVisual>(scene);
             this.surfaceLinesPool = new Visual3DPool<LineVisual>(scene);
             this.meshPool = new Visual3DPool<MeshVisual>(scene);
@@ -38,7 +44,15 @@ namespace LobelFrames.DataStructures.Surfaces
             this.reusableUnitPointShape = this.CreateReusablePointShape();
             this.PrepareGraphicStateForDrawingMeshesAndOverlays();
 
-            this.SceneEditor.CameraChanged += this.CameraChangedHandler;            
+            this.SceneEditor.CameraChanged += this.CameraChangedHandler;
+
+            this.InitializePointerHandlers();
+        }
+
+        private void InitializePointerHandlers()
+        {
+            this.orbitControl.IsEnabled = true;
+            this.iteractivePointsHandler.IsEnabled = false;
         }
 
         private void PrepareGraphicStateForDrawingMeshesAndOverlays()

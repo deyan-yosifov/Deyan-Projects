@@ -59,6 +59,7 @@
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceSelectionHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
     <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />
     <Compile Include="DataStructures\Surfaces\SceneElementsPool.cs" />
