@@ -1,73 +1,51 @@
-﻿using Deyo.Controls.Controls3D;
-using Deyo.Controls.MouseHandlers;
-using System;
+﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
 {
-    public class SurfaceSelectionHandler : IPointerHandler
+    public class SurfaceSelectionHandler : IIteractionHandler
     {
-        private readonly SceneEditor editor;
-        private bool isEnabled;
+        private readonly ISceneElementsManager sceneManager;
 
-        public SurfaceSelectionHandler(SceneEditor editor)
+        internal SurfaceSelectionHandler(ISceneElementsManager sceneManager)
         {
-            this.editor = editor;
-            this.isEnabled = false;
+            this.sceneManager = sceneManager;
         }
-
-        public string Name
+        public IteractionHandlingType IteractionType
         {
             get
             {
-                return "SurfaceSelectionHandler";
+                return IteractionHandlingType.SurfaceIteraction;
             }
         }
 
-        public bool IsEnabled
+        public bool TryHandleClick(Point viewportPosition)
         {
-            get
+            IteractiveSurface surface;
+            if (this.sceneManager.TryGetSurfaceFromPoint(viewportPosition, out surface))
             {
-                return this.isEnabled;
-            }
-            set
-            {
-                if (this.isEnabled != value)
-                {
-                    this.isEnabled = value;
-                }
-            }
-        }
+                this.OnSurfaceSelected(surface);
 
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
-        {
-            Visual3D visual;
-            Point viewportPosition = PointerHandlersController.GetPosition(e);
-
-            if (this.editor.TryHitVisual3D(viewportPosition, out visual))
-            {
-                // TODO:
                 return true;
             }
 
             return false;
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMove(Point viewportPosition)
         {
             return false;
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
-        {
-            return true;
-        }
+        public EventHandler<SurfaceSelectedEventArgs> SurfaceSelected;
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        protected void OnSurfaceSelected(IteractiveSurface surface)
         {
-            return false;
+            if (this.SurfaceSelected != null)
+            {
+                this.SurfaceSelected(this, new SurfaceSelectedEventArgs(surface));
+            }
         }
     }
 }

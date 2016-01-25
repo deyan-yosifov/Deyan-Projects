@@ -25,6 +25,7 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly Visual3DPool<PointVisual> controlPointsPool;
         private readonly Dictionary<LineOverlay, Tuple<Point3D, Point3D>> lineOverlayToSegment3D;
         private readonly HashSet<LineOverlay> visibleLineOverlays;
+        private readonly Dictionary<Visual3D, IteractiveSurface> visual3dToSurfaceOwner;
         private readonly OrbitControl orbitControl;
         private readonly IteractivePointsHandler iteractivePointsHandler;
 
@@ -38,6 +39,7 @@ namespace LobelFrames.DataStructures.Surfaces
             this.meshPool = new Visual3DPool<MeshVisual>(scene);
             this.lineOverlaysPool = new Visual2DPool<LineOverlay>();
             this.lineOverlayToSegment3D = new Dictionary<LineOverlay, Tuple<Point3D, Point3D>>();
+            this.visual3dToSurfaceOwner = new Dictionary<Visual3D, IteractiveSurface>();
             this.visibleLineOverlays = new HashSet<LineOverlay>();
 
             this.reusableUnitLineShape = this.CreateReusableLineShape();
@@ -119,7 +121,7 @@ namespace LobelFrames.DataStructures.Surfaces
             return visual;
         }
 
-        public LineVisual CreateSurfaceLine(Point3D fromPoint, Point3D toPoint)
+        public LineVisual CreateSurfaceLine(IteractiveSurface owner, Point3D fromPoint, Point3D toPoint)
         {
             LineVisual visual;
             if (!this.surfaceLinesPool.TryPopElementFromPool(out visual))
@@ -128,16 +130,20 @@ namespace LobelFrames.DataStructures.Surfaces
                 visual = this.SceneEditor.AddLineVisual(fromPoint, toPoint, this.reusableUnitLineShape);
             }
 
+            this.AddVisualOwnerMapping(visual, owner);
+
             return visual;
         }
 
-        public MeshVisual CreateMesh()
+        public MeshVisual CreateMesh(IteractiveSurface owner)
         {
             MeshVisual visual;
             if (!this.meshPool.TryPopElementFromPool(out visual))
             {                  
                 visual = this.SceneEditor.AddMeshVisual();
             }
+
+            this.AddVisualOwnerMapping(visual, owner);
 
             return visual;
         }
@@ -157,11 +163,23 @@ namespace LobelFrames.DataStructures.Surfaces
         public void DeleteSurfaceLine(LineVisual visual)
         {
             this.surfaceLinesPool.PushElementToPool(visual);
+            this.RemoveVisualOwnerMapping(visual);
         }
 
         public void DeleteMesh(MeshVisual visual)
         {
             this.meshPool.PushElementToPool(visual);
+            this.RemoveVisualOwnerMapping(visual);
+        }
+
+        public bool TryGetSurfaceFromPoint(Point viewportPosition, out IteractiveSurface surface)
+        {
+            surface = null;
+            Visual3D visual;
+            bool success = this.SceneEditor.TryHitVisual3D(viewportPosition, out visual) && 
+                this.visual3dToSurfaceOwner.TryGetValue(visual, out surface);
+
+            return success;
         }
 
         private void CameraChangedHandler(object sender, EventArgs e)
@@ -193,6 +211,16 @@ namespace LobelFrames.DataStructures.Surfaces
                     overlay.Visual.Visibility = Visibility.Collapsed;
                 }
             }            
+        }
+
+        private void AddVisualOwnerMapping(IVisual3DOwner visualOwner, IteractiveSurface surfaceOwner)
+        {
+            this.visual3dToSurfaceOwner.Add(visualOwner.Visual, surfaceOwner);
+        }
+
+        private void RemoveVisualOwnerMapping(IVisual3DOwner visualOwner)
+        {
+            this.visual3dToSurfaceOwner.Remove(visualOwner.Visual);
         }
     }
 }

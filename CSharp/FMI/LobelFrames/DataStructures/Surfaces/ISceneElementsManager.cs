@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using System;
+using System.Windows;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces
@@ -11,9 +12,9 @@ namespace LobelFrames.DataStructures.Surfaces
 
         PointVisual CreatePoint(Point3D point);
 
-        LineVisual CreateSurfaceLine(Point3D fromPoint, Point3D toPoint);
+        LineVisual CreateSurfaceLine(IteractiveSurface owner, Point3D fromPoint, Point3D toPoint);
 
-        MeshVisual CreateMesh();
+        MeshVisual CreateMesh(IteractiveSurface owner);
 
         void DeleteLineOverlay(LineOverlay visual);
 
@@ -22,5 +23,7 @@ namespace LobelFrames.DataStructures.Surfaces
         void DeleteSurfaceLine(LineVisual visual);
 
         void DeleteMesh(MeshVisual visual);
+
+        bool TryGetSurfaceFromPoint(Point viewportPosition, out IteractiveSurface surface);
     }
 }

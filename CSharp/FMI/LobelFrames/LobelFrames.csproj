@@ -59,6 +59,11 @@
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\IIteractionHandler.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\IteractionHandlingType.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\PointSelectionHandler.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceModelingPointerHandler.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceSelectedEventArgs.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceSelectionHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
     <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />
@@ -68,6 +73,7 @@
     <Compile Include="DataStructures\Triangle.cs" />
     <Compile Include="DataStructures\TriangularMesh.cs" />
     <Compile Include="DataStructures\Vertex.cs" />
+    <Compile Include="ViewModels\Commands\CommandContext.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptor.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />
     <Compile Include="ViewModels\Commands\CommandStateEvaluator.cs" />

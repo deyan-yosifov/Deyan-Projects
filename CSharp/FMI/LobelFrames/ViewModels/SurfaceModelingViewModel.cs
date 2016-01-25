@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
 using LobelFrames.DataStructures.Surfaces;
+using LobelFrames.DataStructures.Surfaces.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Commands.History;
 using System;
@@ -19,6 +20,7 @@ namespace LobelFrames.ViewModels
         private readonly CommandDescriptors commandDescriptors;
         private readonly SceneElementsPool elementsPool;
         private readonly SurfaceModelingContext context;
+        private readonly SurfaceModelingPointerHandler surfacePointerHandler;
 
         public SurfaceModelingViewModel(Scene3D scene)
         {
@@ -28,6 +30,8 @@ namespace LobelFrames.ViewModels
             this.context = new SurfaceModelingContext();
             this.elementsPool = new SceneElementsPool(scene);
             this.commandDescriptors = new CommandDescriptors(this);
+            this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool);
+            this.scene.PointerHandlersController.Handlers.AddFirst(this.surfacePointerHandler);
 
             this.AttachToEvents();
             this.InitializeScene();
@@ -73,6 +77,14 @@ namespace LobelFrames.ViewModels
             }
         }
 
+        private SurfaceModelingPointerHandler SurfacePointerHandler
+        {
+            get
+            {
+                return this.surfacePointerHandler;
+            }
+        }
+
         public void AddLobelMesh()
         {
             using (this.Context.HistoryManager.BeginUndoGroup())
@@ -91,6 +103,12 @@ namespace LobelFrames.ViewModels
         public void Redo()
         {
             this.Context.HistoryManager.Redo();
+        }
+
+        public void SelectMesh()
+        {
+            this.context.BeginCommandContext(CommandType.SelectMesh);
+            this.EnableSurfacePointerHandler(IteractionHandlingType.SurfaceIteraction);
         }
 
         public void Deselect()
@@ -118,6 +136,7 @@ namespace LobelFrames.ViewModels
         {
             this.InputManager.ParameterInputed += this.HandleInputManagerParameterInputed;
             this.Context.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
+            this.surfacePointerHandler.SurfaceHandler.SurfaceSelected += this.HandleSurfaceSelected;
         }
 
         private void HandleHistoryChanges(object sender, EventArgs e)
@@ -128,6 +147,24 @@ namespace LobelFrames.ViewModels
         private void HandleInputManagerParameterInputed(object sender, ParameterInputedEventArgs e)
         {
             MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
+        }
+
+        private void HandleSurfaceSelected(object sender, SurfaceSelectedEventArgs e)
+        {
+            this.context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(e.Surface, this.context));
+            this.context.EndCommandContext();
+            this.DisableSurfacePointerHandler();
+        }
+
+        private void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
+        {
+            this.surfacePointerHandler.IteractionType = iteractionType;
+            this.surfacePointerHandler.IsEnabled = true;
+        }
+
+        private void DisableSurfacePointerHandler()
+        {
+            this.surfacePointerHandler.IsEnabled = false;
         }
     }
 }

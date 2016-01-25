@@ -20,7 +20,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterEvaluator(CommandType.Redo, CommandStateEvaluator.IsRedoEnabled);
             this.RegisterEvaluator(CommandType.Settings, CommandStateEvaluator.IsAlwaysEnabled);
             
-            this.RegisterEvaluator(CommandType.SelectMesh, CommandStateEvaluator.IsSelectMeshEnabled);
+            this.RegisterEvaluator(CommandType.SelectMesh, CommandStateEvaluator.AreMeshesDeselected);
             this.RegisterEvaluator(CommandType.DeselectMesh, CommandStateEvaluator.IsMeshSelected);
             this.RegisterEvaluator(CommandType.MoveMesh, CommandStateEvaluator.IsMeshSelected);
             this.RegisterEvaluator(CommandType.DeleteMesh, CommandStateEvaluator.IsMeshSelected);
@@ -79,9 +79,9 @@ namespace LobelFrames.ViewModels.Commands
             return context.HistoryManager.CanRedo;
         }
 
-        private static bool IsSelectMeshEnabled(SurfaceModelingContext context)
+        private static bool AreMeshesDeselected(SurfaceModelingContext context)
         {
-            return context.HasSurfaces;
+            return context.SelectedSurface == null && context.HasSurfaces;
         }
 
         private static bool IsMeshSelected(SurfaceModelingContext context)

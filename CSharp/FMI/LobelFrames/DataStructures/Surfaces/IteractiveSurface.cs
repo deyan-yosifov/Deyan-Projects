@@ -95,7 +95,7 @@ namespace LobelFrames.DataStructures.Surfaces
             {
                 if (lineIndex == this.visibleSurfaceLines.Count)
                 {
-                    this.visibleSurfaceLines.Add(this.SceneManager.CreateSurfaceLine(edge.Start.Point, edge.End.Point));
+                    this.visibleSurfaceLines.Add(this.SceneManager.CreateSurfaceLine(this, edge.Start.Point, edge.End.Point));
                 }
                 else
                 {
@@ -128,7 +128,7 @@ namespace LobelFrames.DataStructures.Surfaces
 
             if (this.meshVisual == null)
             {
-                this.meshVisual = this.SceneManager.CreateMesh();
+                this.meshVisual = this.SceneManager.CreateMesh(this);
             }
 
             this.meshVisual.Mesh.Geometry = meshGeometry;

@@ -1,6 +1,7 @@
 ﻿using Deyo.Core.Common;
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures.Surfaces;
+using LobelFrames.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +12,8 @@ namespace LobelFrames.ViewModels
         private readonly HistoryManager historyManager;
         private readonly HashSet<IteractiveSurface> surfaces;
         private IteractiveSurface selectedSurface;
+        private CommandContext currentCommand;
+        private  IDisposable currentCommandEndAction;
 
         public SurfaceModelingContext()
         {
@@ -69,6 +72,32 @@ namespace LobelFrames.ViewModels
         {
             this.surfaces.Remove(surface);
             surface.Hide();
+        }
+
+        public bool TryGetCurrentCommandContext(out CommandContext commandContext)
+        {
+            commandContext = this.currentCommand;
+
+            return commandContext != null;
+        }
+
+        public void BeginCommandContext(CommandType commandType)
+        {
+            Guard.ThrowExceptionInNotEqual(this.currentCommand, null, "currentCommand");
+            Guard.ThrowExceptionInNotEqual(this.currentCommandEndAction, null, "currentCommandEndAction");
+
+            this.currentCommandEndAction = this.HistoryManager.BeginUndoGroup();
+            this.currentCommand = new CommandContext(commandType);
+        }
+
+        public void EndCommandContext()
+        {
+            Guard.ThrowExceptionIfNull(this.currentCommand, "currentCommand");
+            Guard.ThrowExceptionIfNull(this.currentCommandEndAction, "currentCommandEndAction");
+
+            this.currentCommandEndAction.Dispose();
+            this.currentCommandEndAction = null;
+            this.currentCommand = null;
         }
     }
 }
