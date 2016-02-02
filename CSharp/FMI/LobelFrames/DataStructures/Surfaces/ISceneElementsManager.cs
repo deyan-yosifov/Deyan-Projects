@@ -8,13 +8,19 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public interface ISceneElementsManager
     {
-        LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint);
+        MeshVisual CreateMesh(IteractiveSurface owner);
 
         PointVisual CreatePoint(Point3D point);
 
         LineVisual CreateSurfaceLine(IteractiveSurface owner, Point3D fromPoint, Point3D toPoint);
 
-        MeshVisual CreateMesh(IteractiveSurface owner);
+        LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint);
+
+        LineOverlay BeginMovingLineOverlay(Point3D startPoint);
+
+        void MoveLineOverlay(LineOverlay line, Point3D endPoint);
+
+        void DeleteMovingLineOverlay(LineOverlay visual);
 
         void DeleteLineOverlay(LineOverlay visual);
 
@@ -24,6 +30,8 @@ namespace LobelFrames.DataStructures.Surfaces
 
         void DeleteMesh(MeshVisual visual);
 
-        bool TryGetSurfaceFromPoint(Point viewportPosition, out IteractiveSurface surface);
+        bool TryGetSurfaceFromViewPoint(Point viewportPosition, out IteractiveSurface surface);
+
+        bool TryGetPointFromViewPoint(Point viewportPosition, out PointVisual point);
     }
 }

@@ -16,5 +16,6 @@ namespace LobelFrames.ViewModels
         public static readonly double ControlPointsDiameter = 0.7;
         public static readonly double SurfaceLinesDiameter = 0.2;
         public static readonly double LineOverlaysThickness = 3;
+        public static readonly double[] StrokeDashArray = { 3, 2 };
     }
 }

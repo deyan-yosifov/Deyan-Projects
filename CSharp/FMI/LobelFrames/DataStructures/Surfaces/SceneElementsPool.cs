@@ -22,10 +22,12 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly Visual3DPool<MeshVisual> meshPool;
         private readonly Visual3DPool<LineVisual> surfaceLinesPool;
         private readonly Visual2DPool<LineOverlay> lineOverlaysPool;
+        private readonly Visual2DPool<LineOverlay> movingLineOverlaysPool;
         private readonly Visual3DPool<PointVisual> controlPointsPool;
         private readonly Dictionary<LineOverlay, Tuple<Point3D, Point3D>> lineOverlayToSegment3D;
         private readonly HashSet<LineOverlay> visibleLineOverlays;
         private readonly Dictionary<Visual3D, IteractiveSurface> visual3dToSurfaceOwner;
+        private readonly Dictionary<Visual3D, PointVisual> visual3dToPointOwner;
         private readonly OrbitControl orbitControl;
         private readonly IteractivePointsHandler iteractivePointsHandler;
 
@@ -38,8 +40,10 @@ namespace LobelFrames.DataStructures.Surfaces
             this.surfaceLinesPool = new Visual3DPool<LineVisual>(scene);
             this.meshPool = new Visual3DPool<MeshVisual>(scene);
             this.lineOverlaysPool = new Visual2DPool<LineOverlay>();
+            this.movingLineOverlaysPool = new Visual2DPool<LineOverlay>();
             this.lineOverlayToSegment3D = new Dictionary<LineOverlay, Tuple<Point3D, Point3D>>();
             this.visual3dToSurfaceOwner = new Dictionary<Visual3D, IteractiveSurface>();
+            this.visual3dToPointOwner = new Dictionary<Visual3D, PointVisual>();
             this.visibleLineOverlays = new HashSet<LineOverlay>();
 
             this.reusableUnitLineShape = this.CreateReusableLineShape();
@@ -49,6 +53,111 @@ namespace LobelFrames.DataStructures.Surfaces
             this.SceneEditor.CameraChanged += this.CameraChangedHandler;
 
             this.InitializePointerHandlers();
+        }
+
+        private SceneEditor SceneEditor
+        {
+            get
+            {
+                return this.scene.Editor;
+            }
+        }
+
+        public LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint)
+        {
+            return this.CreateLineOverlay(this.lineOverlaysPool, null, fromPoint, toPoint);
+        }
+
+        public LineOverlay BeginMovingLineOverlay(Point3D startPoint)
+        {
+            return this.CreateLineOverlay(this.movingLineOverlaysPool, SceneConstants.StrokeDashArray, startPoint, startPoint);
+        }
+
+        public PointVisual CreatePoint(Point3D point)
+        {
+            PointVisual visual;
+            if (!this.controlPointsPool.TryPopElementFromPool(out visual))
+            {
+                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlPointsDiameter;
+                visual = this.SceneEditor.AddPointVisual(point, this.reusableUnitPointShape);
+            }
+
+            this.AddPointVisualMapping(visual);
+
+            return visual;
+        }
+
+        public LineVisual CreateSurfaceLine(IteractiveSurface owner, Point3D fromPoint, Point3D toPoint)
+        {
+            LineVisual visual;
+            if (!this.surfaceLinesPool.TryPopElementFromPool(out visual))
+            {
+                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
+                visual = this.SceneEditor.AddLineVisual(fromPoint, toPoint, this.reusableUnitLineShape);
+            }
+
+            this.AddVisualOwnerMapping(visual, owner);
+
+            return visual;
+        }
+
+        public MeshVisual CreateMesh(IteractiveSurface owner)
+        {
+            MeshVisual visual;
+            if (!this.meshPool.TryPopElementFromPool(out visual))
+            {                  
+                visual = this.SceneEditor.AddMeshVisual();
+            }
+
+            this.AddVisualOwnerMapping(visual, owner);
+
+            return visual;
+        }
+
+        public void DeleteLineOverlay(LineOverlay visual)
+        {
+            this.DeleteLineOverlay(this.lineOverlaysPool, visual);
+        }
+
+        public void DeleteMovingLineOverlay(LineOverlay visual)
+        {
+            this.DeleteLineOverlay(this.movingLineOverlaysPool, visual);
+        }
+
+        public void DeletePoint(PointVisual visual)
+        {
+            this.controlPointsPool.PushElementToPool(visual);
+            this.RemovePointVisualMapping(visual);
+        }
+
+        public void DeleteSurfaceLine(LineVisual visual)
+        {
+            this.surfaceLinesPool.PushElementToPool(visual);
+            this.RemoveVisualOwnerMapping(visual);
+        }
+
+        public void DeleteMesh(MeshVisual visual)
+        {
+            this.meshPool.PushElementToPool(visual);
+            this.RemoveVisualOwnerMapping(visual);
+        }
+
+        public bool TryGetSurfaceFromViewPoint(Point viewportPosition, out IteractiveSurface surface)
+        {
+            return this.TryGetElementFromViewPoint(this.visual3dToSurfaceOwner, viewportPosition, out surface);
+        }
+
+        public bool TryGetPointFromViewPoint(Point viewportPosition, out PointVisual point)
+        {
+            return this.TryGetElementFromViewPoint(this.visual3dToPointOwner, viewportPosition, out point);
+        }
+
+        public void MoveLineOverlay(LineOverlay line, Point3D endPoint)
+        {
+            Tuple<Point3D, Point3D> oldPosition = this.lineOverlayToSegment3D[line];
+            Tuple<Point3D, Point3D> newPosition = new Tuple<Point3D, Point3D>(oldPosition.Item1, endPoint);
+            this.lineOverlayToSegment3D[line] = newPosition;
+            this.UpdateLineOverlayPosition(line, newPosition.Item1, newPosition.Item2);
         }
 
         private void InitializePointerHandlers()
@@ -87,101 +196,6 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        private SceneEditor SceneEditor
-        {
-            get
-            {
-                return this.scene.Editor;
-            }
-        }
-
-        public LineOverlay CreateLineOverlay(Point3D fromPoint, Point3D toPoint)
-        {
-            LineOverlay visual;
-            if (!lineOverlaysPool.TryPopElementFromPool(out visual))
-            {
-                visual = this.SceneEditor.AddLineOverlay();
-            }
-
-            lineOverlayToSegment3D.Add(visual, new Tuple<Point3D, Point3D>(fromPoint, toPoint));
-            this.UpdateLineOverlayPosition(visual, fromPoint, toPoint);
-
-            return visual;
-        }
-
-        public PointVisual CreatePoint(Point3D point)
-        {
-            PointVisual visual;
-            if (!this.controlPointsPool.TryPopElementFromPool(out visual))
-            {
-                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlPointsDiameter;
-                visual = this.SceneEditor.AddPointVisual(point, this.reusableUnitPointShape);
-            }
-
-            return visual;
-        }
-
-        public LineVisual CreateSurfaceLine(IteractiveSurface owner, Point3D fromPoint, Point3D toPoint)
-        {
-            LineVisual visual;
-            if (!this.surfaceLinesPool.TryPopElementFromPool(out visual))
-            {
-                this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
-                visual = this.SceneEditor.AddLineVisual(fromPoint, toPoint, this.reusableUnitLineShape);
-            }
-
-            this.AddVisualOwnerMapping(visual, owner);
-
-            return visual;
-        }
-
-        public MeshVisual CreateMesh(IteractiveSurface owner)
-        {
-            MeshVisual visual;
-            if (!this.meshPool.TryPopElementFromPool(out visual))
-            {                  
-                visual = this.SceneEditor.AddMeshVisual();
-            }
-
-            this.AddVisualOwnerMapping(visual, owner);
-
-            return visual;
-        }
-
-        public void DeleteLineOverlay(LineOverlay visual)
-        {
-            this.lineOverlayToSegment3D.Remove(visual);
-            this.lineOverlaysPool.PushElementToPool(visual);
-            this.visibleLineOverlays.Remove(visual);
-        }
-
-        public void DeletePoint(PointVisual visual)
-        {
-            this.controlPointsPool.PushElementToPool(visual);
-        }
-
-        public void DeleteSurfaceLine(LineVisual visual)
-        {
-            this.surfaceLinesPool.PushElementToPool(visual);
-            this.RemoveVisualOwnerMapping(visual);
-        }
-
-        public void DeleteMesh(MeshVisual visual)
-        {
-            this.meshPool.PushElementToPool(visual);
-            this.RemoveVisualOwnerMapping(visual);
-        }
-
-        public bool TryGetSurfaceFromPoint(Point viewportPosition, out IteractiveSurface surface)
-        {
-            surface = null;
-            Visual3D visual;
-            bool success = this.SceneEditor.TryHitVisual3D(viewportPosition, out visual) && 
-                this.visual3dToSurfaceOwner.TryGetValue(visual, out surface);
-
-            return success;
-        }
-
         private void CameraChangedHandler(object sender, EventArgs e)
         {
             foreach (var lineToPoints in this.lineOverlayToSegment3D)
@@ -213,6 +227,16 @@ namespace LobelFrames.DataStructures.Surfaces
             }            
         }
 
+        private void AddPointVisualMapping(PointVisual point)
+        {
+            this.visual3dToPointOwner.Add(point.Visual, point);
+        }
+
+        private void RemovePointVisualMapping(PointVisual point)
+        {
+            this.visual3dToPointOwner.Remove(point.Visual);
+        }
+
         private void AddVisualOwnerMapping(IVisual3DOwner visualOwner, IteractiveSurface surfaceOwner)
         {
             this.visual3dToSurfaceOwner.Add(visualOwner.Visual, surfaceOwner);
@@ -221,6 +245,38 @@ namespace LobelFrames.DataStructures.Surfaces
         private void RemoveVisualOwnerMapping(IVisual3DOwner visualOwner)
         {
             this.visual3dToSurfaceOwner.Remove(visualOwner.Visual);
+        }
+
+        private bool TryGetElementFromViewPoint<T>(Dictionary<Visual3D, T> visual3dToElementOwnerMapping, Point viewportPosition, out T element)
+        {
+            element = default(T);
+            Visual3D visual;
+            bool success = this.SceneEditor.TryHitVisual3D(viewportPosition, out visual) &&
+                visual3dToElementOwnerMapping.TryGetValue(visual, out element);
+
+            return success;
+        }
+
+        private LineOverlay CreateLineOverlay(Visual2DPool<LineOverlay> pool, double[] strokeDashArray, Point3D fromPoint, Point3D toPoint)
+        {
+            LineOverlay visual;
+            if (!pool.TryPopElementFromPool(out visual))
+            {
+                this.SceneEditor.GraphicProperties.Graphics2D.StrokeDashArray = strokeDashArray;
+                visual = this.SceneEditor.AddLineOverlay();
+            }
+
+            this.lineOverlayToSegment3D.Add(visual, new Tuple<Point3D, Point3D>(fromPoint, toPoint));
+            this.UpdateLineOverlayPosition(visual, fromPoint, toPoint);
+
+            return visual;
+        }
+
+        private void DeleteLineOverlay(Visual2DPool<LineOverlay> pool, LineOverlay visual)
+        {
+            pool.PushElementToPool(visual);
+            this.lineOverlayToSegment3D.Remove(visual);
+            this.visibleLineOverlays.Remove(visual);
         }
     }
 }

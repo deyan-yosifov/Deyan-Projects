@@ -24,6 +24,9 @@ namespace Deyo.Controls.Controls3D.Visuals.Overlays2D
             shape.Fill = new SolidColorBrush(this.GraphicProperties.Graphics2D.Fill);
             shape.Stroke = new SolidColorBrush(this.GraphicProperties.Graphics2D.Stroke);
             shape.StrokeThickness = this.GraphicProperties.Graphics2D.StrokeThickness;
+
+            double[] dashArray = this.GraphicProperties.Graphics2D.StrokeDashArray;
+            shape.StrokeDashArray = dashArray == null ? null : new DoubleCollection(dashArray);
         }
     }
 }

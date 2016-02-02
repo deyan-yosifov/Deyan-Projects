@@ -11,12 +11,14 @@ namespace Deyo.Controls.Controls3D
         private Color fill;
         private Color stroke;
         private double strokeThickness;
+        private double[] strokeDashArray;
 
         internal GraphicsManager2D()
         {
             this.fill = Colors.Black;
             this.stroke = Colors.Black;
             this.strokeThickness = 0;
+            this.strokeDashArray = null;
         }
 
         private GraphicsManager2D(GraphicsManager2D other)
@@ -24,6 +26,7 @@ namespace Deyo.Controls.Controls3D
             this.fill = other.Fill;
             this.stroke = other.Stroke;
             this.strokeThickness = other.StrokeThickness;
+            this.strokeDashArray = other.strokeDashArray;
         }
 
         public Color Fill
@@ -70,6 +73,22 @@ namespace Deyo.Controls.Controls3D
                 {
                     this.strokeThickness = value;
                     this.OnPropertyChanged(GraphicPropertyNames.StrokeThickness2D);
+                }
+            }
+        }
+
+        public double[] StrokeDashArray
+        {
+            get
+            {
+                return this.strokeDashArray;
+            }
+            set
+            {
+                if (this.strokeDashArray != value)
+                {
+                    this.strokeDashArray = value;
+                    this.OnPropertyChanged(GraphicPropertyNames.StrokeDashArray2D);
                 }
             }
         }

@@ -23,7 +23,7 @@ namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
         public bool TryHandleClick(Point viewportPosition)
         {
             IteractiveSurface surface;
-            if (this.sceneManager.TryGetSurfaceFromPoint(viewportPosition, out surface))
+            if (this.sceneManager.TryGetSurfaceFromViewPoint(viewportPosition, out surface))
             {
                 this.OnSurfaceSelected(surface);
 
