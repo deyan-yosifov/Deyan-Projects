@@ -61,6 +61,8 @@
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\IIteractionHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\IteractionHandlingType.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\PointClickEventArgs.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\PointEventArgs.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\PointSelectionHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceModelingPointerHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceSelectedEventArgs.cs" />
