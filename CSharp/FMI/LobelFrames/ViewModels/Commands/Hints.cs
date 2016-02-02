@@ -10,5 +10,6 @@ namespace LobelFrames.ViewModels.Commands
     {
         public const string Default = "Избери команда!";
         public const string SelectMesh = "Селектирай повърхнина!";
+        public const string SelectFirstMovePoint = "Селектирай начална точка за преместване!";
     }
 }

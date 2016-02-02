@@ -38,7 +38,7 @@ namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
             return false;
         }
 
-        public EventHandler<SurfaceSelectedEventArgs> SurfaceSelected;
+        public event EventHandler<SurfaceSelectedEventArgs> SurfaceSelected;
 
         protected void OnSurfaceSelected(IteractiveSurface surface)
         {

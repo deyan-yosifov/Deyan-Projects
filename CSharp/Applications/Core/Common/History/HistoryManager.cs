@@ -127,7 +127,7 @@ namespace Deyo.Core.Common.History
             this.OnHistoryChanged();
         }
 
-        public EventHandler HistoryChanged;
+        public event EventHandler HistoryChanged;
 
         private void OnHistoryChanged()
         {

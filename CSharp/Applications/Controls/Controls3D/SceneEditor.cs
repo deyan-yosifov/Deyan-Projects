@@ -127,7 +127,7 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
-        public EventHandler CameraChanged;
+        public event EventHandler CameraChanged;
 
         public LineOverlay AddLineOverlay()
         {

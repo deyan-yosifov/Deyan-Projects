@@ -107,9 +107,9 @@ namespace LobelFrames.ViewModels
 
         public void SelectMesh()
         {
-            this.HintManager.Hint = Hints.SelectMesh;
             this.context.BeginCommandContext(CommandType.SelectMesh);
             this.EnableSurfacePointerHandler(IteractionHandlingType.SurfaceIteraction);
+            this.HintManager.Hint = Hints.SelectMesh;
         }
 
         public void Deselect()
@@ -120,6 +120,13 @@ namespace LobelFrames.ViewModels
         public void DeleteMesh()
         {
             this.Context.HistoryManager.PushUndoableAction(new DeleteSurfaceAction(this.Context));
+        }
+
+        public void MoveMesh()
+        {
+            this.Context.BeginCommandContext(CommandType.MoveMesh);
+            this.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
+            this.HintManager.Hint = Hints.SelectFirstMovePoint;
         }
 
         private void InitializeScene()
