@@ -103,6 +103,7 @@
     <Compile Include="Controls3D\Iteractions\AxisDirection.cs" />
     <Compile Include="Controls3D\Iteractions\IteractivePointsHandler.cs" />
     <Compile Include="Controls3D\Iteractions\PointIteractionPositionInfo.cs" />
+    <Compile Include="Controls3D\Iteractions\IteractionRestrictor.cs" />
     <Compile Include="Controls3D\MaterialsManager.cs" />
     <Compile Include="Controls3D\OrthographicCameraState.cs" />
     <Compile Include="Controls3D\PerspectiveCameraState.cs" />

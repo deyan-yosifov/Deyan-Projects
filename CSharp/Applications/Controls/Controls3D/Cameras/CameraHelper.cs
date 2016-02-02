@@ -91,6 +91,11 @@ namespace Deyo.Controls.Controls3D.Cameras
             return false;
         }
 
+        internal static bool TryGetVisiblePointFromPoint3D(Point3D point3D, Size viewportSize, OrthographicCamera camera, out Point point)
+        {
+            throw new NotImplementedException();
+        }
+
         public static Vector3D GetLookDirectionFromPoint(Point pointOnViewport, Size viewportSize, PerspectiveCamera camera)
         {
             Point3D point = GetPoint3DOnUnityDistantPlane(pointOnViewport, viewportSize, camera);

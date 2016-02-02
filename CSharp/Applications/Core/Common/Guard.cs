@@ -8,6 +8,22 @@ namespace Deyo.Core.Common
 {
     public static class Guard
     {
+        public static void ThrowExceptionIfTrue(bool value, string parameterName)
+        {
+            if (value)
+            {
+                throw new ArgumentException(string.Format("{0} must be false!", parameterName));
+            }
+        }
+
+        public static void ThrowExceptionIfFalse(bool value, string parameterName)
+        {
+            if (!value)
+            {
+                throw new ArgumentException(string.Format("{0} must be true!", parameterName));
+            }
+        }
+
         public static void ThrowExceptionIfNull(object value, string parameterName)
         {
             if (value == null)
