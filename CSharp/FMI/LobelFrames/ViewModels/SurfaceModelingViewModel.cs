@@ -107,6 +107,7 @@ namespace LobelFrames.ViewModels
 
         public void SelectMesh()
         {
+            this.HintManager.Hint = Hints.SelectMesh;
             this.context.BeginCommandContext(CommandType.SelectMesh);
             this.EnableSurfacePointerHandler(IteractionHandlingType.SurfaceIteraction);
         }
@@ -154,6 +155,7 @@ namespace LobelFrames.ViewModels
             this.context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(e.Surface, this.context));
             this.context.EndCommandContext();
             this.DisableSurfacePointerHandler();
+            this.HintManager.Hint = Hints.Default;
         }
 
         private void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)

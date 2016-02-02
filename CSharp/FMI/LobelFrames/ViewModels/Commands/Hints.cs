@@ -9,5 +9,6 @@ namespace LobelFrames.ViewModels.Commands
     internal static class Hints
     {
         public const string Default = "Избери команда!";
+        public const string SelectMesh = "Селектирай повърхнина!";
     }
 }
