@@ -11,14 +11,22 @@ namespace LobelFrames.ViewModels
     {
         private readonly HistoryManager historyManager;
         private readonly HashSet<IteractiveSurface> surfaces;
+        private readonly CommandContext currentCommandContext;
         private IteractiveSurface selectedSurface;
-        private CommandContext currentCommand;
-        private  IDisposable currentCommandEndAction;
 
         public SurfaceModelingContext()
         {
             this.historyManager = new HistoryManager();
             this.surfaces = new HashSet<IteractiveSurface>();
+            this.currentCommandContext = new CommandContext(this.historyManager);
+        }
+
+        public CommandContext CommandContext
+        {
+            get
+            {
+                return this.currentCommandContext;
+            }
         }
 
         public HistoryManager HistoryManager
@@ -72,32 +80,6 @@ namespace LobelFrames.ViewModels
         {
             this.surfaces.Remove(surface);
             surface.Hide();
-        }
-
-        public bool TryGetCurrentCommandContext(out CommandContext commandContext)
-        {
-            commandContext = this.currentCommand;
-
-            return commandContext != null;
-        }
-
-        public void BeginCommandContext(CommandType commandType)
-        {
-            Guard.ThrowExceptionInNotEqual(this.currentCommand, null, "currentCommand");
-            Guard.ThrowExceptionInNotEqual(this.currentCommandEndAction, null, "currentCommandEndAction");
-
-            this.currentCommandEndAction = this.HistoryManager.BeginUndoGroup();
-            this.currentCommand = new CommandContext(commandType);
-        }
-
-        public void EndCommandContext()
-        {
-            Guard.ThrowExceptionIfNull(this.currentCommand, "currentCommand");
-            Guard.ThrowExceptionIfNull(this.currentCommandEndAction, "currentCommandEndAction");
-
-            this.currentCommandEndAction.Dispose();
-            this.currentCommandEndAction = null;
-            this.currentCommand = null;
         }
     }
 }

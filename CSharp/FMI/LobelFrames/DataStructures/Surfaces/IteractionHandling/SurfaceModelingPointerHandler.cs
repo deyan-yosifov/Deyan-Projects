@@ -18,11 +18,11 @@ namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
         private IIteractionHandler currentHandler;
         private bool isEnabled;
 
-        public SurfaceModelingPointerHandler(ISceneElementsManager sceneManager)
+        public SurfaceModelingPointerHandler(ISceneElementsManager sceneManager, SceneEditor editor)
         {
             this.sceneManager = sceneManager;
             this.isEnabled = false;
-            this.pointHandler = new PointSelectionHandler(sceneManager);
+            this.pointHandler = new PointSelectionHandler(sceneManager, editor);
             this.surfaceHandler = new SurfaceSelectionHandler(sceneManager);
             this.handlers = new Dictionary<IteractionHandlingType, IIteractionHandler>();
             this.RegisterIteractionHandler(this.pointHandler);
@@ -107,7 +107,9 @@ namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
 
         public bool TryHandleMouseMove(MouseEventArgs e)
         {
-            return true;
+            Point viewportPosition = PointerHandlersController.GetPosition(e);
+
+            return this.CurrentHandler.TryHandleMove(viewportPosition);    
         }
 
         public bool TryHandleMouseWheel(MouseWheelEventArgs e)

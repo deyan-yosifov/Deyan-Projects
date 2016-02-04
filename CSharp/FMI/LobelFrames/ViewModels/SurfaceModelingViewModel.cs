@@ -1,5 +1,7 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Iteractions;
+using Deyo.Controls.Controls3D.Visuals;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.DataStructures.Surfaces.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
@@ -30,7 +32,7 @@ namespace LobelFrames.ViewModels
             this.context = new SurfaceModelingContext();
             this.elementsPool = new SceneElementsPool(scene);
             this.commandDescriptors = new CommandDescriptors(this);
-            this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool);
+            this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
             this.scene.PointerHandlersController.Handlers.AddFirst(this.surfacePointerHandler);
 
             this.AttachToEvents();
@@ -107,7 +109,7 @@ namespace LobelFrames.ViewModels
 
         public void SelectMesh()
         {
-            this.context.BeginCommandContext(CommandType.SelectMesh);
+            this.Context.CommandContext.BeginCommand(CommandType.SelectMesh);
             this.EnableSurfacePointerHandler(IteractionHandlingType.SurfaceIteraction);
             this.HintManager.Hint = Hints.SelectMesh;
         }
@@ -124,7 +126,7 @@ namespace LobelFrames.ViewModels
 
         public void MoveMesh()
         {
-            this.Context.BeginCommandContext(CommandType.MoveMesh);
+            this.Context.CommandContext.BeginCommand(CommandType.MoveMesh);
             this.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
             this.HintManager.Hint = Hints.SelectFirstMovePoint;
         }
@@ -144,7 +146,9 @@ namespace LobelFrames.ViewModels
         {
             this.InputManager.ParameterInputed += this.HandleInputManagerParameterInputed;
             this.Context.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
-            this.surfacePointerHandler.SurfaceHandler.SurfaceSelected += this.HandleSurfaceSelected;
+            this.SurfacePointerHandler.SurfaceHandler.SurfaceSelected += this.HandleSurfaceSelected;
+            this.SurfacePointerHandler.PointHandler.PointClicked += HandlePointClicked;
+            this.SurfacePointerHandler.PointHandler.PointMove += HandlePointMove;
         }
 
         private void HandleHistoryChanges(object sender, EventArgs e)
@@ -159,10 +163,45 @@ namespace LobelFrames.ViewModels
 
         private void HandleSurfaceSelected(object sender, SurfaceSelectedEventArgs e)
         {
-            this.context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(e.Surface, this.context));
-            this.context.EndCommandContext();
+            this.Context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(e.Surface, this.context));
+            this.Context.CommandContext.EndCommand();
             this.DisableSurfacePointerHandler();
             this.HintManager.Hint = Hints.Default;
+        }
+
+        private void HandlePointClicked(object sender, PointClickEventArgs e)
+        {
+            CommandContext commandContext = this.Context.CommandContext;
+
+            switch (commandContext.Type)
+            {
+                case CommandType.MoveMesh:
+                    this.HandleMoveCommandPointClick(e);
+                    break;
+                default:
+                    throw new NotSupportedException(string.Format("Not supported command type: {0}!", commandContext.Type));
+            }
+        }
+
+        private void HandleMoveCommandPointClick(PointClickEventArgs e)
+        {
+            IteractionRestrictor restrictor = this.SurfacePointerHandler.PointHandler.Restrictor;
+            PointVisual pointVisual;
+
+            if (restrictor.IsInIteraction)
+            {
+
+                restrictor.EndIteraction();
+            }
+            else if(e.TryGetVisual(out pointVisual))
+            {
+                restrictor.BeginIteraction(pointVisual.Position);
+            }
+        }
+
+        private void HandlePointMove(object sender, PointEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)

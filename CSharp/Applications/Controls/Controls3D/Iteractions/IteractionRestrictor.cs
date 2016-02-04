@@ -76,17 +76,24 @@ namespace Deyo.Controls.Controls3D.Iteractions
 
         public bool TryGetIteractionPoint(Point viewportPosition, out Point3D position)
         {
-            Size viewportSize = this.editor.ViewportSize;
+            if (this.IsInIteraction)
+            {
+                Size viewportSize = this.editor.ViewportSize;
 
-            this.editor.DoActionOnCamera(
-                (perspectiveCamera) =>
-                {
-                    this.CalculateLastIteractionPosition(perspectiveCamera, viewportPosition, viewportSize);
-                },
-                (orthographicCamera) =>
-                {
-                    this.CalculateLastIteractionPosition(orthographicCamera, viewportPosition, viewportSize);
-                });
+                this.editor.DoActionOnCamera(
+                    (perspectiveCamera) =>
+                    {
+                        this.CalculateLastIteractionPosition(perspectiveCamera, viewportPosition, viewportSize);
+                    },
+                    (orthographicCamera) =>
+                    {
+                        this.CalculateLastIteractionPosition(orthographicCamera, viewportPosition, viewportSize);
+                    });
+            }
+            else
+            {
+                this.lastIteractionPosition = null;
+            }
 
             position = this.lastIteractionPosition.HasValue ? this.lastIteractionPosition.Value : new Point3D();
 
