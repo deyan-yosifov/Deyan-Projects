@@ -58,6 +58,14 @@ namespace Deyo.Controls.Controls3D.Cameras
             }
         }
 
+        public bool HandlesDragMove
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public double ZoomSpeed
         {
             get;

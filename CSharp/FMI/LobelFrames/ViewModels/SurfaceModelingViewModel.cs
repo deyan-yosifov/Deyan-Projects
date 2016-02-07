@@ -2,6 +2,7 @@
 using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
+using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.DataStructures.Surfaces.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
@@ -183,6 +184,20 @@ namespace LobelFrames.ViewModels
             }
         }
 
+        private void HandlePointMove(object sender, PointEventArgs e)
+        {
+            CommandContext commandContext = this.Context.CommandContext;
+
+            switch (commandContext.Type)
+            {
+                case CommandType.MoveMesh:
+                    this.HandleMoveCommandPointMove(e);
+                    break;
+                default:
+                    throw new NotSupportedException(string.Format("Not supported command type: {0}!", commandContext.Type));
+            }
+        }
+
         private void HandleMoveCommandPointClick(PointClickEventArgs e)
         {
             IteractionRestrictor restrictor = this.SurfacePointerHandler.PointHandler.Restrictor;
@@ -190,29 +205,35 @@ namespace LobelFrames.ViewModels
 
             if (restrictor.IsInIteraction)
             {
-
+                // TODO:
                 restrictor.EndIteraction();
+                this.DisableSurfacePointerHandler();
+                this.Context.CommandContext.EndCommand();
+                this.HintManager.Hint = Hints.Default;
             }
             else if(e.TryGetVisual(out pointVisual))
             {
+                this.Context.CommandContext.MovingLine = this.ElementsPool.BeginMovingLineOverlay(pointVisual.Position);
                 restrictor.BeginIteraction(pointVisual.Position);
             }
         }
 
-        private void HandlePointMove(object sender, PointEventArgs e)
+        private void HandleMoveCommandPointMove(PointEventArgs e)
         {
-            throw new NotImplementedException();
+            this.ElementsPool.MoveLineOverlay(this.Context.CommandContext.MovingLine, e.Point);
         }
 
         private void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
         {
             this.surfacePointerHandler.IteractionType = iteractionType;
             this.surfacePointerHandler.IsEnabled = true;
+            this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = true;
         }
 
         private void DisableSurfacePointerHandler()
         {
             this.surfacePointerHandler.IsEnabled = false;
+            this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = false;
         }
     }
 }

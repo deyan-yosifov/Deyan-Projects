@@ -12,6 +12,8 @@ namespace Deyo.Controls.MouseHandlers
     {
         bool IsEnabled { get; set; }
 
+        bool HandlesDragMove { get; }
+
         bool TryHandleMouseDown(MouseButtonEventArgs e);
 
         bool TryHandleMouseUp(MouseButtonEventArgs e);

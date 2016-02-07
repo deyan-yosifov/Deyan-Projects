@@ -57,6 +57,14 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
             }
         }
 
+        public bool HandlesDragMove
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public bool HandleLeftButtonDown { get; set; }
 
         public bool HandleRightButtonDown { get; set; }

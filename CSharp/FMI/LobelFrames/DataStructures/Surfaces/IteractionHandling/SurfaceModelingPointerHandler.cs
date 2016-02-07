@@ -53,6 +53,14 @@ namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
             }
         }
 
+        public bool HandlesDragMove
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public IteractionHandlingType IteractionType
         {
             get
@@ -95,14 +103,14 @@ namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
 
         public bool TryHandleMouseDown(MouseButtonEventArgs e)
         {
-            Point viewportPosition = PointerHandlersController.GetPosition(e);
-
-            return this.CurrentHandler.TryHandleClick(viewportPosition);            
+            return true;          
         }
 
         public bool TryHandleMouseUp(MouseButtonEventArgs e)
         {
-            return false;
+            Point viewportPosition = PointerHandlersController.GetPosition(e);
+
+            return this.CurrentHandler.TryHandleClick(viewportPosition);  
         }
 
         public bool TryHandleMouseMove(MouseEventArgs e)

@@ -117,8 +117,8 @@ namespace Deyo.Controls.Controls3D
                 this.viewport2D.MouseUp += this.Viewport2D_MouseUp;
                 this.viewport2D.MouseMove += this.Viewport2D_MouseMove;
                 this.viewport2D.MouseWheel += this.Viewport2D_MouseWheel;
-                this.pointerHandlersController.HandlerCaptured += this.PointerHandlersControler_HandlerCaptured;
-                this.pointerHandlersController.HandlerReleased += this.PointerHandlersControler_HandlerReleased;
+                this.pointerHandlersController.HandlerCaptured += this.PointerHandlersController_HandlerCaptured;
+                this.pointerHandlersController.HandlerReleased += this.PointerHandlersController_HandlerReleased;
             }
         }
 
@@ -130,19 +130,19 @@ namespace Deyo.Controls.Controls3D
                 this.viewport2D.MouseUp -= this.Viewport2D_MouseUp;
                 this.viewport2D.MouseMove -= this.Viewport2D_MouseMove;
                 this.viewport2D.MouseWheel -= this.Viewport2D_MouseWheel;
-                this.pointerHandlersController.HandlerCaptured -= this.PointerHandlersControler_HandlerCaptured;
-                this.pointerHandlersController.HandlerReleased -= this.PointerHandlersControler_HandlerReleased;
+                this.pointerHandlersController.HandlerCaptured -= this.PointerHandlersController_HandlerCaptured;
+                this.pointerHandlersController.HandlerReleased -= this.PointerHandlersController_HandlerReleased;
 
                 this.isListeningToMouseEvents = false;
             }
         }
 
-        private void PointerHandlersControler_HandlerReleased(object sender, EventArgs e)
+        private void PointerHandlersController_HandlerReleased(object sender, EventArgs e)
         {
             this.viewport2D.ReleaseMouseCapture();
         }
 
-        private void PointerHandlersControler_HandlerCaptured(object sender, EventArgs e)
+        private void PointerHandlersController_HandlerCaptured(object sender, EventArgs e)
         {
             this.viewport2D.CaptureMouse();
         }

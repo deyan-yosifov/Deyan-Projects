@@ -51,6 +51,14 @@ namespace Deyo.Controls.Controls3D.Iteractions
             }
         }
 
+        public bool HandlesDragMove
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public bool CanMoveOnXAxis
         {
             get
@@ -159,6 +167,6 @@ namespace Deyo.Controls.Controls3D.Iteractions
         {
             this.capturedPoint = null;
             this.restrictor.EndIteraction();
-        }  
+        }
     }
 }
