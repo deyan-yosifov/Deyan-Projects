@@ -3,6 +3,7 @@ using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
+using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.DataStructures.Surfaces.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
@@ -30,8 +31,8 @@ namespace LobelFrames.ViewModels
             this.scene = scene;
             this.hintManager = new HintManager();
             this.inputManager = new InputManager();
-            this.context = new SurfaceModelingContext();
             this.elementsPool = new SceneElementsPool(scene);
+            this.context = new SurfaceModelingContext(this.elementsPool);
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
             this.scene.PointerHandlersController.Handlers.AddFirst(this.surfacePointerHandler);
@@ -205,9 +206,10 @@ namespace LobelFrames.ViewModels
 
             if (restrictor.IsInIteraction)
             {
-                // TODO:
                 restrictor.EndIteraction();
                 this.DisableSurfacePointerHandler();
+                Vector3D moveDirection = e.Point - this.Context.CommandContext.Points[0].Position;
+                this.Context.HistoryManager.PushUndoableAction(new MoveSurfaceAction(this.Context.SelectedSurface, moveDirection));
                 this.Context.CommandContext.EndCommand();
                 this.HintManager.Hint = Hints.Default;
             }
@@ -215,12 +217,27 @@ namespace LobelFrames.ViewModels
             {
                 this.Context.CommandContext.MovingLine = this.ElementsPool.BeginMovingLineOverlay(pointVisual.Position);
                 restrictor.BeginIteraction(pointVisual.Position);
+                this.Context.CommandContext.Points.Add(pointVisual);
+                this.Context.CommandContext.Edges.AddRange(this.Context.SelectedSurface.GetContour());
+
+                foreach (Edge edge in this.Context.CommandContext.Edges)
+                {
+                    this.Context.CommandContext.Lines.Add(this.ElementsPool.CreateLineOverlay(edge.Start.Point, edge.End.Point));
+                }
             }
         }
 
         private void HandleMoveCommandPointMove(PointEventArgs e)
         {
             this.ElementsPool.MoveLineOverlay(this.Context.CommandContext.MovingLine, e.Point);
+            Vector3D moveDirection = e.Point - this.Context.CommandContext.Points[0].Position;
+
+            for (int i = 0; i < this.Context.CommandContext.Edges.Count; i++)
+            {
+                Edge edge = this.Context.CommandContext.Edges[i];
+                LineOverlay line = this.Context.CommandContext.Lines[i];
+                this.ElementsPool.MoveLineOverlay(line, edge.Start.Point + moveDirection, edge.End.Point + moveDirection);
+            }
         }
 
         private void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)

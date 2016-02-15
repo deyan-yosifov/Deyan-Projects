@@ -85,6 +85,14 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public void MoveMesh(Vector3D moveDirection)
+        {
+            foreach (Vertex vertex in this.Vertices)
+            {
+                vertex.Point = vertex.Point + moveDirection;
+            }
+        }
+
         public void AddTrianglesToLobelMesh(Vertex start, Vertex end, int numberOfRows)
         {
             VertexConnectionInfo connectionInfo;
@@ -339,6 +347,28 @@ namespace LobelFrames.DataStructures
         private void OnSizeChanging(double newSizeValue)
         {
             throw new NotImplementedException();
+        }
+
+        internal IEnumerable<Edge> GetContour()
+        {
+            bool hasOpenedContour = true;
+
+            foreach (Edge edge in this.Edges)
+            {
+                if (this.Mesh.GetTriangles(edge).Count() < 2)
+                {
+                    hasOpenedContour = true;
+                    yield return edge;
+                }
+            }
+
+            if (!hasOpenedContour)
+            {
+                foreach (Edge edge in this.Edges)
+                {
+                    yield return edge;
+                }
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Deyo.Controls.Controls3D.Visuals;
 using System;
+using System.Collections.Generic;
+using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces
 {
@@ -37,6 +39,18 @@ namespace LobelFrames.DataStructures.Surfaces
         public override void Deselect()
         {
             base.HideSurfacePoints();
+        }
+
+        public override void Move(Vector3D direction)
+        {
+            this.meshEditor.MoveMesh(direction);
+            this.Render();
+            base.RenderSurfacePoints();
+        }
+
+        public override IEnumerable<Edge> GetContour()
+        {
+            return this.meshEditor.GetContour();
         }
     }
 }

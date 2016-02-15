@@ -76,7 +76,11 @@ namespace LobelFrames.DataStructures.Surfaces
         public PointVisual CreatePoint(Point3D point)
         {
             PointVisual visual;
-            if (!this.controlPointsPool.TryPopElementFromPool(out visual))
+            if (this.controlPointsPool.TryPopElementFromPool(out visual))
+            {
+                visual.Position = point;
+            }
+            else
             {
                 this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlPointsDiameter;
                 visual = this.SceneEditor.AddPointVisual(point, this.reusableUnitPointShape);
@@ -90,7 +94,11 @@ namespace LobelFrames.DataStructures.Surfaces
         public LineVisual CreateSurfaceLine(IteractiveSurface owner, Point3D fromPoint, Point3D toPoint)
         {
             LineVisual visual;
-            if (!this.surfaceLinesPool.TryPopElementFromPool(out visual))
+            if (this.surfaceLinesPool.TryPopElementFromPool(out visual))
+            {
+                visual.MoveTo(fromPoint, toPoint);
+            }
+            else
             {
                 this.SceneEditor.GraphicProperties.Thickness = SceneConstants.SurfaceLinesDiameter;
                 visual = this.SceneEditor.AddLineVisual(fromPoint, toPoint, this.reusableUnitLineShape);
@@ -155,7 +163,12 @@ namespace LobelFrames.DataStructures.Surfaces
         public void MoveLineOverlay(LineOverlay line, Point3D endPoint)
         {
             Tuple<Point3D, Point3D> oldPosition = this.lineOverlayToSegment3D[line];
-            Tuple<Point3D, Point3D> newPosition = new Tuple<Point3D, Point3D>(oldPosition.Item1, endPoint);
+            this.MoveLineOverlay(line, oldPosition.Item1, endPoint);
+        }
+
+        public void MoveLineOverlay(LineOverlay line, Point3D startPoint, Point3D endPoint)
+        {
+            Tuple<Point3D, Point3D> newPosition = new Tuple<Point3D, Point3D>(startPoint, endPoint);
             this.lineOverlayToSegment3D[line] = newPosition;
             this.UpdateLineOverlayPosition(line, newPosition.Item1, newPosition.Item2);
         }
@@ -277,6 +290,6 @@ namespace LobelFrames.DataStructures.Surfaces
             pool.PushElementToPool(visual);
             this.lineOverlayToSegment3D.Remove(visual);
             this.visibleLineOverlays.Remove(visual);
-        }
+        }        
     }
 }

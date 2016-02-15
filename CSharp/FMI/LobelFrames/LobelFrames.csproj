@@ -88,6 +88,7 @@
     <Compile Include="ViewModels\Commands\History\DeleteSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeselectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\IteractiveSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\MoveSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\SelectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\InputManager.cs" />
     <Compile Include="ViewModels\Commands\IsEnabledToColorConverter.cs" />

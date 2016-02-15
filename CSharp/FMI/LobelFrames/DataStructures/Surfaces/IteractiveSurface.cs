@@ -38,6 +38,8 @@ namespace LobelFrames.DataStructures.Surfaces
 
         public abstract void Select();
         public abstract void Deselect();
+        public abstract void Move(Vector3D direction);
+        public abstract IEnumerable<Edge> GetContour();
 
         public virtual void Render()
         {

@@ -18,6 +18,8 @@ namespace LobelFrames.DataStructures.Surfaces
 
         LineOverlay BeginMovingLineOverlay(Point3D startPoint);
 
+        void MoveLineOverlay(LineOverlay line, Point3D startPoint, Point3D endPoint);
+
         void MoveLineOverlay(LineOverlay line, Point3D endPoint);
 
         void DeleteMovingLineOverlay(LineOverlay visual);

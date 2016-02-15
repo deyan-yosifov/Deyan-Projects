@@ -21,7 +21,7 @@ namespace Deyo.Controls.Controls3D.Cameras
         private const int WheelSingleDelta = 120;
         private static readonly Vector3D zAxisVector = new Vector3D(0, 0, 1);
         private readonly SceneEditor editor;
-        private int previousMoveTimestamp = 0;
+        private readonly MouseMoveDelayManager moveDelayManager;
         private bool isEnabled;
         private DragAction dragAction;
         private Vector3D firstPanDirection;
@@ -30,6 +30,7 @@ namespace Deyo.Controls.Controls3D.Cameras
         internal OrbitControl(SceneEditor editor)
         {
             this.editor = editor;
+            this.moveDelayManager = new MouseMoveDelayManager();
 
             this.IsEnabled = true;
             this.ZoomSpeed = 0.1;
@@ -74,8 +75,14 @@ namespace Deyo.Controls.Controls3D.Cameras
 
         public double MoveDeltaTime
         {
-            get;
-            set;
+            get
+            {
+                return this.moveDelayManager.TimeInterval;
+            }
+            set
+            {
+                this.moveDelayManager.TimeInterval = value;
+            }
         }
 
         public double WidthOrbitAngleInDegrees
@@ -140,9 +147,8 @@ namespace Deyo.Controls.Controls3D.Cameras
         {
             if (this.dragAction != DragAction.NoAction)
             {
-                if (Math.Abs(e.Timestamp - this.previousMoveTimestamp) > this.MoveDeltaTime)
+                if (this.moveDelayManager.ShouldHandleMove(e))
                 {
-                    this.previousMoveTimestamp = e.Timestamp;
                     Point position = OrbitControl.GetPosition(e);
                     Size viewportSize = OrbitControl.GetViewportSize(e);
 

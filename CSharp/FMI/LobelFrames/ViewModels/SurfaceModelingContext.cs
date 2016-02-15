@@ -14,11 +14,11 @@ namespace LobelFrames.ViewModels
         private readonly CommandContext currentCommandContext;
         private IteractiveSurface selectedSurface;
 
-        public SurfaceModelingContext()
+        public SurfaceModelingContext(ISceneElementsManager sceneManager)
         {
             this.historyManager = new HistoryManager();
             this.surfaces = new HashSet<IteractiveSurface>();
-            this.currentCommandContext = new CommandContext(this.historyManager);
+            this.currentCommandContext = new CommandContext(sceneManager, this.historyManager);
         }
 
         public CommandContext CommandContext
