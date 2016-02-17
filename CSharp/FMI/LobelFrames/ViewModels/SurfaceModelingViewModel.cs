@@ -207,6 +207,7 @@ namespace LobelFrames.ViewModels
             if (restrictor.IsInIteraction)
             {
                 restrictor.EndIteraction();
+                this.InputManager.Stop();
                 this.DisableSurfacePointerHandler();
                 Vector3D moveDirection = e.Point - this.Context.CommandContext.Points[0].Position;
                 this.Context.HistoryManager.PushUndoableAction(new MoveSurfaceAction(this.Context.SelectedSurface, moveDirection));
@@ -215,6 +216,7 @@ namespace LobelFrames.ViewModels
             }
             else if(e.TryGetVisual(out pointVisual))
             {
+                this.InputManager.Start(Labels.InputMoveDistance, 0.ToString());
                 this.Context.CommandContext.MovingLine = this.ElementsPool.BeginMovingLineOverlay(pointVisual.Position);
                 restrictor.BeginIteraction(pointVisual.Position);
                 this.Context.CommandContext.Points.Add(pointVisual);
@@ -231,6 +233,7 @@ namespace LobelFrames.ViewModels
         {
             this.ElementsPool.MoveLineOverlay(this.Context.CommandContext.MovingLine, e.Point);
             Vector3D moveDirection = e.Point - this.Context.CommandContext.Points[0].Position;
+            this.InputManager.InputValue = Labels.GetDecimalNumberValue(moveDirection.Length);
 
             for (int i = 0; i < this.Context.CommandContext.Edges.Count; i++)
             {

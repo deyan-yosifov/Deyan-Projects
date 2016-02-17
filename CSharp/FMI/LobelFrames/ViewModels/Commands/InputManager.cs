@@ -62,6 +62,20 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
+        public void Start(string label, string value)
+        {
+            this.IsEnabled = true;
+            this.InputLabel = label;
+            this.InputValue = value;
+        }
+
+        public void Stop()
+        {
+            this.InputLabel = Labels.Default;
+            this.InputValue = string.Empty;
+            this.IsEnabled = false;
+        }
+
         public event EventHandler<ParameterInputedEventArgs> ParameterInputed;
 
         private void HandleInputSymbol(char symbol)
