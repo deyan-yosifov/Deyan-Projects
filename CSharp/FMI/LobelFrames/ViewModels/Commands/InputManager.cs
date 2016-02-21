@@ -8,11 +8,14 @@ namespace LobelFrames.ViewModels.Commands
         private string inputLabel;
         private string inputValue;
         private bool isEnabled;
+        private bool isInputingParameter;
 
         public InputManager()
         {
             this.IsEnabled = false;
             this.InputValue = string.Empty;
+            this.InputLabel = Labels.Default;
+            this.isInputingParameter = false;
         }
 
         public bool IsEnabled
@@ -71,8 +74,6 @@ namespace LobelFrames.ViewModels.Commands
 
         public void Stop()
         {
-            this.InputLabel = Labels.Default;
-            this.InputValue = string.Empty;
             this.IsEnabled = false;
         }
 
@@ -84,28 +85,23 @@ namespace LobelFrames.ViewModels.Commands
             const char backspace = '\b';
             const char cariageReturn = '\r';
             const char newLine = '\n';
-
+            
             switch(symbol)
             {
                 case escape:
-                    this.InputValue = string.Empty;
+                    this.HandleEscapeButtonInput();
                     break;
                 case backspace:
-                    if (!string.IsNullOrEmpty(this.InputValue))
-                    {
-                        this.InputValue = this.InputValue.Substring(0, this.InputValue.Length - 1);
-                    }
+                    this.HandleBackspaceButtonInput();
                     break;
                 case newLine:
                 case cariageReturn:
-                    if (!string.IsNullOrEmpty(this.InputValue))
-                    {
-                        this.OnParameterInputed(this.InputValue);
-                        this.InputValue = string.Empty;
-                    }
+                    this.HandleNewLineButtonInput();                    
                     break;
                 default:
-                    if(char.IsLetterOrDigit(symbol))
+                    this.EnsureInputingState();
+
+                    if (char.IsLetterOrDigit(symbol))
                     {
                         this.InputValue += symbol;
                     }
@@ -113,10 +109,45 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
+        private void HandleNewLineButtonInput()
+        {
+            if (!string.IsNullOrEmpty(this.InputValue))
+            {
+                this.OnParameterInputed(this.InputValue);
+                this.InputValue = string.Empty;
+                this.isInputingParameter = false;
+            }
+        }
+
+        private void HandleBackspaceButtonInput()
+        {
+            if (!string.IsNullOrEmpty(this.InputValue))
+            {
+                this.isInputingParameter = true;
+                this.InputValue = this.InputValue.Substring(0, this.InputValue.Length - 1);
+            }
+        }
+
+        private void HandleEscapeButtonInput()
+        {
+            this.InputValue = string.Empty;
+            this.isInputingParameter = false;
+        }
+
+        private void EnsureInputingState()
+        {
+            if (!this.isInputingParameter)
+            {
+                this.isInputingParameter = true;
+                this.InputValue = string.Empty;
+            }
+        }
+
         private void DoOnIsEnabledChanged()
         {
             this.SetLabel(Labels.Default);
             this.InputValue = string.Empty;
+            this.isInputingParameter = false;
         }
 
         private void SetLabel(string label)
