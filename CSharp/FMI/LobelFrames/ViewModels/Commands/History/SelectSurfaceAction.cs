@@ -7,7 +7,7 @@ namespace LobelFrames.ViewModels.Commands.History
     {
         private readonly IteractiveSurface oldSelection;
 
-        public SelectSurfaceAction(IteractiveSurface surface, SurfaceModelingContext context)
+        public SelectSurfaceAction(IteractiveSurface surface, ILobelSceneContext context)
             : base(surface, context)
         {
             this.oldSelection = context.SelectedSurface;

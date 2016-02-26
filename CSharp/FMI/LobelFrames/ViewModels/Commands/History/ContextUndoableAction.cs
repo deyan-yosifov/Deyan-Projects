@@ -6,15 +6,15 @@ namespace LobelFrames.ViewModels.Commands.History
 {
     public abstract class ContextUndoableAction : UndoRedoActionBase
     {
-        private readonly SurfaceModelingContext context;
+        private readonly ILobelSceneContext context;
 
-        public ContextUndoableAction(SurfaceModelingContext context)
+        public ContextUndoableAction(ILobelSceneContext context)
         {
             Guard.ThrowExceptionIfNull(context, "context");
             this.context = context;
         }
 
-        protected SurfaceModelingContext Context
+        protected ILobelSceneContext Context
         {
             get
             {

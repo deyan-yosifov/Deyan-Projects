@@ -6,7 +6,7 @@ namespace LobelFrames.ViewModels.Commands.History
 {
     public class DeselectSurfaceAction : IteractiveSurfaceAction
     {
-        public DeselectSurfaceAction(SurfaceModelingContext context)
+        public DeselectSurfaceAction(ILobelSceneContext context)
             : base(context.SelectedSurface, context)
         {
         }

@@ -4,6 +4,8 @@ using Deyo.Core.Common;
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
+using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+using LobelFrames.ViewModels.Commands.Handlers;
 using System;
 using System.Collections.Generic;
 
@@ -11,24 +13,24 @@ namespace LobelFrames.ViewModels.Commands
 {
     public class CommandContext
     {
-        private readonly ISceneElementsManager elementsManager;
+        private readonly Dictionary<CommandType, ICommandHandler> handlers;
         private readonly HistoryManager historyManager;
-        private readonly List<LineOverlay> lines;
-        private readonly List<PointVisual> points;
-        private readonly List<Edge> edges;
         private bool isStarted;
         private CommandType type;
-        private LineOverlay movingLine;
         private IDisposable endHistoryAction;
+        private ICommandHandler currentHandler;
 
-        internal CommandContext(ISceneElementsManager elementsManager, HistoryManager history)
+        internal CommandContext(HistoryManager historyManager, IEnumerable<ICommandHandler> handlers)
         {
-            this.lines = new List<LineOverlay>();
-            this.points = new List<PointVisual>();
-            this.edges = new List<Edge>();
-            this.elementsManager = elementsManager;
-            this.historyManager = history;
+            this.historyManager = historyManager;
+            this.handlers = new Dictionary<CommandType, ICommandHandler>();
             this.isStarted = false;
+            this.currentHandler = null;
+
+            foreach (ICommandHandler handler in handlers)
+            {
+                this.handlers.Add(handler.Type, handler);
+            }
         }
 
         public bool IsStarted
@@ -48,44 +50,12 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
-        public LineOverlay MovingLine
+        public ICommandHandler CommandHandler
         {
             get
             {
                 this.EnsureIsStarted();
-                return this.movingLine;
-            }
-            set
-            {
-                this.EnsureIsStarted();
-                this.movingLine = value;
-            }
-        }
-
-        public List<LineOverlay> Lines
-        {
-            get
-            {
-                this.EnsureIsStarted();
-                return this.lines;
-            }
-        }
-
-        public List<PointVisual> Points
-        {
-            get
-            {
-                this.EnsureIsStarted();
-                return this.points;
-            }
-        }
-
-        public List<Edge> Edges
-        {
-            get
-            {
-                this.EnsureIsStarted();
-                return this.edges;
+                return this.currentHandler;
             }
         }
 
@@ -95,7 +65,9 @@ namespace LobelFrames.ViewModels.Commands
 
             this.isStarted = true;
             this.type = commandType;
+            this.currentHandler = this.handlers[commandType];
             this.endHistoryAction = this.historyManager.BeginUndoGroup();
+            this.currentHandler.BeginCommand();
         }
 
         public void EndCommand()
@@ -104,26 +76,9 @@ namespace LobelFrames.ViewModels.Commands
 
             this.endHistoryAction.Dispose();
             this.endHistoryAction = null;
+            this.currentHandler.EndCommand();
+            this.currentHandler = null;
             this.isStarted = false;
-            this.ClearElements();
-        }
-
-        private void ClearElements()
-        {
-            if (this.movingLine != null)
-            {
-                this.elementsManager.DeleteMovingLineOverlay(this.movingLine);
-                this.movingLine = null;
-            }
-
-            foreach (LineOverlay line in this.lines)
-            {
-                this.elementsManager.DeleteLineOverlay(line);
-            }
-
-            this.lines.Clear();
-            this.points.Clear();
-            this.edges.Clear();
         }
 
         private void EnsureIsStarted()

@@ -6,13 +6,13 @@ namespace LobelFrames.ViewModels.Commands
 {
     public class CommandStateEvaluator
     {
-        private readonly SurfaceModelingContext context;
-        private readonly Dictionary<CommandType, Func<SurfaceModelingContext, bool>> commandTypesIsEnabledEvaluators;
+        private readonly ILobelSceneContext context;
+        private readonly Dictionary<CommandType, Func<ILobelSceneContext, bool>> commandTypesIsEnabledEvaluators;
 
-        public CommandStateEvaluator(SurfaceModelingContext context)
+        public CommandStateEvaluator(ILobelSceneContext context)
         {
             this.context = context;
-            this.commandTypesIsEnabledEvaluators = new Dictionary<CommandType, Func<SurfaceModelingContext, bool>>();
+            this.commandTypesIsEnabledEvaluators = new Dictionary<CommandType, Func<ILobelSceneContext, bool>>();
 
             this.RegisterEvaluator(CommandType.Open, CommandStateEvaluator.IsAlwaysEnabled);
             this.RegisterEvaluator(CommandType.Save, CommandStateEvaluator.IsAlwaysEnabled);
@@ -39,7 +39,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterEvaluator(CommandType.Help, CommandStateEvaluator.IsAlwaysEnabled);
         }
 
-        private SurfaceModelingContext Context
+        private ILobelSceneContext Context
         {
             get
             {
@@ -49,7 +49,7 @@ namespace LobelFrames.ViewModels.Commands
 
         public bool EvaluateIsEnabled(CommandType type)
         {
-            if (this.Context.HistoryManager.IsCreatingUndoGroup)
+            if (this.Context.HasActiveCommand)
             {
                 return type == CommandType.Help;
             }
@@ -59,42 +59,42 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
-        private void RegisterEvaluator(CommandType type, Func<SurfaceModelingContext, bool> evaluateIsEnabled)
+        private void RegisterEvaluator(CommandType type, Func<ILobelSceneContext, bool> evaluateIsEnabled)
         {
             this.commandTypesIsEnabledEvaluators.Add(type, evaluateIsEnabled);
         }
 
-        private static bool IsAlwaysEnabled(SurfaceModelingContext context)
+        private static bool IsAlwaysEnabled(ILobelSceneContext context)
         {
             return true;
         }
 
-        private static bool IsUndoEnabled(SurfaceModelingContext context)
+        private static bool IsUndoEnabled(ILobelSceneContext context)
         {
-            return context.HistoryManager.CanUndo;
+            return context.HasActionToUndo;
         }
 
-        private static bool IsRedoEnabled(SurfaceModelingContext context)
+        private static bool IsRedoEnabled(ILobelSceneContext context)
         {
-            return context.HistoryManager.CanRedo;
+            return context.HasActionToRedo;
         }
 
-        private static bool AreMeshesDeselected(SurfaceModelingContext context)
+        private static bool AreMeshesDeselected(ILobelSceneContext context)
         {
             return context.SelectedSurface == null && context.HasSurfaces;
         }
 
-        private static bool IsMeshSelected(SurfaceModelingContext context)
+        private static bool IsMeshSelected(ILobelSceneContext context)
         {
             return context.SelectedSurface != null;
         }
 
-        private static bool IsLobelSurfaceSelected(SurfaceModelingContext context)
+        private static bool IsLobelSurfaceSelected(ILobelSceneContext context)
         {
             return context.SelectedSurface != null && context.SelectedSurface.Type == SurfaceType.Lobel;
         }
 
-        private static bool IsBezierSurfaceSelected(SurfaceModelingContext context)
+        private static bool IsBezierSurfaceSelected(ILobelSceneContext context)
         {
             return context.SelectedSurface != null && context.SelectedSurface.Type == SurfaceType.Bezier;
         }

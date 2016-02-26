@@ -2,23 +2,24 @@
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.ViewModels.Commands;
+using LobelFrames.ViewModels.Commands.Handlers;
 using System;
 using System.Collections.Generic;
 
 namespace LobelFrames.ViewModels
 {
-    public class SurfaceModelingContext
+    public class SurfaceModelingContext : ILobelSceneContext
     {
         private readonly HistoryManager historyManager;
         private readonly HashSet<IteractiveSurface> surfaces;
         private readonly CommandContext currentCommandContext;
         private IteractiveSurface selectedSurface;
 
-        public SurfaceModelingContext(ISceneElementsManager sceneManager)
+        public SurfaceModelingContext(IEnumerable<ICommandHandler> commandHandlers)
         {
             this.historyManager = new HistoryManager();
             this.surfaces = new HashSet<IteractiveSurface>();
-            this.currentCommandContext = new CommandContext(sceneManager, this.historyManager);
+            this.currentCommandContext = new CommandContext(this.historyManager, commandHandlers);
         }
 
         public CommandContext CommandContext
@@ -34,6 +35,30 @@ namespace LobelFrames.ViewModels
             get
             {
                 return this.historyManager;
+            }
+        }
+
+        public bool HasActionToUndo
+        {
+            get
+            {
+                return this.historyManager.CanUndo;
+            }
+        }
+
+        public bool HasActionToRedo
+        {
+            get
+            {
+                return this.historyManager.CanRedo;
+            }
+        }
+
+        public bool HasActiveCommand
+        {
+            get
+            {
+                return this.CommandContext.IsStarted;
             }
         }
 

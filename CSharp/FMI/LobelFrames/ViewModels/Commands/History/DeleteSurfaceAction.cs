@@ -4,7 +4,7 @@ namespace LobelFrames.ViewModels.Commands.History
 {
     public class DeleteSurfaceAction : IteractiveSurfaceAction
     {
-        public DeleteSurfaceAction(SurfaceModelingContext context)
+        public DeleteSurfaceAction(ILobelSceneContext context)
             : base(context.SelectedSurface, context)
         {
         }

@@ -5,7 +5,7 @@ namespace LobelFrames.ViewModels.Commands.History
 {
     public class AddSurfaceAction : IteractiveSurfaceAction
     {
-        public AddSurfaceAction(IteractiveSurface surface, SurfaceModelingContext context)
+        public AddSurfaceAction(IteractiveSurface surface, ILobelSceneContext context)
             : base(surface, context)
         {
         }

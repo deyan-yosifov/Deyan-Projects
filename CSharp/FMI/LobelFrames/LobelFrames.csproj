@@ -60,6 +60,7 @@
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\IIteractionHandler.cs" />
+    <Compile Include="DataStructures\Surfaces\IteractionHandling\ISurfaceModelingPointerHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\IteractionHandlingType.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\PointClickEventArgs.cs" />
     <Compile Include="DataStructures\Surfaces\IteractionHandling\PointEventArgs.cs" />
@@ -81,6 +82,11 @@
     <Compile Include="ViewModels\Commands\CommandStateEvaluator.cs" />
     <Compile Include="ViewModels\Commands\CommandType.cs" />
     <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\CommandHandlerBase.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\CommandHandlersFactory.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\ICommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\MoveCommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\SelectCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\HintManager.cs" />
     <Compile Include="ViewModels\Commands\Hints.cs" />
     <Compile Include="ViewModels\Commands\History\AddSurfaceAction.cs" />
@@ -94,6 +100,8 @@
     <Compile Include="ViewModels\Commands\IsEnabledToColorConverter.cs" />
     <Compile Include="ViewModels\Commands\Labels.cs" />
     <Compile Include="ViewModels\Commands\ParameterInputedEventArgs.cs" />
+    <Compile Include="ViewModels\ILobelSceneContext.cs" />
+    <Compile Include="ViewModels\ILobelSceneEditor.cs" />
     <Compile Include="ViewModels\SceneConstants.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />

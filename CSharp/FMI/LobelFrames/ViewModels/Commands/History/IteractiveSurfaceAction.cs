@@ -8,7 +8,7 @@ namespace LobelFrames.ViewModels.Commands.History
     {
         private readonly IteractiveSurface surface;
 
-        public IteractiveSurfaceAction(IteractiveSurface surface, SurfaceModelingContext context)
+        public IteractiveSurfaceAction(IteractiveSurface surface, ILobelSceneContext context)
             : base(context)
         {
             Guard.ThrowExceptionIfNull(surface, "surface");

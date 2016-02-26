@@ -8,7 +8,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
 {
-    public class SurfaceModelingPointerHandler : IPointerHandler
+    public class SurfaceModelingPointerHandler : IPointerHandler, ISurfaceModelingPointerHandler
     {
         private readonly ISceneElementsManager sceneManager;
         private readonly PointSelectionHandler pointHandler;

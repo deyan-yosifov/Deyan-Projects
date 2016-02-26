@@ -3,10 +3,12 @@ using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
+using Deyo.Core.Common.History;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.DataStructures.Surfaces.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
+using LobelFrames.ViewModels.Commands.Handlers;
 using LobelFrames.ViewModels.Commands.History;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels
 {
-    public class SurfaceModelingViewModel : ViewModelBase
+    public class SurfaceModelingViewModel : ViewModelBase, ILobelSceneEditor
     {
         private readonly Scene3D scene;
         private readonly HintManager hintManager;
@@ -32,7 +34,7 @@ namespace LobelFrames.ViewModels
             this.hintManager = new HintManager();
             this.inputManager = new InputManager();
             this.elementsPool = new SceneElementsPool(scene);
-            this.context = new SurfaceModelingContext(this.elementsPool);
+            this.context = new SurfaceModelingContext(CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
             this.scene.PointerHandlersController.Handlers.AddFirst(this.surfacePointerHandler);
@@ -73,7 +75,7 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        internal SurfaceModelingContext Context
+        public ILobelSceneContext Context
         {
             get
             {
@@ -81,7 +83,7 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        private SurfaceModelingPointerHandler SurfacePointerHandler
+        public ISurfaceModelingPointerHandler SurfacePointerHandler
         {
             get
             {
@@ -89,48 +91,91 @@ namespace LobelFrames.ViewModels
             }
         }
 
+        private HistoryManager HistoryManager
+        {
+            get
+            {
+                return this.context.HistoryManager;
+            }
+        }
+
+        private CommandContext CommandContext
+        {
+            get
+            {
+                return this.context.CommandContext;
+            }
+        }
+
         public void AddLobelMesh()
         {
-            using (this.Context.HistoryManager.BeginUndoGroup())
+            using (this.HistoryManager.BeginUndoGroup())
             {
                 LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
-                this.Context.HistoryManager.PushUndoableAction(new AddSurfaceAction(surface, this.Context));
-                this.Context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(surface, this.Context));
+                this.DoAction(new AddSurfaceAction(surface, this.Context));
+                this.DoAction(new SelectSurfaceAction(surface, this.Context));
             }
         }
 
         public void Undo()
         {
-            this.Context.HistoryManager.Undo();
+            this.HistoryManager.Undo();
         }
 
         public void Redo()
         {
-            this.Context.HistoryManager.Redo();
+            this.HistoryManager.Redo();
         }
 
         public void SelectMesh()
         {
-            this.Context.CommandContext.BeginCommand(CommandType.SelectMesh);
-            this.EnableSurfacePointerHandler(IteractionHandlingType.SurfaceIteraction);
-            this.HintManager.Hint = Hints.SelectMesh;
+            this.CommandContext.BeginCommand(CommandType.SelectMesh);
         }
 
         public void Deselect()
         {
-            this.Context.HistoryManager.PushUndoableAction(new DeselectSurfaceAction(this.Context));
+            this.DoAction(new DeselectSurfaceAction(this.Context));
         }
 
         public void DeleteMesh()
         {
-            this.Context.HistoryManager.PushUndoableAction(new DeleteSurfaceAction(this.Context));
+            this.DoAction(new DeleteSurfaceAction(this.Context));
         }
 
         public void MoveMesh()
         {
-            this.Context.CommandContext.BeginCommand(CommandType.MoveMesh);
-            this.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
-            this.HintManager.Hint = Hints.SelectFirstMovePoint;
+            this.CommandContext.BeginCommand(CommandType.MoveMesh);
+        }
+
+        public void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
+        {
+            this.surfacePointerHandler.IteractionType = iteractionType;
+            this.surfacePointerHandler.IsEnabled = true;
+            this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = true;
+        }
+
+        public void DisableSurfacePointerHandler()
+        {
+            this.surfacePointerHandler.IsEnabled = false;
+            this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = false;
+        }
+
+        public void ShowHint(string hint)
+        {
+            this.HintManager.Hint = hint;
+        }
+
+        public void DoAction(IUndoRedoAction action)
+        {
+            this.HistoryManager.PushUndoableAction(action);
+        }
+
+        public void CloseCommandContext()
+        {
+            this.CommandContext.EndCommand();
+            this.DisableSurfacePointerHandler();
+            this.ShowHint(Hints.Default);
+            this.InputManager.Stop();
         }
 
         private void InitializeScene()
@@ -147,7 +192,7 @@ namespace LobelFrames.ViewModels
         private void AttachToEvents()
         {
             this.InputManager.ParameterInputed += this.HandleInputManagerParameterInputed;
-            this.Context.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
+            this.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
             this.SurfacePointerHandler.SurfaceHandler.SurfaceSelected += this.HandleSurfaceSelected;
             this.SurfacePointerHandler.PointHandler.PointClicked += HandlePointClicked;
             this.SurfacePointerHandler.PointHandler.PointMove += HandlePointMove;
@@ -165,95 +210,17 @@ namespace LobelFrames.ViewModels
 
         private void HandleSurfaceSelected(object sender, SurfaceSelectedEventArgs e)
         {
-            this.Context.HistoryManager.PushUndoableAction(new SelectSurfaceAction(e.Surface, this.context));
-            this.Context.CommandContext.EndCommand();
-            this.DisableSurfacePointerHandler();
-            this.HintManager.Hint = Hints.Default;
+            this.CommandContext.CommandHandler.HandleSurfaceSelected(e);
         }
 
         private void HandlePointClicked(object sender, PointClickEventArgs e)
         {
-            CommandContext commandContext = this.Context.CommandContext;
-
-            switch (commandContext.Type)
-            {
-                case CommandType.MoveMesh:
-                    this.HandleMoveCommandPointClick(e);
-                    break;
-                default:
-                    throw new NotSupportedException(string.Format("Not supported command type: {0}!", commandContext.Type));
-            }
+            this.CommandContext.CommandHandler.HandlePointClicked(e);
         }
 
         private void HandlePointMove(object sender, PointEventArgs e)
         {
-            CommandContext commandContext = this.Context.CommandContext;
-
-            switch (commandContext.Type)
-            {
-                case CommandType.MoveMesh:
-                    this.HandleMoveCommandPointMove(e);
-                    break;
-                default:
-                    throw new NotSupportedException(string.Format("Not supported command type: {0}!", commandContext.Type));
-            }
-        }
-
-        private void HandleMoveCommandPointClick(PointClickEventArgs e)
-        {
-            IteractionRestrictor restrictor = this.SurfacePointerHandler.PointHandler.Restrictor;
-            PointVisual pointVisual;
-
-            if (restrictor.IsInIteraction)
-            {
-                restrictor.EndIteraction();
-                this.InputManager.Stop();
-                this.DisableSurfacePointerHandler();
-                Vector3D moveDirection = e.Point - this.Context.CommandContext.Points[0].Position;
-                this.Context.HistoryManager.PushUndoableAction(new MoveSurfaceAction(this.Context.SelectedSurface, moveDirection));
-                this.Context.CommandContext.EndCommand();
-                this.HintManager.Hint = Hints.Default;
-            }
-            else if(e.TryGetVisual(out pointVisual))
-            {
-                this.InputManager.Start(Labels.InputMoveDistance, 0.ToString());
-                this.Context.CommandContext.MovingLine = this.ElementsPool.BeginMovingLineOverlay(pointVisual.Position);
-                restrictor.BeginIteraction(pointVisual.Position);
-                this.Context.CommandContext.Points.Add(pointVisual);
-                this.Context.CommandContext.Edges.AddRange(this.Context.SelectedSurface.GetContour());
-
-                foreach (Edge edge in this.Context.CommandContext.Edges)
-                {
-                    this.Context.CommandContext.Lines.Add(this.ElementsPool.CreateLineOverlay(edge.Start.Point, edge.End.Point));
-                }
-            }
-        }
-
-        private void HandleMoveCommandPointMove(PointEventArgs e)
-        {
-            this.ElementsPool.MoveLineOverlay(this.Context.CommandContext.MovingLine, e.Point);
-            Vector3D moveDirection = e.Point - this.Context.CommandContext.Points[0].Position;
-            this.InputManager.InputValue = Labels.GetDecimalNumberValue(moveDirection.Length);
-
-            for (int i = 0; i < this.Context.CommandContext.Edges.Count; i++)
-            {
-                Edge edge = this.Context.CommandContext.Edges[i];
-                LineOverlay line = this.Context.CommandContext.Lines[i];
-                this.ElementsPool.MoveLineOverlay(line, edge.Start.Point + moveDirection, edge.End.Point + moveDirection);
-            }
-        }
-
-        private void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
-        {
-            this.surfacePointerHandler.IteractionType = iteractionType;
-            this.surfacePointerHandler.IsEnabled = true;
-            this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = true;
-        }
-
-        private void DisableSurfacePointerHandler()
-        {
-            this.surfacePointerHandler.IsEnabled = false;
-            this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = false;
+            this.CommandContext.CommandHandler.HandlePointMove(e);
         }
     }
 }
