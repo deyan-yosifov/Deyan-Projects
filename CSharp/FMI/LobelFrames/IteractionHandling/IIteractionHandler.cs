@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public interface IIteractionHandler
     {

@@ -6,7 +6,7 @@ using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
-using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Commands.Handlers;
 using LobelFrames.ViewModels.Commands.History;

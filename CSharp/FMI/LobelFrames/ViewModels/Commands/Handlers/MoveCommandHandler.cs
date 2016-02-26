@@ -3,7 +3,7 @@ using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
-using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands.History;
 using System;
 using System.Windows.Media.Media3D;

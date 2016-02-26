@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public enum IteractionHandlingType
     {

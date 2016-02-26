@@ -1,5 +1,5 @@
 ﻿using LobelFrames.DataStructures.Surfaces;
-using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands.History;
 using System;
 

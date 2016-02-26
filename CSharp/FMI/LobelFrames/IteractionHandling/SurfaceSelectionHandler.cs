@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LobelFrames.DataStructures.Surfaces;
+using System;
 using System.Windows;
 using System.Windows.Media.Media3D;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public class SurfaceSelectionHandler : IIteractionHandler
     {

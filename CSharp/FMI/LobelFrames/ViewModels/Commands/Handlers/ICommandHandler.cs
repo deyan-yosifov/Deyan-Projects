@@ -1,4 +1,4 @@
-﻿using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+﻿using LobelFrames.IteractionHandling;
 using System;
 
 namespace LobelFrames.ViewModels.Commands.Handlers

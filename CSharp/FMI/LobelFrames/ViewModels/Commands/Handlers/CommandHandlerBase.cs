@@ -2,7 +2,7 @@
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
-using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+using LobelFrames.IteractionHandling;
 using System;
 using System.Collections.Generic;
 

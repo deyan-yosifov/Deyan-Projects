@@ -1,12 +1,13 @@
 ﻿using Deyo.Controls.Controls3D;
 using Deyo.Controls.MouseHandlers;
+using LobelFrames.DataStructures.Surfaces;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public class SurfaceModelingPointerHandler : IPointerHandler, ISurfaceModelingPointerHandler
     {

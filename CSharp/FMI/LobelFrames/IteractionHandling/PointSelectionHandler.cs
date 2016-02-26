@@ -1,11 +1,12 @@
 ﻿using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
+using LobelFrames.DataStructures.Surfaces;
 using System;
 using System.Windows;
 using System.Windows.Media.Media3D;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public class PointSelectionHandler : IIteractionHandler
     {

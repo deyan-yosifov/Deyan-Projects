@@ -1,6 +1,7 @@
-﻿using System;
+﻿using LobelFrames.DataStructures.Surfaces;
+using System;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public class SurfaceSelectedEventArgs : EventArgs
     {

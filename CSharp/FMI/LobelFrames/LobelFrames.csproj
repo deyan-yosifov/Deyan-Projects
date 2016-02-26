@@ -59,15 +59,15 @@
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\IIteractionHandler.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\ISurfaceModelingPointerHandler.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\IteractionHandlingType.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\PointClickEventArgs.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\PointEventArgs.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\PointSelectionHandler.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceModelingPointerHandler.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceSelectedEventArgs.cs" />
-    <Compile Include="DataStructures\Surfaces\IteractionHandling\SurfaceSelectionHandler.cs" />
+    <Compile Include="IteractionHandling\IIteractionHandler.cs" />
+    <Compile Include="IteractionHandling\ISurfaceModelingPointerHandler.cs" />
+    <Compile Include="IteractionHandling\IteractionHandlingType.cs" />
+    <Compile Include="IteractionHandling\PointClickEventArgs.cs" />
+    <Compile Include="IteractionHandling\PointEventArgs.cs" />
+    <Compile Include="IteractionHandling\PointSelectionHandler.cs" />
+    <Compile Include="IteractionHandling\SurfaceModelingPointerHandler.cs" />
+    <Compile Include="IteractionHandling\SurfaceSelectedEventArgs.cs" />
+    <Compile Include="IteractionHandling\SurfaceSelectionHandler.cs" />
     <Compile Include="DataStructures\Surfaces\IteractiveSurface.cs" />
     <Compile Include="DataStructures\Surfaces\LobelSurface.cs" />
     <Compile Include="DataStructures\Surfaces\SceneElementsPool.cs" />
@@ -213,7 +213,9 @@
   <ItemGroup>
     <Resource Include="Resources\Icosahedron-icon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="obj\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Settings-icon.png" />
   </ItemGroup>

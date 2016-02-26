@@ -4,7 +4,7 @@ using Deyo.Core.Common;
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
-using LobelFrames.DataStructures.Surfaces.IteractionHandling;
+using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands.Handlers;
 using System;
 using System.Collections.Generic;

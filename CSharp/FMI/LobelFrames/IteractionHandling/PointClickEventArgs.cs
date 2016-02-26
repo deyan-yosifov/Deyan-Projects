@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Media.Media3D;
 
-namespace LobelFrames.DataStructures.Surfaces.IteractionHandling
+namespace LobelFrames.IteractionHandling
 {
     public class PointClickEventArgs : PointEventArgs
     {
