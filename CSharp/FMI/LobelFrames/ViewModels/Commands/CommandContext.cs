@@ -74,11 +74,11 @@ namespace LobelFrames.ViewModels.Commands
         {
             this.EnsureIsStarted();
 
-            this.endHistoryAction.Dispose();
-            this.endHistoryAction = null;
             this.currentHandler.EndCommand();
             this.currentHandler = null;
             this.isStarted = false;
+            this.endHistoryAction.Dispose();
+            this.endHistoryAction = null;
         }
 
         private void EnsureIsStarted()
