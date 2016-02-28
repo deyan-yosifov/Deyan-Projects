@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using Deyo.Core.Common.History;
+using LobelFrames.FormatProviders;
 using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
 using System;
@@ -16,5 +17,7 @@ namespace LobelFrames.ViewModels
         void ShowHint(string hint);
         void DoAction(IUndoRedoAction action);
         void CloseCommandContext();
+        LobelScene SaveScene();
+        void LoadScene(LobelScene scene);
     }
 }

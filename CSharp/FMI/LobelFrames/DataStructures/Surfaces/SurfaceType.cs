@@ -6,6 +6,6 @@ namespace LobelFrames.DataStructures.Surfaces
     {
         Lobel,
         Bezier,
-        ApproximationResult
+        NonEditable
     }
 }

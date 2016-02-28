@@ -59,6 +59,17 @@
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
+    <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
+    <Compile Include="FormatProviders\BezierSurfaceModel.cs" />
+    <Compile Include="FormatProviders\CameraModel.cs" />
+    <Compile Include="FormatProviders\LobelFormatProviders.cs" />
+    <Compile Include="FormatProviders\LobelFormat\LobelFormatProvider.cs" />
+    <Compile Include="FormatProviders\LobelScene.cs" />
+    <Compile Include="FormatProviders\LobelSceneFormatProviderBase.cs" />
+    <Compile Include="FormatProviders\LobelSurfaceModel.cs" />
+    <Compile Include="FormatProviders\NonEditableSurfaceModel.cs" />
+    <Compile Include="FormatProviders\ObjFormat\ObjFormatProvider.cs" />
+    <Compile Include="FormatProviders\SurfaceModel.cs" />
     <Compile Include="IteractionHandling\IIteractionHandler.cs" />
     <Compile Include="IteractionHandling\ISurfaceModelingPointerHandler.cs" />
     <Compile Include="IteractionHandling\IteractionHandlingType.cs" />
@@ -86,6 +97,8 @@
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlersFactory.cs" />
     <Compile Include="ViewModels\Commands\Handlers\ICommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\MoveCommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\OpenCommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\SaveCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\SelectCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\HintManager.cs" />
     <Compile Include="ViewModels\Commands\Hints.cs" />

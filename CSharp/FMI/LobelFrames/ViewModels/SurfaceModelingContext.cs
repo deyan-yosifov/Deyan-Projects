@@ -5,6 +5,7 @@ using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Commands.Handlers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LobelFrames.ViewModels
 {
@@ -105,6 +106,21 @@ namespace LobelFrames.ViewModels
         {
             this.surfaces.Remove(surface);
             surface.Hide();
+        }
+
+        public void Clear()
+        {
+            Guard.ThrowExceptionIfTrue(this.HasActiveCommand, "HasActiveCommand");
+
+            this.SelectedSurface = null;
+            IteractiveSurface[] surfaces = this.surfaces.ToArray();
+
+            foreach (IteractiveSurface surface in surfaces)
+            {
+                this.RemoveSurface(surface);
+            }
+
+            this.HistoryManager.Clear();
         }
     }
 }

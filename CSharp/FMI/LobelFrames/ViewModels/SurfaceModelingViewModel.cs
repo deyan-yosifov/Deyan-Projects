@@ -6,6 +6,7 @@ using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
+using LobelFrames.FormatProviders;
 using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Commands.Handlers;
@@ -107,14 +108,14 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public void AddLobelMesh()
+        public void Save()
         {
-            using (this.HistoryManager.BeginUndoGroup())
-            {
-                LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
-                this.DoAction(new AddSurfaceAction(surface, this.Context));
-                this.DoAction(new SelectSurfaceAction(surface, this.Context));
-            }
+            this.CommandContext.BeginCommand(CommandType.Save);
+        }
+
+        public void Open()
+        {
+            this.CommandContext.BeginCommand(CommandType.Open);
         }
 
         public void Undo()
@@ -125,6 +126,16 @@ namespace LobelFrames.ViewModels
         public void Redo()
         {
             this.HistoryManager.Redo();
+        }
+
+        public void AddLobelMesh()
+        {
+            using (this.HistoryManager.BeginUndoGroup())
+            {
+                LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
+                this.DoAction(new AddSurfaceAction(surface, this.Context));
+                this.DoAction(new SelectSurfaceAction(surface, this.Context));
+            }
         }
 
         public void SelectMesh()
@@ -176,6 +187,16 @@ namespace LobelFrames.ViewModels
             this.DisableSurfacePointerHandler();
             this.ShowHint(Hints.Default);
             this.InputManager.Stop();
+        }
+
+        public LobelScene SaveScene()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LoadScene(LobelScene scene)
+        {
+            throw new NotImplementedException();
         }
 
         private void InitializeScene()

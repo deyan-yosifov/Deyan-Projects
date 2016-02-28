@@ -127,6 +127,18 @@ namespace Deyo.Core.Common.History
             this.OnHistoryChanged();
         }
 
+        public void Clear()
+        {
+            Guard.ThrowExceptionIfTrue(this.IsCreatingUndoGroup, "IsCreatingUndoGroup");
+
+            if (this.undoStack.Count > 0 || this.redoStack.Count > 0)
+            {
+                this.undoStack.Clear();
+                this.redoStack.Clear();
+                this.OnHistoryChanged();
+            }
+        }
+
         public event EventHandler HistoryChanged;
 
         private void OnHistoryChanged()

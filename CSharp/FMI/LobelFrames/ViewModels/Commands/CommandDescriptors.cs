@@ -41,8 +41,8 @@ namespace LobelFrames.ViewModels.Commands
 
         private void RegisterCommandDescriptors()
         {
-            this.RegisterCommandDescriptor(CommandType.Open, null);
-            this.RegisterCommandDescriptor(CommandType.Save, null);
+            this.RegisterCommandDescriptor(CommandType.Open, this.viewModel.Open);
+            this.RegisterCommandDescriptor(CommandType.Save, this.viewModel.Save);
             this.RegisterCommandDescriptor(CommandType.Undo, this.viewModel.Undo);
             this.RegisterCommandDescriptor(CommandType.Redo, this.viewModel.Redo);
             this.RegisterCommandDescriptor(CommandType.Settings, null);

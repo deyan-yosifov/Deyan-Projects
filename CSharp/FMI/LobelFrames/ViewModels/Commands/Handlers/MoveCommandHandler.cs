@@ -55,6 +55,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 {
                     base.Lines.Add(base.ElementsManager.CreateLineOverlay(edge.Start.Point, edge.End.Point));
                 }
+
+                base.Editor.ShowHint(Hints.SelectSecondMovePoint);
             }
         }
 
