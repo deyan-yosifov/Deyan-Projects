@@ -62,6 +62,7 @@
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
     <Compile Include="FormatProviders\BezierSurfaceModel.cs" />
     <Compile Include="FormatProviders\CameraModel.cs" />
+    <Compile Include="FormatProviders\LinesOfTextLobelFormatProviderBase.cs" />
     <Compile Include="FormatProviders\LobelFormatProviders.cs" />
     <Compile Include="FormatProviders\LobelFormat\LobelFormatProvider.cs" />
     <Compile Include="FormatProviders\LobelScene.cs" />

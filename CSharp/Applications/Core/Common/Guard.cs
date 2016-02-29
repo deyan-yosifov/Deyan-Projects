@@ -24,6 +24,14 @@ namespace Deyo.Core.Common
             }
         }
 
+        public static void ThrowExceptionIfNotNull(object value, string parameterName)
+        {
+            if (value != null)
+            {
+                throw new ArgumentException(string.Format("{0} must be null!", parameterName));
+            }
+        }
+
         public static void ThrowExceptionIfNull(object value, string parameterName)
         {
             if (value == null)

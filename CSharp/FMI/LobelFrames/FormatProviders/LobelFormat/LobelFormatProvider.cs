@@ -2,7 +2,7 @@
 
 namespace LobelFrames.FormatProviders.LobelFormat
 {
-    public class LobelFormatProvider : LobelSceneFormatProviderBase
+    public class LobelFormatProvider : LinesOfTextLobelFormatProviderBase
     {
         public override string FileDescription
         {
@@ -20,12 +20,27 @@ namespace LobelFrames.FormatProviders.LobelFormat
             }
         }
 
-        public override LobelScene Import(byte[] file)
+        protected override void ImportLine(string[] tokens)
         {
             throw new NotImplementedException();
         }
 
-        public override byte[] Export(LobelScene scene)
+        protected override string ExportCamera(CameraModel cameraModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string ExportLobelSurface(LobelSurfaceModel surface)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string ExportBezierSurface(BezierSurfaceModel bezierSurface)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface)
         {
             throw new NotImplementedException();
         }
