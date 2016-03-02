@@ -38,5 +38,10 @@ namespace LobelFrames.FormatProviders
         {
             this.surfaces.Add(surface);
         }
+
+        public void AddSurfaces(IEnumerable<SurfaceModel> surfaces)
+        {
+            this.surfaces.AddRange(surfaces);
+        }
     }
 }

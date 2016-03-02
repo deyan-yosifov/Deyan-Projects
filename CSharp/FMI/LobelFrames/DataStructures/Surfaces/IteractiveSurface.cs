@@ -34,7 +34,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        protected abstract IMeshElementsProvider ElementsProvider { get; }
+        public abstract IMeshElementsProvider ElementsProvider { get; }
 
         public abstract void Select();
         public abstract void Deselect();

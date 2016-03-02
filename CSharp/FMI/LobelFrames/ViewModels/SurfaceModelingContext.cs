@@ -96,6 +96,17 @@ namespace LobelFrames.ViewModels
             }
         }
 
+        public IEnumerable<IteractiveSurface> Surfaces
+        {
+            get
+            {
+                foreach (IteractiveSurface surface in this.surfaces)
+                {
+                    yield return surface;
+                }
+            }
+        }
+
         public void AddSurface(IteractiveSurface surface)
         {
             this.surfaces.Add(surface);

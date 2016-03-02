@@ -3,6 +3,7 @@ using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
+using Deyo.Core.Common;
 using Deyo.Core.Common.History;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
@@ -191,7 +192,19 @@ namespace LobelFrames.ViewModels
 
         public LobelScene SaveScene()
         {
-            throw new NotImplementedException();
+            LobelScene scene = new LobelScene();
+
+            this.scene.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    scene.Camera.LookDirection = perspectiveCamera.LookDirection;
+                    scene.Camera.Position = perspectiveCamera.Position;
+                    scene.Camera.UpDirection = perspectiveCamera.UpDirection;
+                },  (orthographicCamera) => { Guard.ThrowNotSupportedCameraException(); });
+
+            scene.AddSurfaces(LobelSceneFormatProviderBase.GetSurfaceModels(this.Context));
+
+            return scene;
         }
 
         public void LoadScene(LobelScene scene)

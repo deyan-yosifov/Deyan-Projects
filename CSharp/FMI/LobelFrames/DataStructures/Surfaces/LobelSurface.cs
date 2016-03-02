@@ -23,7 +23,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        protected override IMeshElementsProvider ElementsProvider
+        public override IMeshElementsProvider ElementsProvider
         {
             get
             {

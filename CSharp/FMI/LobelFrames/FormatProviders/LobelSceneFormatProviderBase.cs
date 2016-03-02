@@ -1,5 +1,9 @@
 ﻿using Deyo.Core.Common;
+using LobelFrames.DataStructures.Surfaces;
+using LobelFrames.ViewModels;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace LobelFrames.FormatProviders
 {
@@ -45,6 +49,7 @@ namespace LobelFrames.FormatProviders
 
             this.BeginExportOverride();
             byte[] file = this.ExportOverride();
+            this.EndExportOverride();
 
             this.scene = null;
             this.isImportingOrExporting = false;
@@ -66,12 +71,43 @@ namespace LobelFrames.FormatProviders
         {
         }
 
+        protected virtual void EndExportOverride()
+        {
+        }
+
         protected abstract byte[] ExportOverride();
 
         private void EnsureNotImportingOrExporting()
         {
             Guard.ThrowExceptionIfTrue(this.isImportingOrExporting, "isImportingOrExporting");
             Guard.ThrowExceptionIfNotNull(this.scene, "scene");
+        }
+
+        public static IEnumerable<SurfaceModel> GetSurfaceModels(ILobelSceneContext context)
+        {
+            foreach (IteractiveSurface surface in context.Surfaces)
+            {
+                SurfaceModel surfaceModel = LobelSceneFormatProviderBase.GetSurfaceModel(surface);
+                surfaceModel.IsSelected = surface == context.SelectedSurface;
+
+                yield return surfaceModel;
+            }
+        }
+
+        private static SurfaceModel GetSurfaceModel(IteractiveSurface surface)
+        {
+            switch (surface.Type)
+            {
+                case SurfaceType.Lobel:
+                    return LobelSceneFormatProviderBase.GetLobelSurfaceModel((LobelSurface)surface);
+                default:
+                    throw new NotSupportedException(string.Format("Not supported surface type: {0}", surface.Type));
+            }
+        }
+
+        private static SurfaceModel GetLobelSurfaceModel(LobelSurface lobelSurface)
+        {
+            return new LobelSurfaceModel(lobelSurface.ElementsProvider);
         }
     }
 }

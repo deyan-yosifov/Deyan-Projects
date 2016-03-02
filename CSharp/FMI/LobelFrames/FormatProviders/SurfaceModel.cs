@@ -6,22 +6,32 @@ namespace LobelFrames.FormatProviders
 {
     public abstract class SurfaceModel
     {
-        private readonly TriangularMesh mesh;
+        private readonly IMeshElementsProvider elementsProvider;
+        private readonly VerticesIndexer verticesIndexer;
 
-        protected SurfaceModel()
+        protected SurfaceModel(IMeshElementsProvider elementsProvider)
         {
-            this.mesh = new TriangularMesh();
+            this.elementsProvider = elementsProvider;
+            this.verticesIndexer = new VerticesIndexer(elementsProvider.Vertices);
         }
 
         public abstract SurfaceType Type { get; }
 
         public bool IsSelected { get; set; }
 
-        public TriangularMesh Mesh
+        public IMeshElementsProvider ElementsProvider
         {
             get
             {
-                return this.mesh;
+                return this.elementsProvider;
+            }
+        }
+
+        public VerticesIndexer VerticesIndexer
+        {
+            get
+            {
+                return this.verticesIndexer;
             }
         }
     }

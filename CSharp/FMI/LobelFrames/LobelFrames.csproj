@@ -68,6 +68,7 @@
     <Compile Include="FormatProviders\LobelScene.cs" />
     <Compile Include="FormatProviders\LobelSceneFormatProviderBase.cs" />
     <Compile Include="FormatProviders\LobelSurfaceModel.cs" />
+    <Compile Include="FormatProviders\VertexIndexer.cs" />
     <Compile Include="FormatProviders\NonEditableSurfaceModel.cs" />
     <Compile Include="FormatProviders\ObjFormat\ObjFormatProvider.cs" />
     <Compile Include="FormatProviders\SurfaceModel.cs" />

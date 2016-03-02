@@ -1,5 +1,6 @@
 ﻿using LobelFrames.DataStructures.Surfaces;
 using System;
+using System.Collections.Generic;
 
 namespace LobelFrames.ViewModels
 {
@@ -14,6 +15,8 @@ namespace LobelFrames.ViewModels
         bool HasActiveCommand { get; }
 
         IteractiveSurface SelectedSurface { get; set; }
+
+        IEnumerable<IteractiveSurface> Surfaces { get; }
 
         void AddSurface(IteractiveSurface surface);
 
