@@ -1,14 +1,13 @@
-﻿using LobelFrames.DataStructures;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace LobelFrames.FormatProviders
+namespace LobelFrames.DataStructures
 {
-    public class VerticesIndexer
+    public class VertexIndexer
     {
         private readonly Dictionary<Vertex, int> vertexToIndex;
 
-        public VerticesIndexer(IEnumerable<Vertex> vertices)
+        public VertexIndexer(IEnumerable<Vertex> vertices)
         {
             int index = 0;
             this.vertexToIndex = new Dictionary<Vertex, int>();

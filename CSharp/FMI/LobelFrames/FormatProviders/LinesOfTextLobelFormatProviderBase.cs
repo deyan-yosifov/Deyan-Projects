@@ -23,6 +23,11 @@ namespace LobelFrames.FormatProviders
             }
         }
 
+        public static string GetInvariantNumberText(double number)
+        {
+            return number.ToString(CultureInfo.InvariantCulture);
+        }
+
         protected abstract void ImportLine(string[] tokens);
 
         protected abstract string ExportCamera(CameraModel cameraModel);
@@ -58,6 +63,16 @@ namespace LobelFrames.FormatProviders
             return Encoding.UTF8.GetBytes(fileText);
         }
 
+        protected virtual string ExportHeader()
+        {
+            return string.Empty;
+        }
+
+        protected virtual string ExportFooter()
+        {
+            return string.Empty;
+        }
+
         private void Import(string text)
         {
             using (StringReader reader = new StringReader(text))
@@ -86,7 +101,6 @@ namespace LobelFrames.FormatProviders
             StringBuilder builder = new StringBuilder();
 
             builder.AppendLine(this.ExportHeader());
-            builder.AppendLine(this.ExportCamera(this.CurrentScene.Camera));
 
             foreach (SurfaceModel surface in this.CurrentScene.Surfaces)
             {
@@ -109,24 +123,10 @@ namespace LobelFrames.FormatProviders
                 }
             }
 
+            builder.AppendLine(this.ExportCamera(this.CurrentScene.Camera));
             builder.AppendLine(this.ExportFooter());
 
             return builder.ToString();
-        }
-
-        protected virtual string ExportHeader()
-        {
-            return string.Empty;
-        }
-
-        protected virtual string ExportFooter()
-        {
-            return string.Empty;
-        }
-
-        protected static string GetInvariantNumberText(double number)
-        {
-            return number.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

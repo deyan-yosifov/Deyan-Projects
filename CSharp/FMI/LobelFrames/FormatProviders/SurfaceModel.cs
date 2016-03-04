@@ -7,12 +7,12 @@ namespace LobelFrames.FormatProviders
     public abstract class SurfaceModel
     {
         private readonly IMeshElementsProvider elementsProvider;
-        private readonly VerticesIndexer verticesIndexer;
+        private readonly VertexIndexer vertexIndexer;
 
         protected SurfaceModel(IMeshElementsProvider elementsProvider)
         {
             this.elementsProvider = elementsProvider;
-            this.verticesIndexer = new VerticesIndexer(elementsProvider.Vertices);
+            this.vertexIndexer = new VertexIndexer(elementsProvider.Vertices);
         }
 
         public abstract SurfaceType Type { get; }
@@ -27,11 +27,11 @@ namespace LobelFrames.FormatProviders
             }
         }
 
-        public VerticesIndexer VerticesIndexer
+        public VertexIndexer VertexIndexer
         {
             get
             {
-                return this.verticesIndexer;
+                return this.vertexIndexer;
             }
         }
     }

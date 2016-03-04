@@ -60,6 +60,7 @@
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
+    <Compile Include="DataStructures\VertexIndexer.cs" />
     <Compile Include="FormatProviders\BezierSurfaceModel.cs" />
     <Compile Include="FormatProviders\CameraModel.cs" />
     <Compile Include="FormatProviders\LinesOfTextLobelFormatProviderBase.cs" />
@@ -68,8 +69,9 @@
     <Compile Include="FormatProviders\LobelScene.cs" />
     <Compile Include="FormatProviders\LobelSceneFormatProviderBase.cs" />
     <Compile Include="FormatProviders\LobelSurfaceModel.cs" />
-    <Compile Include="FormatProviders\VertexIndexer.cs" />
     <Compile Include="FormatProviders\NonEditableSurfaceModel.cs" />
+    <Compile Include="FormatProviders\ObjFormat\ObjFormatExporter.cs" />
+    <Compile Include="FormatProviders\ObjFormat\ObjFormatImporter.cs" />
     <Compile Include="FormatProviders\ObjFormat\ObjFormatProvider.cs" />
     <Compile Include="FormatProviders\SurfaceModel.cs" />
     <Compile Include="IteractionHandling\IIteractionHandler.cs" />
