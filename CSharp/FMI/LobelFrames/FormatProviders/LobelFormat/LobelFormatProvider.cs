@@ -4,6 +4,8 @@ namespace LobelFrames.FormatProviders.LobelFormat
 {
     public class LobelFormatProvider : LinesOfTextLobelFormatProviderBase
     {
+        public const string CommentToken = "#";
+
         public override string FileDescription
         {
             get
@@ -17,6 +19,14 @@ namespace LobelFrames.FormatProviders.LobelFormat
             get
             {
                 return ".lob";
+            }
+        }
+
+        public override string CommentStartToken
+        {
+            get
+            {
+                return LobelFormatProvider.CommentToken;
             }
         }
 

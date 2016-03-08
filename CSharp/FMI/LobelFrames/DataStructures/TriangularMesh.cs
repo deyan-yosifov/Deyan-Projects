@@ -67,6 +67,28 @@ namespace LobelFrames.DataStructures
             return TriangularMesh.EnumerateSet(this.vertices);
         }
 
+        public IEnumerable<Edge> GetContourEdges()
+        {
+            bool hasOpenedContour = true;
+
+            foreach (Edge edge in this.GetEdges())
+            {
+                if (this.GetTriangles(edge).Count() < 2)
+                {
+                    hasOpenedContour = true;
+                    yield return edge;
+                }
+            }
+
+            if (!hasOpenedContour)
+            {
+                foreach (Edge edge in this.GetEdges())
+                {
+                    yield return edge;
+                }
+            }
+        }
+
         public void AddVertex(Vertex vertex)
         {
             this.vertices.Add(vertex);

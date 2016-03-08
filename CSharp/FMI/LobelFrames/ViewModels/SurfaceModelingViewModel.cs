@@ -209,7 +209,26 @@ namespace LobelFrames.ViewModels
 
         public void LoadScene(LobelScene scene)
         {
-            throw new NotImplementedException();
+            this.Context.Clear();
+
+            this.scene.Editor.DoActionOnCamera(
+                (perspectiveCamera) =>
+                {
+                    perspectiveCamera.LookDirection = scene.Camera.LookDirection;
+                    perspectiveCamera.Position = scene.Camera.Position;
+                    perspectiveCamera.UpDirection = scene.Camera.UpDirection;
+                }, (orthographicCamera) => { Guard.ThrowNotSupportedCameraException(); });
+
+            foreach (SurfaceModel model in scene.Surfaces)
+            {
+                IteractiveSurface surface = LobelSceneFormatProviderBase.CreateIteractiveSurface(this.ElementsPool, model);
+                this.Context.AddSurface(surface);
+
+                if (model.IsSelected)
+                {
+                    this.Context.SelectedSurface = surface;
+                }
+            }
         }
 
         private void InitializeScene()

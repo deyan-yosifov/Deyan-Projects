@@ -83,6 +83,17 @@ namespace LobelFrames.FormatProviders
             Guard.ThrowExceptionIfNotNull(this.scene, "scene");
         }
 
+        public static IteractiveSurface CreateIteractiveSurface(ISceneElementsManager elementsManager, SurfaceModel surface)
+        {
+            switch (surface.Type)
+            {
+                case SurfaceType.NonEditable:
+                    return LobelSceneFormatProviderBase.CreateNonEditableIteractiveSurface(elementsManager, (NonEditableSurfaceModel)surface);
+                default:
+                    throw new NotSupportedException(string.Format("Not supported surface type: {0}", surface.Type));
+            }
+        }
+
         public static IEnumerable<SurfaceModel> GetSurfaceModels(ILobelSceneContext context)
         {
             foreach (IteractiveSurface surface in context.Surfaces)
@@ -108,6 +119,11 @@ namespace LobelFrames.FormatProviders
         private static SurfaceModel GetLobelSurfaceModel(LobelSurface lobelSurface)
         {
             return new LobelSurfaceModel(lobelSurface.ElementsProvider);
+        }
+
+        private static IteractiveSurface CreateNonEditableIteractiveSurface(ISceneElementsManager elementsManager, NonEditableSurfaceModel model)
+        {
+            return new NonEditableSurface(elementsManager, model.ElementsProvider);
         }
     }
 }

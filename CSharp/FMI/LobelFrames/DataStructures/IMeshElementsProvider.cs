@@ -8,5 +8,6 @@ namespace LobelFrames.DataStructures
         IEnumerable<Edge> Edges { get; }
         IEnumerable<Vertex> Vertices { get; }
         IEnumerable<Triangle> Triangles { get; }
+        IEnumerable<Edge> Contour { get; }
     }
 }

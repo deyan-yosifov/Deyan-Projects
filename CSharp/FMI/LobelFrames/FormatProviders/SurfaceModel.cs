@@ -1,4 +1,5 @@
-﻿using LobelFrames.DataStructures;
+﻿using Deyo.Core.Common;
+using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using System;
 
@@ -11,6 +12,8 @@ namespace LobelFrames.FormatProviders
 
         protected SurfaceModel(IMeshElementsProvider elementsProvider)
         {
+            Guard.ThrowExceptionIfNull(elementsProvider, "elementsProvider");
+
             this.elementsProvider = elementsProvider;
             this.vertexIndexer = new VertexIndexer(elementsProvider.Vertices);
         }

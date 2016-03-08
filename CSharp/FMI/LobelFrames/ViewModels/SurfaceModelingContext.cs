@@ -121,7 +121,8 @@ namespace LobelFrames.ViewModels
 
         public void Clear()
         {
-            Guard.ThrowExceptionIfTrue(this.HasActiveCommand, "HasActiveCommand");
+            bool loadCommandIsActive = this.HasActiveCommand && this.currentCommandContext.CommandHandler.Type == CommandType.Open;
+            Guard.ThrowExceptionIfFalse(loadCommandIsActive, "loadCommandIsActive");
 
             this.SelectedSurface = null;
             IteractiveSurface[] surfaces = this.surfaces.ToArray();

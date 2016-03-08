@@ -49,15 +49,15 @@ namespace LobelFrames.FormatProviders.ObjFormat
 
         public string ExportHeader()
         {
-            return string.Format("{0} Exported by Deyan Yosifov, student at Sofia University, FMI", ObjFormatProvider.CommentStartToken);
+            return string.Format("{0} Exported by Deyan Yosifov, student at Sofia University, FMI", ObjFormatProvider.CommentToken);
         }
 
         public string ExportFooter()
         {
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine(string.Format("{0} Bug fix for sketchup plugin not closing the last group", ObjFormatProvider.CommentStartToken));
+            builder.AppendLine(string.Format("{0} Bug fix for sketchup plugin not closing the last group", ObjFormatProvider.CommentToken));
             builder.AppendLine(string.Format("{0} EndOfSceneGroup", ObjFormatProvider.GroupToken));
-            builder.AppendLine(string.Format("{0} End of scene", ObjFormatProvider.CommentStartToken));
+            builder.AppendLine(string.Format("{0} End of scene", ObjFormatProvider.CommentToken));
 
             return builder.ToString();
         }
@@ -65,7 +65,7 @@ namespace LobelFrames.FormatProviders.ObjFormat
         private string ExportSurfaceModel(SurfaceModel surface, string groupName, string comment)
         {
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine(string.Format("{0} {1}", ObjFormatProvider.CommentStartToken, comment));
+            builder.AppendLine(string.Format("{0} {1}", ObjFormatProvider.CommentToken, comment));
             builder.AppendLine(string.Format("{0} {1}", ObjFormatProvider.GroupToken, groupName));
 
             int vertexOffset = this.vertexIndex;

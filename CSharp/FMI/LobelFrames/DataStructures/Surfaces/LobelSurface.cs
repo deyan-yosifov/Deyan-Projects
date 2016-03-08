@@ -30,27 +30,5 @@ namespace LobelFrames.DataStructures.Surfaces
                 return this.meshEditor;
             }
         }
-
-        public override void Select()
-        {
-            base.RenderSurfacePoints();
-        }
-
-        public override void Deselect()
-        {
-            base.HideSurfacePoints();
-        }
-
-        public override void Move(Vector3D direction)
-        {
-            this.meshEditor.MoveMesh(direction);
-            this.Render();
-            base.RenderSurfacePoints();
-        }
-
-        public override IEnumerable<Edge> GetContour()
-        {
-            return this.meshEditor.GetContour();
-        }
     }
 }

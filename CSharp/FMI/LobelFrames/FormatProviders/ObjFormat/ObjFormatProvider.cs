@@ -7,10 +7,11 @@ namespace LobelFrames.FormatProviders.ObjFormat
 {
     public class ObjFormatProvider : LinesOfTextLobelFormatProviderBase
     {
-        public const string CommentStartToken = "#";
+        public const string CommentToken = "#";
         public const string VertexToken = "v";
         public const string FaceToken = "f";
         public const string GroupToken = "g";
+        private ObjFormatImporter importer;
         private ObjFormatExporter exporter;
 
         public override string FileDescription
@@ -29,18 +30,35 @@ namespace LobelFrames.FormatProviders.ObjFormat
             }
         }
 
-        public override string CommentToken
+        public override string CommentStartToken
         {
             get
             {
-                return ObjFormatProvider.CommentStartToken;
+                return ObjFormatProvider.CommentToken;
             }
+        }
+
+        protected override void BeginImportOverride()
+        {
+            base.BeginImportOverride();
+
+            Guard.ThrowExceptionIfNotNull(this.importer, "importer");
+            this.importer = new ObjFormatImporter(this.CurrentScene);
+            this.importer.BeginImport();
         }
 
         protected override void ImportLine(string[] tokens)
         {
-            // TODO:
-            throw new NotImplementedException();
+            this.importer.ImportLine(tokens);
+        }
+
+        protected override void EndImportOverride()
+        {
+            base.EndImportOverride();
+
+            Guard.ThrowExceptionIfNull(this.importer, "importer");
+            this.importer.EndImport();
+            this.importer = null;
         }
 
         protected override string ExportCamera(CameraModel cameraModel)

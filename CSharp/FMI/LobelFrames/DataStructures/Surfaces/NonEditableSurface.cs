@@ -6,9 +6,14 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public class NonEditableSurface : IteractiveSurface
     {
-        public NonEditableSurface(ISceneElementsManager sceneManager)
+        private readonly IMeshElementsProvider elements;
+        private readonly IEnumerable<Edge> contour;
+
+        public NonEditableSurface(ISceneElementsManager sceneManager, IMeshElementsProvider elements)
             : base(sceneManager)
         {
+            this.elements = elements;
+            this.contour = elements.Contour;
         }
 
         public override SurfaceType Type
@@ -21,27 +26,15 @@ namespace LobelFrames.DataStructures.Surfaces
 
         public override IMeshElementsProvider ElementsProvider
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override void Select()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Deselect()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Move(Vector3D direction)
-        {
-            throw new NotImplementedException();
+            get
+            {
+                return this.elements;
+            }
         }
 
         public override IEnumerable<Edge> GetContour()
         {
-            throw new NotImplementedException();
+            return this.contour;
         }
     }
 }

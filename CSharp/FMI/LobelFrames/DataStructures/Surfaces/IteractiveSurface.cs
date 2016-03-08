@@ -36,10 +36,27 @@ namespace LobelFrames.DataStructures.Surfaces
 
         public abstract IMeshElementsProvider ElementsProvider { get; }
 
-        public abstract void Select();
-        public abstract void Deselect();
-        public abstract void Move(Vector3D direction);
-        public abstract IEnumerable<Edge> GetContour();
+        public virtual void Select()
+        {
+            this.RenderSurfacePoints();
+        }
+
+        public virtual void Deselect()
+        {
+            this.HideSurfacePoints();
+        }
+
+        public virtual void Move(Vector3D direction)
+        {
+            this.MoveMeshVertices(direction);
+            this.Render();
+            this.RenderSurfacePoints();
+        }
+
+        public virtual IEnumerable<Edge> GetContour()
+        {
+            return this.ElementsProvider.Contour;
+        }
 
         public virtual void Render()
         {
@@ -70,6 +87,14 @@ namespace LobelFrames.DataStructures.Surfaces
             this.visibleLineOverlays.Clear();
             this.visibleSurfaceLines.Clear();
             this.visiblePoints.Clear();
+        }
+
+        protected virtual void MoveMeshVertices(Vector3D moveDirection)
+        {
+            foreach (Vertex vertex in this.ElementsProvider.Vertices)
+            {
+                vertex.Point = vertex.Point + moveDirection;
+            }
         }
 
         protected void RenderSurfacePoints()

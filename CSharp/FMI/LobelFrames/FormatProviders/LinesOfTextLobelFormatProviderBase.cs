@@ -15,17 +15,16 @@ namespace LobelFrames.FormatProviders
             splitCharacters = new char[] { ' ', '\t' };
         }
 
-        public virtual string CommentToken
-        {
-            get
-            {
-                return "#";
-            }
-        }
+        public abstract string CommentStartToken { get; }
 
         public static string GetInvariantNumberText(double number)
         {
             return number.ToString(CultureInfo.InvariantCulture);
+        }
+
+        public static double GetNumberFromInvariantText(string number)
+        {
+            return double.Parse(number, CultureInfo.InvariantCulture);
         }
 
         protected abstract void ImportLine(string[] tokens);
@@ -85,7 +84,7 @@ namespace LobelFrames.FormatProviders
 
                     if (tokens.Length > 0)
                     {
-                        if (tokens[0] != this.CommentToken)
+                        if (tokens[0] != this.CommentStartToken)
                         {
                             this.ImportLine(tokens);
                         }

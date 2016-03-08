@@ -77,19 +77,19 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public IEnumerable<Edge> Contour
+        {
+            get
+            {
+                return this.Mesh.GetContourEdges();
+            }
+        }
+
         private TriangularMesh Mesh
         {
             get
             {
                 return this.mesh;
-            }
-        }
-
-        public void MoveMesh(Vector3D moveDirection)
-        {
-            foreach (Vertex vertex in this.Vertices)
-            {
-                vertex.Point = vertex.Point + moveDirection;
             }
         }
 
@@ -347,28 +347,6 @@ namespace LobelFrames.DataStructures
         private void OnSizeChanging(double newSizeValue)
         {
             throw new NotImplementedException();
-        }
-
-        internal IEnumerable<Edge> GetContour()
-        {
-            bool hasOpenedContour = true;
-
-            foreach (Edge edge in this.Edges)
-            {
-                if (this.Mesh.GetTriangles(edge).Count() < 2)
-                {
-                    hasOpenedContour = true;
-                    yield return edge;
-                }
-            }
-
-            if (!hasOpenedContour)
-            {
-                foreach (Edge edge in this.Edges)
-                {
-                    yield return edge;
-                }
-            }
         }
     }
 }

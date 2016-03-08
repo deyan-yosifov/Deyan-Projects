@@ -21,5 +21,7 @@ namespace LobelFrames.ViewModels
         void AddSurface(IteractiveSurface surface);
 
         void RemoveSurface(IteractiveSurface surface);
+
+        void Clear();
     }
 }
