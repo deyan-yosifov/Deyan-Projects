@@ -142,7 +142,7 @@
     <Compile Include="Dialogs\Explorer\HeaderToImageConverter.cs" />
     <Compile Include="Media\Imaging\ImageExtensions.cs" />
     <Compile Include="MouseHandlers\IPointerHandler.cs" />
-    <Compile Include="MouseHandlers\MouseMoveDelayManager.cs" />
+    <Compile Include="MouseHandlers\MouseDelayManager.cs" />
     <Compile Include="MouseHandlers\PointerHandlersController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

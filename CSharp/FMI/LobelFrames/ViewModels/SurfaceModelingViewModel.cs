@@ -29,6 +29,7 @@ namespace LobelFrames.ViewModels
         private readonly SceneElementsPool elementsPool;
         private readonly SurfaceModelingContext context;
         private readonly SurfaceModelingPointerHandler surfacePointerHandler;
+        private readonly ZoomToContentsPointerHandler zoomToContentsPointerHandler;
 
         public SurfaceModelingViewModel(Scene3D scene)
         {
@@ -39,7 +40,9 @@ namespace LobelFrames.ViewModels
             this.context = new SurfaceModelingContext(CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
+            this.zoomToContentsPointerHandler = new ZoomToContentsPointerHandler(this.ZoomToContents);
             this.scene.PointerHandlersController.Handlers.AddFirst(this.surfacePointerHandler);
+            this.scene.PointerHandlersController.Handlers.AddFirst(this.zoomToContentsPointerHandler);
 
             this.AttachToEvents();
             this.InitializeScene();
@@ -229,6 +232,11 @@ namespace LobelFrames.ViewModels
                     this.Context.SelectedSurface = surface;
                 }
             }
+        }
+
+        private void ZoomToContents()
+        {
+            System.Diagnostics.Debug.WriteLine("Zoom to contents");
         }
 
         private void InitializeScene()

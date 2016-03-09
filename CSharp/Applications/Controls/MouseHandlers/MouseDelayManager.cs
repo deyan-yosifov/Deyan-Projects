@@ -3,22 +3,22 @@ using System.Windows.Input;
 
 namespace Deyo.Controls.MouseHandlers
 {
-    public class MouseMoveDelayManager
+    public class MouseDelayManager
     {
         private int previousMoveTimestamp;
 
-        public MouseMoveDelayManager()
+        public MouseDelayManager()
         {
             this.previousMoveTimestamp = 0;
         }
 
-        public double TimeInterval
+        public int TimeInterval
         {
             get;
             set;
         }
 
-        public bool ShouldHandleMove(MouseEventArgs e)
+        public bool ShouldHandleMouse(MouseEventArgs e)
         {
             if (Math.Abs(e.Timestamp - this.previousMoveTimestamp) > this.TimeInterval)
             {
