@@ -141,6 +141,16 @@ namespace Deyo.Controls.Controls3D.Cameras
             return unityPlaneWidth;
         }
 
+        public static Point3D GetZoomToContentsCameraPosition(PerspectiveCamera camera, IEnumerable<Point3D> contentPoints)
+        {
+            foreach (Point3D point in contentPoints)
+            {
+                // TODO:
+            }
+
+            return new Point3D();
+        }
+
         private static Point GetFirstPointFromVisibleSemiSpace(Point3D linePoint, Vector3D lineVector, Size viewportSize, PerspectiveCamera camera)
         {
             Vector3D nearestPlaneNormal = camera.LookDirection;

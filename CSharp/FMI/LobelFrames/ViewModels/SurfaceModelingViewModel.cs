@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Cameras;
 using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
@@ -203,7 +204,7 @@ namespace LobelFrames.ViewModels
                     scene.Camera.LookDirection = perspectiveCamera.LookDirection;
                     scene.Camera.Position = perspectiveCamera.Position;
                     scene.Camera.UpDirection = perspectiveCamera.UpDirection;
-                },  (orthographicCamera) => { Guard.ThrowNotSupportedCameraException(); });
+                },  (orthographicCamera) => Guard.ThrowNotSupportedCameraException());
 
             scene.AddSurfaces(LobelSceneFormatProviderBase.GetSurfaceModels(this.Context));
 
@@ -236,7 +237,60 @@ namespace LobelFrames.ViewModels
 
         private void ZoomToContents()
         {
-            System.Diagnostics.Debug.WriteLine("Zoom to contents");
+            this.scene.Editor.DoActionOnCamera((perspectiveCamera) =>
+            {
+                Point3D fromPoint = CameraHelper.GetZoomToContentsCameraPosition(perspectiveCamera, this.GetSceneContextPoints());
+                Rect3D boundingRect = this.GetSceneContextPointsBoundingRectangle();
+                Point3D boundingCenter = boundingRect.Location + new Vector3D(boundingRect.SizeX, boundingRect.SizeY, boundingRect.SizeZ);
+
+                // TODO: Delete!
+                fromPoint = boundingCenter - 10 * perspectiveCamera.LookDirection;
+
+                double projectedCoordinate = Vector3D.DotProduct(perspectiveCamera.LookDirection, boundingCenter - fromPoint);
+                Point3D projectedCenter = fromPoint + projectedCoordinate * perspectiveCamera.LookDirection;
+                this.scene.Editor.Look(fromPoint, projectedCenter);
+            }, (orthographicCamera) => Guard.ThrowNotSupportedCameraException());
+        }
+
+        private Rect3D GetSceneContextPointsBoundingRectangle()
+        {
+            double minX = double.MaxValue, minY = double.MaxValue, minZ = double.MaxValue;
+            double maxX = double.MinValue, maxY = double.MinValue, maxZ = double.MinValue;
+
+            foreach (Point3D point in this.GetSceneContextPoints())
+            {
+                minX = Math.Min(minX, point.X);
+                minY = Math.Min(minY, point.Y);
+                minZ = Math.Min(minZ, point.Z);
+                maxX = Math.Max(maxX, point.X);
+                maxY = Math.Max(maxY, point.Y);
+                maxZ = Math.Max(maxZ, point.Z);
+            }
+
+            Rect3D boundingRectangle = new Rect3D(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
+
+            return boundingRectangle;
+        }
+
+        private IEnumerable<Point3D> GetSceneContextPoints()
+        {
+            if (this.Context.SelectedSurface == null)
+            {
+                foreach (IteractiveSurface surface in this.Context.Surfaces)
+                {
+                    foreach (Vertex vertex in surface.ElementsProvider.Vertices)
+                    {
+                        yield return vertex.Point;
+                    }
+                }
+            }
+            else
+            {
+                foreach (Vertex vertex in this.Context.SelectedSurface.ElementsProvider.Vertices)
+                {
+                    yield return vertex.Point;
+                }
+            }
         }
 
         private void InitializeScene()
