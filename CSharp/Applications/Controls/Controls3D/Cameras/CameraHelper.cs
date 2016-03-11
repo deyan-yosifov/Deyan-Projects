@@ -141,14 +141,75 @@ namespace Deyo.Controls.Controls3D.Cameras
             return unityPlaneWidth;
         }
 
-        public static Point3D GetZoomToContentsCameraPosition(PerspectiveCamera camera, IEnumerable<Point3D> contentPoints)
+        public static Point3D GetZoomToContentsCameraPosition(PerspectiveCamera camera, Size viewportSize, IEnumerable<Point3D> contentPoints)
         {
-            foreach (Point3D point in contentPoints)
+            if (!contentPoints.Any())
             {
-                // TODO:
+                return camera.Position;
             }
 
+            Vector3D i, j, k;
+            CameraHelper.GetCameraLocalCoordinateVectors(camera.LookDirection, camera.UpDirection, out i, out j, out k);
+            double unitWidth = CameraHelper.GetUnityDistantPlaneWidth(camera.FieldOfView);
+            double unitHeight = viewportSize.Height * unitWidth / viewportSize.Width;            
+            Vector3D leftSlopeNormal = i + (unitWidth / 2) * k;
+            Vector3D rightSlopeNormal = -i + (unitWidth / 2) * k;
+            Vector3D topSlopeNormal = j + (unitHeight / 2) * k;
+            Vector3D bottomSlopeNormal = -j + (unitHeight / 2) * k;
+
+            Point3D leftMost, rightMost, topMost, bottomMost;
+            CameraHelper.CalculateViewSlopesEndMostPoints(contentPoints, camera.Position, leftSlopeNormal, rightSlopeNormal, topSlopeNormal, bottomSlopeNormal,
+                out leftMost, out rightMost, out topMost, out bottomMost);
+
+            // TODO: Intersect lines to find minimal k coordinate and i, j position, so that all points are visible;
+
+            Vector3D leftSlope = k - (unitWidth / 2) * i;
+            Vector3D rightSlope = k + (unitWidth / 2) * i;
+            Vector3D topSlope = k - (unitHeight / 2) * j;
+            Vector3D bottomSlope = k + (unitHeight / 2) * j;
+
             return new Point3D();
+        }
+
+        private static void CalculateViewSlopesEndMostPoints(IEnumerable<Point3D> points, Point3D cameraPosition,
+            Vector3D leftSlopeNormal, Vector3D rightSlopeNormal, Vector3D topSlopeNormal, Vector3D bottomSlopeNormal,
+            out Point3D leftMostPoint, out Point3D rightMostPoint, out Point3D topMostPoint, out Point3D bottomMostPoint)
+        {
+            leftMostPoint = rightMostPoint = topMostPoint = bottomMostPoint = cameraPosition;
+            double leftMin = double.MaxValue, rightMin = double.MaxValue, topMin = double.MaxValue, bottomMin = double.MaxValue;
+
+            foreach (Point3D point in points)
+            {
+                Vector3D directionVector = point - cameraPosition;
+                double left = Vector3D.DotProduct(leftSlopeNormal, directionVector);
+                double right = Vector3D.DotProduct(rightSlopeNormal, directionVector);
+                double top = Vector3D.DotProduct(topSlopeNormal, directionVector);
+                double bottom = Vector3D.DotProduct(bottomSlopeNormal, directionVector);
+
+                if (left < leftMin)
+                {
+                    leftMin = left;
+                    leftMostPoint = point;
+                }
+
+                if (right < rightMin)
+                {
+                    rightMin = right;
+                    rightMostPoint = point;
+                }
+
+                if (top < topMin)
+                {
+                    topMin = top;
+                    topMostPoint = point;
+                }
+
+                if (bottom < bottomMin)
+                {
+                    bottomMin = bottom;
+                    bottomMostPoint = point;
+                }
+            }
         }
 
         private static Point GetFirstPointFromVisibleSemiSpace(Point3D linePoint, Vector3D lineVector, Size viewportSize, PerspectiveCamera camera)

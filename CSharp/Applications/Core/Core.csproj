@@ -61,6 +61,7 @@
     <Compile Include="Common\PreservableState.cs" />
     <Compile Include="Common\PropertiesChangedEventArgs.cs" />
     <Compile Include="Mathematics\Algebra\AlgebraExtensions.cs" />
+    <Compile Include="Mathematics\Geometry\GeometryHelper.cs" />
     <Compile Include="Mathematics\Geometry\IntersectionsHelper.cs" />
     <Compile Include="Mathematics\Geometry\IntersectionType.cs" />
     <Compile Include="Mathematics\MathExtensions.cs" />
