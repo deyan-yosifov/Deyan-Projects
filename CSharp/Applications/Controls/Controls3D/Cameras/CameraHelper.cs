@@ -161,14 +161,37 @@ namespace Deyo.Controls.Controls3D.Cameras
             CameraHelper.CalculateViewSlopesEndMostPoints(contentPoints, camera.Position, leftSlopeNormal, rightSlopeNormal, topSlopeNormal, bottomSlopeNormal,
                 out leftMost, out rightMost, out topMost, out bottomMost);
 
-            // TODO: Intersect lines to find minimal k coordinate and i, j position, so that all points are visible;
+            Point3D center = new Point3D();
 
-            Vector3D leftSlope = k - (unitWidth / 2) * i;
-            Vector3D rightSlope = k + (unitWidth / 2) * i;
-            Vector3D topSlope = k - (unitHeight / 2) * j;
-            Vector3D bottomSlope = k + (unitHeight / 2) * j;
+            Point leftProjection = ProjectPointInPlane(leftMost, center, i, k);
+            Point rightProjection = ProjectPointInPlane(rightMost, center, i, k);
+            Vector leftSlope = new Vector(-unitWidth / 2, 1);
+            Vector rightSlope = new Vector(unitWidth / 2, 1);
+            Point iDirectionIntersection = IntersectionsHelper.IntersectLines(leftProjection, leftSlope, rightProjection, rightSlope);
 
-            return new Point3D();
+            Point topProjection = ProjectPointInPlane(topMost, center, j, k);
+            Point bottomProjection = ProjectPointInPlane(bottomMost, center, j, k);
+            Vector topSlope = new Vector(-unitHeight / 2, 1);
+            Vector bottomSlope = new Vector(unitHeight / 2, 1);
+            Point jDirectionIntersection = IntersectionsHelper.IntersectLines(topProjection, topSlope, bottomProjection, bottomSlope);
+
+            Vector3D x = iDirectionIntersection.X * i;
+            Vector3D y = jDirectionIntersection.X * j;
+            Vector3D z = Math.Min(iDirectionIntersection.Y, jDirectionIntersection.Y) * k;
+
+            Point3D cameraPosition = center + x + y + z;
+
+            return cameraPosition;
+        }
+
+        private static Point ProjectPointInPlane(Point3D point, Point3D center, Vector3D i, Vector3D j)
+        {
+            Vector3D radiusVector = point - center;
+            double x = Vector3D.DotProduct(i, radiusVector);
+            double y = Vector3D.DotProduct(j, radiusVector);
+            Point projection = new Point(x, y);
+
+            return projection;
         }
 
         private static void CalculateViewSlopesEndMostPoints(IEnumerable<Point3D> points, Point3D cameraPosition,
