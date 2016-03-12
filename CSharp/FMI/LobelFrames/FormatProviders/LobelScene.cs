@@ -7,21 +7,13 @@ namespace LobelFrames.FormatProviders
     public class LobelScene
     {
         private readonly List<SurfaceModel> surfaces;
-        private readonly CameraModel camera;
 
         public LobelScene()
         {
-            this.camera = new CameraModel();
             this.surfaces = new List<SurfaceModel>();
         }
 
-        public CameraModel Camera
-        {
-            get
-            {
-                return this.camera;
-            }
-        }
+        public CameraModel Camera { get; set; }
 
         public IEnumerable<SurfaceModel> Surfaces
         {

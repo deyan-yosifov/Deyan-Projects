@@ -199,6 +199,7 @@ namespace LobelFrames.ViewModels
         {
             LobelScene scene = new LobelScene();
 
+            scene.Camera = new CameraModel();
             this.scene.Editor.DoActionOnCamera(
                 (perspectiveCamera) =>
                 {
@@ -216,14 +217,6 @@ namespace LobelFrames.ViewModels
         {
             this.Context.Clear();
 
-            this.scene.Editor.DoActionOnCamera(
-                (perspectiveCamera) =>
-                {
-                    perspectiveCamera.LookDirection = scene.Camera.LookDirection;
-                    perspectiveCamera.Position = scene.Camera.Position;
-                    perspectiveCamera.UpDirection = scene.Camera.UpDirection;
-                }, (orthographicCamera) => { Guard.ThrowNotSupportedCameraException(); });
-
             foreach (SurfaceModel model in scene.Surfaces)
             {
                 IteractiveSurface surface = LobelSceneFormatProviderBase.CreateIteractiveSurface(this.ElementsPool, model);
@@ -233,6 +226,21 @@ namespace LobelFrames.ViewModels
                 {
                     this.Context.SelectedSurface = surface;
                 }
+            }
+
+            if (scene.Camera == null)
+            {
+                this.ZoomToContents();
+            }
+            else
+            {
+                this.scene.Editor.DoActionOnCamera(
+                    (perspectiveCamera) =>
+                    {
+                        perspectiveCamera.LookDirection = scene.Camera.LookDirection;
+                        perspectiveCamera.Position = scene.Camera.Position;
+                        perspectiveCamera.UpDirection = scene.Camera.UpDirection;
+                    }, (orthographicCamera) => { Guard.ThrowNotSupportedCameraException(); });
             }
         }
 
@@ -244,8 +252,10 @@ namespace LobelFrames.ViewModels
                 Point3D fromPoint = CameraHelper.GetZoomToContentsCameraPosition(perspectiveCamera, this.scene.Editor.ViewportSize, contentPoints);
                 Rect3D boundingRect = GeometryHelper.GetBoundingRectangle(contentPoints);
                 Point3D boundingCenter = boundingRect.Location + new Vector3D(boundingRect.SizeX, boundingRect.SizeY, boundingRect.SizeZ);
-                double projectedCoordinate = 1;// Vector3D.DotProduct(perspectiveCamera.LookDirection, boundingCenter - fromPoint);
-                Point3D projectedCenter = fromPoint + projectedCoordinate * perspectiveCamera.LookDirection;
+                Vector3D lookDirection = perspectiveCamera.LookDirection;
+                lookDirection.Normalize();
+                double projectedCoordinate = Vector3D.DotProduct(lookDirection, boundingCenter - fromPoint);
+                Point3D projectedCenter = fromPoint + projectedCoordinate * lookDirection;
                 this.scene.Editor.Look(fromPoint, projectedCenter);
             }, (orthographicCamera) => Guard.ThrowNotSupportedCameraException());
         }

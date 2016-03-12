@@ -10,6 +10,7 @@ namespace Deyo.Core.Common.History
         private readonly BeginEndUpdateCounter undoGroupCounter;
         private UndoRedoGroup undoGroup;
         private int maxUndoSize;
+        private bool isClearingHistory;
 
         public HistoryManager()
         {
@@ -86,7 +87,10 @@ namespace Deyo.Core.Common.History
 
             if (this.IsCreatingUndoGroup)
             {
-                this.undoGroup.AddAction(action);
+                if (!this.isClearingHistory)
+                {
+                    this.undoGroup.AddAction(action);
+                }
             }
             else
             {
@@ -129,13 +133,21 @@ namespace Deyo.Core.Common.History
 
         public void Clear()
         {
-            Guard.ThrowExceptionIfTrue(this.IsCreatingUndoGroup, "IsCreatingUndoGroup");
+            if (this.IsCreatingUndoGroup)
+            {
+                this.isClearingHistory = true;
+                this.undoGroup.Clear();
+            }
 
             if (this.undoStack.Count > 0 || this.redoStack.Count > 0)
             {
                 this.undoStack.Clear();
                 this.redoStack.Clear();
-                this.OnHistoryChanged();
+
+                if (!this.isClearingHistory)
+                {
+                    this.OnHistoryChanged();
+                }
             }
         }
 
@@ -152,6 +164,7 @@ namespace Deyo.Core.Common.History
         private void EndUndoGroup()
         {
             UndoRedoGroup group = this.undoGroup;
+            this.isClearingHistory = false;
             this.undoGroup = null;
 
             if (group.IsEmpty)

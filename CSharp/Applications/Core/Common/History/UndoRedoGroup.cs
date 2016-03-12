@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Deyo.Core.Common.History
 {
-    public class UndoRedoGroup : UndoRedoActionBase
+    internal class UndoRedoGroup : UndoRedoActionBase
     {
         private readonly List<IUndoRedoAction> actions;
 
@@ -23,6 +23,11 @@ namespace Deyo.Core.Common.History
         public void AddAction(IUndoRedoAction action)
         {
             this.actions.Add(action);
+        }
+
+        public void Clear()
+        {
+            this.actions.Clear();
         }
 
         protected override void UndoOverride()

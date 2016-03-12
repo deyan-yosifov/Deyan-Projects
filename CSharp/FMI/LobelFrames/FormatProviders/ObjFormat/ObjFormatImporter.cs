@@ -45,7 +45,6 @@ namespace LobelFrames.FormatProviders.ObjFormat
         public void EndImport()
         {
             this.PopPreviousSurface();
-            this.SetCameraPosition();
         }
 
         private void HandleVertexTokenLine(string[] tokens)
@@ -129,11 +128,6 @@ namespace LobelFrames.FormatProviders.ObjFormat
                 this.currentMesh = null;
                 this.currentSurfaceGlobalIndexToVertex.Clear();
             }
-        }
-
-        private void SetCameraPosition()
-        {
-            throw new NotImplementedException();
         }
     }
 }
