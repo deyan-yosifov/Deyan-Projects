@@ -77,12 +77,6 @@ namespace LobelFrames.FormatProviders
 
         protected abstract byte[] ExportOverride();
 
-        private void EnsureNotImportingOrExporting()
-        {
-            Guard.ThrowExceptionIfTrue(this.isImportingOrExporting, "isImportingOrExporting");
-            Guard.ThrowExceptionIfNotNull(this.scene, "scene");
-        }
-
         public static IteractiveSurface CreateIteractiveSurface(ISceneElementsManager elementsManager, SurfaceModel surface)
         {
             switch (surface.Type)
@@ -105,15 +99,28 @@ namespace LobelFrames.FormatProviders
             }
         }
 
+        private void EnsureNotImportingOrExporting()
+        {
+            Guard.ThrowExceptionIfTrue(this.isImportingOrExporting, "isImportingOrExporting");
+            Guard.ThrowExceptionIfNotNull(this.scene, "scene");
+        }
+
         private static SurfaceModel GetSurfaceModel(IteractiveSurface surface)
         {
             switch (surface.Type)
             {
                 case SurfaceType.Lobel:
                     return LobelSceneFormatProviderBase.GetLobelSurfaceModel((LobelSurface)surface);
+                case SurfaceType.NonEditable:
+                    return LobelSceneFormatProviderBase.GetNonEditableSurfaceModel((NonEditableSurface)surface);
                 default:
                     throw new NotSupportedException(string.Format("Not supported surface type: {0}", surface.Type));
             }
+        }
+
+        private static SurfaceModel GetNonEditableSurfaceModel(NonEditableSurface nonEditableSurface)
+        {
+            return new NonEditableSurfaceModel(nonEditableSurface.ElementsProvider);
         }
 
         private static SurfaceModel GetLobelSurfaceModel(LobelSurface lobelSurface)

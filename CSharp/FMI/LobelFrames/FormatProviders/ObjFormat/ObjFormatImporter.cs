@@ -49,9 +49,9 @@ namespace LobelFrames.FormatProviders.ObjFormat
 
         private void HandleVertexTokenLine(string[] tokens)
         {
-            double x = LinesOfTextLobelFormatProviderBase.GetNumberFromInvariantText(tokens[1]);
-            double y = LinesOfTextLobelFormatProviderBase.GetNumberFromInvariantText(tokens[2]);
-            double z = LinesOfTextLobelFormatProviderBase.GetNumberFromInvariantText(tokens[3]);
+            double x = LinesOfTextLobelFormatProviderBase.ParseNumber(tokens[1]);
+            double y = LinesOfTextLobelFormatProviderBase.ParseNumber(tokens[2]);
+            double z = LinesOfTextLobelFormatProviderBase.ParseNumber(tokens[3]);
 
             this.vertices.Add(new Vertex(new Point3D(x, y, z)));
         }
@@ -123,7 +123,11 @@ namespace LobelFrames.FormatProviders.ObjFormat
             if (this.currentMesh != null)
             {
                 this.currentMesh.EndInit();
-                this.scene.AddSurface(new NonEditableSurfaceModel(this.currentMesh));
+
+                if (currentMesh.Triangles.Any())
+                {
+                    this.scene.AddSurface(new NonEditableSurfaceModel(this.currentMesh));
+                }
 
                 this.currentMesh = null;
                 this.currentSurfaceGlobalIndexToVertex.Clear();

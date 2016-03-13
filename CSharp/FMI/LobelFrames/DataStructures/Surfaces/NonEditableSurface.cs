@@ -8,12 +8,21 @@ namespace LobelFrames.DataStructures.Surfaces
     {
         private readonly IMeshElementsProvider elements;
         private readonly IEnumerable<Edge> contour;
+        private readonly HashSet<Vertex> contourVertices;
 
         public NonEditableSurface(ISceneElementsManager sceneManager, IMeshElementsProvider elements)
             : base(sceneManager)
         {
             this.elements = elements;
             this.contour = elements.Contour;
+
+            this.contourVertices = new HashSet<Vertex>();
+
+            foreach (Edge edge in this.contour)
+            {
+                this.contourVertices.Add(edge.Start);
+                this.contourVertices.Add(edge.End);
+            }
         }
 
         public override SurfaceType Type
@@ -29,6 +38,14 @@ namespace LobelFrames.DataStructures.Surfaces
             get
             {
                 return this.elements;
+            }
+        }
+
+        protected override IEnumerable<Vertex> SurfaceVerticesToRender
+        {
+            get
+            {
+                return this.contourVertices;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using LobelFrames.DataStructures.Surfaces;
+﻿using Deyo.Core.Common;
+using LobelFrames.DataStructures.Surfaces;
 using System;
 using System.Globalization;
 using System.IO;
@@ -9,6 +10,7 @@ namespace LobelFrames.FormatProviders
     public abstract class LinesOfTextLobelFormatProviderBase : LobelSceneFormatProviderBase
     {
         private static readonly char[] splitCharacters;
+        private LinesOfTextWriter writer;
 
         static LinesOfTextLobelFormatProviderBase()
         {
@@ -17,31 +19,64 @@ namespace LobelFrames.FormatProviders
 
         public abstract string CommentStartToken { get; }
 
-        public static string GetInvariantNumberText(double number)
+        protected LinesOfTextWriter Writer
         {
-            return number.ToString(CultureInfo.InvariantCulture);
+            get
+            {
+                return this.writer;
+            }
         }
 
-        public static double GetNumberFromInvariantText(string number)
+        public static double ParseNumber(string number)
         {
             return double.Parse(number, CultureInfo.InvariantCulture);
         }
 
         protected abstract void ImportLine(string[] tokens);
 
-        protected abstract string ExportCamera(CameraModel cameraModel);
-        
-        protected abstract string ExportLobelSurface(LobelSurfaceModel surface);
+        protected abstract void ExportCamera(CameraModel cameraModel);
 
-        protected abstract string ExportBezierSurface(BezierSurfaceModel bezierSurface);
+        protected abstract void ExportLobelSurface(LobelSurfaceModel surface);
 
-        protected abstract string ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface);
+        protected abstract void ExportBezierSurface(BezierSurfaceModel bezierSurface);
+
+        protected abstract void ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface);
 
         protected override void ImportOverride(byte[] file)
         {
             string text = this.GetFileText(file);
 
             this.Import(text);
+        }
+
+        protected override void BeginImportOverride()
+        {
+            base.BeginImportOverride();
+
+            Guard.ThrowExceptionIfNotNull(this.writer, "writer");
+        }
+
+        protected override void EndImportOverride()
+        {
+            base.EndImportOverride();
+
+            Guard.ThrowExceptionIfNotNull(this.writer, "writer");
+        }
+
+        protected override void BeginExportOverride()
+        {
+            base.BeginExportOverride();
+
+            Guard.ThrowExceptionIfNotNull(this.writer, "writer");
+            this.writer = new LinesOfTextWriter(this.CommentStartToken);
+        }
+
+        protected override void EndExportOverride()
+        {
+            base.EndExportOverride();
+
+            Guard.ThrowExceptionIfNull(this.writer, "writer");
+            this.writer = null;
         }
 
         protected override byte[] ExportOverride()
@@ -62,14 +97,14 @@ namespace LobelFrames.FormatProviders
             return Encoding.UTF8.GetBytes(fileText);
         }
 
-        protected virtual string ExportHeader()
+        protected virtual void ExportHeader()
         {
-            return string.Empty;
+            // Do nothing.
         }
 
-        protected virtual string ExportFooter()
+        protected virtual void ExportFooter()
         {
-            return string.Empty;
+            // Do nothing.
         }
 
         private void Import(string text)
@@ -97,9 +132,7 @@ namespace LobelFrames.FormatProviders
 
         private string Export()
         {
-            StringBuilder builder = new StringBuilder();
-
-            builder.AppendLine(this.ExportHeader());
+            this.ExportHeader();
 
             foreach (SurfaceModel surface in this.CurrentScene.Surfaces)
             {
@@ -107,25 +140,25 @@ namespace LobelFrames.FormatProviders
                 {
                     case SurfaceType.Lobel:
                         LobelSurfaceModel lobelSurface = (LobelSurfaceModel)surface;
-                        builder.AppendLine(this.ExportLobelSurface(lobelSurface));
+                        this.ExportLobelSurface(lobelSurface);
                         break;
                     case SurfaceType.Bezier:
                         BezierSurfaceModel bezierSurface = (BezierSurfaceModel)surface;
-                        builder.AppendLine(this.ExportBezierSurface(bezierSurface));
+                        this.ExportBezierSurface(bezierSurface);
                         break;
                     case SurfaceType.NonEditable:
                         NonEditableSurfaceModel nonEditableSurface = (NonEditableSurfaceModel)surface;
-                        builder.AppendLine(this.ExportNonEditableSurface(nonEditableSurface));
+                        this.ExportNonEditableSurface(nonEditableSurface);
                         break;
                     default:
                         throw new NotSupportedException(string.Format("Not supported surface type: {0}", surface.Type));
                 }
             }
 
-            builder.AppendLine(this.ExportCamera(this.CurrentScene.Camera));
-            builder.AppendLine(this.ExportFooter());
+            this.ExportCamera(this.CurrentScene.Camera);
+            this.ExportFooter();
 
-            return builder.ToString();
+            return this.Writer.ToString();
         }
     }
 }

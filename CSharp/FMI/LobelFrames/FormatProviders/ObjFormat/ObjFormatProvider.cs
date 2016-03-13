@@ -47,11 +47,6 @@ namespace LobelFrames.FormatProviders.ObjFormat
             this.importer.BeginImport();
         }
 
-        protected override void ImportLine(string[] tokens)
-        {
-            this.importer.ImportLine(tokens);
-        }
-
         protected override void EndImportOverride()
         {
             base.EndImportOverride();
@@ -61,32 +56,12 @@ namespace LobelFrames.FormatProviders.ObjFormat
             this.importer = null;
         }
 
-        protected override string ExportCamera(CameraModel cameraModel)
-        {
-            return string.Empty;
-        }
-
-        protected override string ExportLobelSurface(LobelSurfaceModel lobelSurface)
-        {
-            return this.exporter.ExportLobelSurface(lobelSurface);
-        }
-
-        protected override string ExportBezierSurface(BezierSurfaceModel bezierSurface)
-        {
-            return this.exporter.ExportBezierSurface(bezierSurface);
-        }
-
-        protected override string ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface)
-        {
-            return this.exporter.ExportNonEditableSurface(nonEditableSurface);
-        }
-
         protected override void BeginExportOverride()
         {
             base.BeginExportOverride();
 
             Guard.ThrowExceptionIfNotNull(this.exporter, "exporter");
-            this.exporter = new ObjFormatExporter();
+            this.exporter = new ObjFormatExporter(this.Writer);
             this.exporter.BeginExport();
         }
 
@@ -99,14 +74,39 @@ namespace LobelFrames.FormatProviders.ObjFormat
             this.exporter = null;
         }
 
-        protected override string ExportHeader()
+        protected override void ImportLine(string[] tokens)
         {
-            return this.exporter.ExportHeader();
+            this.importer.ImportLine(tokens);
         }
 
-        protected override string ExportFooter()
+        protected override void ExportLobelSurface(LobelSurfaceModel lobelSurface)
         {
-            return this.exporter.ExportFooter();
+            this.exporter.ExportLobelSurface(lobelSurface);
+        }
+
+        protected override void ExportBezierSurface(BezierSurfaceModel bezierSurface)
+        {
+            this.exporter.ExportBezierSurface(bezierSurface);
+        }
+
+        protected override void ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface)
+        {
+            this.exporter.ExportNonEditableSurface(nonEditableSurface);
+        }
+
+        protected override void ExportHeader()
+        {
+            this.exporter.ExportHeader();
+        }
+
+        protected override void ExportFooter()
+        {
+            this.exporter.ExportFooter();
+        }
+
+        protected override void ExportCamera(CameraModel cameraModel)
+        {
+            // Do nothing.
         }
     }
 }

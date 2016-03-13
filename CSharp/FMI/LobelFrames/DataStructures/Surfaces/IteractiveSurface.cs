@@ -18,6 +18,7 @@ namespace LobelFrames.DataStructures.Surfaces
         public IteractiveSurface(ISceneElementsManager sceneManager)
         {
             Guard.ThrowExceptionIfNull(sceneManager, "sceneManager");
+
             this.sceneManager = sceneManager;
             this.visiblePoints = new List<PointVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
@@ -25,6 +26,8 @@ namespace LobelFrames.DataStructures.Surfaces
         }
 
         public abstract SurfaceType Type { get; }
+
+        public abstract IMeshElementsProvider ElementsProvider { get; }
 
         protected ISceneElementsManager SceneManager
         {
@@ -34,7 +37,13 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public abstract IMeshElementsProvider ElementsProvider { get; }
+        protected virtual IEnumerable<Vertex> SurfaceVerticesToRender
+        {
+            get
+            {
+                return this.ElementsProvider.Vertices;
+            }
+        }
 
         public virtual void Select()
         {
@@ -100,7 +109,7 @@ namespace LobelFrames.DataStructures.Surfaces
         protected void RenderSurfacePoints()
         {
             int pointIndex = 0;
-            foreach (Vertex vertex in this.ElementsProvider.Vertices)
+            foreach (Vertex vertex in this.SurfaceVerticesToRender)
             {
                 if (pointIndex == this.visiblePoints.Count)
                 {

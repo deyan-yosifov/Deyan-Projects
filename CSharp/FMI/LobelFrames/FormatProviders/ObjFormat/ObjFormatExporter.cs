@@ -1,4 +1,5 @@
-﻿using LobelFrames.DataStructures;
+﻿using Deyo.Core.Common;
+using LobelFrames.DataStructures;
 using System;
 using System.Text;
 
@@ -6,13 +7,17 @@ namespace LobelFrames.FormatProviders.ObjFormat
 {
     internal class ObjFormatExporter
     {
+        private readonly LinesOfTextWriter writer;
         private int lobelSurfaceIndex;
         private int bezierSurfaceIndex;
         private int nonEditableSurfaceIndex;
         private int vertexIndex;
 
-        public ObjFormatExporter()
+        public ObjFormatExporter(LinesOfTextWriter writer)
         {
+            Guard.ThrowExceptionIfNull(writer, "writer");
+
+            this.writer = writer;
             this.ResetIndices();
         }
 
@@ -26,56 +31,50 @@ namespace LobelFrames.FormatProviders.ObjFormat
             this.ResetIndices();
         }
 
-        public string ExportLobelSurface(LobelSurfaceModel lobelSurface)
+        public void ExportLobelSurface(LobelSurfaceModel lobelSurface)
         {
-            return this.ExportSurfaceModel(lobelSurface,
+            this.ExportSurfaceModel(lobelSurface,
                 string.Format("LobelSurface{0}", this.lobelSurfaceIndex),
                 string.Format("Lobel surface {0}", this.lobelSurfaceIndex++));
         }
 
-        public string ExportBezierSurface(BezierSurfaceModel bezierSurface)
+        public void ExportBezierSurface(BezierSurfaceModel bezierSurface)
         {
-            return this.ExportSurfaceModel(bezierSurface,
+            this.ExportSurfaceModel(bezierSurface,
                 string.Format("BezierSurface{0}", this.bezierSurfaceIndex),
                 string.Format("Bezier surface {0}", this.bezierSurfaceIndex++));
         }
 
-        public string ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface)
+        public void ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface)
         {
-            return this.ExportSurfaceModel(nonEditableSurface,
+            this.ExportSurfaceModel(nonEditableSurface,
                 string.Format("NonEditableSurface{0}", this.nonEditableSurfaceIndex),
                 string.Format("Non-Editable surface {0}", this.nonEditableSurfaceIndex++));
         }
 
-        public string ExportHeader()
+        public void ExportHeader()
         {
-            return string.Format("{0} Exported by Deyan Yosifov, student at Sofia University, FMI", ObjFormatProvider.CommentToken);
+            this.writer.WriteCommentLine("Exported by Deyan Yosifov, student at Sofia University, FMI");
+            this.writer.WriteLine();
         }
 
-        public string ExportFooter()
+        public void ExportFooter()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine(string.Format("{0} Bug fix for sketchup plugin not closing the last group", ObjFormatProvider.CommentToken));
-            builder.AppendLine(string.Format("{0} EndOfSceneGroup", ObjFormatProvider.GroupToken));
-            builder.AppendLine(string.Format("{0} End of scene", ObjFormatProvider.CommentToken));
-
-            return builder.ToString();
+            this.writer.WriteCommentLine("Bug fix for sketchup plugin not closing the last group");
+            this.writer.WriteLine(ObjFormatProvider.GroupToken, "EndOfSceneGroup");
+            this.writer.WriteCommentLine("End of scene");
         }
 
-        private string ExportSurfaceModel(SurfaceModel surface, string groupName, string comment)
+        private void ExportSurfaceModel(SurfaceModel surface, string groupName, string comment)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine(string.Format("{0} {1}", ObjFormatProvider.CommentToken, comment));
-            builder.AppendLine(string.Format("{0} {1}", ObjFormatProvider.GroupToken, groupName));
+            this.writer.WriteCommentLine(comment);
+            this.writer.WriteLine(ObjFormatProvider.GroupToken, groupName);
 
             int vertexOffset = this.vertexIndex;
             foreach (Vertex vertex in surface.ElementsProvider.Vertices)
             {
                 this.vertexIndex++;
-                builder.AppendLine(string.Format("{0} {1} {2} {3}", ObjFormatProvider.VertexToken,
-                    LinesOfTextLobelFormatProviderBase.GetInvariantNumberText(vertex.Point.X),
-                    LinesOfTextLobelFormatProviderBase.GetInvariantNumberText(vertex.Point.Y),
-                    LinesOfTextLobelFormatProviderBase.GetInvariantNumberText(vertex.Point.Z)));
+                this.writer.WriteLine(ObjFormatProvider.VertexToken, vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
             }
 
             foreach (Triangle triangle in surface.ElementsProvider.Triangles)
@@ -83,10 +82,10 @@ namespace LobelFrames.FormatProviders.ObjFormat
                 int indexA = vertexOffset + surface.VertexIndexer[triangle.A];
                 int indexB = vertexOffset + surface.VertexIndexer[triangle.B];
                 int indexC = vertexOffset + surface.VertexIndexer[triangle.C];
-                builder.AppendLine(string.Format("{0} {1} {2} {3}", ObjFormatProvider.FaceToken, indexA, indexB, indexC));
+                this.writer.WriteLine(ObjFormatProvider.FaceToken, indexA, indexB, indexC);
             }
 
-            return builder.ToString();
+            this.writer.WriteLine();
         }
 
         private void ResetIndices()
