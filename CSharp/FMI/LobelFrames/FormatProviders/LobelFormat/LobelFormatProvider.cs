@@ -1,5 +1,7 @@
 ﻿using Deyo.Core.Common;
 using System;
+using System.IO;
+using System.IO.Compression;
 
 namespace LobelFrames.FormatProviders.LobelFormat
 {
@@ -8,13 +10,14 @@ namespace LobelFrames.FormatProviders.LobelFormat
         public const string CommentToken = "#";
         public const string VertexToken = "v";
         public const string FaceToken = "f";
-        public const string CameraToken = "c";
+        public const string PerspectiveCameraToken = "pcam";
         public const string CameraPositionToken = "cpos";
         public const string CameraLookDirectionToken = "cldir";
         public const string CameraUpDirectionToken = "cudir";
         public const string LobelSurfaceToken = "ls";
         public const string BezierSurfaceToken = "bs";
         public const string NonEditableSurfaceToken = "ns";
+        public const string SelectedSurfaceIndexToken = "sel";
         private LobelFormatImporter importer;
         private LobelFormatExporter exporter;
 
@@ -30,7 +33,7 @@ namespace LobelFrames.FormatProviders.LobelFormat
         {
             get
             {
-                return ".lob";
+                return ".lobz";
             }
         }
 
@@ -111,6 +114,37 @@ namespace LobelFrames.FormatProviders.LobelFormat
         protected override void ExportFooter()
         {
             this.exporter.ExportFooter();
+        }
+
+        protected override byte[] GetFileBytes(string fileText)
+        {
+            byte[] textBytes = base.GetFileBytes(fileText);
+
+            using (MemoryStream compressedFile = new MemoryStream())
+            {
+                using (GZipStream compressionStream = new GZipStream(compressedFile, CompressionMode.Compress))
+                {
+                    compressionStream.Write(textBytes, 0, textBytes.Length);
+                }
+
+                return compressedFile.ToArray();
+            }
+        }
+
+        protected override string GetFileText(byte[] file)
+        {
+            using (MemoryStream decompressedFile = new MemoryStream())
+            {
+                using (MemoryStream fileToDecompress = new MemoryStream(file))
+                {
+                    using (GZipStream decompressionStream = new GZipStream(fileToDecompress, CompressionMode.Decompress))
+                    {
+                        decompressionStream.CopyTo(decompressedFile);
+                    }
+                }
+
+                return base.GetFileText(decompressedFile.ToArray());
+            }
         }
     }
 }

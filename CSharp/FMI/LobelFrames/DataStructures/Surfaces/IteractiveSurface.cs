@@ -146,20 +146,16 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             MeshGeometry3D meshGeometry = new MeshGeometry3D();
 
-            Dictionary<Vertex, int> vertexToIndex = new Dictionary<Vertex, int>();
-
-            int index = 0;
-            foreach (Vertex vertex in this.ElementsProvider.Vertices)
+            VertexIndexer vertexIndexer = new VertexIndexer(this.ElementsProvider.Vertices, (vertex) =>
             {
-                vertexToIndex.Add(vertex, index++);
                 meshGeometry.Positions.Add(vertex.Point);
-            }
+            });
 
             foreach (Triangle triangle in this.ElementsProvider.Triangles)
             {
-                meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.A]);
-                meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.B]);
-                meshGeometry.TriangleIndices.Add(vertexToIndex[triangle.C]);
+                meshGeometry.TriangleIndices.Add(vertexIndexer[triangle.A]);
+                meshGeometry.TriangleIndices.Add(vertexIndexer[triangle.B]);
+                meshGeometry.TriangleIndices.Add(vertexIndexer[triangle.C]);
             }
 
             if (this.meshVisual == null)

@@ -54,6 +54,7 @@ namespace LobelFrames.FormatProviders.ObjFormat
 
         public void ExportHeader()
         {
+            this.writer.WriteCommentLine("OBJ format export of \"Lobel frames\" modeling scene");
             this.writer.WriteCommentLine("Exported by Deyan Yosifov, student at Sofia University, FMI");
             this.writer.WriteLine();
         }
@@ -74,7 +75,7 @@ namespace LobelFrames.FormatProviders.ObjFormat
             foreach (Vertex vertex in surface.ElementsProvider.Vertices)
             {
                 this.vertexIndex++;
-                this.writer.WriteLine(ObjFormatProvider.VertexToken, vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
+                this.writer.WriteLine(ObjFormatProvider.VertexToken, vertex.Point);
             }
 
             foreach (Triangle triangle in surface.ElementsProvider.Triangles)

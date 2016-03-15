@@ -8,13 +8,29 @@ namespace LobelFrames.DataStructures
         private readonly Dictionary<Vertex, int> vertexToIndex;
 
         public VertexIndexer(IEnumerable<Vertex> vertices)
+            : this(vertices, null)
+        {
+        }
+
+        internal VertexIndexer(IEnumerable<Vertex> vertices, Action<Vertex> onVertexEnumerated)
         {
             int index = 0;
             this.vertexToIndex = new Dictionary<Vertex, int>();
 
-            foreach (Vertex vertex in vertices)
+            if (onVertexEnumerated == null)
             {
-                this.vertexToIndex[vertex] = index++;
+                foreach (Vertex vertex in vertices)
+                {
+                    this.vertexToIndex[vertex] = index++;
+                }
+            }
+            else
+            {
+                foreach (Vertex vertex in vertices)
+                {
+                    this.vertexToIndex[vertex] = index++;
+                    onVertexEnumerated(vertex);
+                }
             }
         }
 
