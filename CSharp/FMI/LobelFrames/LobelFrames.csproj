@@ -62,6 +62,7 @@
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
+    <Compile Include="DataStructures\UniqueEdgesSet.cs" />
     <Compile Include="DataStructures\VertexIndexer.cs" />
     <Compile Include="FormatProviders\BezierSurfaceModel.cs" />
     <Compile Include="FormatProviders\CameraModel.cs" />
