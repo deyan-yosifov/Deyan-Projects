@@ -15,6 +15,12 @@ namespace LobelFrames.DataStructures.Surfaces
             this.meshEditor = new EquilateralMeshEditor(rows, columns, sideSize);
         }
 
+        internal LobelSurface(ISceneElementsManager sceneManager, IEnumerable<Triangle> triangles)
+            : base(sceneManager)
+        {
+            this.meshEditor = new EquilateralMeshEditor(triangles);
+        }
+
         public override SurfaceType Type
         {
             get

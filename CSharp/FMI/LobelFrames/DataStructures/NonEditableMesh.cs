@@ -7,15 +7,15 @@ namespace LobelFrames.DataStructures
     public class NonEditableMesh : IMeshElementsProvider
     {
         private readonly TriangularMesh mesh;
-        private readonly Dictionary<Edge, Edge> uniqueEdgesSet;
         private IEnumerable<Edge> contour;
+        private UniqueEdgesSet uniqueEdges;
         private bool isInitialized;
 
         public NonEditableMesh()
         {
             this.mesh = new TriangularMesh();
+            this.uniqueEdges = new UniqueEdgesSet();
 
-            this.uniqueEdgesSet = new Dictionary<Edge, Edge>(new EdgesEqualityComparer());
             this.isInitialized = false;
         }
 
@@ -78,20 +78,7 @@ namespace LobelFrames.DataStructures
         public void AddTriangle(Vertex a, Vertex b, Vertex c)
         {
             Guard.ThrowExceptionIfTrue(this.isInitialized, "isInitialized");
-            this.mesh.AddTriangle(new Triangle(this.GetUniqueEdge(a, b), this.GetUniqueEdge(a, c), this.GetUniqueEdge(b, c)), true);
-        }
-
-        private Edge GetUniqueEdge(Vertex a, Vertex b)
-        {
-            Edge edge = new Edge(a, b);
-            
-            Edge oldEdge;
-            if (this.uniqueEdgesSet.TryGetValue(edge, out oldEdge))
-            {
-                edge = oldEdge;
-            }
-
-            return edge;
+            this.mesh.AddTriangle(new Triangle(this.uniqueEdges.GetEdge(a, b), this.uniqueEdges.GetEdge(a, c), this.uniqueEdges.GetEdge(b, c)), true);
         }
     }
 }

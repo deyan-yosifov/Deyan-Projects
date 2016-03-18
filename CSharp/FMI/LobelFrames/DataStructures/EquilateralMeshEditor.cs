@@ -1,4 +1,5 @@
-﻿using Deyo.Core.Mathematics.Algebra;
+﻿using Deyo.Core.Common;
+using Deyo.Core.Mathematics.Algebra;
 using LobelFrames.DataStructures.Surfaces;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,23 @@ namespace LobelFrames.DataStructures
             Vertex first, last;
             this.AddFirstEdges(new Point3D(-width / 2, -height / 2, 0), EquilateralMeshEditor.InitialX, columns, out first, out last);
             this.AddTrianglesToLobelMesh(first, last, rows);
+        }
+
+        internal EquilateralMeshEditor(IEnumerable<Triangle> triangles)
+        {
+            double expectedSquaredSideSize = triangles.First().SideA.LengthSquared;
+            this.mesh = new TriangularMesh();
+
+            foreach (Triangle triangle in triangles)
+            {
+                Guard.ThrowExceptionIfFalse(expectedSquaredSideSize.IsEqualTo(triangle.SideA.LengthSquared), "triangle expected side length");
+                Guard.ThrowExceptionIfFalse(expectedSquaredSideSize.IsEqualTo(triangle.SideB.LengthSquared), "triangle expected side length");
+                Guard.ThrowExceptionIfFalse(expectedSquaredSideSize.IsEqualTo(triangle.SideC.LengthSquared), "triangle expected side length");
+
+                this.Mesh.AddTriangle(triangle, true);
+            }
+
+            this.sideSize = Math.Sqrt(expectedSquaredSideSize);
         }
 
         public double SideSize

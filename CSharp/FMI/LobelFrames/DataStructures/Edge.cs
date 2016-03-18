@@ -30,6 +30,14 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public double LengthSquared
+        {
+            get
+            {
+                return (this.End.Point - this.Start.Point).LengthSquared;
+            }
+        }
+
         public IEnumerable<Vertex> Vertices
         {
             get
