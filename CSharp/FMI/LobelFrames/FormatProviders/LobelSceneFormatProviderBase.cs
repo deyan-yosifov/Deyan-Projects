@@ -81,6 +81,8 @@ namespace LobelFrames.FormatProviders
         {
             switch (surface.Type)
             {
+                case SurfaceType.Lobel:
+                    return LobelSceneFormatProviderBase.CreateLobelIteractiveSurface(elementsManager, (LobelSurfaceModel)surface);
                 case SurfaceType.NonEditable:
                     return LobelSceneFormatProviderBase.CreateNonEditableIteractiveSurface(elementsManager, (NonEditableSurfaceModel)surface);
                 default:
@@ -126,6 +128,11 @@ namespace LobelFrames.FormatProviders
         private static SurfaceModel GetLobelSurfaceModel(LobelSurface lobelSurface)
         {
             return new LobelSurfaceModel(lobelSurface.ElementsProvider);
+        }
+
+        private static IteractiveSurface CreateLobelIteractiveSurface(ISceneElementsManager elementsManager, LobelSurfaceModel lobelSurfaceModel)
+        {
+            return new LobelSurface(elementsManager, lobelSurfaceModel.ElementsProvider.Triangles);
         }
 
         private static IteractiveSurface CreateNonEditableIteractiveSurface(ISceneElementsManager elementsManager, NonEditableSurfaceModel model)

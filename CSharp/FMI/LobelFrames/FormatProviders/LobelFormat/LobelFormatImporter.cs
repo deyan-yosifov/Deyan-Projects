@@ -1,29 +1,211 @@
-﻿using System;
+﻿using Deyo.Core.Common;
+using LobelFrames.DataStructures;
+using LobelFrames.DataStructures.Surfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Media.Media3D;
 
 namespace LobelFrames.FormatProviders.LobelFormat
 {
     internal class LobelFormatImporter
     {
-        private readonly LobelScene lobelScene;
+        private readonly LobelScene scene;
+        private readonly Dictionary<string, Action<string[]>> lineTokensHandlers;
+        private List<Vertex> currentSurfaceVertices;
+        private NonEditableMesh currentMesh;
+        private SurfaceType? currentSurfaceType;
+        private int? selectedSurfaceIndex;
 
-        public LobelFormatImporter(LobelScene lobelScene)
+        public LobelFormatImporter(LobelScene scene)
         {
-            this.lobelScene = lobelScene;
+            this.scene = scene;
+            this.currentMesh = null;
+            this.currentSurfaceType = null;
+            this.selectedSurfaceIndex = null;
+            this.currentSurfaceVertices = null;
+
+            this.lineTokensHandlers = new Dictionary<string, Action<string[]>>();
+            this.lineTokensHandlers.Add(LobelFormatProvider.VertexToken, this.HandleVertexTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.FaceToken, this.HandleFaceTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.PerspectiveCameraToken, this.HandlePerspectiveCameraTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.CameraPositionToken, this.HandleCameraPositionTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.CameraLookDirectionToken, this.HandleCameraLookDirectionTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.CameraUpDirectionToken, this.HandleCameraUpDirectionTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.LobelSurfaceToken, this.HandleLobelSurfaceTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.BezierSurfaceToken, this.HandleBezierSurfaceTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.NonEditableSurfaceToken, this.HandleNonEditableSurfaceTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.SelectedSurfaceIndexToken, this.HandleSelectedSurfaceIndexTokenLine);
         }
 
         public void BeginImport()
         {
-            throw new NotImplementedException();
+            Guard.ThrowExceptionIfNotNull(this.currentMesh, "currentMesh");
+            Guard.ThrowExceptionIfNotNull(this.currentSurfaceType, "currentSurfaceType");
+            Guard.ThrowExceptionIfNotNull(this.selectedSurfaceIndex, "selectedSurfaceIndex");
+            Guard.ThrowExceptionIfNotNull(this.currentSurfaceVertices, "currentSurfaceVertices");
+            Guard.ThrowExceptionIfNotNull(this.scene.Camera, "scene.Camera");
         }
 
         public void EndImport()
         {
-            throw new NotImplementedException();
+            this.PopPreviousSurface();
+
+            if (this.selectedSurfaceIndex.HasValue)
+            {
+                int currentIndex = 0;
+
+                foreach (SurfaceModel surface in this.scene.Surfaces)
+                {
+                    if (currentIndex == this.selectedSurfaceIndex.Value)
+                    {
+                        surface.IsSelected = true;
+                        break;
+                    }
+
+                    currentIndex++;
+                }
+
+                this.selectedSurfaceIndex = null;
+            }
         }
 
         public void ImportLine(string[] tokens)
         {
+            Action<string[]> lineTokensHandler;
+            if (this.lineTokensHandlers.TryGetValue(tokens[0], out lineTokensHandler))
+            {
+                lineTokensHandler(tokens);
+            }
+        }
+
+        private void HandleVertexTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNull(this.currentSurfaceVertices, "currentSurfaceVertices");
+
+            double x, y, z;
+            LobelFormatImporter.ParseThreeCoordinatesLine(tokens, out x, out y, out z);
+            this.currentSurfaceVertices.Add(new Vertex(new Point3D(x, y, z)));
+        }
+
+        private void HandleFaceTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNull(this.currentMesh, "currentMesh");
+            Guard.ThrowExceptionIfNull(this.currentSurfaceVertices, "currentSurfaceVertices");
+
+            if (tokens.Length != 4)
+            {
+                throw new NotSupportedException("Only faces with 3 vertices are supported!");
+            }
+
+            int firstIndex = int.Parse(tokens[1]);
+            int secondIndex = int.Parse(tokens[2]);
+            int thirdIndex = int.Parse(tokens[3]);
+
+            Vertex a = this.currentSurfaceVertices[firstIndex];
+            Vertex b = this.currentSurfaceVertices[secondIndex];
+            Vertex c = this.currentSurfaceVertices[thirdIndex];
+
+            this.currentMesh.AddTriangle(a, b, c);
+        }
+
+        private void HandlePerspectiveCameraTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNotNull(this.scene.Camera, "scene.Camera");
+
+            this.scene.Camera = new CameraModel();
+        }
+
+        private void HandleCameraPositionTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNull(this.scene.Camera, "scene.Camera");
+            double x, y, z;
+            LobelFormatImporter.ParseThreeCoordinatesLine(tokens, out x, out y, out z);
+            this.scene.Camera.Position = new Point3D(x, y, z);
+        }
+
+        private void HandleCameraLookDirectionTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNull(this.scene.Camera, "scene.Camera");
+            double x, y, z;
+            LobelFormatImporter.ParseThreeCoordinatesLine(tokens, out x, out y, out z);
+            this.scene.Camera.LookDirection = new Vector3D(x, y, z);
+        }
+
+        private void HandleCameraUpDirectionTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNull(this.scene.Camera, "scene.Camera");
+            double x, y, z;
+            LobelFormatImporter.ParseThreeCoordinatesLine(tokens, out x, out y, out z);
+            this.scene.Camera.UpDirection = new Vector3D(x, y, z);
+        }
+
+        private void HandleLobelSurfaceTokenLine(string[] tokens)
+        {
+            this.BeginSurface(SurfaceType.Lobel);
+        }
+
+        private void HandleNonEditableSurfaceTokenLine(string[] tokens)
+        {
+            this.BeginSurface(SurfaceType.NonEditable);
+        }
+
+        private void HandleBezierSurfaceTokenLine(string[] tokens)
+        {
             throw new NotImplementedException();
+        }
+
+        private void HandleSelectedSurfaceIndexTokenLine(string[] tokens)
+        {
+            this.selectedSurfaceIndex = int.Parse(tokens[1]);
+        }
+
+        private void BeginSurface(SurfaceType type)
+        {
+            this.PopPreviousSurface();
+
+            this.currentSurfaceType = type;
+            this.currentMesh = new NonEditableMesh();
+            this.currentMesh.BeginInit();
+            this.currentSurfaceVertices = new List<Vertex>();
+        }
+
+        private void PopPreviousSurface()
+        {
+            if (this.currentSurfaceType != null)
+            {
+                this.currentMesh.EndInit();
+
+                if (currentMesh.Triangles.Any())
+                {
+                    SurfaceModel surface = this.CreateSurfaceModel();
+                    this.scene.AddSurface(surface);
+                }
+
+                this.currentMesh = null;
+                this.currentSurfaceType = null;
+                this.currentSurfaceVertices = null;
+            }
+        }
+
+        private SurfaceModel CreateSurfaceModel()
+        {
+            switch (this.currentSurfaceType)
+            {
+                case SurfaceType.Lobel:
+                    return new LobelSurfaceModel(this.currentMesh);
+                case SurfaceType.NonEditable:
+                    return new NonEditableSurfaceModel(this.currentMesh);
+                default:
+                    throw new NotSupportedException(string.Format("Not supported surface type: {0}", this.currentSurfaceType));
+            }
+        }
+
+        private static void ParseThreeCoordinatesLine(string[] tokens, out double x, out double y, out double z)
+        {
+            x = LinesOfTextLobelFormatProviderBase.ParseNumber(tokens[1]);
+            y = LinesOfTextLobelFormatProviderBase.ParseNumber(tokens[2]);
+            z = LinesOfTextLobelFormatProviderBase.ParseNumber(tokens[3]);
         }
     }
 }
