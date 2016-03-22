@@ -127,6 +127,11 @@
     <Compile Include="ViewModels\ILobelSceneContext.cs" />
     <Compile Include="ViewModels\ILobelSceneEditor.cs" />
     <Compile Include="ViewModels\SceneConstants.cs" />
+    <Compile Include="ViewModels\Settings\BezierSettings.cs" />
+    <Compile Include="ViewModels\Settings\GeneralSettings.cs" />
+    <Compile Include="ViewModels\Settings\LobelSettings.cs" />
+    <Compile Include="ViewModels\Settings\SettingsBase.cs" />
+    <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
     <Compile Include="Views\SurfaceModelingView.xaml.cs">

@@ -1,5 +1,6 @@
 ﻿using LobelFrames.ViewModels;
 using LobelFrames.ViewModels.Commands;
+using LobelFrames.ViewModels.Settings;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +23,7 @@ namespace LobelFrames.Views
             this.CommandDescriptors = this.viewModel.CommandDescriptors;
             this.InputManager = this.viewModel.InputManager;
             this.HintManager = this.viewModel.HintManager;
+            this.Settings = this.viewModel.Settings;
             this.DataContext = this.viewModel;
         }
 
@@ -33,6 +35,9 @@ namespace LobelFrames.Views
 
         public static readonly DependencyProperty InputManagerProperty = DependencyProperty.Register("InputManager",
             typeof(InputManager), typeof(SurfaceModelingView));
+
+        public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register("Settings",
+            typeof(SettingsViewModel), typeof(SurfaceModelingView));
 
         public CommandDescriptors CommandDescriptors
         {
@@ -50,6 +55,12 @@ namespace LobelFrames.Views
         {
             get { return (InputManager)GetValue(InputManagerProperty); }
             set { SetValue(InputManagerProperty, value); }
+        }
+
+        public SettingsViewModel Settings
+        {
+            get { return (SettingsViewModel)GetValue(SettingsProperty); }
+            set { SetValue(SettingsProperty, value); }
         }
     }
 }

@@ -14,6 +14,7 @@ using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Commands.Handlers;
 using LobelFrames.ViewModels.Commands.History;
+using LobelFrames.ViewModels.Settings;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -27,6 +28,7 @@ namespace LobelFrames.ViewModels
         private readonly Scene3D scene;
         private readonly HintManager hintManager;
         private readonly InputManager inputManager;
+        private readonly SettingsViewModel settings;
         private readonly CommandDescriptors commandDescriptors;
         private readonly SceneElementsPool elementsPool;
         private readonly SurfaceModelingContext context;
@@ -38,6 +40,7 @@ namespace LobelFrames.ViewModels
             this.scene = scene;
             this.hintManager = new HintManager();
             this.inputManager = new InputManager();
+            this.settings = new SettingsViewModel();
             this.elementsPool = new SceneElementsPool(scene);
             this.context = new SurfaceModelingContext(CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
             this.commandDescriptors = new CommandDescriptors(this);
@@ -79,6 +82,14 @@ namespace LobelFrames.ViewModels
             get
             {
                 return this.inputManager;
+            }
+        }
+
+        public SettingsViewModel Settings
+        {
+            get
+            {
+                return this.settings;
             }
         }
 
@@ -132,6 +143,39 @@ namespace LobelFrames.ViewModels
         public void Redo()
         {
             this.HistoryManager.Redo();
+        }
+
+        public void ChangeGeneralSettings()
+        {
+            this.Settings.GeneralSettings.IsOpen = !this.Settings.GeneralSettings.IsOpen;
+        }
+
+        public void ChangeLobelSettings()
+        {
+            this.Settings.LobelSettings.IsOpen = !this.Settings.LobelSettings.IsOpen;
+        }
+
+        public void ChangeBezierSettings()
+        {
+            this.Settings.BezierSettings.IsOpen = !this.Settings.BezierSettings.IsOpen;
+        }
+
+        public void BeforeCommandExecuted(CommandType type)
+        {
+            if (type != CommandType.Settings)
+            {
+                this.Settings.GeneralSettings.IsOpen = false;
+            }
+
+            if (type != CommandType.LobelSettings)
+            {
+                this.Settings.LobelSettings.IsOpen = false;
+            }
+
+            if (type != CommandType.BezierSettings)
+            {
+                this.Settings.BezierSettings.IsOpen = false;
+            }
         }
 
         public void AddLobelMesh()

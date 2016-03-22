@@ -8,7 +8,10 @@
         xmlns:buttons="clr-namespace:Deyo.Controls.Buttons;assembly=Deyo.Controls"
         xmlns:deyoContentControls ="clr-namespace:Deyo.Controls.ContentControls;assembly=Deyo.Controls"
         Title="Дипломна работа към ФМИ" Height="800" Width="1000"
-        Icon="/LobelFrames;component/Resources/Icosahedron-icon.png">
+        Icon="/LobelFrames;component/Resources/Icosahedron-icon.png"
+        SizeChanged="Window_SizeChanged"
+        LocationChanged="Window_LocationChanged"
+        PreviewTextInput="Window_PreviewTextInput">
     <Window.Resources>
         <commands:IsEnabledToColorConverter x:Key="isEnabledColorConverter" />
         <commands:CommandTypeToDescriptorConverter x:Key="commandConverter" />
@@ -63,8 +66,8 @@
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <buttons:ImageButton ToolTip="Настройки" ButtonImageSource="/LobelFrames;component/Resources/Settings-icon.png"
                             DataContext="{Binding ConverterParameter=Settings, Converter={StaticResource commandConverter}}" 
-                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
-                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Unloaded="SettingsButton_Unloaded"
+                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" x:Name="settingsButton" />
                         <Separator />
 
                         <buttons:ImageButton ToolTip="Селектирай" ButtonImageSource="/LobelFrames;component/Resources/Select-icon.png"
@@ -103,8 +106,8 @@
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <buttons:ImageButton ToolTip="Настройки на повърхнините на Лобел" ButtonImageSource="/LobelFrames;component/Resources/LobelSettings-icon.png"
                             DataContext="{Binding ConverterParameter=LobelSettings, Converter={StaticResource commandConverter}}" 
-                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
-                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Unloaded="LobelSettingsButton_Unloaded"
+                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" x:Name="lobelSettingsButton" />
                         <Separator />
 
                         <buttons:ImageButton ToolTip="Добави повърхнина на Безие" ButtonImageSource="/LobelFrames;component/Resources/AddBezierMesh-icon.png"
@@ -117,8 +120,8 @@
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <buttons:ImageButton ToolTip="Настройки на повърхнините на Безие" ButtonImageSource="/LobelFrames;component/Resources/BezierSettings-icon.png"
                             DataContext="{Binding ConverterParameter=BezierSettings, Converter={StaticResource commandConverter}}" 
-                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" 
-                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" Unloaded="BezierSettingsButton_Unloaded"
+                            Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" x:Name="bezierSettingsButton" />
                         
                         <Separator DataContext="{Binding ConverterParameter=Test, Converter={StaticResource commandConverter}}"
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}"/>
@@ -128,7 +131,33 @@
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />                       
                     </deyoContentControls:Toolbar>
                 </Border>
-                          
+
+                <Grid DataContext="{Binding ElementName=surface, Path=Settings}">
+                    <Popup DataContext="{Binding GeneralSettings}" x:Name="settingsPopup" IsOpen="{Binding IsOpen}" 
+                           PlacementTarget="{Binding ElementName=settingsButton}" 
+                           Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
+                        <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
+                            <TextBlock Text="{Binding Label}" />
+                        </Border>
+                    </Popup>
+
+                    <Popup DataContext="{Binding LobelSettings}" x:Name="lobelSettingsPopup" IsOpen="{Binding IsOpen}" 
+                           PlacementTarget="{Binding ElementName=lobelSettingsButton}" 
+                           Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
+                        <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
+                            <TextBlock Text="{Binding Label}" />
+                        </Border>
+                    </Popup>
+
+                    <Popup DataContext="{Binding BezierSettings}" x:Name="bezierSettingsPopup" IsOpen="{Binding IsOpen}" 
+                           PlacementTarget="{Binding ElementName=bezierSettingsButton}" 
+                           Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
+                        <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
+                            <TextBlock Text="{Binding Label}" />
+                        </Border>
+                    </Popup>
+                </Grid>
+
                 <lobelFames:SurfaceModelingView Grid.Row="1" x:Name="surface" />
 
                 <Border Grid.Row="2" Background="Transparent" Margin="10 0 5 5">

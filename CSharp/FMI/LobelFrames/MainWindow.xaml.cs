@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -23,11 +24,58 @@ namespace LobelFrames
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            this.PreviewTextInput += (s, e) =>
+        private IEnumerable<Popup> Popups
+        {
+            get
+            {
+                yield return this.settingsPopup;
+                yield return this.lobelSettingsPopup;
+                yield return this.bezierSettingsPopup;
+            }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            this.UpdatePopupPositions();
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            this.UpdatePopupPositions();
+        }
+
+        private void Window_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            this.surface.InputManager.HandleInput(e);
+        }
+
+        private void UpdatePopupPositions()
+        {
+            foreach (Popup popup in this.Popups)
+            {
+                if (popup.IsOpen)
                 {
-                    this.surface.InputManager.HandleInput(e);
-                };
+                    popup.HorizontalOffset += 0.001;
+                    popup.HorizontalOffset -= 0.001;
+                }
+            }
+        }
+
+        private void BezierSettingsButton_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.bezierSettingsPopup.IsOpen = false;
+        }
+
+        private void LobelSettingsButton_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.lobelSettingsPopup.IsOpen = false;
+        }
+
+        private void SettingsButton_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.settingsPopup.IsOpen = false;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.Save, this.viewModel.Save);
             this.RegisterCommandDescriptor(CommandType.Undo, this.viewModel.Undo);
             this.RegisterCommandDescriptor(CommandType.Redo, this.viewModel.Redo);
-            this.RegisterCommandDescriptor(CommandType.Settings, null);
+            this.RegisterCommandDescriptor(CommandType.Settings, this.viewModel.ChangeGeneralSettings);
 
             this.RegisterCommandDescriptor(CommandType.SelectMesh, this.viewModel.SelectMesh);
             this.RegisterCommandDescriptor(CommandType.DeselectMesh, this.viewModel.Deselect);
@@ -56,11 +56,11 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.CutMesh, null);
             this.RegisterCommandDescriptor(CommandType.FoldMesh, null);
             this.RegisterCommandDescriptor(CommandType.GlueMesh, null);
-            this.RegisterCommandDescriptor(CommandType.LobelSettings, null);
+            this.RegisterCommandDescriptor(CommandType.LobelSettings, this.viewModel.ChangeLobelSettings);
 
             this.RegisterCommandDescriptor(CommandType.AddBezierSurface, null);
             this.RegisterCommandDescriptor(CommandType.ApproximateWithLobelMesh, null);
-            this.RegisterCommandDescriptor(CommandType.BezierSettings, null);
+            this.RegisterCommandDescriptor(CommandType.BezierSettings, this.viewModel.ChangeBezierSettings);
 
             this.RegisterCommandDescriptor(CommandType.Test, this.TestAction, false);
 
@@ -75,8 +75,17 @@ namespace LobelFrames.ViewModels.Commands
         private void RegisterCommandDescriptor(CommandType type, Action commandAction, bool initialIsVisibleState)
         {
             ICommand command = commandAction == null ?
-                new DelegateCommand((p) => this.ShowNotImplementedCommand(type)) :
-                new DelegateCommand((p) => commandAction());
+                new DelegateCommand((p) =>
+                    {
+                        this.viewModel.BeforeCommandExecuted(type);
+                        this.ShowNotImplementedCommand(type);
+                    }) :
+                new DelegateCommand((p) =>
+                    {
+                        this.viewModel.BeforeCommandExecuted(type);
+                        commandAction();
+                    });
+
             this.descriptors.Add(type, new CommandDescriptor(command) { IsVisible = initialIsVisibleState });
         }
 
