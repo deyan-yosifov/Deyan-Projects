@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using System;
+using System.Globalization;
 
 namespace LobelFrames.ViewModels.Commands
 {
@@ -8,14 +9,14 @@ namespace LobelFrames.ViewModels.Commands
         private string inputLabel;
         private string inputValue;
         private bool isEnabled;
-        private bool isInputingParameter;
+        private bool isInputingParameterWithKeyboard;
 
         public InputManager()
         {
             this.IsEnabled = false;
             this.InputValue = string.Empty;
             this.InputLabel = Labels.Default;
-            this.isInputingParameter = false;
+            this.isInputingParameterWithKeyboard = false;
         }
 
         public bool IsEnabled
@@ -54,6 +55,14 @@ namespace LobelFrames.ViewModels.Commands
             set
             {
                 this.SetProperty(ref this.inputValue, value);
+            }
+        }
+
+        public bool IsInputingParameterWithKeyboard
+        {
+            get
+            {
+                return this.isInputingParameterWithKeyboard;
             }
         }
 
@@ -101,7 +110,7 @@ namespace LobelFrames.ViewModels.Commands
                 default:
                     this.EnsureInputingState();
 
-                    if (char.IsLetterOrDigit(symbol))
+                    if (char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol))
                     {
                         this.InputValue += symbol;
                     }
@@ -115,7 +124,7 @@ namespace LobelFrames.ViewModels.Commands
             {
                 this.OnParameterInputed(this.InputValue);
                 this.InputValue = string.Empty;
-                this.isInputingParameter = false;
+                this.isInputingParameterWithKeyboard = false;
             }
         }
 
@@ -123,7 +132,7 @@ namespace LobelFrames.ViewModels.Commands
         {
             if (!string.IsNullOrEmpty(this.InputValue))
             {
-                this.isInputingParameter = true;
+                this.isInputingParameterWithKeyboard = true;
                 this.InputValue = this.InputValue.Substring(0, this.InputValue.Length - 1);
             }
         }
@@ -131,14 +140,14 @@ namespace LobelFrames.ViewModels.Commands
         private void HandleEscapeButtonInput()
         {
             this.InputValue = string.Empty;
-            this.isInputingParameter = false;
+            this.isInputingParameterWithKeyboard = false;
         }
 
         private void EnsureInputingState()
         {
-            if (!this.isInputingParameter)
+            if (!this.isInputingParameterWithKeyboard)
             {
-                this.isInputingParameter = true;
+                this.isInputingParameterWithKeyboard = true;
                 this.InputValue = string.Empty;
             }
         }
@@ -147,7 +156,7 @@ namespace LobelFrames.ViewModels.Commands
         {
             this.SetLabel(Labels.Default);
             this.InputValue = string.Empty;
-            this.isInputingParameter = false;
+            this.isInputingParameterWithKeyboard = false;
         }
 
         private void SetLabel(string label)
@@ -161,6 +170,20 @@ namespace LobelFrames.ViewModels.Commands
             {
                 this.ParameterInputed(this, new ParameterInputedEventArgs(parameter));
             }
+        }
+
+        private static bool IsDecimalSeparator(char symbol)
+        {
+            string separatorText = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+
+            if (!string.IsNullOrEmpty(separatorText))
+            {
+                char separator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+                return separator == symbol;
+            }
+
+            return false;
         }
     }
 }

@@ -109,5 +109,11 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.points.Clear();
             this.edges.Clear();
         }
+
+
+        public virtual void HandleParameterInputed(ParameterInputedEventArgs e)
+        {
+            // Do nothing...
+        }
     }
 }

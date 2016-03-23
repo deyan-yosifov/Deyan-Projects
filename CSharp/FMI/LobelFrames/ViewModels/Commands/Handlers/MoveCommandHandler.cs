@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
+using Deyo.Core.Mathematics.Algebra;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
@@ -12,6 +13,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 {
     public class MoveCommandHandler : CommandHandlerBase
     {
+        private Point3D previousMovePoint;
+
         public MoveCommandHandler(ILobelSceneEditor editor, ISceneElementsManager elementsManager)
             : base(editor, elementsManager)
         {
@@ -38,13 +41,12 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             if (restrictor.IsInIteraction)
             {
-                restrictor.EndIteraction();
                 Vector3D moveDirection = e.Point - base.Points[0].Position;
-                base.Editor.DoAction(new MoveSurfaceAction(base.Editor.Context.SelectedSurface, moveDirection));
-                base.Editor.CloseCommandContext();
+                this.EndMoveCommand(moveDirection);
             }
             else if (e.TryGetVisual(out pointVisual))
             {
+                this.previousMovePoint = pointVisual.Position;
                 base.Editor.InputManager.Start(Labels.InputMoveDistance, 0.ToString());
                 base.MovingLine = base.ElementsManager.BeginMovingLineOverlay(pointVisual.Position);
                 restrictor.BeginIteraction(pointVisual.Position);
@@ -62,9 +64,15 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void HandlePointMove(PointEventArgs e)
         {
+            this.previousMovePoint = e.Point;
             base.ElementsManager.MoveLineOverlay(base.MovingLine, e.Point);
             Vector3D moveDirection = e.Point - base.Points[0].Position;
-            base.Editor.InputManager.InputValue = Labels.GetDecimalNumberValue(moveDirection.Length);
+
+            if (!base.Editor.InputManager.IsInputingParameterWithKeyboard)
+            {
+                base.Editor.InputManager.InputLabel = Labels.InputMoveDistance;
+                base.Editor.InputManager.InputValue = Labels.GetDecimalNumberValue(moveDirection.Length);
+            }
 
             for (int i = 0; i < base.Edges.Count; i++)
             {
@@ -72,6 +80,37 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 LineOverlay line = base.Lines[i];
                 base.ElementsManager.MoveLineOverlay(line, edge.Start.Point + moveDirection, edge.End.Point + moveDirection);
             }
+        }
+
+        public override void HandleParameterInputed(ParameterInputedEventArgs e)
+        {
+            double distance;
+            if (double.TryParse(e.Parameter, out distance))
+            {
+                Vector3D moveDirection = this.previousMovePoint - base.Points[0].Position;
+                if (moveDirection.LengthSquared.IsZero())
+                {
+                    base.Editor.InputManager.InputLabel = Labels.WrongMousePositioningMoveDirection;
+                }
+                else
+                {
+                    moveDirection.Normalize();
+                    moveDirection = moveDirection * distance;
+                    this.EndMoveCommand(moveDirection);
+                }
+            }
+            else
+            {
+                base.Editor.InputManager.InputLabel = Labels.WrongInputMoveDistance;
+            }
+        }
+
+        private void EndMoveCommand(Vector3D moveDirection)
+        {
+            IteractionRestrictor restrictor = base.Editor.SurfacePointerHandler.PointHandler.Restrictor;
+            restrictor.EndIteraction();
+            base.Editor.DoAction(new MoveSurfaceAction(base.Editor.Context.SelectedSurface, moveDirection));
+            base.Editor.CloseCommandContext();
         }
     }
 }

@@ -352,7 +352,7 @@ namespace LobelFrames.ViewModels
 
         private void HandleInputManagerParameterInputed(object sender, ParameterInputedEventArgs e)
         {
-            MessageBox.Show(string.Format("Parameter inputed: {0}", e.Parameter));
+            this.CommandContext.CommandHandler.HandleParameterInputed(e);
         }
 
         private void HandleSurfaceSelected(object sender, SurfaceSelectedEventArgs e)
