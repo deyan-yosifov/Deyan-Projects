@@ -94,6 +94,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 }
                 else
                 {
+                    e.Handled = true;
                     moveDirection.Normalize();
                     moveDirection = moveDirection * distance;
                     this.EndMoveCommand(moveDirection);

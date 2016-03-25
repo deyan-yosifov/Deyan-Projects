@@ -122,9 +122,14 @@ namespace LobelFrames.ViewModels.Commands
         {
             if (!string.IsNullOrEmpty(this.InputValue))
             {
-                this.OnParameterInputed(this.InputValue);
-                this.InputValue = string.Empty;
-                this.isInputingParameterWithKeyboard = false;
+                ParameterInputedEventArgs args = new ParameterInputedEventArgs(this.InputValue);
+                this.OnParameterInputed(args);
+
+                if (args.Handled)
+                {
+                    this.InputValue = string.Empty;
+                    this.isInputingParameterWithKeyboard = false;
+                }
             }
         }
 
@@ -164,11 +169,11 @@ namespace LobelFrames.ViewModels.Commands
             this.InputLabel = label;
         }
 
-        private void OnParameterInputed(string parameter)
+        private void OnParameterInputed(ParameterInputedEventArgs args)
         {
             if (this.ParameterInputed != null)
             {
-                this.ParameterInputed(this, new ParameterInputedEventArgs(parameter));
+                this.ParameterInputed(this, args);
             }
         }
 

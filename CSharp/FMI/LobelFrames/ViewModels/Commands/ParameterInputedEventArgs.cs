@@ -18,5 +18,11 @@ namespace LobelFrames.ViewModels.Commands
                 return this.parameter;
             }
         }
+
+        public bool Handled
+        {
+            get;
+            set;
+        }
     }
 }
