@@ -30,6 +30,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void BeginCommand()
         {
+            base.BeginCommand();
             base.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
             base.Editor.ShowHint(Hints.SelectFirstMovePoint);
         }
@@ -47,7 +48,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             else if (e.TryGetVisual(out pointVisual))
             {
                 this.previousMovePoint = pointVisual.Position;
-                base.Editor.InputManager.Start(Labels.InputMoveDistance, 0.ToString());
+                base.Editor.InputManager.Start(Labels.InputMoveDistance, 0.ToString(), false);
                 base.MovingLine = base.ElementsManager.BeginMovingLineOverlay(pointVisual.Position);
                 restrictor.BeginIteraction(pointVisual.Position);
                 base.Points.Add(pointVisual);
@@ -106,11 +107,22 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
+        public override void HandleCancelInputed()
+        {
+            base.HandleCancelInputed();
+            this.EndMoveCommand(new Vector3D());
+        }
+
         private void EndMoveCommand(Vector3D moveDirection)
         {
             IteractionRestrictor restrictor = base.Editor.SurfacePointerHandler.PointHandler.Restrictor;
             restrictor.EndIteraction();
-            base.Editor.DoAction(new MoveSurfaceAction(base.Editor.Context.SelectedSurface, moveDirection));
+
+            if (!moveDirection.LengthSquared.IsZero())
+            {
+                base.Editor.DoAction(new MoveSurfaceAction(base.Editor.Context.SelectedSurface, moveDirection));
+            }
+
             base.Editor.CloseCommandContext();
         }
     }

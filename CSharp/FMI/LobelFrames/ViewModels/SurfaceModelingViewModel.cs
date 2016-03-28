@@ -339,6 +339,7 @@ namespace LobelFrames.ViewModels
         private void AttachToEvents()
         {
             this.InputManager.ParameterInputed += this.HandleInputManagerParameterInputed;
+            this.InputManager.CancelInputed += this.HandleInputManagerCancelInputed;
             this.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
             this.SurfacePointerHandler.SurfaceHandler.SurfaceSelected += this.HandleSurfaceSelected;
             this.SurfacePointerHandler.PointHandler.PointClicked += HandlePointClicked;
@@ -353,6 +354,11 @@ namespace LobelFrames.ViewModels
         private void HandleInputManagerParameterInputed(object sender, ParameterInputedEventArgs e)
         {
             this.CommandContext.CommandHandler.HandleParameterInputed(e);
+        }
+
+        private void HandleInputManagerCancelInputed(object sender, EventArgs e)
+        {
+            this.CommandContext.CommandHandler.HandleCancelInputed();
         }
 
         private void HandleSurfaceSelected(object sender, SurfaceSelectedEventArgs e)

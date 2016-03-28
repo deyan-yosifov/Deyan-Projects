@@ -70,7 +70,10 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public abstract CommandType Type { get; }
 
-        public abstract void BeginCommand();
+        public virtual void BeginCommand()
+        {
+            this.Editor.InputManager.Start(Labels.PressEscapeToCancel, string.Empty, true);
+        }
 
         public virtual void HandleSurfaceSelected(SurfaceSelectedEventArgs e)
         {
@@ -89,6 +92,9 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public void EndCommand()
         {
+            this.Editor.InputManager.IsEnabled = false;
+            this.Editor.InputManager.HandleCancelInputOnly = false;
+
             this.ClearElements();
         }
 
@@ -114,6 +120,12 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         public virtual void HandleParameterInputed(ParameterInputedEventArgs e)
         {
             // Do nothing...
+        }
+
+
+        public virtual void HandleCancelInputed()
+        {
+            // Do nothing
         }
     }
 }

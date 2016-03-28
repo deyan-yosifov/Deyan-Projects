@@ -34,6 +34,12 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
+        public bool HandleCancelInputOnly
+        {
+            get;
+            set;
+        }
+
         public string InputLabel
         {
             get
@@ -74,11 +80,12 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
-        public void Start(string label, string value)
+        public void Start(string label, string value, bool handleCancelOnly)
         {
             this.IsEnabled = true;
             this.InputLabel = label;
             this.InputValue = value;
+            this.HandleCancelInputOnly = handleCancelOnly;
         }
 
         public void Stop()
@@ -87,6 +94,7 @@ namespace LobelFrames.ViewModels.Commands
         }
 
         public event EventHandler<ParameterInputedEventArgs> ParameterInputed;
+        public event EventHandler CancelInputed;
 
         private void HandleInputSymbol(char symbol)
         {
@@ -94,27 +102,31 @@ namespace LobelFrames.ViewModels.Commands
             const char backspace = '\b';
             const char cariageReturn = '\r';
             const char newLine = '\n';
-            
-            switch(symbol)
-            {
-                case escape:
-                    this.HandleEscapeButtonInput();
-                    break;
-                case backspace:
-                    this.HandleBackspaceButtonInput();
-                    break;
-                case newLine:
-                case cariageReturn:
-                    this.HandleNewLineButtonInput();                    
-                    break;
-                default:
-                    this.EnsureInputingState();
 
-                    if (char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol))
-                    {
-                        this.InputValue += symbol;
-                    }
-                    break;
+            if (symbol == escape)
+            {
+                this.HandleEscapeButtonInput();
+            }
+            else if (!this.HandleCancelInputOnly)
+            {
+                switch (symbol)
+                {
+                    case backspace:
+                        this.HandleBackspaceButtonInput();
+                        break;
+                    case newLine:
+                    case cariageReturn:
+                        this.HandleNewLineButtonInput();
+                        break;
+                    default:
+                        this.EnsureInputingState();
+
+                        if (char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol))
+                        {
+                            this.InputValue += symbol;
+                        }
+                        break;
+                }
             }
         }
 
@@ -145,7 +157,15 @@ namespace LobelFrames.ViewModels.Commands
         private void HandleEscapeButtonInput()
         {
             this.InputValue = string.Empty;
-            this.isInputingParameterWithKeyboard = false;
+
+            if (this.IsInputingParameterWithKeyboard)
+            {
+                this.isInputingParameterWithKeyboard = false;
+            }
+            else
+            {
+                this.OnCancelInputed();
+            }
         }
 
         private void EnsureInputingState()
@@ -162,11 +182,20 @@ namespace LobelFrames.ViewModels.Commands
             this.SetLabel(Labels.Default);
             this.InputValue = string.Empty;
             this.isInputingParameterWithKeyboard = false;
+            this.HandleCancelInputOnly = false;
         }
 
         private void SetLabel(string label)
         {
             this.InputLabel = label;
+        }
+
+        private void OnCancelInputed()
+        {
+            if (this.CancelInputed != null)
+            {
+                this.CancelInputed(this, new EventArgs());
+            }
         }
 
         private void OnParameterInputed(ParameterInputedEventArgs args)

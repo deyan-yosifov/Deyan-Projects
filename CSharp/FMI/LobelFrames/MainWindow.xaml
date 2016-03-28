@@ -180,7 +180,6 @@
                             <TextBlock Margin="10 0" FontWeight="Bold" VerticalAlignment="Center" 
                                        Visibility="{Binding IsEnabled, Converter={StaticResource visibilityConverter}}">
                                 <Run Text="{Binding InputLabel}" />
-                                <Run Text=":" />
                             </TextBlock>
                             <Border BorderThickness="1" VerticalAlignment="Center" Padding="5 0"
                                     BorderBrush="{Binding IsEnabled, Converter={StaticResource isEnabledColorConverter}}">

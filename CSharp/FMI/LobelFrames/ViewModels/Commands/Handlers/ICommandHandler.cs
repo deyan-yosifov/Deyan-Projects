@@ -18,5 +18,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         void HandlePointMove(PointEventArgs e);
 
         void HandleParameterInputed(ParameterInputedEventArgs e);
+
+        void HandleCancelInputed();
     }
 }
