@@ -30,7 +30,7 @@ namespace Deyo.Controls.Controls3D.Cameras
         internal OrbitControl(SceneEditor editor)
         {
             this.editor = editor;
-            this.moveDelayManager = new MouseDelayManager();
+            this.moveDelayManager = new MouseDelayManager(true);
 
             this.IsEnabled = true;
             this.ZoomSpeed = 0.1;

@@ -16,7 +16,7 @@ namespace LobelFrames.IteractionHandling
         {
             Guard.ThrowExceptionIfNull(zoomToContents, "zoomToContents");
 
-            this.delayManager = new MouseDelayManager();
+            this.delayManager = new MouseDelayManager(false);
             this.zoomToContents = zoomToContents;
             this.DoubleClickInterval = 400;
             this.IsEnabled = true;
