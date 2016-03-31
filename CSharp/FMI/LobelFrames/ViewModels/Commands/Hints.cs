@@ -10,5 +10,6 @@ namespace LobelFrames.ViewModels.Commands
         public const string SelectSecondMovePoint = "Селектирай финална точка на преместване!";
         public const string OpenLobelScene = "Отвори сцена от файл!";
         public const string SaveLobelScene = "Запиши сцената в предпочитан файлов формат!";
+        public const string SelectCutPoint = "Селектирай точка на рязане!";
     }
 }

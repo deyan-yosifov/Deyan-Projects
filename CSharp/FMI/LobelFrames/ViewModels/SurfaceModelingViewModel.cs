@@ -208,6 +208,11 @@ namespace LobelFrames.ViewModels
             this.CommandContext.BeginCommand(CommandType.MoveMesh);
         }
 
+        public void CutMesh()
+        {
+            this.CommandContext.BeginCommand(CommandType.CutMesh);
+        }
+
         public void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
         {
             this.surfacePointerHandler.IteractionType = iteractionType;

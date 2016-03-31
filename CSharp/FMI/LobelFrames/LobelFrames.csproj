@@ -106,6 +106,7 @@
     <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlerBase.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlersFactory.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\CutMeshCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\ICommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\MoveCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\OpenCommandHandler.cs" />
