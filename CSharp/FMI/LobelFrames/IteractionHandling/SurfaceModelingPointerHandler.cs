@@ -50,6 +50,7 @@ namespace LobelFrames.IteractionHandling
                 if (this.isEnabled != value)
                 {
                     this.isEnabled = value;
+                    this.OnIsEnabledChanged();                    
                 }
             }
         }
@@ -134,6 +135,11 @@ namespace LobelFrames.IteractionHandling
         private void SetCurrentHandler()
         {
             this.currentHandler = this.handlers[this.IteractionType];
+        }
+
+        private void OnIsEnabledChanged()
+        {
+            this.currentHandler.Reset();
         }
     }
 }

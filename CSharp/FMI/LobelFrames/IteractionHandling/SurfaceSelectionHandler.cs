@@ -48,5 +48,11 @@ namespace LobelFrames.IteractionHandling
                 this.SurfaceSelected(this, new SurfaceSelectedEventArgs(surface));
             }
         }
+
+
+        public void Reset()
+        {
+            // Do nothing.
+        }
     }
 }

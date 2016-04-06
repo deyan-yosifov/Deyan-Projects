@@ -91,5 +91,10 @@ namespace LobelFrames.IteractionHandling
                 this.PointMove(this, new PointEventArgs(point));
             }
         }
+
+        public void Reset()
+        {
+            this.restrictor.EndIteraction();
+        }
     }
 }

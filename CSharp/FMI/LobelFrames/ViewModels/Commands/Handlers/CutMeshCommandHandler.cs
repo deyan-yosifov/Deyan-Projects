@@ -60,7 +60,10 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void HandlePointMove(PointEventArgs e)
         {
-            base.ElementsManager.MoveLineOverlay(base.MovingLine, e.Point);
+            if (base.MovingLine != null)
+            {
+                base.ElementsManager.MoveLineOverlay(base.MovingLine, e.Point);
+            }
         }
 
         public override void HandleCancelInputed()

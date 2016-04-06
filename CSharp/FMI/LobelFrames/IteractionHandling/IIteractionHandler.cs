@@ -8,5 +8,6 @@ namespace LobelFrames.IteractionHandling
         IteractionHandlingType IteractionType { get; }
         bool TryHandleClick(Point viewportPosition);
         bool TryHandleMove(Point viewportPosition);
+        void Reset();
     }
 }
