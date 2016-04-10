@@ -4,6 +4,7 @@ using Deyo.Core.Common;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
 using System;
+using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels.Commands.Handlers
 {
@@ -22,11 +23,21 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
+        private IteractionRestrictor Restrictor
+        {
+            get
+            {
+                return base.Editor.SurfacePointerHandler.PointHandler.Restrictor;
+            }
+        }
+
         public override void BeginCommand()
         {
             base.BeginCommand();
             base.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
             base.Editor.ShowHint(Hints.SelectCutPoint);
+            base.Editor.InputManager.DisableKeyboardInputValueEditing = true;
+            this.UpdateInputLabel();
         }
 
         public override void HandlePointClicked(PointClickEventArgs e)
@@ -34,7 +45,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             PointVisual point;
             if (e.TryGetVisual(out point))
             {
-                IteractionRestrictor restrictor = base.Editor.SurfacePointerHandler.PointHandler.Restrictor;
+                IteractionRestrictor restrictor = this.Restrictor;
 
                 if (restrictor.IsInIteraction)
                 {
@@ -45,15 +56,13 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                         base.Lines.Add(base.ElementsManager.CreateLineOverlay(base.Points.PeekLast().Position, point.Position));
 
                         base.Points.Add(point);
-                        base.MovingLine = base.ElementsManager.BeginMovingLineOverlay(point.Position);
-                        restrictor.BeginIteraction(point.Position);
-                    }                    
+                        this.BeginIteraction(point.Position);
+                    }
                 }
                 else
                 {
                     base.Points.Add(point);
-                    base.MovingLine = base.ElementsManager.BeginMovingLineOverlay(point.Position);
-                    restrictor.BeginIteraction(point.Position);
+                    this.BeginIteraction(point.Position);
                 }
             }
         }
@@ -68,7 +77,68 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void HandleCancelInputed()
         {
-            base.Editor.CloseCommandContext();
+            IteractionRestrictor restrictor = this.Restrictor;
+
+            if (restrictor.IsInIteraction)
+            {
+                this.EndIteraction();
+                base.Points.RemoveAt(base.Points.Count - 1);
+
+                if (base.Lines.Count > 0)
+                {
+                    base.ElementsManager.DeleteLineOverlay(base.Lines.PeekLast());
+                    base.Lines.RemoveAt(base.Lines.Count - 1);
+                }
+
+                if (base.Points.Count > 0)
+                {
+                    this.BeginIteraction(base.Points.PeekLast().Position);
+                }
+                else
+                {
+                    this.UpdateInputLabel();
+                }
+            }
+            else
+            {
+                base.Editor.CloseCommandContext();
+            }
+        }
+
+        private void UpdateInputLabel()
+        {
+            switch (this.Points.Count)
+            {
+                case 0:
+                    base.Editor.InputManager.Start(Labels.PressEscapeToCancel, string.Empty, true);
+                    base.Editor.InputManager.HandleEmptyParameterInput = false;
+                    break;
+                case 1:
+                    base.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
+                    base.Editor.InputManager.HandleEmptyParameterInput = false;
+                    break;
+                case 2:
+                    base.Editor.InputManager.Start(Labels.PressEnterToCut, string.Empty, true);
+                    base.Editor.InputManager.HandleEmptyParameterInput = true;
+                    break;
+                default:
+                    // Do nothing.
+                    break;
+            }
+        }
+
+        private void EndIteraction()
+        {
+            base.ElementsManager.DeleteMovingLineOverlay(base.MovingLine);
+            this.Restrictor.EndIteraction();
+            this.UpdateInputLabel();
+        }
+
+        private void BeginIteraction(Point3D point)
+        {
+            base.MovingLine = base.ElementsManager.BeginMovingLineOverlay(point);
+            this.Restrictor.BeginIteraction(point);
+            this.UpdateInputLabel();
         }
     }
 }

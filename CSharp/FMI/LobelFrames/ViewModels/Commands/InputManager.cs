@@ -40,6 +40,18 @@ namespace LobelFrames.ViewModels.Commands
             set;
         }
 
+        public bool HandleEmptyParameterInput
+        {
+            get;
+            set;
+        }
+
+        public bool DisableKeyboardInputValueEditing
+        {
+            get;
+            set;
+        }
+
         public string InputLabel
         {
             get
@@ -119,11 +131,14 @@ namespace LobelFrames.ViewModels.Commands
                         this.HandleNewLineButtonInput();
                         break;
                     default:
-                        this.EnsureInputingState();
-
-                        if (char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol))
+                        if (!this.DisableKeyboardInputValueEditing)
                         {
-                            this.InputValue += symbol;
+                            this.EnsureInputingState();
+
+                            if (char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol))
+                            {
+                                this.InputValue += symbol;
+                            }
                         }
                         break;
                 }
@@ -132,7 +147,7 @@ namespace LobelFrames.ViewModels.Commands
 
         private void HandleNewLineButtonInput()
         {
-            if (!string.IsNullOrEmpty(this.InputValue))
+            if (!string.IsNullOrEmpty(this.InputValue) || this.HandleEmptyParameterInput)
             {
                 ParameterInputedEventArgs args = new ParameterInputedEventArgs(this.InputValue);
                 this.OnParameterInputed(args);
@@ -183,6 +198,8 @@ namespace LobelFrames.ViewModels.Commands
             this.InputValue = string.Empty;
             this.isInputingParameterWithKeyboard = false;
             this.HandleCancelInputOnly = false;
+            this.DisableKeyboardInputValueEditing = false;
+            this.HandleEmptyParameterInput = false;
         }
 
         private void SetLabel(string label)
