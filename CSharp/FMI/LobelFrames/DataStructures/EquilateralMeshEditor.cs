@@ -132,6 +132,26 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public bool TryConnectVerticesWithColinearEdges(Vertex start, Vertex end, out VertexConnectionInfo connectionInfo)
+        {
+            connectionInfo = null;
+            Vector3D direction = end.Point - start.Point;
+            double sideLengths = (direction).Length / this.SideSize;
+            bool mayBeConnected = sideLengths.IsInteger();
+
+            if (mayBeConnected)
+            {
+                Vector3D firstPlaneNormal;
+                bool hasEdgesOnBothSides, hasNoTriangles;
+                this.GetStartVertexSurroundingInfo(start, direction, out hasNoTriangles, out hasEdgesOnBothSides, out firstPlaneNormal);
+
+                int edgesCount = (int)Math.Round(sideLengths);
+                mayBeConnected = TryFindEdgesInDirection(start, direction, edgesCount, firstPlaneNormal, hasEdgesOnBothSides, hasNoTriangles, out connectionInfo);
+            }
+
+            return mayBeConnected;
+        }
+
         private void AddTrianglesToLobelMesh(Edge[] firstEdges, Vector3D yAxis, int numberOfRows)
         {
             yAxis.Normalize();
@@ -218,26 +238,6 @@ namespace LobelFrames.DataStructures
             {
                 return second.Start.Point - first.End.Point;
             }
-        }
-
-        private bool TryConnectVerticesWithColinearEdges(Vertex start, Vertex end, out VertexConnectionInfo connectionInfo)
-        {
-            connectionInfo = null;
-            Vector3D direction = end.Point - start.Point;
-            double sideLengths = (direction).Length / this.SideSize;
-            bool mayBeConnected = sideLengths.IsInteger();
-
-            if (mayBeConnected)
-            {
-                Vector3D firstPlaneNormal;
-                bool hasEdgesOnBothSides, hasNoTriangles;
-                this.GetStartVertexSurroundingInfo(start, direction, out hasNoTriangles, out hasEdgesOnBothSides, out firstPlaneNormal);
-
-                int edgesCount = (int)Math.Round(sideLengths);
-                mayBeConnected = TryFindEdgesInDirection(start, direction, edgesCount, firstPlaneNormal, hasEdgesOnBothSides, hasNoTriangles, out connectionInfo);
-            }
-
-            return mayBeConnected;
         }
 
         private bool TryFindEdgesInDirection(Vertex start, Vector3D direction, int edgesCount, Vector3D firstPlaneNormal,

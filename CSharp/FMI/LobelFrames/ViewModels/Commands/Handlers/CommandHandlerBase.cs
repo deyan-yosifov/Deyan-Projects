@@ -90,7 +90,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             throw new NotImplementedException();
         }
 
-        public void EndCommand()
+        public virtual void EndCommand()
         {
             this.Editor.InputManager.IsEnabled = false;
             this.Editor.InputManager.HandleCancelInputOnly = false;

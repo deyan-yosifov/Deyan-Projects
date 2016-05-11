@@ -14,6 +14,7 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly List<PointVisual> visiblePoints;
         private readonly List<LineVisual> visibleSurfaceLines;
         private readonly List<LineOverlay> visibleLineOverlays;
+        private readonly Dictionary<PointVisual, Vertex> pointVisualToVertexMapping;
 
         public IteractiveSurface(ISceneElementsManager sceneManager)
         {
@@ -23,6 +24,7 @@ namespace LobelFrames.DataStructures.Surfaces
             this.visiblePoints = new List<PointVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
             this.visibleLineOverlays = new List<LineOverlay>();
+            this.pointVisualToVertexMapping = new Dictionary<PointVisual, Vertex>();
         }
 
         public abstract SurfaceType Type { get; }
@@ -75,10 +77,7 @@ namespace LobelFrames.DataStructures.Surfaces
 
         public virtual void Hide()
         {
-            foreach (PointVisual point in this.visiblePoints)
-            {
-                this.SceneManager.DeletePoint(point);
-            }
+            this.HideSurfacePoints();
 
             foreach (LineVisual surfaceLine in this.visibleSurfaceLines)
             {
@@ -95,7 +94,11 @@ namespace LobelFrames.DataStructures.Surfaces
             this.meshVisual = null;
             this.visibleLineOverlays.Clear();
             this.visibleSurfaceLines.Clear();
-            this.visiblePoints.Clear();
+        }
+
+        public Vertex GetVertexFromPointVisual(PointVisual visual)
+        {
+            return this.pointVisualToVertexMapping[visual];
         }
 
         protected virtual void MoveMeshVertices(Vector3D moveDirection)
@@ -114,10 +117,13 @@ namespace LobelFrames.DataStructures.Surfaces
                 if (pointIndex == this.visiblePoints.Count)
                 {
                     this.visiblePoints.Add(this.SceneManager.CreatePoint(vertex.Point));
+                    this.AddPointVisualToVertexMapping(this.visiblePoints.PeekLast(), vertex);
+                    
                 }
                 else
                 {
                     this.visiblePoints[pointIndex].Position = vertex.Point;
+                    this.AddPointVisualToVertexMapping(this.visiblePoints[pointIndex], vertex);
                 }
 
                 pointIndex++;
@@ -174,6 +180,12 @@ namespace LobelFrames.DataStructures.Surfaces
             }
 
             this.visiblePoints.Clear();
+            this.pointVisualToVertexMapping.Clear();
+        }
+
+        private void AddPointVisualToVertexMapping(PointVisual visual, Vertex vertex)
+        {
+            this.pointVisualToVertexMapping[visual] = vertex;
         }
     }
 }

@@ -11,5 +11,6 @@ namespace LobelFrames.ViewModels.Commands
         public const string OpenLobelScene = "Отвори сцена от файл!";
         public const string SaveLobelScene = "Запиши сцената в предпочитан файлов формат!";
         public const string SelectCutPoint = "Селектирай точка на рязане!";
+        public const string NeighbouringCutPointsShouldBeOnColinearEdges = "Съседните точки на рязане трябва да са свързани с колинеарни ръбове!";
     }
 }

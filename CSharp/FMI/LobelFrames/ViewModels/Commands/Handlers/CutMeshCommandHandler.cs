@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Core.Common;
+using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
 using System;
@@ -10,6 +11,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 {
     public class CutMeshCommandHandler : CommandHandlerBase
     {
+        private LobelSurface surface;
+
         public CutMeshCommandHandler(ILobelSceneEditor editor, ISceneElementsManager elementsManager)
             : base(editor, elementsManager)
         {
@@ -33,11 +36,18 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void BeginCommand()
         {
+            this.surface = (LobelSurface)base.Editor.Context.SelectedSurface;
             base.BeginCommand();
             base.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
             base.Editor.ShowHint(Hints.SelectCutPoint);
             base.Editor.InputManager.DisableKeyboardInputValueEditing = true;
             this.UpdateInputLabel();
+        }
+
+        public override void EndCommand()
+        {
+            base.EndCommand();
+            this.surface = null;
         }
 
         public override void HandlePointClicked(PointClickEventArgs e)
@@ -49,7 +59,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
                 if (restrictor.IsInIteraction)
                 {
-                    if (point != base.Points.PeekLast())
+                    if (point != base.Points.PeekLast() && this.TryValidateNextPointInput(point))
                     {
                         restrictor.EndIteraction();
                         base.ElementsManager.DeleteMovingLineOverlay(base.MovingLine);
@@ -65,6 +75,21 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                     this.BeginIteraction(point.Position);
                 }
             }
+        }
+
+        private bool TryValidateNextPointInput(PointVisual point)
+        {
+            Vertex previous = this.surface.GetVertexFromPointVisual(base.Points.PeekLast());
+            Vertex next = this.surface.GetVertexFromPointVisual(point);
+
+            VertexConnectionInfo connectionInfo;
+            if (!surface.MeshEditor.TryConnectVerticesWithColinearEdges(previous, next, out connectionInfo))
+            {
+                base.Editor.ShowHint(Hints.NeighbouringCutPointsShouldBeOnColinearEdges);
+                return false;
+            }
+
+            return true;
         }
 
         public override void HandlePointMove(PointEventArgs e)
@@ -107,6 +132,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private void UpdateInputLabel()
         {
+            base.Editor.ShowHint(Hints.SelectCutPoint);
+
             switch (this.Points.Count)
             {
                 case 0:

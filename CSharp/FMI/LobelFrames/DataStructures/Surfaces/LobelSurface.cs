@@ -36,5 +36,13 @@ namespace LobelFrames.DataStructures.Surfaces
                 return this.meshEditor;
             }
         }
+
+        public EquilateralMeshEditor MeshEditor
+        {
+            get
+            {
+                return this.meshEditor;
+            }
+        }
     }
 }
