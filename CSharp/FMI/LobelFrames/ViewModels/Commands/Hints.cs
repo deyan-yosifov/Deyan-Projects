@@ -12,5 +12,8 @@ namespace LobelFrames.ViewModels.Commands
         public const string SaveLobelScene = "Запиши сцената в предпочитан файлов формат!";
         public const string SelectCutPoint = "Селектирай точка на рязане!";
         public const string NeighbouringCutPointsShouldBeOnColinearEdges = "Съседните точки на рязане трябва да са свързани с колинеарни ръбове!";
+        public const string NextCutPointCannotBeColinearWithPreviousCutPointsCouple = "Точката не трябва да е колинеарна с предните две точки от селекцията!";
+        public const string CutSelectionMustBePlanarPolygone = "Селекцията за рязане трябва да бъде равнинен полигон!";
+        public const string CutSelectionMustBeConvexPolygone = "Селекцията за рязане трябва да бъде изпъкнал полигон!";
     }
 }
