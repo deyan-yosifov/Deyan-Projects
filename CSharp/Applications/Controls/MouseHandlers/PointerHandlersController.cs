@@ -12,6 +12,9 @@ namespace Deyo.Controls.MouseHandlers
 {
     public class PointerHandlersController
     {
+#if DEBUG
+        private static readonly bool DebugPointerHandlers = false;
+#endif
         private readonly NamedObjectsCollection<IPointerHandler> handlers;
         private IPointerHandler capturedHandler;
         private PointerEventArgs<MouseButtonEventArgs> lastCaptureArgs;
@@ -180,7 +183,7 @@ namespace Deyo.Controls.MouseHandlers
         private void ReleaseHandler()
         {
 #if DEBUG
-            System.Diagnostics.Debug.WriteLine("ReleaseHandler: <{0}>", this.CapturedHandler);
+            DebugLine("ReleaseHandler: <{0}>", this.CapturedHandler);
 #endif
             this.capturedHandler = null;
             this.OnHandlerReleased();
@@ -212,9 +215,18 @@ namespace Deyo.Controls.MouseHandlers
             return handler.IsEnabled && handler.HandlesDragMove;
         }
 #if DEBUG
+        private static void DebugLine(string text, params object[] parameters)
+        {
+            if (!DebugPointerHandlers) return;
+
+            System.Diagnostics.Debug.WriteLine(text, parameters);
+        }
+
         private static void DebugEventHandler<T>(string text, IPointerHandler handler, PointerEventArgs<T> e)
             where T : MouseEventArgs
         {
+            if (!DebugPointerHandlers) return;
+
             Func<object, string> getShortName = (obj) => 
                 {
                     if(obj == null)

@@ -119,7 +119,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void HandleParameterInputed(ParameterInputedEventArgs e)
         {
-            System.Windows.MessageBox.Show(e.Parameter);
+
         }
 
         private bool TryValidateNextPointInput(PointVisual point)
@@ -211,14 +211,17 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 case 0:
                     this.Editor.InputManager.Start(Labels.PressEscapeToCancel, string.Empty, true);
                     this.Editor.InputManager.HandleEmptyParameterInput = false;
+                    this.Editor.InputManager.HandleCancelInputOnly = true;
                     break;
                 case 1:
                     this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
                     this.Editor.InputManager.HandleEmptyParameterInput = false;
+                    this.Editor.InputManager.HandleCancelInputOnly = true;
                     break;
                 case 2:
                     this.Editor.InputManager.Start(Labels.PressEnterToCut, string.Empty, true);
                     this.Editor.InputManager.HandleEmptyParameterInput = true;
+                    this.Editor.InputManager.HandleCancelInputOnly = false;
                     break;
                 default:
                     // Do nothing.
