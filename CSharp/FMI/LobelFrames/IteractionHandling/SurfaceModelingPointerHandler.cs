@@ -103,26 +103,22 @@ namespace LobelFrames.IteractionHandling
             }
         }
 
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
+        public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
             return true;          
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)
         {
-            Point viewportPosition = PointerHandlersController.GetPosition(e);
-
-            return this.CurrentHandler.TryHandleClick(viewportPosition);  
+            return this.CurrentHandler.TryHandleClick(e.Position);  
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
+        public bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e)
         {
-            Point viewportPosition = PointerHandlersController.GetPosition(e);
-
-            return this.CurrentHandler.TryHandleMove(viewportPosition);    
+            return this.CurrentHandler.TryHandleMove(e.Position);    
         }
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
             return false;
         }

@@ -143,6 +143,7 @@
     <Compile Include="Media\Imaging\ImageExtensions.cs" />
     <Compile Include="MouseHandlers\IPointerHandler.cs" />
     <Compile Include="MouseHandlers\MouseDelayManager.cs" />
+    <Compile Include="MouseHandlers\PointerEventArgs.cs" />
     <Compile Include="MouseHandlers\PointerHandlersController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

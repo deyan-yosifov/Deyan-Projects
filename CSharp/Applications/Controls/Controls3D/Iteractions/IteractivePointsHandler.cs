@@ -105,12 +105,12 @@ namespace Deyo.Controls.Controls3D.Iteractions
             this.registeredPoints.Remove(point.Visual);
         }
 
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
+        public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
             Visual3D visual;
             PointVisual point;
             this.ReleaseCapturedPoint();
-            Point viewportPosition = PointerHandlersController.GetPosition(e);
+            Point viewportPosition = e.Position;
 
             if (this.editor.TryHitVisual3D(viewportPosition, out visual) && this.registeredPoints.TryGetValue(visual, out point))
             {
@@ -122,7 +122,7 @@ namespace Deyo.Controls.Controls3D.Iteractions
             return false;
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)
         {
             if (this.restrictor.IsInIteraction)
             {
@@ -134,11 +134,11 @@ namespace Deyo.Controls.Controls3D.Iteractions
             return false;
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
+        public bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e)
         {
             if (this.restrictor.IsInIteraction)
             {
-                Point viewportPosition = PointerHandlersController.GetPosition(e);
+                Point viewportPosition = e.Position;
 
                 Point3D position;
                 if (this.restrictor.TryGetIteractionPoint(viewportPosition, out position))
@@ -152,7 +152,7 @@ namespace Deyo.Controls.Controls3D.Iteractions
             return false;
         }
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
             return this.restrictor.IsInIteraction;
         }

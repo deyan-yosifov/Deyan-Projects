@@ -149,22 +149,22 @@ namespace Deyo.Controls.Controls3D
 
         private void Viewport2D_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            this.pointerHandlersController.TryHandleMouseWheel(e);
+            this.pointerHandlersController.TryHandleMouseWheel(new PointerEventArgs<MouseWheelEventArgs>(this.viewport2D, e));
         }
 
         private void Viewport2D_MouseMove(object sender, MouseEventArgs e)
         {
-            this.pointerHandlersController.TryHandleMouseMove(e);
+            this.pointerHandlersController.TryHandleMouseMove(new PointerEventArgs<MouseEventArgs>(this.viewport2D, e));
         }
 
         private void Viewport2D_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            this.pointerHandlersController.TryHandleMouseUp(e);
+            this.pointerHandlersController.TryHandleMouseUp(new PointerEventArgs<MouseButtonEventArgs>(this.viewport2D, e));
         }
 
         private void Viewport2D_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this.pointerHandlersController.TryHandleMouseDown(e);
+            this.pointerHandlersController.TryHandleMouseDown(new PointerEventArgs<MouseButtonEventArgs>(this.viewport2D, e));
         }
 
         protected override Visual GetVisualChild(int index)

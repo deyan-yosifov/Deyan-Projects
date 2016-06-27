@@ -28,7 +28,8 @@ namespace Deyo.Controls.MouseHandlers
             set;
         }
 
-        public bool ShouldHandleMouse(MouseEventArgs e)
+        public bool ShouldHandleMouse<T>(PointerEventArgs<T> e)
+            where T : MouseEventArgs
         {
             return this.shouldHandleTimeStamp(e.Timestamp);
         }

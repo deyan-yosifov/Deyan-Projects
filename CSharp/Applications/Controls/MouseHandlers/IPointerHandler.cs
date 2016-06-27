@@ -14,12 +14,12 @@ namespace Deyo.Controls.MouseHandlers
 
         bool HandlesDragMove { get; }
 
-        bool TryHandleMouseDown(MouseButtonEventArgs e);
+        bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e);
 
-        bool TryHandleMouseUp(MouseButtonEventArgs e);
+        bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e);
 
-        bool TryHandleMouseMove(MouseEventArgs e);
+        bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e);
 
-        bool TryHandleMouseWheel(MouseWheelEventArgs e);
+        bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e);
     }
 }

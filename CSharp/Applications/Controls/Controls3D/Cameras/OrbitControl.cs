@@ -36,6 +36,7 @@ namespace Deyo.Controls.Controls3D.Cameras
             this.ZoomSpeed = 0.1;
             this.MoveDeltaTime = 20;
             this.WidthOrbitAngleInDegrees = 180;
+            this.dragAction = DragAction.NoAction;
         }
 
         public string Name
@@ -54,8 +55,11 @@ namespace Deyo.Controls.Controls3D.Cameras
             }
             set
             {
-                this.dragAction = DragAction.NoAction;
-                this.isEnabled = value;
+                if (this.isEnabled != value)
+                {
+                    this.dragAction = DragAction.NoAction;
+                    this.isEnabled = value;
+                }
             }
         }
 
@@ -99,12 +103,12 @@ namespace Deyo.Controls.Controls3D.Cameras
             }
         }
 
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
+        public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
-            Point position = OrbitControl.GetPosition(e);
-            Size viewportSize = OrbitControl.GetViewportSize(e);
+            Point position = e.Position;
+            Size viewportSize = e.SenderSize;
 
-            if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
+            if (e.OriginalArgs.MouseDevice.MiddleButton == MouseButtonState.Pressed)
             {
                 this.dragAction = DragAction.Pan;
 
@@ -136,21 +140,21 @@ namespace Deyo.Controls.Controls3D.Cameras
             return true;
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)
         {
             this.dragAction = DragAction.NoAction;
 
             return true;
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
+        public bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e)
         {
             if (this.dragAction != DragAction.NoAction)
             {
                 if (this.moveDelayManager.ShouldHandleMouse(e))
                 {
-                    Point position = OrbitControl.GetPosition(e);
-                    Size viewportSize = OrbitControl.GetViewportSize(e);
+                    Point position = e.Position;
+                    Size viewportSize = e.SenderSize;
 
                     if (this.dragAction == DragAction.Orbit)
                     {
@@ -176,17 +180,19 @@ namespace Deyo.Controls.Controls3D.Cameras
                                 this.Pan(orthographicCamera, position, viewportSize);
                             });
                     }
+
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
-            Point position = OrbitControl.GetPosition(e);
-            Size viewportSize = OrbitControl.GetViewportSize(e);
-            double zoomAmount = (this.ZoomSpeed * e.Delta) / WheelSingleDelta;
+            Point position = e.Position;
+            Size viewportSize = e.SenderSize;
+            double zoomAmount = (this.ZoomSpeed * e.OriginalArgs.Delta) / WheelSingleDelta;
 
             this.Editor.DoActionOnCamera(
                 (perspectiveCamera) =>
@@ -343,18 +349,6 @@ namespace Deyo.Controls.Controls3D.Cameras
             Point3D zoomPosition = currentPosition + zoomVector;
 
             return zoomPosition;
-        }
-
-        private static Point GetPosition(MouseEventArgs e)
-        {
-            return e.GetPosition((IInputElement)e.Source);
-        }
-
-        private static Size GetViewportSize(MouseEventArgs e)
-        {
-            FrameworkElement element = (FrameworkElement)e.Source;
-
-            return new Size(element.ActualWidth, element.ActualHeight);
         }
     }
 }

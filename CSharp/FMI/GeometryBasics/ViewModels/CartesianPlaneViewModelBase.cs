@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Charts;
 using Deyo.Controls.Common;
+using Deyo.Controls.MouseHandlers;
 using GeometryBasics.Algorithms;
 using GeometryBasics.Common;
 using System;
@@ -309,7 +310,7 @@ namespace GeometryBasics.ViewModels
             {
                 this.previousMoveTimestamp = e.Timestamp;
 
-                this.OnSelectionMoveOverride(this.CartesianPlane.GetCartesianPointFromMousePosition(e));
+                this.OnSelectionMoveOverride(this.CartesianPlane.GetCartesianPointFromMousePosition(new PointerEventArgs<MouseEventArgs>(this.CartesianPlane, e)));
             }
         }
 
@@ -319,7 +320,7 @@ namespace GeometryBasics.ViewModels
             {
                 using (this.CartesianPlane.SuspendLayoutUpdate())
                 {
-                    this.OnPointSelectedOverride(this.CartesianPlane.GetCartesianPointFromMousePosition(e), this.isFirstPointSelection);
+                    this.OnPointSelectedOverride(this.CartesianPlane.GetCartesianPointFromMousePosition(new PointerEventArgs<MouseButtonEventArgs>(this.CartesianPlane, e)), this.isFirstPointSelection);
                     this.isFirstPointSelection = false;
                 }
             }

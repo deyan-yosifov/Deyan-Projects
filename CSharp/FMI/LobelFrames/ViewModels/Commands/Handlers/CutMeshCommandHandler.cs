@@ -48,7 +48,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void EndCommand()
         {
-            this.EndCommand();
+            base.EndCommand();
             this.surface = null;
         }
 
@@ -115,6 +115,11 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             {
                 this.Editor.CloseCommandContext();
             }
+        }
+
+        public override void HandleParameterInputed(ParameterInputedEventArgs e)
+        {
+            System.Windows.MessageBox.Show(e.Parameter);
         }
 
         private bool TryValidateNextPointInput(PointVisual point)

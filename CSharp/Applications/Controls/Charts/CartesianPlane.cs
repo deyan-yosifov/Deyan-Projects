@@ -261,9 +261,10 @@ namespace Deyo.Controls.Charts
             this.InvalidateLayout();
         }
 
-        public Point GetCartesianPointFromMousePosition(MouseEventArgs mouseArgs)
+        public Point GetCartesianPointFromMousePosition<T>(PointerEventArgs<T> pointArgs)
+            where T : MouseEventArgs
         {
-            return this.InverseMatrix.Transform(mouseArgs.GetPosition(this)); 
+            return this.InverseMatrix.Transform(pointArgs.Position); 
         }
 
         public void StartListeningToMouseEvents()
@@ -292,7 +293,7 @@ namespace Deyo.Controls.Charts
         {
             if (this.isListeningToMouseEvents)
             {
-                this.PointerHandlersController.TryHandleMouseDown(e);
+                this.PointerHandlersController.TryHandleMouseDown(new PointerEventArgs<MouseButtonEventArgs>(this, e));
             }
 
             base.OnMouseDown(e);
@@ -302,7 +303,7 @@ namespace Deyo.Controls.Charts
         {
             if (this.isListeningToMouseEvents)
             {
-                this.PointerHandlersController.TryHandleMouseUp(e);
+                this.PointerHandlersController.TryHandleMouseUp(new PointerEventArgs<MouseButtonEventArgs>(this, e));
             }
 
             base.OnMouseUp(e);
@@ -312,7 +313,7 @@ namespace Deyo.Controls.Charts
         {
             if (this.isListeningToMouseEvents)
             {
-                this.PointerHandlersController.TryHandleMouseMove(e);
+                this.PointerHandlersController.TryHandleMouseMove(new PointerEventArgs<MouseEventArgs>(this, e));
             }
 
             base.OnMouseMove(e);
@@ -322,7 +323,7 @@ namespace Deyo.Controls.Charts
         {
             if (this.isListeningToMouseEvents)
             {
-                this.PointerHandlersController.TryHandleMouseWheel(e);
+                this.PointerHandlersController.TryHandleMouseWheel(new PointerEventArgs<MouseWheelEventArgs>(this, e));
             }
 
             base.OnMouseWheel(e);

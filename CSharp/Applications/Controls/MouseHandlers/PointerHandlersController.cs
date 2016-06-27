@@ -14,7 +14,7 @@ namespace Deyo.Controls.MouseHandlers
     {
         private readonly NamedObjectsCollection<IPointerHandler> handlers;
         private IPointerHandler capturedHandler;
-        private MouseButtonEventArgs lastCaptureArgs;
+        private PointerEventArgs<MouseButtonEventArgs> lastCaptureArgs;
         private Point lastMovePosition;
 
         public PointerHandlersController()
@@ -43,12 +43,12 @@ namespace Deyo.Controls.MouseHandlers
             }
         }
         
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
+        public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
 #if DEBUG
-            DebugLine("TryHandleMouseDown before: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), this.CapturedHandler);
+            DebugEventHandler("TryHandleMouseDown before:", this.CapturedHandler, e);
 #endif
-            this.lastMovePosition = PointerHandlersController.GetPosition(e);
+            this.lastMovePosition = e.Position;
             this.TryHandleMouseUp(e);
 
             foreach (IPointerHandler handler in this.Handlers)
@@ -63,10 +63,10 @@ namespace Deyo.Controls.MouseHandlers
             return false;
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)
         {
 #if DEBUG
-            DebugLine("TryHandleMouseUp before: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), this.CapturedHandler);
+            DebugEventHandler("TryHandleMouseUp before:", this.CapturedHandler, e);
 #endif
 
             if (this.CapturedHandler != null)
@@ -80,28 +80,29 @@ namespace Deyo.Controls.MouseHandlers
             return false;
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
+        public bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e)
         {
-            Point position = PointerHandlersController.GetPosition(e);
-
-            if (this.lastMovePosition.Equals(position))
+            if (this.lastMovePosition.Equals(e.Position))
             {
+#if DEBUG
+                DebugEventHandler("Move with same position:", this.CapturedHandler, e);
+#endif
                 return false;
             }
 
-            this.lastMovePosition = position;
+            this.lastMovePosition = e.Position;
 
             if (this.CapturedHandler != null)
             {
 #if DEBUG
-                DebugLine("TryHandleMouseMove before: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), this.CapturedHandler);
+                DebugEventHandler("TryHandleMouseMove before:", this.CapturedHandler, e);
 #endif
 
                 if(PointerHandlersController.IsValidDragMoveHandler(this.CapturedHandler) ||
                     this.TryCaptureNextValidHandler(PointerHandlersController.IsValidDragMoveHandler))
                 {
 #if DEBUG
-                    DebugLine("TryHandleMouseMove captured before: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), this.CapturedHandler);
+                    DebugEventHandler("TryHandleMouseMove captured:", this.CapturedHandler, e);
 #endif
                     return this.CapturedHandler.TryHandleMouseMove(e);
                 }
@@ -114,7 +115,7 @@ namespace Deyo.Controls.MouseHandlers
                     if (handler.IsEnabled && handler.TryHandleMouseMove(e))
                     {
 #if DEBUG
-                        DebugLine("TryHandleMouseMove not captured: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), handler);
+                        DebugEventHandler("TryHandleMouseMove not captured:", handler, e);
 #endif
                         return true;
                     }
@@ -124,10 +125,10 @@ namespace Deyo.Controls.MouseHandlers
             return false;
         }
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
 #if DEBUG
-            DebugLine("TryHandleMouseWheel before: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), this.CapturedHandler);
+            DebugEventHandler("TryHandleMouseWheel before:", this.CapturedHandler, e);
 #endif
 
             if (this.CapturedHandler != null && this.CapturedHandler.IsEnabled)
@@ -144,12 +145,7 @@ namespace Deyo.Controls.MouseHandlers
             }
 
             return false;
-        }
-
-        public static Point GetPosition(MouseEventArgs e)
-        {
-            return e.GetPosition((IInputElement)e.Source);
-        }    
+        }   
 
         public event EventHandler HandlerCaptured;
         public event EventHandler HandlerReleased;
@@ -170,13 +166,13 @@ namespace Deyo.Controls.MouseHandlers
             }
         }
 
-        private void CaptureHandler(IPointerHandler handler, MouseButtonEventArgs e)
+        private void CaptureHandler(IPointerHandler handler, PointerEventArgs<MouseButtonEventArgs> e)
         {
             Guard.ThrowExceptionIfNull(handler, "handler");
             this.capturedHandler = handler;
             this.lastCaptureArgs = e;
 #if DEBUG
-            DebugLine("CaptureHandler: <{0}>, <{1}>, <{2}>", GetPosition(e), e.GetHashCode(), this.CapturedHandler);
+            DebugEventHandler("CaptureHandler:", this.CapturedHandler, e);
 #endif
             this.OnHandlerCaptured();
         }
@@ -184,7 +180,7 @@ namespace Deyo.Controls.MouseHandlers
         private void ReleaseHandler()
         {
 #if DEBUG
-            DebugLine("ReleaseHandler: <{0}>", this.CapturedHandler);
+            System.Diagnostics.Debug.WriteLine("ReleaseHandler: <{0}>", this.CapturedHandler);
 #endif
             this.capturedHandler = null;
             this.OnHandlerReleased();
@@ -216,9 +212,36 @@ namespace Deyo.Controls.MouseHandlers
             return handler.IsEnabled && handler.HandlesDragMove;
         }
 #if DEBUG
-        private static void DebugLine(string text, params object[] parameters)
+        private static void DebugEventHandler<T>(string text, IPointerHandler handler, PointerEventArgs<T> e)
+            where T : MouseEventArgs
         {
-            System.Diagnostics.Debug.WriteLine(text, parameters);
+            Func<object, string> getShortName = (obj) => 
+                {
+                    if(obj == null)
+                    {
+                        return string.Empty;
+                    }
+
+                    string str = obj.ToString();
+                    int index = str.LastIndexOf('.');
+
+                    if(index < 0 || index == str.Length - 1)
+                    {
+                        return str;
+                    }
+
+                    return str.Substring(index + 1);
+                };
+
+            System.Diagnostics.Debug.WriteLine("{0}: <{1}> E{2} P<{3}> T{4} <{5}> S{6} <{7}> ", 
+                text, 
+                getShortName(handler), 
+                e.GetHashCode(), 
+                e.Position,  
+                e.Timestamp,
+                getShortName(e.Sender),
+                e.Sender.GetHashCode(),
+                e.SenderSize);
         }
 #endif
     }

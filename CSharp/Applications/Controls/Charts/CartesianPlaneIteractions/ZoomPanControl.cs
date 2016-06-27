@@ -94,9 +94,9 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
             set;
         }
 
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
+        public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
-            if (this.ShouldHandleMouseDown(e))
+            if (this.ShouldHandleMouseDown(e.OriginalArgs))
             {
                 this.firstPanPoint = this.cartesianPlane.GetCartesianPointFromMousePosition(e);
                 this.isPanning = true;
@@ -107,14 +107,14 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
             return false;
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)
         {
             this.isPanning = false;
 
             return true;
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
+        public bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e)
         {
             if(this.isPanning && (Math.Abs(e.Timestamp - this.previousMoveTimestamp) > this.MoveDeltaTime))
             {
@@ -129,10 +129,10 @@ namespace Deyo.Controls.Charts.CartesianPlaneIteractions
             return true;
         }
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
-            double zoomAmount = 1 + Math.Abs(this.ZoomWidthDeltaPercentSpeed * e.Delta) / WheelSingleDelta;
-            double width = e.Delta < 0 ? this.cartesianPlane.ViewportInfo.VisibleWidth * zoomAmount : this.cartesianPlane.ViewportInfo.VisibleWidth / zoomAmount;
+            double zoomAmount = 1 + Math.Abs(this.ZoomWidthDeltaPercentSpeed * e.OriginalArgs.Delta) / WheelSingleDelta;
+            double width = e.OriginalArgs.Delta < 0 ? this.cartesianPlane.ViewportInfo.VisibleWidth * zoomAmount : this.cartesianPlane.ViewportInfo.VisibleWidth / zoomAmount;
 
             double scale = this.cartesianPlane.ViewportInfo.VisibleWidth / width;
             Point zoomPosition = this.cartesianPlane.GetCartesianPointFromMousePosition(e);

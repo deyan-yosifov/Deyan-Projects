@@ -52,9 +52,9 @@ namespace LobelFrames.IteractionHandling
             }
         }
 
-        public bool TryHandleMouseDown(MouseButtonEventArgs e)
+        public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
-            if (e.ChangedButton != MouseButton.Middle)
+            if (e.OriginalArgs.ChangedButton != MouseButton.Middle)
             {
                 return false;
             }
@@ -74,17 +74,17 @@ namespace LobelFrames.IteractionHandling
             return false;
         }
 
-        public bool TryHandleMouseUp(MouseButtonEventArgs e)
+        public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)
         {
             return false;
         }
 
-        public bool TryHandleMouseMove(MouseEventArgs e)
+        public bool TryHandleMouseMove(PointerEventArgs<MouseEventArgs> e)
         {
             return false;
         }
 
-        public bool TryHandleMouseWheel(MouseWheelEventArgs e)
+        public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
             return false;
         }
