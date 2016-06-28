@@ -1,11 +1,15 @@
 ﻿using Deyo.Controls.Controls3D.Iteractions;
 using Deyo.Controls.Controls3D.Visuals;
+using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using Deyo.Core.Common;
 using Deyo.Core.Mathematics.Algebra;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
+using LobelFrames.ViewModels.Commands.History;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels.Commands.Handlers
@@ -14,6 +18,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
     {
         private LobelSurface surface;
         private Vector3D sweepDirectionVector;
+        private bool isLookingForSweepDirection;
+        private Vertex[] verticesToDelete;
 
         public CutMeshCommandHandler(ILobelSceneEditor editor, ISceneElementsManager elementsManager)
             : base(editor, elementsManager)
@@ -41,7 +47,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.surface = (LobelSurface)this.Editor.Context.SelectedSurface;
             base.BeginCommand();
             this.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
-            this.Editor.ShowHint(Hints.SelectCutPoint);
+            this.Editor.ShowHint(Hints.SelectCutPoint, HintType.Info);
             this.Editor.InputManager.DisableKeyboardInputValueEditing = true;
             this.UpdateInputLabel();
         }
@@ -50,6 +56,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             base.EndCommand();
             this.surface = null;
+            this.verticesToDelete = null;
+            this.isLookingForSweepDirection = false;
         }
 
         public override void HandlePointClicked(PointClickEventArgs e)
@@ -119,7 +127,65 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void HandleParameterInputed(ParameterInputedEventArgs e)
         {
+            Guard.ThrowExceptionIfLessThan(this.Points.Count, 2, "Points.Count");
 
+            if (this.verticesToDelete == null && !this.isLookingForSweepDirection)
+            {
+                this.EndIteraction();
+
+                if (this.Points.Count == 2)
+                {
+                    this.isLookingForSweepDirection = true;
+                }
+                else
+                {
+                    this.ShowEdgesToCut();
+                }
+            }
+            else if (this.verticesToDelete != null)
+            {
+                if (this.verticesToDelete.Length == this.surface.MeshEditor.VerticesCount)
+                {
+                    this.Editor.DoAction(new DeleteSurfaceAction(this.Editor.Context));
+                }
+                else
+                {
+                    this.Editor.DoAction(new DeleteVerticesAction(this.surface, this.verticesToDelete));
+                }
+
+                this.Editor.CloseCommandContext();
+            }            
+        }
+
+        private void ShowEdgesToCut()
+        {
+            Vertex[] cutBoundary = new Vertex[this.Points.Count];
+
+            for(int pointIndex = 0; pointIndex < this.Points.Count; pointIndex++)
+            {
+                cutBoundary[pointIndex] = this.surface.GetVertexFromPointVisual(this.Points[pointIndex]);
+            }
+
+            this.verticesToDelete = this.surface.MeshEditor.FindVerticesToDelete(cutBoundary, this.sweepDirectionVector).ToArray();
+            Triangle[] trianglesToDelete = this.surface.MeshEditor.GetTrianglesFromVertices(verticesToDelete).ToArray();
+            
+            while(this.Lines.Count > 0)
+            {
+                this.ElementsManager.DeleteLineOverlay(this.Lines.PopLast());
+            }
+
+            HashSet<Edge> renderedEdges = new HashSet<Edge>();
+
+            foreach (Triangle triangle in trianglesToDelete)
+            {
+                foreach (Edge edge in triangle.Edges)
+                {
+                    if (renderedEdges.Add(edge))
+                    {
+                        this.Lines.Add(this.ElementsManager.CreateLineOverlay(edge.Start.Point, edge.End.Point));
+                    }
+                }                
+            }
         }
 
         private bool TryValidateNextPointInput(PointVisual point)
@@ -136,7 +202,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             VertexConnectionInfo connectionInfo;
             if (!surface.MeshEditor.TryConnectVerticesWithColinearEdges(previous, next, out connectionInfo))
             {
-                this.Editor.ShowHint(Hints.NeighbouringCutPointsShouldBeOnColinearEdges);
+                this.Editor.ShowHint(Hints.NeighbouringCutPointsShouldBeOnColinearEdges, HintType.Warning);
                 return false;
             }
 
@@ -154,7 +220,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
                 if (areColinear)
                 {
-                    this.Editor.ShowHint(Hints.NextCutPointCannotBeColinearWithPreviousCutPointsCouple);
+                    this.Editor.ShowHint(Hints.NextCutPointCannotBeColinearWithPreviousCutPointsCouple, HintType.Warning);
                     return false;
                 }
 
@@ -180,7 +246,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             if (!isCoplanar)
             {
-                this.Editor.ShowHint(Hints.CutSelectionMustBePlanarPolygone);
+                this.Editor.ShowHint(Hints.CutSelectionMustBePlanarPolyline, HintType.Warning);
             }
 
             return isCoplanar;
@@ -196,7 +262,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             if (!isConvex)
             {
-                this.Editor.ShowHint(Hints.CutSelectionMustBeConvexPolygone);
+                this.Editor.ShowHint(Hints.CutSelectionMustBeConvexPolyline, HintType.Warning);
             }
 
             return isConvex;
@@ -204,7 +270,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private void UpdateInputLabel()
         {
-            this.Editor.ShowHint(Hints.SelectCutPoint);
+            this.Editor.ShowHint(Hints.SelectCutPoint, HintType.Info);
 
             switch (this.Points.Count)
             {

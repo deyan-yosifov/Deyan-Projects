@@ -14,7 +14,7 @@ namespace LobelFrames.ViewModels
         ISurfaceModelingPointerHandler SurfacePointerHandler { get; }
         void EnableSurfacePointerHandler(IteractionHandlingType iteractionType);
         void DisableSurfacePointerHandler();
-        void ShowHint(string hint);
+        void ShowHint(string hint, HintType hintType);
         void DoAction(IUndoRedoAction action);
         void CloseCommandContext();
         LobelScene SaveScene();

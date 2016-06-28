@@ -51,6 +51,7 @@ namespace LobelFrames.DataStructures.Surfaces
             this.PrepareGraphicStateForDrawingMeshesAndOverlays();
 
             this.SceneEditor.CameraChanged += this.CameraChangedHandler;
+            scene.SizeChanged += this.SceneSizeChanged;
 
             this.InitializePointerHandlers();
         }
@@ -210,6 +211,16 @@ namespace LobelFrames.DataStructures.Surfaces
         }
 
         private void CameraChangedHandler(object sender, EventArgs e)
+        {
+            this.UpdateLineOverlays();
+        }
+
+        private void SceneSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            this.UpdateLineOverlays();
+        }
+
+        private void UpdateLineOverlays()
         {
             foreach (var lineToPoints in this.lineOverlayToSegment3D)
             {

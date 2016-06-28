@@ -226,9 +226,10 @@ namespace LobelFrames.ViewModels
             this.scene.PointerHandlersController.HandleMoveWhenNoHandlerIsCaptured = false;
         }
 
-        public void ShowHint(string hint)
+        public void ShowHint(string hint, HintType hintType)
         {
             this.HintManager.Hint = hint;
+            this.HintManager.HintType = hintType;
         }
 
         public void DoAction(IUndoRedoAction action)
@@ -240,7 +241,7 @@ namespace LobelFrames.ViewModels
         {
             this.CommandContext.EndCommand();
             this.DisableSurfacePointerHandler();
-            this.ShowHint(Hints.Default);
+            this.ShowHint(Hints.Default, HintType.Info);
             this.InputManager.Stop();
         }
 

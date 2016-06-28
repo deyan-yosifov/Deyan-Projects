@@ -6,6 +6,7 @@ namespace LobelFrames.ViewModels.Commands
     public class HintManager : ViewModelBase
     {
         private string hint;
+        private HintType hintType;
 
         public HintManager()
         {
@@ -21,6 +22,18 @@ namespace LobelFrames.ViewModels.Commands
             set
             {
                 this.SetProperty(ref this.hint, value);
+            }
+        }
+
+        public HintType HintType
+        {
+            get
+            {
+                return this.hintType;
+            }
+            set
+            {
+                this.SetProperty(ref this.hintType, value);
             }
         }
 

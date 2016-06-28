@@ -24,7 +24,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void BeginCommand()
         {
-            base.Editor.ShowHint(Hints.SaveLobelScene);
+            base.Editor.ShowHint(Hints.SaveLobelScene, HintType.Info);
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = LobelFormatProviders.DialogsFilter;
 

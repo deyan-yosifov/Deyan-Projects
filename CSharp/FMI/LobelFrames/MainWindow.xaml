@@ -15,6 +15,7 @@
     <Window.Resources>
         <commands:IsEnabledToColorConverter x:Key="isEnabledColorConverter" />
         <commands:CommandTypeToDescriptorConverter x:Key="commandConverter" />
+        <commands:HintTypeToColorConverter x:Key="hintTypeToColorConverter" />
         <BooleanToVisibilityConverter x:Key="visibilityConverter" />
     </Window.Resources>
     <Grid>
@@ -173,7 +174,7 @@
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <TextBlock Grid.Column="1" Margin="10 0 0 0" TextWrapping="Wrap" VerticalAlignment="Center"
                                    DataContext="{Binding ElementName=surface, Path=HintManager}" >
-                            <Run FontStyle="Italic" Text="{Binding Hint}" />
+                            <Run FontStyle="Italic" Foreground="{Binding HintType, Converter={StaticResource hintTypeToColorConverter}}" Text="{Binding Hint}" />
                         </TextBlock>
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"
                                     DataContext="{Binding ElementName=surface, Path=InputManager}">

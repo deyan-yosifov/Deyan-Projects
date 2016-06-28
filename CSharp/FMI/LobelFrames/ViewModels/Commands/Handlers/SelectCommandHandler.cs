@@ -24,7 +24,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             base.BeginCommand();
             base.Editor.EnableSurfacePointerHandler(IteractionHandlingType.SurfaceIteraction);
-            base.Editor.ShowHint(Hints.SelectMesh);
+            base.Editor.ShowHint(Hints.SelectMesh, HintType.Info);
         }
 
         public override void HandleSurfaceSelected(SurfaceSelectedEventArgs e)

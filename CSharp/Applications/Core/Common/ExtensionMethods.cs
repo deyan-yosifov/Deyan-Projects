@@ -29,7 +29,7 @@ namespace Deyo.Core.Common
             return list[list.Count - 1 - indexFromTheEnd];
         }
 
-        public static T PeelFromEnd<T>(this T[] array, int indexFromTheEnd)
+        public static T PeekFromEnd<T>(this T[] array, int indexFromTheEnd)
         {
             return array[array.Length - 1 - indexFromTheEnd];
         }

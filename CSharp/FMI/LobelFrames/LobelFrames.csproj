@@ -62,6 +62,7 @@
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
+    <Compile Include="DataStructures\Surfaces\VerticesDeletionInfo.cs" />
     <Compile Include="DataStructures\UniqueEdgesSet.cs" />
     <Compile Include="DataStructures\VertexIndexer.cs" />
     <Compile Include="FormatProviders\BezierSurfaceModel.cs" />
@@ -114,11 +115,15 @@
     <Compile Include="ViewModels\Commands\Handlers\SelectCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\HintManager.cs" />
     <Compile Include="ViewModels\Commands\Hints.cs" />
+    <Compile Include="ViewModels\Commands\HintType.cs" />
+    <Compile Include="ViewModels\Commands\HintTypeToColorConverter.cs" />
     <Compile Include="ViewModels\Commands\History\AddSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\ContextUndoableAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeleteSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\DeleteVerticesAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeselectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\IteractiveSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\ModifySurfaceUndoableActionBase.cs" />
     <Compile Include="ViewModels\Commands\History\MoveSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\SelectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\InputManager.cs" />

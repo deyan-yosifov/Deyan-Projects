@@ -32,7 +32,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             base.BeginCommand();
             base.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
-            base.Editor.ShowHint(Hints.SelectFirstMovePoint);
+            base.Editor.ShowHint(Hints.SelectFirstMovePoint, HintType.Info);
         }
 
         public override void HandlePointClicked(PointClickEventArgs e)
@@ -59,7 +59,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                     base.Lines.Add(base.ElementsManager.CreateLineOverlay(edge.Start.Point, edge.End.Point));
                 }
 
-                base.Editor.ShowHint(Hints.SelectSecondMovePoint);
+                base.Editor.ShowHint(Hints.SelectSecondMovePoint, HintType.Info);
             }
         }
 

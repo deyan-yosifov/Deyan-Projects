@@ -14,7 +14,7 @@ namespace LobelFrames.DataStructures
 
         public override string ToString()
         {
-            return string.Format("<{0}; {1}; {2}>", this.Point.X, this.Point.Y, this.Point.Z);
+            return string.Format("V{3}<{0}; {1}; {2}>", this.Point.X, this.Point.Y, this.Point.Z, this.GetHashCode());
         }
     }
 }

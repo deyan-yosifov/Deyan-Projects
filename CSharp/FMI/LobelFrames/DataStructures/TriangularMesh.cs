@@ -21,6 +21,30 @@ namespace LobelFrames.DataStructures
             this.vertexToTriangles = new Dictionary<Vertex, HashSet<Triangle>>();
         }
 
+        public int VerticesCount
+        {
+            get
+            {
+                return this.vertices.Count;
+            }
+        }
+
+        public int EdgesCount
+        {
+            get
+            {
+                return this.edges.Count;
+            }
+        }
+
+        public int TrianglesCount
+        {
+            get
+            {
+                return this.triangles.Count;
+            }
+        }
+
         public IEnumerable<Triangle> GetTriangles()
         {
             return TriangularMesh.EnumerateSet(this.triangles);
@@ -127,6 +151,36 @@ namespace LobelFrames.DataStructures
                 this.AddVertex(triangle.A);
                 this.AddVertex(triangle.B);
                 this.AddVertex(triangle.C);
+            }
+        }
+
+        public void DeleteVertices(IEnumerable<Vertex> vertices)
+        {
+            foreach (Vertex vertex in vertices)
+            {
+                foreach (Triangle triangle in this.GetTriangles(vertex).ToArray())
+                {
+                    this.triangles.Remove(triangle);
+
+                    foreach (Vertex triangleVertex in triangle.Vertices)
+                    {
+                        this.vertexToTriangles[triangleVertex].Remove(triangle);
+                    }
+                }
+
+                foreach (Edge edge in this.GetEdges(vertex).ToArray())
+                {
+                    this.edges.Remove(edge);
+
+                    foreach (Vertex edgeVertex in edge.Vertices)
+                    {
+                        this.vertexToEdges[edgeVertex].Remove(edge);
+                    }
+                }
+
+                this.vertexToTriangles.Remove(vertex);
+                this.vertexToEdges.Remove(vertex);
+                this.vertices.Remove(vertex);
             }
         }
 

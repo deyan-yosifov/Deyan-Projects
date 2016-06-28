@@ -103,11 +103,78 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public int VerticesCount
+        {
+            get
+            {
+                return this.mesh.VerticesCount;
+            }
+        }
+
+        public int EdgesCount
+        {
+            get
+            {
+                return this.mesh.EdgesCount;
+            }
+        }
+
+        public int TrianglesCount
+        {
+            get
+            {
+                return this.mesh.TrianglesCount;
+            }
+        }
+
         private TriangularMesh Mesh
         {
             get
             {
                 return this.mesh;
+            }
+        }
+
+        public VerticesDeletionInfo DeleteVertices(IEnumerable<Vertex> vertices)
+        {
+            HashSet<Triangle> trianglesToDelete = new HashSet<Triangle>();
+
+            foreach (Vertex vertex in vertices)
+            {
+                foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
+                {
+                    trianglesToDelete.Add(triangle);
+                }
+            }
+
+            VerticesDeletionInfo deletionInfo = new VerticesDeletionInfo(trianglesToDelete);
+
+            this.Mesh.DeleteVertices(vertices);
+
+            return deletionInfo;
+        }
+
+        public void RestoreDeletedVertices(VerticesDeletionInfo deletionInfo)
+        {
+            foreach (Triangle triangle in deletionInfo.Triangles)
+            {
+                this.Mesh.AddTriangle(triangle, true);
+            }
+        }
+
+        public IEnumerable<Triangle> GetTrianglesFromVertices(IEnumerable<Vertex> vertices)
+        {
+            HashSet<Triangle> visitedTriangles = new HashSet<Triangle>();
+
+            foreach(Vertex vertex in vertices)
+            {
+                foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
+                {
+                    if (visitedTriangles.Add(triangle))
+                    {
+                        yield return triangle;
+                    }
+                }
             }
         }
 
@@ -150,6 +217,142 @@ namespace LobelFrames.DataStructures
             }
 
             return mayBeConnected;
+        }
+
+        public IEnumerable<Vertex> FindVerticesToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal)
+        {
+            Guard.ThrowExceptionIfLessThan(convexPlanarPolylineCutBoundary.Length, 2, "convexPlanarPolygoneCutBoundary.Length");
+
+            if (cutSemiplaneNormal.LengthSquared.IsZero())
+            {
+                yield break;
+            }
+
+            convexPlanarPolylineCutBoundary[0] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary[1], convexPlanarPolylineCutBoundary[0]);
+            convexPlanarPolylineCutBoundary[convexPlanarPolylineCutBoundary.Length - 1] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary.PeekFromEnd(1), convexPlanarPolylineCutBoundary.PeekLast());
+
+            HashSet<Vertex> visitedVertices = new HashSet<Vertex>();
+            IEnumerable<Vertex> secondLevelVertices = this.FindSecondLevelVerticesToDelete(convexPlanarPolylineCutBoundary, cutSemiplaneNormal, visitedVertices);
+            Queue<Vertex> searchQueue = new Queue<Vertex>(secondLevelVertices);            
+
+            while (searchQueue.Count > 0)
+            {
+                Vertex current = searchQueue.Dequeue();
+
+                foreach (Vertex neighbour in this.Mesh.GetVertexNeighbours(current))
+                {
+                    if (visitedVertices.Add(neighbour))
+                    {
+                        searchQueue.Enqueue(neighbour);
+                    }
+                }
+            }
+
+            foreach (Vertex potentialVertexToDelete in visitedVertices)
+            {
+                bool shouldBeDeleted = true;
+
+                foreach (Vertex neighbour in this.Mesh.GetVertexNeighbours(potentialVertexToDelete))
+                {
+                    if (!visitedVertices.Contains(neighbour))
+                    {
+                        shouldBeDeleted = false;
+                        break;
+                    }
+                }
+
+                if (shouldBeDeleted)
+                {
+                    yield return potentialVertexToDelete;
+                }
+            }
+        }
+
+        private IEnumerable<Vertex> FindSecondLevelVerticesToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal, HashSet<Vertex> visitedVerticesCollection)
+        {
+            Vertex[][] polylineSideVertices = this.GetAllVerticesOnPolylineSides(convexPlanarPolylineCutBoundary);
+
+            foreach (Vertex[] side in polylineSideVertices)
+            {
+                foreach (Vertex firstLevelVertex in side)
+                {
+                    visitedVerticesCollection.Add(firstLevelVertex);
+                }
+            }
+
+            for (int sideIndex = 0; sideIndex < polylineSideVertices.Length; sideIndex++)
+            {
+                Vertex[] sideVertices = polylineSideVertices[sideIndex];
+                Vector3D sideDirection = sideVertices[1].Point - sideVertices[0].Point;
+                bool isEndingWithNeighbouringSidesVertex = sideIndex < polylineSideVertices.Length - 1;
+                int endIndex = isEndingWithNeighbouringSidesVertex ? sideVertices.Length - 2 : sideVertices.Length - 1;
+                int startIndex = sideIndex == 0 ? 0 : 1;
+
+                for (int vertexIndex = startIndex; vertexIndex <= endIndex; vertexIndex++)
+                {
+                    Vertex currentVertex = sideVertices[vertexIndex];
+
+                    foreach (Vertex neighbour in this.Mesh.GetVertexNeighbours(currentVertex))
+                    {
+                        if (!visitedVerticesCollection.Contains(neighbour))
+                        {
+                            Vector3D neighbourDirection = neighbour.Point - currentVertex.Point;
+                            Vector3D neighbourNormal = Vector3D.CrossProduct(sideDirection, neighbourDirection);
+
+                            if (neighbourNormal.IsColinearWithSameDirection(cutSemiplaneNormal))
+                            {
+                                visitedVerticesCollection.Add(neighbour);
+                                yield return neighbour;
+                            }
+                        }                        
+                    }
+                }                
+            }
+        }
+
+        private Vertex[][] GetAllVerticesOnPolylineSides(Vertex[] polyline)
+        {
+            Vertex[][] sideVertices = new Vertex[polyline.Length - 1][];
+
+            for (int sideIndex = 0; sideIndex < polyline.Length - 1; sideIndex++)
+            {
+                VertexConnectionInfo connectionInfo;
+                if (!this.TryConnectVerticesWithColinearEdges(polyline[sideIndex], polyline[sideIndex + 1], out connectionInfo))
+                {
+                    throw new ArgumentException("Neighbouring vertices should be connected with colinear edges!");
+                }
+
+                sideVertices[sideIndex] = connectionInfo.ConnectingVertices.ToArray();
+            }
+
+            return sideVertices;
+        }
+
+        private Vertex FindEndOfEdgesRayInPlane(Vertex rayStartVertex, Vertex rayDirectionVertex)
+        {
+            Vector3D rayDirection = rayDirectionVertex.Point - rayStartVertex.Point;
+
+            Vertex currentEndVertex = rayDirectionVertex;
+            bool shouldSearchForNextVertex = true;
+
+            while (shouldSearchForNextVertex)
+            {
+                shouldSearchForNextVertex = false;
+
+                foreach (Vertex neighbour in this.Mesh.GetVertexNeighbours(currentEndVertex))
+                {
+                    Vector3D direction = neighbour.Point - currentEndVertex.Point;
+
+                    if (direction.IsColinearWithSameDirection(rayDirection))
+                    {
+                        currentEndVertex = neighbour;
+                        shouldSearchForNextVertex = true;
+                        break;
+                    }
+                }
+            }
+
+            return currentEndVertex;
         }
 
         private void AddTrianglesToLobelMesh(Edge[] firstEdges, Vector3D yAxis, int numberOfRows)
@@ -280,7 +483,7 @@ namespace LobelFrames.DataStructures
 
             if (hasFoundEdges)
             {
-                connectionInfo = new VertexConnectionInfo(edges, hasEdgesOnBothSides, firstPlaneNormal);
+                connectionInfo = new VertexConnectionInfo(start, edges, hasEdgesOnBothSides, firstPlaneNormal);
             }
 
             return hasFoundEdges;
