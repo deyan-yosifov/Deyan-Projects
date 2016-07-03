@@ -1,10 +1,12 @@
-﻿using Deyo.Controls.Controls3D.Visuals;
+﻿using Deyo.Controls.Controls3D.Iteractions;
+using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
 using System;
 using System.Collections.Generic;
+using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels.Commands.Handlers
 {
@@ -68,6 +70,22 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
+        protected bool IsInPointMoveIteraction
+        {
+            get
+            {
+                return this.Restrictor.IsInIteraction;
+            }
+        }
+
+        private IteractionRestrictor Restrictor
+        {
+            get
+            {
+                return this.Editor.SurfacePointerHandler.PointHandler.Restrictor;
+            }
+        }
+
         public abstract CommandType Type { get; }
 
         public virtual void BeginCommand()
@@ -87,7 +105,22 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public virtual void HandlePointMove(PointEventArgs e)
         {
-            throw new NotImplementedException();
+            if (this.MovingLine != null)
+            {
+                this.ElementsManager.MoveLineOverlay(this.MovingLine, e.Point);
+            }
+        }
+
+        public virtual void BeginPointMoveIteraction(Point3D point)
+        {
+            this.MovingLine = this.ElementsManager.BeginMovingLineOverlay(point);
+            this.Restrictor.BeginIteraction(point);
+        }
+
+        public virtual void EndPointMoveIteraction()
+        {
+            this.Restrictor.EndIteraction();
+            this.ElementsManager.DeleteMovingLineOverlay(this.MovingLine);
         }
 
         public virtual void EndCommand()

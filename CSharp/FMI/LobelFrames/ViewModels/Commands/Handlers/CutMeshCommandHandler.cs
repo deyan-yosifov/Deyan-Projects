@@ -34,11 +34,11 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        private IteractionRestrictor Restrictor
+        private bool IsShowingTrianglesToDelete
         {
             get
             {
-                return this.Editor.SurfacePointerHandler.PointHandler.Restrictor;
+                return this.verticesToDelete != null;
             }
         }
 
@@ -65,43 +65,40 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             PointVisual point;
             if (e.TryGetVisual(out point))
             {
-                IteractionRestrictor restrictor = this.Restrictor;
-
-                if (restrictor.IsInIteraction)
+                if (this.IsInPointMoveIteraction)
                 {
                     if (point.Position != this.Points.PeekLast().Position && this.TryValidateNextPointInput(point))
                     {
-                        restrictor.EndIteraction();
-                        this.ElementsManager.DeleteMovingLineOverlay(this.MovingLine);
+                        base.EndPointMoveIteraction();
                         this.Lines.Add(this.ElementsManager.CreateLineOverlay(this.Points.PeekLast().Position, point.Position));
 
                         this.Points.Add(point);
-                        this.BeginIteraction(point.Position);
+                        this.BeginPointMoveIteraction(point.Position);
+                    }
+                }
+                else if (this.isLookingForSweepDirection)
+                {
+                    Triangle[] trianglesToDelete;
+                    if (this.TrySpecifySweepDirectionFromThirdSelectionPoint(point) && this.TryValidateTrianglesToDeleteCalculation(out trianglesToDelete))
+                    {
+                        this.isLookingForSweepDirection = false;
+                        this.ShowTrianglesToDeleteAndHideCutBoundary(trianglesToDelete);
+                        this.UpdateInputLabel();
                     }
                 }
                 else
                 {
                     this.Points.Add(point);
-                    this.BeginIteraction(point.Position);
+                    this.BeginPointMoveIteraction(point.Position);
                 }
-            }
-        }
-
-        public override void HandlePointMove(PointEventArgs e)
-        {
-            if (this.MovingLine != null)
-            {
-                this.ElementsManager.MoveLineOverlay(this.MovingLine, e.Point);
             }
         }
 
         public override void HandleCancelInputed()
         {
-            IteractionRestrictor restrictor = this.Restrictor;
-
-            if (restrictor.IsInIteraction)
+            if (this.IsInPointMoveIteraction)
             {
-                this.EndIteraction();
+                this.EndPointMoveIteraction();
                 this.Points.RemoveAt(this.Points.Count - 1);
 
                 if (this.Lines.Count > 0)
@@ -112,12 +109,22 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
                 if (this.Points.Count > 0)
                 {
-                    this.BeginIteraction(this.Points.PeekLast().Position);
+                    this.BeginPointMoveIteraction(this.Points.PeekLast().Position);
                 }
                 else
                 {
                     this.UpdateInputLabel();
                 }
+            }
+            else if (isLookingForSweepDirection)
+            {
+                this.isLookingForSweepDirection = false;
+                this.BeginPointMoveIteraction(this.Points.PeekLast().Position);
+            }
+            else if (this.IsShowingTrianglesToDelete)
+            {
+                this.HideTrianglesToDeleteAndShowCutBoundary();
+                this.BeginPointMoveIteraction(this.Points.PeekLast().Position);
             }
             else
             {
@@ -129,20 +136,26 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             Guard.ThrowExceptionIfLessThan(this.Points.Count, 2, "Points.Count");
 
-            if (this.verticesToDelete == null && !this.isLookingForSweepDirection)
+            if (!this.IsShowingTrianglesToDelete && !this.isLookingForSweepDirection)
             {
-                this.EndIteraction();
-
                 if (this.Points.Count == 2)
                 {
+                    this.EndPointMoveIteraction();
                     this.isLookingForSweepDirection = true;
+                    this.UpdateInputLabel();
                 }
                 else
                 {
-                    this.ShowEdgesToCut();
+                    Triangle[] trianglesToDelete;
+                    if (this.TryValidateTrianglesToDeleteCalculation(out trianglesToDelete))
+                    {
+                        this.EndPointMoveIteraction();
+                        this.ShowTrianglesToDeleteAndHideCutBoundary(trianglesToDelete);
+                        this.UpdateInputLabel();
+                    }
                 }
             }
-            else if (this.verticesToDelete != null)
+            else if (this.IsShowingTrianglesToDelete)
             {
                 if (this.verticesToDelete.Length == this.surface.MeshEditor.VerticesCount)
                 {
@@ -157,22 +170,54 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }            
         }
 
-        private void ShowEdgesToCut()
+        private void HideVisibleLines()
+        {
+            while (this.Lines.Count > 0)
+            {
+                this.ElementsManager.DeleteLineOverlay(this.Lines.PopLast());
+            }
+        }
+
+        private void HideTrianglesToDeleteAndShowCutBoundary()
+        {
+            this.verticesToDelete = null;
+            this.HideVisibleLines();
+
+            for (int pointIndex = 1; pointIndex < this.Points.Count; pointIndex++)
+            {
+                this.Lines.Add(this.ElementsManager.CreateLineOverlay(this.Points[pointIndex - 1].Position, this.Points[pointIndex].Position));
+            }
+        }
+
+        private bool TryValidateTrianglesToDeleteCalculation(out Triangle[] trianglesToDelete)
         {
             Vertex[] cutBoundary = new Vertex[this.Points.Count];
 
-            for(int pointIndex = 0; pointIndex < this.Points.Count; pointIndex++)
+            for (int pointIndex = 0; pointIndex < this.Points.Count; pointIndex++)
             {
                 cutBoundary[pointIndex] = this.surface.GetVertexFromPointVisual(this.Points[pointIndex]);
             }
 
             this.verticesToDelete = this.surface.MeshEditor.FindVerticesToDelete(cutBoundary, this.sweepDirectionVector).ToArray();
-            Triangle[] trianglesToDelete = this.surface.MeshEditor.GetTrianglesFromVertices(verticesToDelete).ToArray();
-            
-            while(this.Lines.Count > 0)
+            trianglesToDelete = this.surface.MeshEditor.GetTrianglesFromVertices(verticesToDelete).ToArray();
+
+            if (trianglesToDelete.Length == 0)
             {
-                this.ElementsManager.DeleteLineOverlay(this.Lines.PopLast());
+                this.Editor.ShowHint(Hints.ThereAreNoVerticesToDeleteWithCurrentCutSelection, HintType.Warning);
+                this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
+                this.verticesToDelete = null;
+
+                return false;
             }
+            else
+            {
+                return true;
+            }
+        }
+
+        private void ShowTrianglesToDeleteAndHideCutBoundary(Triangle[] trianglesToDelete)
+        {          
+            this.HideVisibleLines();
 
             HashSet<Edge> renderedEdges = new HashSet<Edge>();
 
@@ -213,28 +258,44 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             if (this.Points.Count == 2)
             {
-                Vector3D previous = this.Points.PeekLast().Position - this.Points.PeekFromEnd(1).Position;
-                Vector3D next = nextPoint.Position - this.Points.PeekLast().Position;
-                Vector3D sweep = Vector3D.CrossProduct(previous, next);
-                bool areColinear = sweep.LengthSquared.IsZero();
-
-                if (areColinear)
-                {
-                    this.Editor.ShowHint(Hints.NextCutPointCannotBeColinearWithPreviousCutPointsCouple, HintType.Warning);
-                    return false;
-                }
-
-                this.sweepDirectionVector = sweep;
+                return this.TrySpecifySweepDirectionFromThirdSelectionPoint(nextPoint);
             }
             else if (this.Points.Count > 2)
             {
-                return this.TryValidateCoplanarity(nextPoint) &&
+                return this.TryValidatePointIsNotColinearWithPreviousPoints(nextPoint) &&
+                    this.TryValidateCoplanarity(nextPoint) &&
                     this.TryValidateSameSweepDirection(this.Points.PeekFromEnd(1), this.Points.PeekLast(), nextPoint) &&
                     this.TryValidateSameSweepDirection(this.Points.PeekLast(), nextPoint, this.Points[0]) &&
                     this.TryValidateSameSweepDirection(nextPoint, this.Points[0], this.Points[1]);
             }
 
             return true;
+        }
+
+        private bool TrySpecifySweepDirectionFromThirdSelectionPoint(PointVisual thirdSelectionPoint)
+        {         
+            return TryValidatePointIsNotColinearWithPreviousPoints(thirdSelectionPoint, out this.sweepDirectionVector);
+        }
+
+        private bool TryValidatePointIsNotColinearWithPreviousPoints(PointVisual nextPoint)
+        {
+            Vector3D sweep;
+            return this.TryValidatePointIsNotColinearWithPreviousPoints(nextPoint, out sweep);
+        }
+
+        private bool TryValidatePointIsNotColinearWithPreviousPoints(PointVisual nextPoint, out Vector3D sweep)
+        {
+            Vector3D previous = this.Points.PeekLast().Position - this.Points.PeekFromEnd(1).Position;
+            Vector3D next = nextPoint.Position - this.Points.PeekLast().Position;
+            sweep = Vector3D.CrossProduct(previous, next);
+            bool areColinear = sweep.LengthSquared.IsZero();
+
+            if (areColinear)
+            {
+                this.Editor.ShowHint(Hints.NextCutPointCannotBeColinearWithPreviousCutPointsCouple, HintType.Warning);
+            }
+
+            return !areColinear;
         }
 
         private bool TryValidateCoplanarity(PointVisual nextPoint)
@@ -270,7 +331,9 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private void UpdateInputLabel()
         {
-            this.Editor.ShowHint(Hints.SelectCutPoint, HintType.Info);
+            string hint = this.isLookingForSweepDirection ? Hints.SpecifySemiplaneToCut :
+                (this.IsShowingTrianglesToDelete ? Hints.ConfirmOrRejectCutSelection : Hints.SelectCutPoint);
+            this.Editor.ShowHint(hint, HintType.Info);
 
             switch (this.Points.Count)
             {
@@ -295,17 +358,15 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        private void EndIteraction()
+        public override void BeginPointMoveIteraction(Point3D point)
         {
-            this.ElementsManager.DeleteMovingLineOverlay(this.MovingLine);
-            this.Restrictor.EndIteraction();
+            base.BeginPointMoveIteraction(point);
             this.UpdateInputLabel();
         }
 
-        private void BeginIteraction(Point3D point)
+        public override void EndPointMoveIteraction()
         {
-            this.MovingLine = this.ElementsManager.BeginMovingLineOverlay(point);
-            this.Restrictor.BeginIteraction(point);
+            base.EndPointMoveIteraction();
             this.UpdateInputLabel();
         }
     }
