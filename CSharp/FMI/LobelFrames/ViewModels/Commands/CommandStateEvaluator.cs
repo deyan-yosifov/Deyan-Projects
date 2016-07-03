@@ -25,13 +25,13 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterEvaluator(CommandType.MoveMesh, CommandStateEvaluator.IsMeshSelected);
             this.RegisterEvaluator(CommandType.DeleteMesh, CommandStateEvaluator.IsMeshSelected);
             
-            this.RegisterEvaluator(CommandType.AddLobelMesh, CommandStateEvaluator.IsAlwaysEnabled);
+            this.RegisterEvaluator(CommandType.AddLobelMesh, CommandStateEvaluator.IsThereNoSurfaceSelected);
             this.RegisterEvaluator(CommandType.CutMesh, CommandStateEvaluator.IsLobelSurfaceSelected);
             this.RegisterEvaluator(CommandType.FoldMesh, CommandStateEvaluator.IsLobelSurfaceSelected);
             this.RegisterEvaluator(CommandType.GlueMesh, CommandStateEvaluator.IsLobelSurfaceSelected);
-            this.RegisterEvaluator(CommandType.LobelSettings, CommandStateEvaluator.IsAlwaysEnabled);
+            this.RegisterEvaluator(CommandType.LobelSettings, CommandStateEvaluator.IsThereNoSurfaceSelected);
             
-            this.RegisterEvaluator(CommandType.AddBezierSurface, CommandStateEvaluator.IsAlwaysEnabled);
+            this.RegisterEvaluator(CommandType.AddBezierSurface, CommandStateEvaluator.IsThereNoSurfaceSelected);
             this.RegisterEvaluator(CommandType.ApproximateWithLobelMesh, CommandStateEvaluator.IsBezierSurfaceSelected);
             this.RegisterEvaluator(CommandType.BezierSettings, CommandStateEvaluator.IsAlwaysEnabled);
             
@@ -77,6 +77,11 @@ namespace LobelFrames.ViewModels.Commands
         private static bool IsRedoEnabled(ILobelSceneContext context)
         {
             return context.HasActionToRedo;
+        }
+
+        private static bool IsThereNoSurfaceSelected(ILobelSceneContext context)
+        {
+            return context.SelectedSurface == null;
         }
 
         private static bool AreMeshesDeselected(ILobelSceneContext context)

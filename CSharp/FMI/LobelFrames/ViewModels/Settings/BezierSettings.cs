@@ -6,7 +6,7 @@ namespace LobelFrames.ViewModels.Settings
     {
         public BezierSettings()
         {
-            this.Label = "Choose Bezier Settings!";
+            this.Label = "Bezier Settings";
         }
     }
 }

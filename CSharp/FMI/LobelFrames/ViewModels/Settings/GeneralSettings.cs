@@ -6,7 +6,7 @@ namespace LobelFrames.ViewModels.Settings
     {
         public GeneralSettings()
         {
-            this.Label = "Choose General Settings!";
+            this.Label = "General Settings";
         }
     }
 }

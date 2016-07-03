@@ -182,7 +182,7 @@ namespace LobelFrames.ViewModels
         {
             using (this.HistoryManager.BeginUndoGroup())
             {
-                LobelSurface surface = new LobelSurface(this.ElementsPool, 7, 5, 3);
+                LobelSurface surface = new LobelSurface(this.ElementsPool, this.Settings.LobelSettings.MeshRows, this.Settings.LobelSettings.MeshColumns, 3);
                 this.DoAction(new AddSurfaceAction(surface, this.Context));
                 this.DoAction(new SelectSurfaceAction(surface, this.Context));
             }
