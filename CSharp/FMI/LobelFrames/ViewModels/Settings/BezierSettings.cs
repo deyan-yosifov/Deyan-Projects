@@ -4,7 +4,8 @@ namespace LobelFrames.ViewModels.Settings
 {
     public class BezierSettings : SettingsBase
     {
-        public BezierSettings()
+        public BezierSettings(ILobelSceneContext context)
+            : base(context)
         {
             this.Label = "Настройки на повърхнини на Безие";
         }

@@ -14,6 +14,8 @@ namespace LobelFrames.ViewModels
 
         bool HasActiveCommand { get; }
 
+        int MaxUndoStackSize { get; set; }
+
         IteractiveSurface SelectedSurface { get; set; }
 
         IEnumerable<IteractiveSurface> Surfaces { get; }

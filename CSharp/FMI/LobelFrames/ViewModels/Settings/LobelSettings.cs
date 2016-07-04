@@ -8,7 +8,8 @@ namespace LobelFrames.ViewModels.Settings
         private readonly LabeledSliderViewModel<int> meshColumns;
         private readonly LabeledSliderViewModel<double> meshTriangleSide;
 
-        public LobelSettings()
+        public LobelSettings(ILobelSceneContext context)
+            : base(context)
         {
             this.Label = "Настройки на повърхнини на Лобел";
             this.meshRows = new LabeledSliderViewModel<int>("Брой редове в растера:", 7, 1, 20, 1);

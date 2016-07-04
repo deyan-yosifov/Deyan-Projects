@@ -1,19 +1,17 @@
-﻿using Deyo.Core.Common.History;
-using System;
+﻿using System;
 
 namespace LobelFrames.ViewModels.Settings
 {
     public class GeneralSettings : SettingsBase
     {
         public const int DefaultHistoryStackSize = 10;
-        private readonly HistoryManager historyManager;
         private readonly LabeledSliderViewModel<int> historyStackSetting;
 
-        public GeneralSettings(HistoryManager historyManager)
+        public GeneralSettings(ILobelSceneContext context)
+            : base(context)
         {
             this.Label = "Настройки";
-            this.historyManager = historyManager;
-            this.historyManager.MaxUndoSize = DefaultHistoryStackSize;
+            this.Context.MaxUndoStackSize = DefaultHistoryStackSize;
             this.historyStackSetting = new LabeledSliderViewModel<int>("Брой стъпки назад:", DefaultHistoryStackSize, 1, 20, 1);
             this.historyStackSetting.ValueChanged += this.HistoryStackSettingValueChanged;
         }
@@ -28,7 +26,7 @@ namespace LobelFrames.ViewModels.Settings
 
         private void HistoryStackSettingValueChanged(object sender, EventArgs e)
         {
-            this.historyManager.MaxUndoSize = this.historyStackSetting.Value;
+            this.Context.MaxUndoStackSize = this.historyStackSetting.Value;
         }
     }
 }

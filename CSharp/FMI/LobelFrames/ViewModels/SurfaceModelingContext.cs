@@ -71,6 +71,18 @@ namespace LobelFrames.ViewModels
             }
         }
 
+        public int MaxUndoStackSize
+        {
+            get
+            {
+                return this.historyManager.MaxUndoSize;
+            }
+            set
+            {
+                this.historyManager.MaxUndoSize = value;
+            }
+        }
+
         public IteractiveSurface SelectedSurface
         {
             get

@@ -10,11 +10,11 @@ namespace LobelFrames.ViewModels.Settings
         private readonly LobelSettings lobelSettings;
         private readonly BezierSettings bezierSettings;
 
-        public SettingsViewModel(HistoryManager historyManager)
+        public SettingsViewModel(ILobelSceneContext context)
         {
-            this.generalSettings = new GeneralSettings(historyManager);
-            this.lobelSettings = new LobelSettings();
-            this.bezierSettings = new BezierSettings();
+            this.generalSettings = new GeneralSettings(context);
+            this.lobelSettings = new LobelSettings(context);
+            this.bezierSettings = new BezierSettings(context);
         }
 
         public GeneralSettings GeneralSettings
