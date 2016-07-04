@@ -5,30 +5,30 @@ namespace LobelFrames.ViewModels.Settings
 {
     public class GeneralSettings : SettingsBase
     {
-        public const int DefaultHistoryManagerSize = 10;
+        public const int DefaultHistoryStackSize = 10;
         private readonly HistoryManager historyManager;
-        private int historyStackSize;
+        private readonly LabeledSliderViewModel<int> historyStackSetting;
 
         public GeneralSettings(HistoryManager historyManager)
         {
+            this.Label = "Настройки";
             this.historyManager = historyManager;
-            this.Label = "General Settings";
-            this.HistoryStackSize = DefaultHistoryManagerSize;
+            this.historyManager.MaxUndoSize = DefaultHistoryStackSize;
+            this.historyStackSetting = new LabeledSliderViewModel<int>("Брой стъпки назад:", DefaultHistoryStackSize, 1, 20, 1);
+            this.historyStackSetting.ValueChanged += this.HistoryStackSettingValueChanged;
         }
 
-        public int HistoryStackSize
+        public LabeledSliderViewModel<int> HistoryStackSetting
         {
             get
             {
-                return this.historyStackSize;
+                return this.historyStackSetting;
             }
-            set
-            {
-                if (this.SetProperty(ref this.historyStackSize, value))
-                {
-                    this.historyManager.MaxUndoSize = value;
-                }
-            }
+        }
+
+        private void HistoryStackSettingValueChanged(object sender, EventArgs e)
+        {
+            this.historyManager.MaxUndoSize = this.historyStackSetting.Value;
         }
     }
 }

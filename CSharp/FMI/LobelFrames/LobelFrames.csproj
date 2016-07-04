@@ -132,6 +132,7 @@
     <Compile Include="ViewModels\Commands\ParameterInputedEventArgs.cs" />
     <Compile Include="ViewModels\ILobelSceneContext.cs" />
     <Compile Include="ViewModels\ILobelSceneEditor.cs" />
+    <Compile Include="ViewModels\LabeledSliderViewModel.cs" />
     <Compile Include="ViewModels\SceneConstants.cs" />
     <Compile Include="ViewModels\Settings\BezierSettings.cs" />
     <Compile Include="ViewModels\Settings\GeneralSettings.cs" />
@@ -140,6 +141,9 @@
     <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />
     <Compile Include="ViewModels\SurfaceModelingViewModel.cs" />
+    <Compile Include="Views\LabeledSliderView.xaml.cs">
+      <DependentUpon>LabeledSliderView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SurfaceModelingView.xaml.cs">
       <DependentUpon>SurfaceModelingView.xaml</DependentUpon>
     </Compile>
@@ -155,6 +159,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\LabeledSliderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SurfaceModelingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

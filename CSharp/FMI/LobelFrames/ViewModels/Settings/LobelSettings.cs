@@ -4,37 +4,39 @@ namespace LobelFrames.ViewModels.Settings
 {
     public class LobelSettings : SettingsBase
     {
-        private int meshRows;
-        private int meshColumns;
+        private readonly LabeledSliderViewModel<int> meshRows;
+        private readonly LabeledSliderViewModel<int> meshColumns;
+        private readonly LabeledSliderViewModel<double> meshTriangleSide;
 
         public LobelSettings()
         {
-            this.Label = "Lobel Surface Settings";
-            this.MeshRows = 7;
-            this.MeshColumns = 5;
+            this.Label = "Настройки на повърхнини на Лобел";
+            this.meshRows = new LabeledSliderViewModel<int>("Брой редове в растера:", 7, 1, 20, 1);
+            this.meshColumns = new LabeledSliderViewModel<int>("Брой колони в растера:", 5, 1, 20, 1);
+            this.meshTriangleSide = new LabeledSliderViewModel<double>("Страна на триъгълника:", 3, 1, 10, 0.2);
         }
 
-        public int MeshRows
+        public LabeledSliderViewModel<int> MeshRows
         {
             get
             {
                 return this.meshRows;
             }
-            set
-            {
-                this.SetProperty(ref this.meshRows, value);
-            }
         }
 
-        public int MeshColumns
+        public LabeledSliderViewModel<int> MeshColumns
         {
             get
             {
                 return this.meshColumns;
             }
-            set
+        }
+
+        public LabeledSliderViewModel<double> MeshTriangleSide
+        {
+            get
             {
-                this.SetProperty(ref this.meshColumns, value);
+                return this.meshTriangleSide;
             }
         }
     }

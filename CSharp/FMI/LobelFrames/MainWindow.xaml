@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:lobelFames="clr-namespace:LobelFrames.Views"
+        xmlns:lobelFrames="clr-namespace:LobelFrames.Views"
         xmlns:commands="clr-namespace:LobelFrames.ViewModels.Commands"
         xmlns:buttons="clr-namespace:Deyo.Controls.Buttons;assembly=Deyo.Controls"
         xmlns:deyoContentControls ="clr-namespace:Deyo.Controls.ContentControls;assembly=Deyo.Controls"
@@ -146,15 +146,7 @@
                                 <TextBlock Text="{Binding Label}" />
 
                                 <StackPanel Grid.Row="1" Orientation="Vertical">
-                                    <StackPanel Orientation="Vertical" Margin="5 0" HorizontalAlignment="Center">
-                                        <TextBlock Margin="0 5" FontSize="13">Undo Stack Size:</TextBlock>
-                                        <StackPanel Orientation="Horizontal" Margin="5 0">
-                                            <Border BorderThickness="0.5" SnapsToDevicePixels="True" BorderBrush="Black" Margin="0">
-                                                <TextBlock Margin="4 0" Width="15" Text="{Binding HistoryStackSize}" />
-                                            </Border>
-                                            <Slider Value="{Binding HistoryStackSize, Mode=TwoWay}" Minimum="1" Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" />
-                                        </StackPanel>
-                                    </StackPanel>
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding HistoryStackSetting}" />
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -172,25 +164,9 @@
                                 <TextBlock Text="{Binding Label}" />
                                 
                                 <StackPanel Grid.Row="1" Orientation="Vertical">
-                                    <StackPanel Orientation="Vertical" Margin="5 0" HorizontalAlignment="Center">
-                                        <TextBlock Margin="0 5" FontSize="13">Mesh rows:</TextBlock>
-                                        <StackPanel Orientation="Horizontal" Margin="5 0">
-                                            <Border BorderThickness="0.5" SnapsToDevicePixels="True" BorderBrush="Black" Margin="0">
-                                                <TextBlock Margin="4 0" Width="15" Text="{Binding MeshRows}" />
-                                            </Border>
-                                            <Slider Value="{Binding MeshRows, Mode=TwoWay}" Minimum="1" Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" />
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Vertical" Margin="5 0" HorizontalAlignment="Center">
-                                        <TextBlock Margin="0 5" FontSize="13">Mesh columns:</TextBlock>
-                                        <StackPanel Orientation="Horizontal" Margin="5 0">
-                                            <Border BorderThickness="0.5" SnapsToDevicePixels="True" BorderBrush="Black" Margin="0">
-                                                <TextBlock Margin="4 0" Width="15" Text="{Binding MeshColumns}" />
-                                            </Border>
-                                            <Slider Value="{Binding MeshColumns, Mode=TwoWay}" Minimum="1" Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" />
-                                        </StackPanel>
-                                    </StackPanel>
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding MeshRows}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding MeshColumns}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding MeshTriangleSide}" />
                                 </StackPanel>                                
                             </Grid>  
                         </Border>
@@ -205,7 +181,7 @@
                     </Popup>
                 </Grid>
 
-                <lobelFames:SurfaceModelingView Grid.Row="1" x:Name="surface" />
+                <lobelFrames:SurfaceModelingView Grid.Row="1" x:Name="surface" />
 
                 <Border Grid.Row="2" Background="Transparent" Margin="10 0 5 5">
                     <Grid>
