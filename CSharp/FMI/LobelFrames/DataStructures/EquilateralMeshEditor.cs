@@ -232,7 +232,8 @@ namespace LobelFrames.DataStructures
             convexPlanarPolylineCutBoundary[convexPlanarPolylineCutBoundary.Length - 1] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary.PeekFromEnd(1), convexPlanarPolylineCutBoundary.PeekLast());
 
             HashSet<Vertex> visitedVertices = new HashSet<Vertex>();
-            IEnumerable<Vertex> secondLevelVertices = this.FindSecondLevelVerticesToDelete(convexPlanarPolylineCutBoundary, cutSemiplaneNormal, visitedVertices);
+            Vertex[][] polylineSideVertices = this.GetAllVerticesOnPolylineSides(convexPlanarPolylineCutBoundary);
+            IEnumerable<Vertex> secondLevelVertices = this.FindSecondLevelVerticesToDelete(polylineSideVertices, cutSemiplaneNormal, visitedVertices);
             Queue<Vertex> searchQueue = new Queue<Vertex>(secondLevelVertices);            
 
             while (searchQueue.Count > 0)
@@ -268,10 +269,8 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        private IEnumerable<Vertex> FindSecondLevelVerticesToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal, HashSet<Vertex> visitedVerticesCollection)
+        private IEnumerable<Vertex> FindSecondLevelVerticesToDelete(Vertex[][] polylineSideVertices, Vector3D cutSemiplaneNormal, HashSet<Vertex> visitedVerticesCollection)
         {
-            Vertex[][] polylineSideVertices = this.GetAllVerticesOnPolylineSides(convexPlanarPolylineCutBoundary);
-
             foreach (Vertex[] side in polylineSideVertices)
             {
                 foreach (Vertex firstLevelVertex in side)

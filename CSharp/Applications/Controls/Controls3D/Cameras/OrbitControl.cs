@@ -324,7 +324,7 @@ namespace Deyo.Controls.Controls3D.Cameras
             double widthLengths = FullCircleAngleInDegrees / this.WidthOrbitAngleInDegrees;
             double fullCircleLength = widthLengths * CameraHelper.GetUnityDistantPlaneWidth(perspectiveCamera.FieldOfView);
 
-            return widthLengths;
+            return fullCircleLength;
         }
 
         private void StartOrbit(OrthographicCamera orthographicCamera, Point orbitPoint, Size viewportSize)
