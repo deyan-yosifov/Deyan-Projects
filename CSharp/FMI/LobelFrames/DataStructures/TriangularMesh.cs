@@ -208,9 +208,9 @@ namespace LobelFrames.DataStructures
 
         private static IEnumerable<T> EnumerateSet<T>(HashSet<T> set)
         {
-            IEnumerable<T> enumerable = set ?? Enumerable.Empty<T>(); 
-            
-            foreach (T element in set)
+            IEnumerable<T> enumerable = set ?? Enumerable.Empty<T>();
+
+            foreach (T element in enumerable)
             {
                 yield return element;
             }
