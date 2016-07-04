@@ -300,8 +300,9 @@ namespace LobelFrames.ViewModels
             {
                 IEnumerable<Point3D> contentPoints = this.GetSceneContextPoints();
                 Point3D fromPoint = CameraHelper.GetZoomToContentsCameraPosition(perspectiveCamera, this.scene.Editor.ViewportSize, contentPoints);
-                Rect3D boundingRect = GeometryHelper.GetBoundingRectangle(contentPoints);
-                Point3D boundingCenter = boundingRect.Location + new Vector3D(boundingRect.SizeX, boundingRect.SizeY, boundingRect.SizeZ);
+                Vector3D i, j, k;
+                CameraHelper.GetCameraLocalCoordinateVectors(perspectiveCamera.LookDirection, perspectiveCamera.UpDirection, out i, out j, out k);
+                Point3D boundingCenter = GeometryHelper.GetBoundingRectangleCenter(contentPoints, i, j, k);
                 Vector3D lookDirection = perspectiveCamera.LookDirection;
                 lookDirection.Normalize();
                 double projectedCoordinate = Vector3D.DotProduct(lookDirection, boundingCenter - fromPoint);
