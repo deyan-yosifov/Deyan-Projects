@@ -40,9 +40,9 @@ namespace LobelFrames.ViewModels
             this.scene = scene;
             this.hintManager = new HintManager();
             this.inputManager = new InputManager();
-            this.settings = new SettingsViewModel();
             this.elementsPool = new SceneElementsPool(scene);
             this.context = new SurfaceModelingContext(CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
+            this.settings = new SettingsViewModel(this.context.HistoryManager);
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
             this.zoomToContentsPointerHandler = new ZoomToContentsPointerHandler(this.ZoomToContents);

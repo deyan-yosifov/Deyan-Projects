@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Common;
+using Deyo.Core.Common.History;
 using System;
 
 namespace LobelFrames.ViewModels.Settings
@@ -9,9 +10,9 @@ namespace LobelFrames.ViewModels.Settings
         private readonly LobelSettings lobelSettings;
         private readonly BezierSettings bezierSettings;
 
-        public SettingsViewModel()
+        public SettingsViewModel(HistoryManager historyManager)
         {
-            this.generalSettings = new GeneralSettings();
+            this.generalSettings = new GeneralSettings(historyManager);
             this.lobelSettings = new LobelSettings();
             this.bezierSettings = new BezierSettings();
         }

@@ -138,7 +138,25 @@
                            PlacementTarget="{Binding ElementName=settingsButton}" 
                            Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
-                            <TextBlock Text="{Binding Label}" />
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Label}" />
+
+                                <StackPanel Grid.Row="1" Orientation="Vertical">
+                                    <StackPanel Orientation="Vertical" Margin="5 0" HorizontalAlignment="Center">
+                                        <TextBlock Margin="0 5" FontSize="13">Undo Stack Size:</TextBlock>
+                                        <StackPanel Orientation="Horizontal" Margin="5 0">
+                                            <Border BorderThickness="0.5" SnapsToDevicePixels="True" BorderBrush="Black" Margin="0">
+                                                <TextBlock Margin="4 0" Width="15" Text="{Binding HistoryStackSize}" />
+                                            </Border>
+                                            <Slider Value="{Binding HistoryStackSize, Mode=TwoWay}" Minimum="1" Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </Border>
                     </Popup>
 
