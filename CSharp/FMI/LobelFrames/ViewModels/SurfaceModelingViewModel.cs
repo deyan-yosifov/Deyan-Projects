@@ -23,7 +23,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels
 {
-    public class SurfaceModelingViewModel : ViewModelBase, ILobelSceneEditor
+    public class SurfaceModelingViewModel : ViewModelBase, ILobelSceneEditor, IContentProvider
     {
         private readonly Scene3D scene;
         private readonly HintManager hintManager;
@@ -33,7 +33,7 @@ namespace LobelFrames.ViewModels
         private readonly SceneElementsPool elementsPool;
         private readonly SurfaceModelingContext context;
         private readonly SurfaceModelingPointerHandler surfacePointerHandler;
-        private readonly ZoomToContentsPointerHandler zoomToContentsPointerHandler;
+        private readonly ZoomToContentsHandler zoomToContentsPointerHandler;
 
         public SurfaceModelingViewModel(Scene3D scene)
         {
@@ -45,7 +45,7 @@ namespace LobelFrames.ViewModels
             this.settings = new SettingsViewModel(this.context);
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
-            this.zoomToContentsPointerHandler = new ZoomToContentsPointerHandler(this.ZoomToContents);
+            this.zoomToContentsPointerHandler = new ZoomToContentsHandler(this.scene.Editor, this);
             this.scene.PointerHandlersController.Handlers.AddFirst(this.surfacePointerHandler);
             this.scene.PointerHandlersController.Handlers.AddFirst(this.zoomToContentsPointerHandler);
 
@@ -280,7 +280,7 @@ namespace LobelFrames.ViewModels
 
             if (scene.Camera == null)
             {
-                this.ZoomToContents();
+                this.zoomToContentsPointerHandler.ZoomToContents();
             }
             else
             {
@@ -294,24 +294,7 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        private void ZoomToContents()
-        {
-            this.scene.Editor.DoActionOnCamera((perspectiveCamera) =>
-            {
-                IEnumerable<Point3D> contentPoints = this.GetSceneContextPoints();
-                Point3D fromPoint = CameraHelper.GetZoomToContentsCameraPosition(perspectiveCamera, this.scene.Editor.ViewportSize, contentPoints);
-                Vector3D i, j, k;
-                CameraHelper.GetCameraLocalCoordinateVectors(perspectiveCamera.LookDirection, perspectiveCamera.UpDirection, out i, out j, out k);
-                Point3D boundingCenter = GeometryHelper.GetBoundingRectangleCenter(contentPoints, i, j, k);
-                Vector3D lookDirection = perspectiveCamera.LookDirection;
-                lookDirection.Normalize();
-                double projectedCoordinate = Vector3D.DotProduct(lookDirection, boundingCenter - fromPoint);
-                Point3D projectedCenter = fromPoint + projectedCoordinate * lookDirection;
-                this.scene.Editor.Look(fromPoint, projectedCenter);
-            }, (orthographicCamera) => Guard.ThrowNotSupportedCameraException());
-        }
-        
-        private IEnumerable<Point3D> GetSceneContextPoints()
+        public IEnumerable<Point3D> GetContentPoints()
         {
             if (this.Context.SelectedSurface == null)
             {

@@ -95,11 +95,13 @@
     <Compile Include="Controls3D\Cameras\DragAction.cs" />
     <Compile Include="Controls3D\Cameras\OrbitControl.cs" />
     <Compile Include="Controls3D\Cameras\OrbitPositionInfo.cs" />
+    <Compile Include="Controls3D\Cameras\ZoomToContentsHandler.cs" />
     <Compile Include="Controls3D\GraphicProperties.cs" />
     <Compile Include="Controls3D\GraphicPropertyNames.cs" />
     <Compile Include="Controls3D\GraphicsManager2D.cs" />
     <Compile Include="Controls3D\GraphicState.cs" />
     <Compile Include="Controls3D\GraphicStateFactory.cs" />
+    <Compile Include="Controls3D\IContentProvider.cs" />
     <Compile Include="Controls3D\Iteractions\AxisDirection.cs" />
     <Compile Include="Controls3D\Iteractions\IteractivePointsHandler.cs" />
     <Compile Include="Controls3D\Iteractions\PointIteractionPositionInfo.cs" />

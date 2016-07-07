@@ -1,5 +1,6 @@
 ﻿using Deyo.Controls.Common;
 using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Cameras;
 using Deyo.Controls.Controls3D.Iteractions;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace CAGD
             this.scene = scene;
             this.iteractivePointsHandler = this.scene.IteractivePointsHandler;
             this.geometryManager = this.CreateGeometryManager(scene);
+            this.scene.PointerHandlersController.Handlers.AddFirst(new ZoomToContentsHandler(scene.Editor, this.geometryManager));
             this.showControlPoints = true;
             this.showControlLines = true;
             this.showSurfaceLines = true;

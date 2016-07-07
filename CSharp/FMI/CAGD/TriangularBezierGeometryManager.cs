@@ -39,6 +39,14 @@ namespace CAGD
             this.GenerateGeometry(geometryContext);
         }
 
+        protected override IEnumerable<Point3D> GetControlPoints()
+        {
+            foreach (PointVisual point in this.controlPoints)
+            {
+                yield return point.Position;
+            }
+        }
+
         protected override int ControlPointsCount()
         {
             return this.controlPoints.Length;

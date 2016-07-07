@@ -1,23 +1,28 @@
 ﻿using Deyo.Controls.MouseHandlers;
 using Deyo.Core.Common;
+using Deyo.Core.Mathematics.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
 
-namespace LobelFrames.IteractionHandling
+namespace Deyo.Controls.Controls3D.Cameras
 {
-    public class ZoomToContentsPointerHandler : IPointerHandler
+    public class ZoomToContentsHandler : IPointerHandler
     {
+        private readonly SceneEditor sceneEditor;
+        private readonly IContentProvider contentProvider;
         private readonly MouseDelayManager delayManager;
-        private readonly Action zoomToContents;
         private bool hasHandledFirstDown;
 
-        public ZoomToContentsPointerHandler(Action zoomToContents)
+        public ZoomToContentsHandler(SceneEditor sceneEditor, IContentProvider contentProvider)
         {
-            Guard.ThrowExceptionIfNull(zoomToContents, "zoomToContents");
+            Guard.ThrowExceptionIfNull(sceneEditor, "sceneEditor");
+            Guard.ThrowExceptionIfNull(contentProvider, "contentProvider");
 
+            this.sceneEditor = sceneEditor;
+            this.contentProvider = contentProvider;
             this.delayManager = new MouseDelayManager(false);
-            this.zoomToContents = zoomToContents;
             this.DoubleClickInterval = 400;
             this.IsEnabled = true;
         }
@@ -63,7 +68,7 @@ namespace LobelFrames.IteractionHandling
 
             if (this.hasHandledFirstDown && shouldHandleDelay)
             {
-                this.zoomToContents();
+                this.ZoomToContents();
                 this.hasHandledFirstDown = false;
             }
             else
@@ -87,6 +92,23 @@ namespace LobelFrames.IteractionHandling
         public bool TryHandleMouseWheel(PointerEventArgs<MouseWheelEventArgs> e)
         {
             return false;
+        }
+
+        public void ZoomToContents()
+        {
+            this.sceneEditor.DoActionOnCamera((perspectiveCamera) =>
+            {
+                IEnumerable<Point3D> contentPoints = this.contentProvider.GetContentPoints();
+                Point3D fromPoint = CameraHelper.GetZoomToContentsCameraPosition(perspectiveCamera, this.sceneEditor.ViewportSize, contentPoints);
+                Vector3D i, j, k;
+                CameraHelper.GetCameraLocalCoordinateVectors(perspectiveCamera.LookDirection, perspectiveCamera.UpDirection, out i, out j, out k);
+                Point3D boundingCenter = GeometryHelper.GetBoundingRectangleCenter(contentPoints, i, j, k);
+                Vector3D lookDirection = perspectiveCamera.LookDirection;
+                lookDirection.Normalize();
+                double projectedCoordinate = Vector3D.DotProduct(lookDirection, boundingCenter - fromPoint);
+                Point3D projectedCenter = fromPoint + projectedCoordinate * lookDirection;
+                this.sceneEditor.Look(fromPoint, projectedCenter);
+            }, (orthographicCamera) => Guard.ThrowNotSupportedCameraException());
         }
     }
 }

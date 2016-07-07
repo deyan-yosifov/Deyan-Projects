@@ -7,7 +7,7 @@ using System.Windows.Media.Media3D;
 
 namespace CAGD
 {
-    public abstract class BezierGeometryManagerBase<T>
+    public abstract class BezierGeometryManagerBase<T> : IContentProvider
         where T : BezierGeometryContextBase
     {
         private readonly Scene3D scene;
@@ -174,11 +174,18 @@ namespace CAGD
             this.RecalculateSurfaceGeometry();
         }
 
+        public IEnumerable<Point3D> GetContentPoints()
+        {
+            return this.GetControlPoints();
+        }
+
         protected void RegisterVisiblePoint(PointVisual point)
         {
             this.visibleControlPoints.Enqueue(point);
             this.AttachToPointEvents(point);
         }
+
+        protected abstract IEnumerable<Point3D> GetControlPoints();
 
         protected abstract int ControlPointsCount();
 
