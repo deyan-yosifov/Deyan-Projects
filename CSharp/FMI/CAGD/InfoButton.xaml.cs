@@ -32,6 +32,7 @@ namespace CAGD
  - ORBIT => Drag with mouse left or rigth button down.
  - PAN => Drag with middle mouse button down.
  - ZOOM => Scroll with the mouse wheel.
+ - ZOOM TO CONTENTS => Double click with middle mouse button.
  - MOVE BEZIER CONTROL POINT => Drag some control point with mouse left or right button down.";
             border.Child = textBlock;
 
