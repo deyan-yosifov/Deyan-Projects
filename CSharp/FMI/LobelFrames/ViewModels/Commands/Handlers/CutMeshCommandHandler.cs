@@ -19,7 +19,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         private LobelSurface surface;
         private Vector3D sweepDirectionVector;
         private bool isLookingForSweepDirection;
-        private Vertex[] verticesToDelete;
+        private DeleteVerticesAction deleteMeshPatchAction;
 
         public CutMeshCommandHandler(ILobelSceneEditor editor, ISceneElementsManager elementsManager)
             : base(editor, elementsManager)
@@ -38,7 +38,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             get
             {
-                return this.verticesToDelete != null;
+                return this.deleteMeshPatchAction != null;
             }
         }
 
@@ -56,7 +56,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             base.EndCommand();
             this.surface = null;
-            this.verticesToDelete = null;
+            this.deleteMeshPatchAction = null;
             this.isLookingForSweepDirection = false;
         }
 
@@ -157,13 +157,13 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
             else if (this.IsShowingTrianglesToDelete)
             {
-                if (this.verticesToDelete.Length == this.surface.MeshEditor.VerticesCount)
+                if (this.deleteMeshPatchAction.DeletionInfo.VerticesToDelete.Count() == this.surface.MeshEditor.VerticesCount)
                 {
                     this.Editor.DoAction(new DeleteSurfaceAction(this.Editor.Context));
                 }
                 else
                 {
-                    this.Editor.DoAction(new DeleteVerticesAction(this.surface, this.verticesToDelete));
+                    this.Editor.DoAction(this.deleteMeshPatchAction);
                 }
 
                 this.Editor.CloseCommandContext();
@@ -180,7 +180,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private void HideTrianglesToDeleteAndShowCutBoundary()
         {
-            this.verticesToDelete = null;
+            this.deleteMeshPatchAction = null;
             this.HideVisibleLines();
 
             for (int pointIndex = 1; pointIndex < this.Points.Count; pointIndex++)
@@ -198,14 +198,15 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 cutBoundary[pointIndex] = this.surface.GetVertexFromPointVisual(this.Points[pointIndex]);
             }
 
-            this.verticesToDelete = this.surface.MeshEditor.FindVerticesToDelete(cutBoundary, this.sweepDirectionVector).ToArray();
-            trianglesToDelete = this.surface.MeshEditor.GetTrianglesFromVertices(verticesToDelete).ToArray();
+            MeshPatchDeletionInfo deletionInfo = this.surface.MeshEditor.GetMeshPatchToDelete(cutBoundary, this.sweepDirectionVector);
+            this.deleteMeshPatchAction = new DeleteVerticesAction(this.surface, deletionInfo);
+            trianglesToDelete = this.deleteMeshPatchAction.AdditionInfo.Triangles.ToArray();
 
             if (trianglesToDelete.Length == 0)
             {
-                this.Editor.ShowHint(Hints.ThereAreNoVerticesToDeleteWithCurrentCutSelection, HintType.Warning);
+                this.Editor.ShowHint(Hints.ThereIsNothingToDeleteWithCurrentSelection, HintType.Warning);
                 this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
-                this.verticesToDelete = null;
+                this.deleteMeshPatchAction = null;
 
                 return false;
             }

@@ -135,28 +135,14 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        public VerticesDeletionInfo DeleteVertices(IEnumerable<Vertex> vertices)
-        {
-            HashSet<Triangle> trianglesToDelete = new HashSet<Triangle>();
-
-            foreach (Vertex vertex in vertices)
-            {
-                foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
-                {
-                    trianglesToDelete.Add(triangle);
-                }
-            }
-
-            VerticesDeletionInfo deletionInfo = new VerticesDeletionInfo(trianglesToDelete);
-
-            this.Mesh.DeleteVertices(vertices);
-
-            return deletionInfo;
+        public void DeleteMeshPatch(MeshPatchDeletionInfo deletionInfo)
+        {          
+            this.Mesh.DeleteMeshPatch(deletionInfo);
         }
 
-        public void RestoreDeletedVertices(VerticesDeletionInfo deletionInfo)
+        public void AddMeshPatch(MeshPatchAdditionInfo additionInfo)
         {
-            foreach (Triangle triangle in deletionInfo.Triangles)
+            foreach (Triangle triangle in additionInfo.Triangles)
             {
                 this.Mesh.AddTriangle(triangle, true);
             }
@@ -219,22 +205,114 @@ namespace LobelFrames.DataStructures
             return mayBeConnected;
         }
 
-        public IEnumerable<Vertex> FindVerticesToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal)
+        public MeshPatchDeletionInfo GetMeshPatchToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal)
         {
             Guard.ThrowExceptionIfLessThan(convexPlanarPolylineCutBoundary.Length, 2, "convexPlanarPolygoneCutBoundary.Length");
 
             if (cutSemiplaneNormal.LengthSquared.IsZero())
             {
-                yield break;
+                return new MeshPatchDeletionInfo(Enumerable.Empty<Vertex>(), Enumerable.Empty<Edge>(), Enumerable.Empty<Triangle>());
             }
 
             convexPlanarPolylineCutBoundary[0] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary[1], convexPlanarPolylineCutBoundary[0]);
             convexPlanarPolylineCutBoundary[convexPlanarPolylineCutBoundary.Length - 1] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary.PeekFromEnd(1), convexPlanarPolylineCutBoundary.PeekLast());
 
-            HashSet<Vertex> visitedVertices = new HashSet<Vertex>();
             Vertex[][] polylineSideVertices = this.GetAllVerticesOnPolylineSides(convexPlanarPolylineCutBoundary);
+
+            HashSet<Vertex> verticesToDelete, visitedVertices;
+            this.FindVerticesToDelete(polylineSideVertices, cutSemiplaneNormal, out verticesToDelete, out visitedVertices);
+
+            HashSet<Triangle> boundaryTrianglesToDelete = this.FindBoundaryTrianglesToDelete(polylineSideVertices, verticesToDelete, visitedVertices);
+            IEnumerable<Edge> boundaryEdgesToDelete = this.FindBoundaryEdgesToDelete(boundaryTrianglesToDelete);
+
+            return new MeshPatchDeletionInfo(verticesToDelete, boundaryEdgesToDelete, boundaryTrianglesToDelete);
+        }
+
+        private HashSet<Triangle> FindBoundaryTrianglesToDelete(Vertex[][] polylineSideVertices, HashSet<Vertex> verticesToDelete, HashSet<Vertex> visitedVertices)
+        {
+            HashSet<Triangle> boundaryTrianglesToDelete = new HashSet<Triangle>();
+            HashSet<Triangle> visitedTriangles = new HashSet<Triangle>();
+
+            for (int sideIndex = 0; sideIndex < polylineSideVertices.Length; sideIndex++)
+            {
+                Vertex[] sideVertices = polylineSideVertices[sideIndex];
+                int vertexStartIndex = sideIndex == 0 ? 0 : 1;
+                int vertexEndIndex = (sideIndex == polylineSideVertices.Length - 1) ? (sideVertices.Length - 1) : (sideVertices.Length - 2);
+
+                for (int vertexIndex = vertexStartIndex; vertexIndex <= vertexEndIndex; vertexIndex++)
+                {
+                    Vertex vertex = sideVertices[vertexIndex];
+
+                    foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
+                    {
+                        if (visitedTriangles.Add(triangle))
+                        {
+                            bool containOnlyVisitedVertices = true;
+                            bool containsVertexThatWillNotBeDeleted = false;
+
+                            foreach (Vertex triangleVertex in triangle.Vertices)
+                            {
+                                if (!visitedVertices.Contains(triangleVertex))
+                                {
+                                    containOnlyVisitedVertices = false;
+                                    break;
+                                }
+
+                                if (!containsVertexThatWillNotBeDeleted && !verticesToDelete.Contains(triangleVertex))
+                                {
+                                    containsVertexThatWillNotBeDeleted = true;
+                                }
+                            }
+
+                            if (containOnlyVisitedVertices && containsVertexThatWillNotBeDeleted)
+                            {
+                                boundaryTrianglesToDelete.Add(triangle);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return boundaryTrianglesToDelete;
+        }
+
+        private IEnumerable<Edge> FindBoundaryEdgesToDelete(HashSet<Triangle> boundaryTrianglesToDelete)
+        {
+            HashSet<Edge> boundaryEdgesToDelete = new HashSet<Edge>();
+
+            foreach (Triangle triangle in boundaryTrianglesToDelete)
+            {
+                foreach (Edge edge in triangle.Edges)
+                {
+                    if (!boundaryEdgesToDelete.Contains(edge))
+                    {
+                        bool isBoundaryEdgeToDelete = true;
+
+                        foreach (Triangle edgeTriangle in this.Mesh.GetTriangles(edge))
+                        {
+                            if (!boundaryTrianglesToDelete.Contains(edgeTriangle))
+                            {
+                                isBoundaryEdgeToDelete = false;
+                                break;
+                            }
+                        }
+
+                        if (isBoundaryEdgeToDelete)
+                        {
+                            boundaryEdgesToDelete.Add(edge);
+                            yield return edge;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FindVerticesToDelete(Vertex[][] polylineSideVertices, Vector3D cutSemiplaneNormal, out HashSet<Vertex> verticesToDelete, out HashSet<Vertex> visitedVertices)
+        {
+            verticesToDelete = new HashSet<Vertex>();
+            visitedVertices = new HashSet<Vertex>();
             IEnumerable<Vertex> secondLevelVertices = this.FindSecondLevelVerticesToDelete(polylineSideVertices, cutSemiplaneNormal, visitedVertices);
-            Queue<Vertex> searchQueue = new Queue<Vertex>(secondLevelVertices);            
+            Queue<Vertex> searchQueue = new Queue<Vertex>(secondLevelVertices);
 
             while (searchQueue.Count > 0)
             {
@@ -264,7 +342,7 @@ namespace LobelFrames.DataStructures
 
                 if (shouldBeDeleted)
                 {
-                    yield return potentialVertexToDelete;
+                    verticesToDelete.Add(potentialVertexToDelete);
                 }
             }
         }

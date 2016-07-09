@@ -61,8 +61,9 @@
     <Compile Include="DataStructures\NonEditableMesh.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
+    <Compile Include="DataStructures\Surfaces\MeshPatchDeletionInfo.cs" />
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
-    <Compile Include="DataStructures\Surfaces\VerticesDeletionInfo.cs" />
+    <Compile Include="DataStructures\Surfaces\MeshPatchAdditionInfo.cs" />
     <Compile Include="DataStructures\UniqueEdgesSet.cs" />
     <Compile Include="DataStructures\VertexIndexer.cs" />
     <Compile Include="FormatProviders\BezierSurfaceModel.cs" />

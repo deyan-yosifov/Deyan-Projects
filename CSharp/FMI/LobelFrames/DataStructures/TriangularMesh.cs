@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LobelFrames.DataStructures.Surfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -154,9 +155,29 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        public void DeleteVertices(IEnumerable<Vertex> vertices)
+        public void DeleteMeshPatch(MeshPatchDeletionInfo meshPatchToDelete)
         {
-            foreach (Vertex vertex in vertices)
+            foreach (Triangle triangle in meshPatchToDelete.BoundaryTrianglesToDelete)
+            {
+                foreach (Vertex vertex in triangle.Vertices)
+                {
+                    this.vertexToTriangles[vertex].Remove(triangle);
+                }
+
+                this.triangles.Remove(triangle);
+            }
+
+            foreach (Edge edge in meshPatchToDelete.BoundaryEdgesToDelete)
+            {
+                foreach (Vertex vertex in edge.Vertices)
+                {
+                    this.vertexToEdges[vertex].Remove(edge);
+                }
+
+                this.edges.Remove(edge);
+            }
+
+            foreach (Vertex vertex in meshPatchToDelete.VerticesToDelete)
             {
                 foreach (Triangle triangle in this.GetTriangles(vertex).ToArray())
                 {

@@ -8,24 +8,52 @@ namespace LobelFrames.ViewModels.Commands.History
 {
     public class DeleteVerticesAction : ModifySurfaceUndoableActionBase<LobelSurface>
     {
-        private readonly IEnumerable<Vertex> verticesToDelete;
-        private VerticesDeletionInfo deletionInfo;
+        private readonly MeshPatchDeletionInfo deletionInfo;
+        private MeshPatchAdditionInfo additionInfo;
 
-        public DeleteVerticesAction(LobelSurface surface, IEnumerable<Vertex> verticesToDelete)
+        public DeleteVerticesAction(LobelSurface surface, MeshPatchDeletionInfo deletionInfo)
             : base(surface)
         {
-            this.verticesToDelete = verticesToDelete;
+            this.deletionInfo = deletionInfo;
+        }
+
+        public MeshPatchDeletionInfo DeletionInfo
+        {
+            get
+            {
+                return this.deletionInfo;
+            }
+        }
+
+        public MeshPatchAdditionInfo AdditionInfo
+        {
+            get
+            {
+                if (this.additionInfo == null)
+                {
+                    List<Triangle> trianglesToDelete = new List<Triangle>(this.DeletionInfo.BoundaryTrianglesToDelete);
+
+                    foreach (Triangle triangle in this.Surface.MeshEditor.GetTrianglesFromVertices(this.DeletionInfo.VerticesToDelete))
+                    {
+                        trianglesToDelete.Add(triangle);
+                    }
+
+                    this.additionInfo = new MeshPatchAdditionInfo(trianglesToDelete);
+                }
+
+                return this.additionInfo;
+            }
         }
 
         protected override void DoOverride()
         {
-            this.deletionInfo = this.Surface.MeshEditor.DeleteVertices(this.verticesToDelete);
+            this.Surface.MeshEditor.DeleteMeshPatch(this.DeletionInfo);
             this.RenderSurfaceChanges();
         }
 
         protected override void UndoOverride()
-        {
-            this.Surface.MeshEditor.RestoreDeletedVertices(this.deletionInfo);
+        {          
+            this.Surface.MeshEditor.AddMeshPatch(this.AdditionInfo);
             this.RenderSurfaceChanges();
         }
     }

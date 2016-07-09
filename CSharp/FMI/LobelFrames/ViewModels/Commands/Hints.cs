@@ -17,6 +17,6 @@ namespace LobelFrames.ViewModels.Commands
         public const string CutSelectionMustBeConvexPolyline = "Селекцията за рязане трябва да бъде изпъкнала начупена линия!";
         public const string SpecifySemiplaneToCut = "Избери точка от полуравнината на рязане!";
         public const string ConfirmOrRejectCutSelection = "Потвърди с Enter или отмени с Escape селекцията за рязане?";
-        public const string ThereAreNoVerticesToDeleteWithCurrentCutSelection = "Няма върхове за рязане! Променете селекциятa, връщайки назад с Escape!";
+        public const string ThereIsNothingToDeleteWithCurrentSelection = "Няма нищо за рязане с текущата селекция! Променете селекциятa, връщайки назад с Escape!";
     }
 }
