@@ -213,6 +213,11 @@ namespace LobelFrames.ViewModels
             this.CommandContext.BeginCommand(CommandType.CutMesh);
         }
 
+        public void FoldMesh()
+        {
+            this.CommandContext.BeginCommand(CommandType.FoldMesh);
+        }
+
         public void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
         {
             this.surfacePointerHandler.IteractionType = iteractionType;

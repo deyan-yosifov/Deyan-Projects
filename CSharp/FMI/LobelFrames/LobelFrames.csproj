@@ -108,7 +108,10 @@
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlerBase.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlersFactory.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CutMeshCommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\FoldMeshCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\ICommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\LobelEditingCommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\SurfaceEdititingCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\MoveCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\OpenCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\SaveCommandHandler.cs" />
@@ -120,7 +123,7 @@
     <Compile Include="ViewModels\Commands\History\AddSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\ContextUndoableAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeleteSurfaceAction.cs" />
-    <Compile Include="ViewModels\Commands\History\DeleteVerticesAction.cs" />
+    <Compile Include="ViewModels\Commands\History\DeleteMeshPatchAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeselectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\IteractiveSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\ModifySurfaceUndoableActionBase.cs" />

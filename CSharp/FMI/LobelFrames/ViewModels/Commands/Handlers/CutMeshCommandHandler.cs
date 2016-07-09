@@ -14,12 +14,11 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels.Commands.Handlers
 {
-    public class CutMeshCommandHandler : CommandHandlerBase
+    public class CutMeshCommandHandler : LobelEditingCommandHandler
     {
-        private LobelSurface surface;
         private Vector3D sweepDirectionVector;
         private bool isLookingForSweepDirection;
-        private DeleteVerticesAction deleteMeshPatchAction;
+        private DeleteMeshPatchAction deleteMeshPatchAction;
 
         public CutMeshCommandHandler(ILobelSceneEditor editor, ISceneElementsManager elementsManager)
             : base(editor, elementsManager)
@@ -44,7 +43,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public override void BeginCommand()
         {
-            this.surface = (LobelSurface)this.Editor.Context.SelectedSurface;
             base.BeginCommand();
             this.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
             this.Editor.ShowHint(Hints.SelectCutPoint, HintType.Info);
@@ -55,7 +53,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         public override void EndCommand()
         {
             base.EndCommand();
-            this.surface = null;
             this.deleteMeshPatchAction = null;
             this.isLookingForSweepDirection = false;
         }
@@ -157,7 +154,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
             else if (this.IsShowingTrianglesToDelete)
             {
-                if (this.deleteMeshPatchAction.DeletionInfo.VerticesToDelete.Count() == this.surface.MeshEditor.VerticesCount)
+                if (this.deleteMeshPatchAction.DeletionInfo.VerticesToDelete.Count() == this.Surface.MeshEditor.VerticesCount)
                 {
                     this.Editor.DoAction(new DeleteSurfaceAction(this.Editor.Context));
                 }
@@ -168,6 +165,35 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
                 this.Editor.CloseCommandContext();
             }            
+        }
+
+        protected override void UpdateInputLabel()
+        {
+            string hint = this.isLookingForSweepDirection ? Hints.SpecifySemiplaneToCut :
+                (this.IsShowingTrianglesToDelete ? Hints.ConfirmOrRejectCutSelection : Hints.SelectCutPoint);
+            this.Editor.ShowHint(hint, HintType.Info);
+
+            switch (this.Points.Count)
+            {
+                case 0:
+                    this.Editor.InputManager.Start(Labels.PressEscapeToCancel, string.Empty, true);
+                    this.Editor.InputManager.HandleEmptyParameterInput = false;
+                    this.Editor.InputManager.HandleCancelInputOnly = true;
+                    break;
+                case 1:
+                    this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
+                    this.Editor.InputManager.HandleEmptyParameterInput = false;
+                    this.Editor.InputManager.HandleCancelInputOnly = true;
+                    break;
+                case 2:
+                    this.Editor.InputManager.Start(Labels.PressEnterToCut, string.Empty, true);
+                    this.Editor.InputManager.HandleEmptyParameterInput = true;
+                    this.Editor.InputManager.HandleCancelInputOnly = false;
+                    break;
+                default:
+                    // Do nothing.
+                    break;
+            }
         }
 
         private void HideVisibleLines()
@@ -195,11 +221,11 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             for (int pointIndex = 0; pointIndex < this.Points.Count; pointIndex++)
             {
-                cutBoundary[pointIndex] = this.surface.GetVertexFromPointVisual(this.Points[pointIndex]);
+                cutBoundary[pointIndex] = this.Surface.GetVertexFromPointVisual(this.Points[pointIndex]);
             }
 
-            MeshPatchDeletionInfo deletionInfo = this.surface.MeshEditor.GetMeshPatchToDelete(cutBoundary, this.sweepDirectionVector);
-            this.deleteMeshPatchAction = new DeleteVerticesAction(this.surface, deletionInfo);
+            MeshPatchDeletionInfo deletionInfo = this.Surface.MeshEditor.GetMeshPatchToDelete(cutBoundary, this.sweepDirectionVector);
+            this.deleteMeshPatchAction = new DeleteMeshPatchAction(this.Surface, deletionInfo);
             trianglesToDelete = this.deleteMeshPatchAction.AdditionInfo.Triangles.ToArray();
 
             if (trianglesToDelete.Length == 0)
@@ -242,11 +268,11 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private bool TryValidateColinearEdgesConnection(PointVisual nextPoint)
         {
-            Vertex previous = this.surface.GetVertexFromPointVisual(this.Points.PeekLast());
-            Vertex next = this.surface.GetVertexFromPointVisual(nextPoint);
+            Vertex previous = this.Surface.GetVertexFromPointVisual(this.Points.PeekLast());
+            Vertex next = this.Surface.GetVertexFromPointVisual(nextPoint);
 
             VertexConnectionInfo connectionInfo;
-            if (!surface.MeshEditor.TryConnectVerticesWithColinearEdges(previous, next, out connectionInfo))
+            if (!this.Surface.MeshEditor.TryConnectVerticesWithColinearEdges(previous, next, out connectionInfo))
             {
                 this.Editor.ShowHint(Hints.NeighbouringCutPointsShouldBeOnColinearEdges, HintType.Warning);
                 return false;
@@ -328,47 +354,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
 
             return isConvex;
-        }
-
-        private void UpdateInputLabel()
-        {
-            string hint = this.isLookingForSweepDirection ? Hints.SpecifySemiplaneToCut :
-                (this.IsShowingTrianglesToDelete ? Hints.ConfirmOrRejectCutSelection : Hints.SelectCutPoint);
-            this.Editor.ShowHint(hint, HintType.Info);
-
-            switch (this.Points.Count)
-            {
-                case 0:
-                    this.Editor.InputManager.Start(Labels.PressEscapeToCancel, string.Empty, true);
-                    this.Editor.InputManager.HandleEmptyParameterInput = false;
-                    this.Editor.InputManager.HandleCancelInputOnly = true;
-                    break;
-                case 1:
-                    this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
-                    this.Editor.InputManager.HandleEmptyParameterInput = false;
-                    this.Editor.InputManager.HandleCancelInputOnly = true;
-                    break;
-                case 2:
-                    this.Editor.InputManager.Start(Labels.PressEnterToCut, string.Empty, true);
-                    this.Editor.InputManager.HandleEmptyParameterInput = true;
-                    this.Editor.InputManager.HandleCancelInputOnly = false;
-                    break;
-                default:
-                    // Do nothing.
-                    break;
-            }
-        }
-
-        public override void BeginPointMoveIteraction(Point3D point)
-        {
-            base.BeginPointMoveIteraction(point);
-            this.UpdateInputLabel();
-        }
-
-        public override void EndPointMoveIteraction()
-        {
-            base.EndPointMoveIteraction();
-            this.UpdateInputLabel();
         }
     }
 }

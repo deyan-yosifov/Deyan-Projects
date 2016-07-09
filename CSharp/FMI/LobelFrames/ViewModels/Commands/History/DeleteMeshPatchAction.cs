@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace LobelFrames.ViewModels.Commands.History
 {
-    public class DeleteVerticesAction : ModifySurfaceUndoableActionBase<LobelSurface>
+    public class DeleteMeshPatchAction : ModifySurfaceUndoableActionBase<LobelSurface>
     {
         private readonly MeshPatchDeletionInfo deletionInfo;
         private MeshPatchAdditionInfo additionInfo;
 
-        public DeleteVerticesAction(LobelSurface surface, MeshPatchDeletionInfo deletionInfo)
+        public DeleteMeshPatchAction(LobelSurface surface, MeshPatchDeletionInfo deletionInfo)
             : base(surface)
         {
             this.deletionInfo = deletionInfo;
