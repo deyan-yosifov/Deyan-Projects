@@ -10,6 +10,8 @@ namespace LobelFrames.ViewModels.Commands
         private string inputValue;
         private bool isEnabled;
         private bool isInputingParameterWithKeyboard;
+        private bool handleCancelInputOnly;
+        private bool disableKeyboardInputValueEditing;
 
         public InputManager()
         {
@@ -34,22 +36,40 @@ namespace LobelFrames.ViewModels.Commands
             }
         }
 
-        public bool HandleCancelInputOnly
-        {
-            get;
-            set;
-        }
-
         public bool HandleEmptyParameterInput
         {
             get;
             set;
         }
 
+        public bool HandleCancelInputOnly
+        {
+            get
+            {
+                return this.handleCancelInputOnly;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.handleCancelInputOnly, value))
+                {
+                    this.InputValue = string.Empty;
+                }
+            }
+        }
+
         public bool DisableKeyboardInputValueEditing
         {
-            get;
-            set;
+            get
+            {
+                return this.disableKeyboardInputValueEditing;
+            }
+            set
+            {
+                if (this.SetProperty(ref this.disableKeyboardInputValueEditing, value))
+                {
+                    this.InputValue = string.Empty;
+                }
+            }
         }
 
         public string InputLabel

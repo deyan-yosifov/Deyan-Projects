@@ -66,6 +66,15 @@ namespace Deyo.Core.Common
             }
         }
 
+        public static void ThrowExceptionIfBiggerThan<T>(T value, T maximumValue, string parameterName)
+            where T : IComparable
+        {
+            if (value.CompareTo(maximumValue) > 0)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("{0} should not be bigger than {1}!", parameterName, maximumValue));
+            }
+        }
+
         public static void ThrowNotSupportedCameraException()
         {
             throw new NotSupportedException("Not supported camera type!");

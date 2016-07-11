@@ -78,7 +78,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        private IteractionRestrictor Restrictor
+        protected IteractionRestrictor Restrictor
         {
             get
             {

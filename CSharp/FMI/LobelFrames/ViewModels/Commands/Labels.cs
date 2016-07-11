@@ -15,6 +15,7 @@ namespace LobelFrames.ViewModels.Commands
         public const string PressEscapeToStepBack = "Натисни Escape за стъпка назад";
         public const string WrongMousePositioningMoveDirection = "Неясна посока на преместване - моля преместете мишката!";
         public const string PressEnterToCut = "Натисни Enter за рязане";
+        public const string PressEnterToRotate = "Натисни Enter за ротиране";
 
         public static string GetDecimalNumberValue(double value, int digits = 2)
         {
