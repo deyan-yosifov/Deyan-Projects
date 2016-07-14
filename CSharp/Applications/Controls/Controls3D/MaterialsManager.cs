@@ -61,7 +61,7 @@ namespace Deyo.Controls.Controls3D
 
         public void AddBackDiffuseMaterial(Color color)
         {
-            this.AddBackMaterial(new DiffuseMaterial(new SolidColorBrush(color)));
+            this.AddBackMaterial(CreateDiffuseMaterial(color));
         }
 
         public void AddFrontTexture(ImageSource image)
@@ -76,12 +76,22 @@ namespace Deyo.Controls.Controls3D
 
         public static DiffuseMaterial CreateDiffuseMaterial(Color color)
         {
-            return new DiffuseMaterial(new SolidColorBrush(color));
+            SolidColorBrush brush = new SolidColorBrush(color);
+            brush.Freeze();
+            DiffuseMaterial material = new DiffuseMaterial(brush);
+            material.Freeze();
+
+            return material;
         }
 
         public static DiffuseMaterial CreateDiffuseMaterial(ImageSource image)
         {
-            return new DiffuseMaterial(new ImageBrush(image) { ViewportUnits = BrushMappingMode.Absolute });
+            ImageBrush brush = new ImageBrush(image) { ViewportUnits = BrushMappingMode.Absolute };
+            brush.Freeze();
+            DiffuseMaterial material = new DiffuseMaterial(brush);
+            material.Freeze();
+
+            return material;
         }
 
         public event EventHandler<PropertiesChangedEventArgs> PropertiesChanged;

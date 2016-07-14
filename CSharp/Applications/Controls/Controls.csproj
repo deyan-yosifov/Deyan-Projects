@@ -118,6 +118,7 @@
     <Compile Include="Common\ViewModelBase.cs" />
     <Compile Include="Controls3D\Shapes\Cube.cs" />
     <Compile Include="Controls3D\Shapes\Cylinder.cs" />
+    <Compile Include="Controls3D\Shapes\IcoSphere.cs" />
     <Compile Include="Controls3D\Shapes\Line.cs" />
     <Compile Include="Controls3D\Shapes\Mesh.cs" />
     <Compile Include="Controls3D\Shapes\RotationalShape.cs" />

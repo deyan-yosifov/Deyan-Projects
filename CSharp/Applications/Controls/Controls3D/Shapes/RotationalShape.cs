@@ -17,6 +17,14 @@ namespace Deyo.Controls.Controls3D.Shapes
         {
             base.GeometryModel.Geometry = this.GenerateGeometry(sectionsInXZPlaneCounterClockSide, meridiansCount, isSmooth);
         }
+
+        internal static int AddPointWithTextureCoordinateToGeometry(MeshGeometry3D geometry, Point3D point, double angleInRadians, double minZ, double maxZ)
+        {
+            geometry.Positions.Add(point);
+            geometry.TextureCoordinates.Add(GetTextureCoordinate(angleInRadians, point.Z, minZ, maxZ));
+
+            return geometry.Positions.Count - 1;
+        }
         
         private Geometry3D GenerateGeometry(Point[][] sectionsInXYPlane, int meridiansCount, bool isSmooth)
         {
@@ -58,7 +66,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                     secondPoints[parallel] = RotateSectionPoint(sectionPoints[parallel], angleInRadians);
                 }
 
-                Func<Point3D, double, int> addPointToGeometry = (point, meridianAngleInRadians) => { return AddPointToGeometry(geometry, point, meridianAngleInRadians, minZ, maxZ); };
+                Func<Point3D, double, int> addPointToGeometry = (point, meridianAngleInRadians) => { return AddPointWithTextureCoordinateToGeometry(geometry, point, meridianAngleInRadians, minZ, maxZ); };
                 Action<Point3D, Point3D, Point3D> addPointsToGeomety = (first, second, third) =>
                 {
                     AddTriangle(geometry, addPointToGeometry(first, previousAngleInRadians), addPointToGeometry(second, previousAngleInRadians), addPointToGeometry(third, angleInRadians));
@@ -157,7 +165,7 @@ namespace Deyo.Controls.Controls3D.Shapes
             Point3D sectionPoint = sectionPoints[pointIndex];
             Point3D rotatedPoint = RotateSectionPoint(sectionPoint, meridianAngleInRadians);
 
-            return AddPointToGeometry(geometry, rotatedPoint, meridianAngleInRadians, minZ, maxZ);
+            return AddPointWithTextureCoordinateToGeometry(geometry, rotatedPoint, meridianAngleInRadians, minZ, maxZ);
         }
 
         private static Point3D CalculateNormalVectorInSectionPlane(Point3D[] sectionPoints, int pointIndex)
@@ -202,14 +210,6 @@ namespace Deyo.Controls.Controls3D.Shapes
             {
                 return new Point3D(sectionPoint.X * Math.Cos(angleInRadians), sectionPoint.X * Math.Sin(angleInRadians), sectionPoint.Z);
             }
-        }
-
-        private static int AddPointToGeometry(MeshGeometry3D geometry, Point3D point, double angleInRadians, double minZ, double maxZ)
-        {
-            geometry.Positions.Add(point);
-            geometry.TextureCoordinates.Add(GetTextureCoordinate(angleInRadians, point.Z, minZ, maxZ));
-
-            return geometry.Positions.Count - 1;
         }
 
         private static void CalculateSectionsPoints(Point[][] sectionsInXZPlane, out Point3D[][] sectionsPoints, out double minZ, out double maxZ)

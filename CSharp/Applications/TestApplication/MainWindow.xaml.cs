@@ -129,7 +129,7 @@ namespace TestApplication
 
             
             editor.GraphicProperties.IsSmooth = true;
-            editor.GraphicProperties.ArcResolution = 20;
+            editor.GraphicProperties.ArcResolution = 15;
             editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             editor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(Colors.Green);
 
@@ -138,9 +138,9 @@ namespace TestApplication
             editor.AddShapeVisual(editor.ShapeFactory.CreateCylinder(false));
 
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(0.1);
+            timer.Interval = TimeSpan.FromSeconds(0.5);
             Matrix3D rotation = new Matrix3D();
-            rotation.Rotate(new Quaternion(new Vector3D(0, 0, 1), 5));
+            rotation.Rotate(new Quaternion(new Vector3D(0, 0, 1), 10));
             timer.Tick += (s, e) =>
                 {
                     line.MoveTo(line.Start, rotation.Transform(line.End));
@@ -150,6 +150,10 @@ namespace TestApplication
             using (editor.SavePosition())
             {
                 editor.Position.Translate(new Vector3D(-1, 1, 0));
+                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere());
+
+                editor.GraphicProperties.IsSmooth = false;
+                editor.Position.Translate(new Vector3D(0, -1.5, 0));
                 editor.AddShapeVisual(editor.ShapeFactory.CreateSphere());
             }
 
