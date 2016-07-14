@@ -16,7 +16,9 @@ namespace Deyo.Controls.Controls3D
         private readonly MaterialGroup backMaterials;
         private readonly MaterialsManager materialsManager;
         private readonly GraphicsManager2D graphicsManager2d;
+        private SphereType sphereType;
         private int arcResolution;
+        private int subDevisions;
         private double thickness;
         private bool isSmooth;
 
@@ -30,6 +32,8 @@ namespace Deyo.Controls.Controls3D
             this.graphicsManager2d.PropertiesChanged += GraphicsManager2dPropertiesChanged;
             this.Thickness = 1;
             this.ArcResolution = 10;
+            this.SubDevisions = 2;
+            this.SphereType = Shapes.SphereType.UVSphere;
             this.IsSmooth = true;
         }
 
@@ -84,6 +88,22 @@ namespace Deyo.Controls.Controls3D
             }
         }
 
+        public SphereType SphereType
+        {
+            get
+            {
+                return this.sphereType;
+            }
+            set
+            {
+                if (this.sphereType != value)
+                {
+                    this.sphereType = value;
+                    this.OnPropertyChanged(GraphicPropertyNames.SphereType);
+                }
+            }
+        }
+
         public int ArcResolution
         {
             get
@@ -96,6 +116,22 @@ namespace Deyo.Controls.Controls3D
                 {
                     this.arcResolution = value;
                     this.OnPropertyChanged(GraphicPropertyNames.ArcResolution);
+                }
+            }
+        }
+
+        public int SubDevisions
+        {
+            get
+            {
+                return this.subDevisions;
+            }
+            set
+            {
+                if (this.subDevisions != value)
+                {
+                    this.subDevisions = value;
+                    this.OnPropertyChanged(GraphicPropertyNames.SubDevisions);
                 }
             }
         }

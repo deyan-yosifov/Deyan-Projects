@@ -193,13 +193,6 @@ namespace Deyo.Controls.Controls3D.Shapes
             return normalVectorInSectionPlane;
         }
 
-        private static void AddTriangle(MeshGeometry3D geometry, int first, int second, int third)
-        {
-            geometry.TriangleIndices.Add(first);
-            geometry.TriangleIndices.Add(second);
-            geometry.TriangleIndices.Add(third);
-        }
-
         private static Point3D RotateSectionPoint(Point3D sectionPoint, double angleInRadians)
         {
             if (sectionPoint.X == 0 || angleInRadians == 0 || (FullCircleAngleInRadians - angleInRadians).IsZero())

@@ -4,6 +4,7 @@ namespace Deyo.Controls.Controls3D
 {
     public static class GraphicPropertyNames
     {
+        public const string SphereType = "SphereType";
         public const string SubDevisions = "SubDevisions";
         public const string ArcResolution = "ArcResolution";
         public const string Thickness = "Thickness";

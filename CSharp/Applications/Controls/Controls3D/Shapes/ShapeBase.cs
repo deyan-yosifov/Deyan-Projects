@@ -41,5 +41,12 @@ namespace Deyo.Controls.Controls3D.Shapes
                 return this.materialsManager;
             }
         }
+
+        public static void AddTriangle(MeshGeometry3D geometry, int first, int second, int third)
+        {
+            geometry.TriangleIndices.Add(first);
+            geometry.TriangleIndices.Add(second);
+            geometry.TriangleIndices.Add(third);
+        }
     }
 }

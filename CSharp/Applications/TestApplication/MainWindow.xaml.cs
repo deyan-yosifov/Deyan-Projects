@@ -129,7 +129,7 @@ namespace TestApplication
 
             
             editor.GraphicProperties.IsSmooth = true;
-            editor.GraphicProperties.ArcResolution = 15;
+            editor.GraphicProperties.ArcResolution = 20;
             editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             editor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(Colors.Green);
 
@@ -150,11 +150,12 @@ namespace TestApplication
             using (editor.SavePosition())
             {
                 editor.Position.Translate(new Vector3D(-1, 1, 0));
-                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere());
+                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
 
                 editor.GraphicProperties.IsSmooth = false;
+                editor.GraphicProperties.SphereType = SphereType.IcoSphere;
                 editor.Position.Translate(new Vector3D(0, -1.5, 0));
-                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere());
+                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
             }
 
             editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));

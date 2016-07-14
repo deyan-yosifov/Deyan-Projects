@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace Deyo.Controls.Controls3D.Shapes
 {
-    public class Sphere : RotationalShape
+    public class Sphere : RotationalShape, ISphereShape
     {
         public const double Diameter = 1;
         public const double Radius = Diameter / 2;
@@ -15,6 +15,22 @@ namespace Deyo.Controls.Controls3D.Shapes
         public Sphere(int parallelsCount, int meridiansCount, bool isSmooth)
             : base(Sphere.CalculateSectionPoints(parallelsCount), meridiansCount, isSmooth)
         {
+        }
+
+        public SphereType SphereType
+        {
+            get
+            {
+                return Shapes.SphereType.UVSphere;
+            }
+        }
+
+        public ShapeBase Shape
+        {
+            get
+            {
+                return this;
+            }
         }
 
         private static Point[][] CalculateSectionPoints(int parallelsCount)

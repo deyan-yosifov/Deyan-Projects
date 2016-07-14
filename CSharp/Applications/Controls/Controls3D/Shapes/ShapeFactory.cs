@@ -39,10 +39,30 @@ namespace Deyo.Controls.Controls3D.Shapes
             return line;
         }
 
-        public Sphere CreateSphere()
+        public ISphereShape CreateSphere()
         {
-            Sphere sphere = new Sphere(this.GraphicProperties.ArcResolution, this.GraphicProperties.ArcResolution, this.GraphicProperties.IsSmooth);
-            this.ApplyMatherials(sphere);
+            ISphereShape sphere;
+
+            switch (this.GraphicProperties.SphereType)
+            {
+                case SphereType.UVSphere:
+                    sphere = new Sphere(this.GraphicProperties.ArcResolution, this.GraphicProperties.ArcResolution, this.GraphicProperties.IsSmooth);
+                    break;
+                case SphereType.IcoSphere:
+                    sphere = new IcoSphere(this.GraphicProperties.SubDevisions, this.GraphicProperties.IsSmooth);
+                    break;
+                case SphereType.OctaSphere:
+                    sphere = new OctaSphere(this.GraphicProperties.SubDevisions, this.GraphicProperties.IsSmooth);
+                    break;
+                case SphereType.TetraSphere:
+                    sphere = new TetraSphere(this.GraphicProperties.SubDevisions, this.GraphicProperties.IsSmooth);
+                    break;
+                default:
+                    throw new NotSupportedException(string.Format("Not supported sphere type: {0}", this.GraphicProperties.SphereType));
+            }
+
+
+            this.ApplyMatherials(sphere.Shape);
 
             return sphere;
         }

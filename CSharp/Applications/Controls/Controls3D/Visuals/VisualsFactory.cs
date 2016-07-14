@@ -17,7 +17,7 @@ namespace Deyo.Controls.Controls3D.Visuals
         private readonly Dictionary<string, Action> propertyInvalidations;
         private Line lineGeometry = null;
         private Cube cubeGeometry = null;
-        private Sphere sphereGeometry = null;
+        private ISphereShape sphereGeometry = null;
         
         public VisualsFactory(ShapeFactory shapeFactory, PreservableState<Position3D> positionState)
         {
@@ -29,6 +29,20 @@ namespace Deyo.Controls.Controls3D.Visuals
             this.propertyInvalidations.Add(GraphicPropertyNames.ArcResolution, () =>
                 {
                     this.InvalidateLineGeometry();
+                    if (this.GraphicProperties.SphereType == SphereType.UVSphere)
+                    {
+                        this.InvalidateSphereGeometry();
+                    }
+                });
+            this.propertyInvalidations.Add(GraphicPropertyNames.SubDevisions, () =>
+                {
+                    if (this.GraphicProperties.SphereType != SphereType.UVSphere)
+                    {
+                        this.InvalidateSphereGeometry();
+                    }
+                });
+            this.propertyInvalidations.Add(GraphicPropertyNames.SphereType, () =>
+                {
                     this.InvalidateSphereGeometry();
                 });
             this.propertyInvalidations.Add(GraphicPropertyNames.FrontMaterial, () =>
@@ -87,7 +101,7 @@ namespace Deyo.Controls.Controls3D.Visuals
             }
         }
 
-        internal Sphere SphereGeometry
+        internal ISphereShape SphereGeometry
         {
             get
             {
@@ -125,7 +139,7 @@ namespace Deyo.Controls.Controls3D.Visuals
 
         public PointVisual CreatePointVisual(Point3D position)
         {
-            return this.CreatePointVisual(position, this.SphereGeometry);
+            return this.CreatePointVisual(position, this.SphereGeometry.Shape);
         }
 
         public PointVisual CreatePointVisual(Point3D position, ShapeBase unitPointShape)
