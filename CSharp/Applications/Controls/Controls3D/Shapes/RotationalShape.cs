@@ -11,14 +11,23 @@ namespace Deyo.Controls.Controls3D.Shapes
 {
     public class RotationalShape : ShapeBase
     {
-        private const double FullCircleAngleInRadians = 2 * Math.PI;
+        public const double FullCircleAngleInRadians = 2 * Math.PI;
 
         public RotationalShape(Point[][] sectionsInXZPlaneCounterClockSide, int meridiansCount, bool isSmooth)
         {
             base.GeometryModel.Geometry = this.GenerateGeometry(sectionsInXZPlaneCounterClockSide, meridiansCount, isSmooth);
+            this.GeometryModel.Geometry.Freeze();
         }
 
-        internal static int AddPointWithTextureCoordinateToGeometry(MeshGeometry3D geometry, Point3D point, double angleInRadians, double minZ, double maxZ)
+        internal static Point GetTextureCoordinate(double angleInRadians, double parallelZ, double minZ, double maxZ)
+        {
+            double u = angleInRadians / FullCircleAngleInRadians;
+            double v = (maxZ - parallelZ) / (maxZ - minZ);
+
+            return new Point(u, v);
+        }
+
+        private static int AddPointWithTextureCoordinateToGeometry(MeshGeometry3D geometry, Point3D point, double angleInRadians, double minZ, double maxZ)
         {
             geometry.Positions.Add(point);
             geometry.TextureCoordinates.Add(GetTextureCoordinate(angleInRadians, point.Z, minZ, maxZ));
@@ -227,17 +236,16 @@ namespace Deyo.Controls.Controls3D.Shapes
             }
         }
 
-        private static Point GetTextureCoordinate(double angleInRadians, double parallelZ, double minZ, double maxZ)
-        {
-            double u = angleInRadians / FullCircleAngleInRadians;
-            double v = (maxZ - parallelZ) / (maxZ - minZ);
-
-            return new Point(u, v);
-        }
-
         private static double GetMeridianRotationInRadians(int meridian, int meridiansCount)
         {
             return (meridian / (double)meridiansCount) * FullCircleAngleInRadians;
+        }
+
+        private static void AddTriangle(MeshGeometry3D geometry, int first, int second, int third)
+        {
+            geometry.TriangleIndices.Add(first);
+            geometry.TriangleIndices.Add(second);
+            geometry.TriangleIndices.Add(third);
         }
     }
 }

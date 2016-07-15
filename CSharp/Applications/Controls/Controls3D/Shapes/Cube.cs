@@ -17,6 +17,7 @@ namespace Deyo.Controls.Controls3D.Shapes
         public Cube()
         {
             this.GeometryModel.Geometry = Cube.GenerateGeometry();
+            this.GeometryModel.Geometry.Freeze();
         }
 
         private static Geometry3D GenerateGeometry()
