@@ -19,9 +19,9 @@ namespace Deyo.Controls.Controls3D.Shapes
             this.GeometryModel.Geometry.Freeze();
         }
 
-        internal static Point GetTextureCoordinate(double angleInRadians, double parallelZ, double minZ, double maxZ)
+        internal static Point GetTextureCoordinate(double positiveAngleInRadians, double parallelZ, double minZ, double maxZ)
         {
-            double u = angleInRadians / FullCircleAngleInRadians;
+            double u = positiveAngleInRadians / FullCircleAngleInRadians;
             double v = (maxZ - parallelZ) / (maxZ - minZ);
 
             return new Point(u, v);

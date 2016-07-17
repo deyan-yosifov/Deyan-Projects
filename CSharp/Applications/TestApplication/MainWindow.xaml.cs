@@ -124,13 +124,14 @@ namespace TestApplication
 
             byte directionIntensity = 250;
             byte ambientIntensity = 125;
-            editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
+            VisualOwner light = editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
 
             
             editor.GraphicProperties.IsSmooth = true;
             editor.GraphicProperties.ArcResolution = 20;
             editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
+            //editor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Colors.Orange);
             editor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(Colors.Green);
 
             editor.GraphicProperties.Thickness = 0.2;
@@ -141,19 +142,23 @@ namespace TestApplication
             timer.Interval = TimeSpan.FromSeconds(0.5);
             Matrix3D rotation = new Matrix3D();
             rotation.Rotate(new Quaternion(new Vector3D(0, 0, 1), 10));
+            light.Visual.Transform = new Transform3DGroup();
             timer.Tick += (s, e) =>
                 {
                     line.MoveTo(line.Start, rotation.Transform(line.End));
+                    ((Transform3DGroup)light.Visual.Transform).Children.Add(new MatrixTransform3D(rotation));
                 };
             timer.Start();
 
             using (editor.SavePosition())
             {
+                editor.GraphicProperties.IsSmooth = false;
                 editor.Position.Translate(new Vector3D(-1, 1, 0));
                 editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
 
                 editor.GraphicProperties.IsSmooth = false;
                 editor.GraphicProperties.SphereType = SphereType.IcoSphere;
+                editor.GraphicProperties.SubDevisions = 0;
                 editor.Position.Translate(new Vector3D(0, -1.5, 0));
                 editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
             }

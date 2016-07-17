@@ -13,7 +13,7 @@ namespace Deyo.Controls.Controls3D.Shapes
             double goldenRatio = (Math.Sqrt(5) + 1) / 2;
             Vector scaledRadius = new Vector(goldenRatio, 1);
 
-            IcoRadiusVector = scaledRadius * (0.5 / scaledRadius.Length);
+            IcoRadiusVector = scaledRadius * (GeodesicSphere.Radius / scaledRadius.Length);
         }
 
         public IcoSphere(int subDevisions, bool isSmooth)
@@ -70,6 +70,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                 7, 8, 6,
                 7, 1, 8,
                 1, 9, 8,
+                1, 5, 9,
                 5, 4, 9,
             };
         }
