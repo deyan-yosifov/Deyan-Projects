@@ -126,12 +126,11 @@ namespace TestApplication
             byte ambientIntensity = 125;
             VisualOwner light = editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
-
-            
+                       
             editor.GraphicProperties.IsSmooth = true;
             editor.GraphicProperties.ArcResolution = 20;
             editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
-            //editor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Colors.Orange);
+            //editor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Colors.Orange); 
             editor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(Colors.Green);
 
             editor.GraphicProperties.Thickness = 0.2;
@@ -152,7 +151,7 @@ namespace TestApplication
 
             using (editor.SavePosition())
             {
-                editor.GraphicProperties.IsSmooth = false;
+                editor.GraphicProperties.IsSmooth = true;
                 editor.Position.Translate(new Vector3D(-1, 1, 0));
                 editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
 

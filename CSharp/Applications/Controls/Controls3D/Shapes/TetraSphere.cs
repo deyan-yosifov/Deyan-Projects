@@ -24,12 +24,28 @@ namespace Deyo.Controls.Controls3D.Shapes
 
         private static Point3D[] GetInitialPoints()
         {
-            throw new NotImplementedException();
+            double sqrt2 = Math.Sqrt(2);
+            double sqrt3 = Math.Sqrt(3);
+            double groundHeight = -Radius / 3;
+
+            return new Point3D[]
+            {
+                new Point3D(0, 0, Radius),
+                new Point3D(2 * Radius * sqrt2 / 3, 0, groundHeight),
+                new Point3D(-Radius * sqrt2 / 3, Radius * sqrt2 / sqrt3, groundHeight),
+                new Point3D(-Radius * sqrt2 / 3, -Radius * sqrt2 / sqrt3, groundHeight),
+            };
         }
 
         private static int[] GetInitialTriangles()
         {
-            throw new NotImplementedException();
+            return new int[]
+            {
+                0, 1, 2,
+                0, 2, 3,
+                0, 3, 1,
+                1, 3, 2,
+            };
         }
     }
 }

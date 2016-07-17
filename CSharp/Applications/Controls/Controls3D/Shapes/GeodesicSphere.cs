@@ -227,7 +227,7 @@ namespace Deyo.Controls.Controls3D.Shapes
         {
             int initialTrianglesIndicesCount = triangleIndices.Count;
             Dictionary<int, Point> pointIndexToTextureCoordinate = new Dictionary<int, Point>();
-            Dictionary<int, int> zeroMeridianVertexToDuplicatedVertex = new Dictionary<int, int>();
+            Dictionary<int, PointIndexWithMeridianAngle> zeroMeridianVertexToDuplicatedVertex = new Dictionary<int, PointIndexWithMeridianAngle>();
             Dictionary<PointIndicesCouple, PointIndexWithMeridianAngle[]> coupleToSplitMidpoints = new Dictionary<PointIndicesCouple, PointIndexWithMeridianAngle[]>();
 
             Action<int, double> enqueueTriangleIndexWithTexture = (pointIndex, meridianAngle) =>
@@ -265,7 +265,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                             new PointIndexWithMeridianAngle(currentTriangleIndices[(zeroIndex + 1) % 3], currentMeridianAngles[(zeroIndex + 1) % 3]),
                             new PointIndexWithMeridianAngle(currentTriangleIndices[(zeroIndex + 2) % 3], currentMeridianAngles[(zeroIndex + 2) % 3]),
                         };
-                        int duplicatePointIndex = GeodesicSphere.GetZeroAngleDuplicatePointIndex(triangle[0].Index, points, zeroMeridianVertexToDuplicatedVertex);
+                        PointIndexWithMeridianAngle duplicatePointIndex = GeodesicSphere.GetZeroAngleDuplicatePointIndex(triangle[0].Index, currentTrianglePoints, points, zeroMeridianVertexToDuplicatedVertex);
                         PointIndexWithMeridianAngle[] midPoints = GeodesicSphere.GetMidpointsIndices(triangle[1].Index, triangle[2].Index, points, coupleToSplitMidpoints, pointIndexToTextureCoordinate);
                         GeodesicSphere.SplitAndEnqueueTriangle(points, triangle, midPoints, duplicatePointIndex, enqueueTriangleIndexWithTexture);
                     }
@@ -275,8 +275,8 @@ namespace Deyo.Controls.Controls3D.Shapes
                         {
                             if (currentMeridianAngles[index].IsZero())
                             {
-                                int duplicatePointIndex = GeodesicSphere.GetZeroAngleDuplicatePointIndex(currentTriangleIndices[index], points, zeroMeridianVertexToDuplicatedVertex);
-                                enqueueTriangleIndexWithTexture(duplicatePointIndex, RotationalShape.FullCircleAngleInRadians);
+                                PointIndexWithMeridianAngle duplicatePointIndex = GeodesicSphere.GetZeroAngleDuplicatePointIndex(currentTriangleIndices[index], currentTrianglePoints, points, zeroMeridianVertexToDuplicatedVertex);
+                                enqueueTriangleIndexWithTexture(duplicatePointIndex.Index, duplicatePointIndex.Angle);
                             }
                             else
                             {
@@ -299,36 +299,37 @@ namespace Deyo.Controls.Controls3D.Shapes
             for (int i = 0; i < points.Count; i++)
             {
                 // TODO: Delete this commented code!
-                //Point texture;
-                //if (!pointIndexToTextureCoordinate.TryGetValue(i, out texture))
-                //{
-                //    texture = new Point();
-                //}
+                Point texture;
+                if (!pointIndexToTextureCoordinate.TryGetValue(i, out texture))
+                {
+                    texture = new Point();
+                }
 
-                //textureCoordinates[i] = texture;
-                textureCoordinates[i] = pointIndexToTextureCoordinate[i];
+                textureCoordinates[i] = texture;
+                //textureCoordinates[i] = pointIndexToTextureCoordinate[i];
             }
         }
 
         private static void SplitAndEnqueueTriangle(List<Point3D> points, PointIndexWithMeridianAngle[] triangle, PointIndexWithMeridianAngle[] midPoints,
-            int duplicatePointIndex, Action<int, double> enqueueTriangleIndexWithTexture)
+            PointIndexWithMeridianAngle duplicatePointIndex, Action<int, double> enqueueTriangleIndexWithTexture)
         {
             int[] firstTriangleIndices, secondTriangleIndices;
             double[] firstTriangleMeridianAngles, secondTriangleMeridianAngles;
+            PointIndexWithMeridianAngle zeroAnglePoint = midPoints.Length == 1 ? duplicatePointIndex : triangle[0];
 
-            if (points[triangle[1].Index].Z > 0)
+            if (points[triangle[1].Index].Y > 0)
             {
-                firstTriangleIndices = new int[] { triangle[0].Index, triangle[1].Index, midPoints.First().Index };
-                secondTriangleIndices = new int[] { midPoints.Last().Index, triangle[2].Index, duplicatePointIndex };
-                firstTriangleMeridianAngles = new double[] { 0, triangle[1].Angle, midPoints.First().Angle };
-                secondTriangleMeridianAngles = new double[] { midPoints.Last().Angle, triangle[2].Angle, RotationalShape.FullCircleAngleInRadians };
+                firstTriangleIndices = new int[] { zeroAnglePoint.Index, triangle[1].Index, midPoints.First().Index };
+                secondTriangleIndices = new int[] { midPoints.Last().Index, triangle[2].Index, duplicatePointIndex.Index };
+                firstTriangleMeridianAngles = new double[] { zeroAnglePoint.Angle, triangle[1].Angle, midPoints.First().Angle };
+                secondTriangleMeridianAngles = new double[] { midPoints.Last().Angle, triangle[2].Angle, duplicatePointIndex.Angle };
             }
             else
             {
-                firstTriangleIndices = new int[] { duplicatePointIndex, triangle[1].Index, midPoints.Last().Index };
-                secondTriangleIndices = new int[] { midPoints.First().Index, triangle[2].Index, triangle[0].Index };
-                firstTriangleMeridianAngles = new double[] { RotationalShape.FullCircleAngleInRadians, triangle[1].Angle, midPoints.Last().Angle };
-                secondTriangleMeridianAngles = new double[] { midPoints.First().Angle, triangle[2].Angle, 0 };
+                firstTriangleIndices = new int[] { duplicatePointIndex.Index, triangle[1].Index, midPoints.Last().Index };
+                secondTriangleIndices = new int[] { midPoints.First().Index, triangle[2].Index, zeroAnglePoint.Index };
+                firstTriangleMeridianAngles = new double[] { duplicatePointIndex.Angle, triangle[1].Angle, midPoints.Last().Angle };
+                secondTriangleMeridianAngles = new double[] { midPoints.First().Angle, triangle[2].Angle, zeroAnglePoint.Angle };
             }
 
             GeodesicSphere.AddTriangleWithTextures(firstTriangleIndices, firstTriangleMeridianAngles, enqueueTriangleIndexWithTexture);
@@ -378,15 +379,37 @@ namespace Deyo.Controls.Controls3D.Shapes
             return midPoints;
         }
   
-        private static int GetZeroAngleDuplicatePointIndex(int zeroAngleIndex, List<Point3D> points, Dictionary<int, int> zeroMeridianVertexToDuplicatedVertex)
+        private static PointIndexWithMeridianAngle GetZeroAngleDuplicatePointIndex(int zeroAngleIndex, IEnumerable<Point3D> currentTriangle, List<Point3D> points, Dictionary<int, PointIndexWithMeridianAngle> zeroMeridianVertexToDuplicatedVertex)
         {
-            int duplicatePointIndex;
-            if (!zeroMeridianVertexToDuplicatedVertex.TryGetValue(zeroAngleIndex, out duplicatePointIndex))
+            PointIndexWithMeridianAngle duplicatePointIndex;
+            Point3D zeroAnglePoint = points[zeroAngleIndex];
+
+            if (zeroAnglePoint.X.IsZero() && zeroAnglePoint.Y.IsZero())
             {
-                duplicatePointIndex = points.Count;
-                points.Add(points[zeroAngleIndex]);
-                zeroMeridianVertexToDuplicatedVertex.Add(zeroAngleIndex, duplicatePointIndex);
+                double x = 0;
+                double y = 0;
+
+                foreach (Point3D point in currentTriangle)
+                {
+                    x += point.X;
+                    y += point.Y;
+                }
+
+                double angle = GeodesicSphere.GetMeridianAngle(new Point3D(x / 3, y / 3, zeroAnglePoint.Z));
+                duplicatePointIndex = new PointIndexWithMeridianAngle(points.Count, angle);
+                points.Add(zeroAnglePoint);
             }
+            else
+            {
+                if (!zeroMeridianVertexToDuplicatedVertex.TryGetValue(zeroAngleIndex, out duplicatePointIndex))
+                {
+                    duplicatePointIndex = new PointIndexWithMeridianAngle(points.Count, RotationalShape.FullCircleAngleInRadians);
+                    points.Add(zeroAnglePoint);
+                    zeroMeridianVertexToDuplicatedVertex.Add(zeroAngleIndex, duplicatePointIndex);
+                }
+            }
+
+            
 
             return duplicatePointIndex;
         }
