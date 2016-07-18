@@ -129,54 +129,59 @@ namespace TestApplication
                        
             editor.GraphicProperties.IsSmooth = true;
             editor.GraphicProperties.ArcResolution = 20;
-            editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
             //editor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(Colors.Orange); 
             editor.GraphicProperties.MaterialsManager.AddBackDiffuseMaterial(Colors.Green);
 
-            editor.GraphicProperties.Thickness = 0.2;
-            LineVisual line = editor.AddLineVisual(new Point3D(0, 0, 0), new Point3D(-1, -1, -1));
-            editor.AddShapeVisual(editor.ShapeFactory.CreateCylinder(false));
-
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(0.5);
-            Matrix3D rotation = new Matrix3D();
-            rotation.Rotate(new Quaternion(new Vector3D(0, 0, 1), 10));
-            light.Visual.Transform = new Transform3DGroup();
-            timer.Tick += (s, e) =>
-                {
-                    line.MoveTo(line.Start, rotation.Transform(line.End));
-                    ((Transform3DGroup)light.Visual.Transform).Children.Add(new MatrixTransform3D(rotation));
-                };
-            timer.Start();
-
-            using (editor.SavePosition())
+            using (editor.SaveGraphicProperties())
             {
-                editor.GraphicProperties.IsSmooth = true;
-                editor.Position.Translate(new Vector3D(-1, 1, 0));
-                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
+                editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/earth_map.jpg")));
 
-                editor.GraphicProperties.IsSmooth = false;
-                editor.GraphicProperties.SphereType = SphereType.IcoSphere;
-                editor.GraphicProperties.SubDevisions = 0;
-                editor.Position.Translate(new Vector3D(0, -1.5, 0));
-                editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
+                editor.GraphicProperties.Thickness = 0.2;
+                LineVisual line = editor.AddLineVisual(new Point3D(0, 0, 0), new Point3D(-1, -1, -1));
+                editor.AddShapeVisual(editor.ShapeFactory.CreateCylinder(false));
+
+                DispatcherTimer timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromSeconds(0.5);
+                Matrix3D rotation = new Matrix3D();
+                rotation.Rotate(new Quaternion(new Vector3D(0, 0, 1), 10));
+                light.Visual.Transform = new Transform3DGroup();
+                timer.Tick += (s, e) =>
+                    {
+                        line.MoveTo(line.Start, rotation.Transform(line.End));
+                        ((Transform3DGroup)light.Visual.Transform).Children.Add(new MatrixTransform3D(rotation));
+                    };
+                timer.Start();
+
+                using (editor.SavePosition())
+                {
+                    editor.Position.Translate(new Vector3D(-1, 1, 0));
+                    editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
+
+                    editor.GraphicProperties.SphereType = SphereType.IcoSphere;
+                    editor.GraphicProperties.SubDevisions = 3;
+                    editor.Position.Translate(new Vector3D(0, -1.5, 0));
+                    editor.AddShapeVisual(editor.ShapeFactory.CreateSphere().Shape);
+                }
             }
 
-            editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
-            editor.Position.Scale(new Vector3D(0.5, 0.5, 0.5));
-
-            editor.Position.Translate(new Vector3D(1, 1, 0.5));
-            Cube cube = editor.ShapeFactory.CreateCube();
-            editor.AddShapeVisual(cube);
-            editor.Position.Translate(new Vector3D(1, 1, 0.5));
-
-            using (editor.SavePosition())
+            using (editor.SaveGraphicProperties())
             {
-                editor.Position.RotateAt(new Quaternion(new Vector3D(0.5, 0.5, 0.5), 90), new Point3D(0.25, 0.25, 0.25));
+                editor.GraphicProperties.MaterialsManager.AddFrontTexture(JpegDecoder.GetBitmapSource(ResourceHelper.GetResourceStream("Resources/TeamBuildingPamporovo.jpg")));
+                editor.Position.Scale(new Vector3D(0.5, 0.5, 0.5));
+
+                editor.Position.Translate(new Vector3D(1, 1, 0.5));
+                Cube cube = editor.ShapeFactory.CreateCube();
+                editor.AddShapeVisual(cube);
+                editor.Position.Translate(new Vector3D(1, 1, 0.5));
+
+                using (editor.SavePosition())
+                {
+                    editor.Position.RotateAt(new Quaternion(new Vector3D(0.5, 0.5, 0.5), 90), new Point3D(0.25, 0.25, 0.25));
+                    editor.AddShapeVisual(cube);
+                }
+
                 editor.AddShapeVisual(cube);
             }
-
-            editor.AddShapeVisual(cube);
 
             editor.Look(new Point3D(3, 3, 3), new Point3D());
 

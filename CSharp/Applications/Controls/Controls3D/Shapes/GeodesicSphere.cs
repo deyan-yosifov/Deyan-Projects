@@ -95,24 +95,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                 GeodesicSphere.GenerateSmoothGeometry(points, triangleIndices, textureCoordinates) :
                 GeodesicSphere.GenerateSharpGeometry(points, triangleIndices, textureCoordinates);
 
-            // TODO: Delete this commented code and the corresponding method!
-            //GeodesicSphere.AddFastSharpTriangles((MeshGeometry3D)this.GeometryModel.Geometry, initialPoints, initialTriangleIndices);
-
             this.GeometryModel.Geometry.Freeze();
-        }
-
-        private static MeshGeometry3D AddFastSharpTriangles(MeshGeometry3D mesh, Point3D[] points, IEnumerable<int> triangleIndices)
-        {
-            int initialPointsCount = mesh.Positions.Count;
-            int i = 0;
-
-            foreach (int index in triangleIndices)
-            {
-                mesh.Positions.Add(points[index]);
-                mesh.TriangleIndices.Add(i++ + initialPointsCount);
-            }
-
-            return mesh;
         }
 
         public abstract SphereType SphereType { get; }
@@ -248,44 +231,33 @@ namespace Deyo.Controls.Controls3D.Shapes
                 double[] currentMeridianAngles = { GetMeridianAngle(currentTrianglePoints[0]), GetMeridianAngle(currentTrianglePoints[1]), GetMeridianAngle(currentTrianglePoints[2]) };
 
                 bool hasModifiedCurrentTriangle = false;
-                bool hasBorderMeridian = GeodesicSphere.HasBorderMeridian(currentMeridianAngles);
+                int zeroIndex = GeodesicSphere.IndexOfZeroMeridianAngle(currentMeridianAngles);
 
-                if (hasBorderMeridian)
+                if (zeroIndex > -1)
                 {
-                    bool hasPointInNegativeSemiplane = GeodesicSphere.HasPointInNegativeSemiplane(currentTrianglePoints);
-                    bool hasPointInPositiveSemiplane = GeodesicSphere.HasPointInPositiveSemiplane(currentTrianglePoints);
-                    bool shouldSplitTriangleTextures = hasPointInNegativeSemiplane && hasPointInPositiveSemiplane;
+                    bool hasPointInNegativeSemiplane, hasPointInPositiveSemiplane, hasPolePoint, allPointsHaveNonNegativeXCoordinate;
+                    GeodesicSphere.GetCurrentTriangleVerticesInformation(currentTrianglePoints, out hasPolePoint, out hasPointInNegativeSemiplane, out hasPointInPositiveSemiplane, out allPointsHaveNonNegativeXCoordinate);
+                    bool shouldSplitTriangleTextures = (hasPolePoint && hasPointInPositiveSemiplane && hasPointInNegativeSemiplane && allPointsHaveNonNegativeXCoordinate)
+                        || (!hasPolePoint && hasPointInNegativeSemiplane && hasPointInPositiveSemiplane);
 
                     if (shouldSplitTriangleTextures)
-                    {
-                        int zeroIndex = GeodesicSphere.IndexOfZeroMeridianAngle(currentMeridianAngles);
+                    { 
                         PointIndexWithMeridianAngle[] triangle = new PointIndexWithMeridianAngle[]
                         {
                             new PointIndexWithMeridianAngle(currentTriangleIndices[zeroIndex], currentMeridianAngles[zeroIndex]),
                             new PointIndexWithMeridianAngle(currentTriangleIndices[(zeroIndex + 1) % 3], currentMeridianAngles[(zeroIndex + 1) % 3]),
                             new PointIndexWithMeridianAngle(currentTriangleIndices[(zeroIndex + 2) % 3], currentMeridianAngles[(zeroIndex + 2) % 3]),
                         };
-                        PointIndexWithMeridianAngle duplicatePointIndex = GeodesicSphere.GetZeroAngleDuplicatePointIndex(triangle[0].Index, currentTrianglePoints, points, zeroMeridianVertexToDuplicatedVertex);
-                        PointIndexWithMeridianAngle[] midPoints = GeodesicSphere.GetMidpointsIndices(triangle[1].Index, triangle[2].Index, points, coupleToSplitMidpoints, pointIndexToTextureCoordinate);
-                        GeodesicSphere.SplitAndEnqueueTriangle(points, triangle, midPoints, duplicatePointIndex, enqueueTriangleIndexWithTexture);
+                        GeodesicSphere.SplitTriangleWithZeroPointTextureChanges
+                            (triangle, points, zeroMeridianVertexToDuplicatedVertex, coupleToSplitMidpoints, pointIndexToTextureCoordinate, enqueueTriangleIndexWithTexture);
                     }
-                    else if (hasPointInNegativeSemiplane)
+                    else if (hasPointInNegativeSemiplane || hasPolePoint)
                     {
-                        for (int index = 0; index < 3; index++)
-                        {
-                            if (currentMeridianAngles[index].IsZero())
-                            {
-                                PointIndexWithMeridianAngle duplicatePointIndex = GeodesicSphere.GetZeroAngleDuplicatePointIndex(currentTriangleIndices[index], currentTrianglePoints, points, zeroMeridianVertexToDuplicatedVertex);
-                                enqueueTriangleIndexWithTexture(duplicatePointIndex.Index, duplicatePointIndex.Angle);
-                            }
-                            else
-                            {
-                                enqueueTriangleIndexWithTexture(currentTriangleIndices[index], currentMeridianAngles[index]);
-                            }
-                        }
+                        GeodesicSphere.AddTriangleWithZeroPointTextureChanges
+                            (currentTrianglePoints, currentMeridianAngles, hasPointInNegativeSemiplane, currentTriangleIndices, points, zeroMeridianVertexToDuplicatedVertex, enqueueTriangleIndexWithTexture);
                     }
 
-                    hasModifiedCurrentTriangle = shouldSplitTriangleTextures || hasPointInNegativeSemiplane;
+                    hasModifiedCurrentTriangle = shouldSplitTriangleTextures || hasPointInNegativeSemiplane || hasPolePoint;
                 }
 
                 if (!hasModifiedCurrentTriangle)
@@ -298,16 +270,88 @@ namespace Deyo.Controls.Controls3D.Shapes
 
             for (int i = 0; i < points.Count; i++)
             {
-                // TODO: Delete this commented code!
-                Point texture;
-                if (!pointIndexToTextureCoordinate.TryGetValue(i, out texture))
-                {
-                    texture = new Point();
-                }
-
-                textureCoordinates[i] = texture;
-                //textureCoordinates[i] = pointIndexToTextureCoordinate[i];
+                textureCoordinates[i] = pointIndexToTextureCoordinate[i];
             }
+        }
+  
+        private static void AddTriangleWithZeroPointTextureChanges(Point3D[] currentTrianglePoints, double[] currentMeridianAngles, bool hasPointInNegativeSemiplane, int[] currentTriangleIndices,
+            List<Point3D> points, Dictionary<int, PointIndexWithMeridianAngle> zeroMeridianVertexToDuplicatedVertex, Action<int, double> enqueueTriangleIndexWithTexture)
+        {
+            for (int index = 0; index < 3; index++)
+            {
+                bool isPolePoint = currentTrianglePoints[index].X.IsZero() && currentTrianglePoints[index].Y.IsZero();
+                bool isZeroMeridianPoint = currentMeridianAngles[index].IsZero();
+
+                if (isZeroMeridianPoint)
+                {
+                    PointIndexWithMeridianAngle pointWithAngle;
+
+                    if (isPolePoint)
+                    {
+                        double nextAngle = currentMeridianAngles[(index + 1) % 3];
+                        double lastAngle = currentMeridianAngles[(index + 2) % 3];
+
+                        double angle;
+                        if ((nextAngle.IsZero() || lastAngle.IsZero()))
+                        {
+                            angle = hasPointInNegativeSemiplane ? RotationalShape.FullCircleAngleInRadians : 0;
+                        }
+                        else
+                        {
+                            angle = Math.Min(nextAngle, lastAngle);
+                        }
+
+                        if (angle.IsZero())
+                        {
+                            pointWithAngle = new PointIndexWithMeridianAngle(currentTriangleIndices[index], angle);
+                        }
+                        else
+                        {
+                            points.Add(currentTrianglePoints[index]);
+                            pointWithAngle = new PointIndexWithMeridianAngle(points.Count - 1, angle);
+                        }
+                    }
+                    else if (hasPointInNegativeSemiplane)
+                    {
+                        pointWithAngle = GeodesicSphere.GetZeroAngleOppositeAngleDuplicatePoint(currentTriangleIndices[index], points, zeroMeridianVertexToDuplicatedVertex);
+                    }
+                    else
+                    {
+                        pointWithAngle = new PointIndexWithMeridianAngle(currentTriangleIndices[index], 0);
+                    }
+
+                    enqueueTriangleIndexWithTexture(pointWithAngle.Index, pointWithAngle.Angle);
+                }
+                else
+                {
+                    enqueueTriangleIndexWithTexture(currentTriangleIndices[index], currentMeridianAngles[index]);
+                }
+            }
+        }
+
+        private static void GetCurrentTriangleVerticesInformation(IEnumerable<Point3D> currentTrianglePoints,
+            out bool hasPolePoint, out bool hasNegativeSemiplanePoint, out bool hasPositiveSemiplanePoint, out bool allPointsHaveNonNegativeXCoordinate)
+        {
+            hasNegativeSemiplanePoint = false;
+            hasPositiveSemiplanePoint = false;
+            hasPolePoint = false;
+            allPointsHaveNonNegativeXCoordinate = true;
+
+            foreach (Point3D point in currentTrianglePoints)
+            {
+                hasNegativeSemiplanePoint |= point.Y.IsLessThan(0);
+                hasPositiveSemiplanePoint |= point.Y.IsGreaterThan(0);
+                hasPolePoint |= (point.X.IsZero() && point.Y.IsZero());
+                allPointsHaveNonNegativeXCoordinate &= point.X.IsGreaterThanOrEqualTo(0);
+            }
+        }
+  
+        private static void SplitTriangleWithZeroPointTextureChanges(PointIndexWithMeridianAngle[] triangle, List<Point3D> points, Dictionary<int, PointIndexWithMeridianAngle> zeroMeridianVertexToDuplicatedVertex,
+            Dictionary<PointIndicesCouple, PointIndexWithMeridianAngle[]> coupleToSplitMidpoints, Dictionary<int, Point> pointIndexToTextureCoordinate, Action<int, double> enqueueTriangleIndexWithTexture)
+        {
+            PointIndexWithMeridianAngle duplicatePointIndex = GeodesicSphere.GetZeroAngleOppositeAngleDuplicatePoint(triangle[0].Index, points, zeroMeridianVertexToDuplicatedVertex);
+            PointIndexWithMeridianAngle[] midPoints = GeodesicSphere.GetMidpointsIndices(triangle[1].Index, triangle[2].Index, points, coupleToSplitMidpoints, pointIndexToTextureCoordinate);
+            GeodesicSphere.SplitAndEnqueueTriangle(points, triangle, midPoints, duplicatePointIndex, enqueueTriangleIndexWithTexture);
         }
 
         private static void SplitAndEnqueueTriangle(List<Point3D> points, PointIndexWithMeridianAngle[] triangle, PointIndexWithMeridianAngle[] midPoints,
@@ -344,7 +388,8 @@ namespace Deyo.Controls.Controls3D.Shapes
             }
         }
 
-        private static PointIndexWithMeridianAngle[] GetMidpointsIndices(int firstNonZeroIndex, int secondNonZeroIndex, List<Point3D> points, Dictionary<PointIndicesCouple, PointIndexWithMeridianAngle[]> coupleToSplitMidpoints, Dictionary<int, Point> pointIndexToTextureCoordinate)
+        private static PointIndexWithMeridianAngle[] GetMidpointsIndices(int firstNonZeroIndex, int secondNonZeroIndex, List<Point3D> points,
+            Dictionary<PointIndicesCouple, PointIndexWithMeridianAngle[]> coupleToSplitMidpoints, Dictionary<int, Point> pointIndexToTextureCoordinate)
         {
             PointIndicesCouple couple = new PointIndicesCouple(firstNonZeroIndex, secondNonZeroIndex);
 
@@ -378,38 +423,16 @@ namespace Deyo.Controls.Controls3D.Shapes
 
             return midPoints;
         }
-  
-        private static PointIndexWithMeridianAngle GetZeroAngleDuplicatePointIndex(int zeroAngleIndex, IEnumerable<Point3D> currentTriangle, List<Point3D> points, Dictionary<int, PointIndexWithMeridianAngle> zeroMeridianVertexToDuplicatedVertex)
+
+        private static PointIndexWithMeridianAngle GetZeroAngleOppositeAngleDuplicatePoint(int zeroAngleIndex, List<Point3D> points, Dictionary<int, PointIndexWithMeridianAngle> zeroMeridianVertexToDuplicatedVertex)
         {
             PointIndexWithMeridianAngle duplicatePointIndex;
-            Point3D zeroAnglePoint = points[zeroAngleIndex];
-
-            if (zeroAnglePoint.X.IsZero() && zeroAnglePoint.Y.IsZero())
+            if (!zeroMeridianVertexToDuplicatedVertex.TryGetValue(zeroAngleIndex, out duplicatePointIndex))
             {
-                double x = 0;
-                double y = 0;
-
-                foreach (Point3D point in currentTriangle)
-                {
-                    x += point.X;
-                    y += point.Y;
-                }
-
-                double angle = GeodesicSphere.GetMeridianAngle(new Point3D(x / 3, y / 3, zeroAnglePoint.Z));
-                duplicatePointIndex = new PointIndexWithMeridianAngle(points.Count, angle);
-                points.Add(zeroAnglePoint);
+                duplicatePointIndex = new PointIndexWithMeridianAngle(points.Count, RotationalShape.FullCircleAngleInRadians);
+                points.Add(points[zeroAngleIndex]);
+                zeroMeridianVertexToDuplicatedVertex.Add(zeroAngleIndex, duplicatePointIndex);
             }
-            else
-            {
-                if (!zeroMeridianVertexToDuplicatedVertex.TryGetValue(zeroAngleIndex, out duplicatePointIndex))
-                {
-                    duplicatePointIndex = new PointIndexWithMeridianAngle(points.Count, RotationalShape.FullCircleAngleInRadians);
-                    points.Add(zeroAnglePoint);
-                    zeroMeridianVertexToDuplicatedVertex.Add(zeroAngleIndex, duplicatePointIndex);
-                }
-            }
-
-            
 
             return duplicatePointIndex;
         }
@@ -424,46 +447,7 @@ namespace Deyo.Controls.Controls3D.Shapes
                 }
             }
 
-            throw new InvalidOperationException("There is no zero meridian angle!");
-        }
-
-        private static bool HasPointInNegativeSemiplane(IEnumerable<Point3D> points)
-        {
-            foreach (Point3D point in points)
-            {
-                if (point.Y.IsLessThan(0))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool HasPointInPositiveSemiplane(IEnumerable<Point3D> points)
-        {
-            foreach (Point3D point in points)
-            {
-                if (point.Y.IsGreaterThan(0))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool HasBorderMeridian(IEnumerable<double> currentMeridianAngles)
-        {
-            foreach (double angle in currentMeridianAngles)
-            {
-                if (angle.IsZero())
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return -1;
         }
 
         private static double GetMeridianAngle(Point3D point)
