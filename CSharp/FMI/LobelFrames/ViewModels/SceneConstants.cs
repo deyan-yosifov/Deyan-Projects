@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Controls.Controls3D.Shapes;
+using System;
 using System.Windows.Media;
 
 namespace LobelFrames.ViewModels
@@ -10,7 +11,8 @@ namespace LobelFrames.ViewModels
         public static readonly Color SurfaceGeometryColor = Colors.BlanchedAlmond;
         public static readonly Color SurfaceLinesColor = Colors.Orange;
         public static readonly Color LineOverlaysColor = Colors.Red;
-        public static readonly int ControlPointsArcResolution = 6;
+        public static readonly SphereType ControlPointsSphereType = SphereType.IcoSphere;
+        public static readonly int ControlPointsSubDevisions = 1;
         public static readonly int ControlLinesArcResolution = 3;
         public static readonly int SurfaceLinesArcResolution = 3;
         public static readonly double ControlPointsDiameter = 0.7;

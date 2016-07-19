@@ -211,7 +211,8 @@ namespace CAGD
         {
             using (this.SceneEditor.SaveGraphicProperties())
             {
-                this.SceneEditor.GraphicProperties.ArcResolution = SceneConstants.ControlPointsArcResolution;
+                this.SceneEditor.GraphicProperties.SphereType = SceneConstants.ControlPointsSphereType;
+                this.SceneEditor.GraphicProperties.SubDevisions = SceneConstants.ControlPointsSubDevisions;
                 this.SceneEditor.GraphicProperties.MaterialsManager.AddFrontDiffuseMaterial(SceneConstants.ControlPointsColor);
                 this.SceneEditor.GraphicProperties.Thickness = SceneConstants.ControlPointsDiameter;
 
