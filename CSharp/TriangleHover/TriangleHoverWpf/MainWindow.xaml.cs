@@ -74,24 +74,20 @@ namespace TriangleHoverWpf
 
         private static Tuple<double, double, double> CalculateBarycentricCoordinates(Point point, Tuple<Point, Point, Point> triangle)
         {
-            Vector i = CalculateVector(triangle.Item1, triangle.Item2);
-            Vector j = CalculateVector(triangle.Item1, triangle.Item3);
-            Matrix matrix = new Matrix(i.X, j.X, i.Y, j.Y, 0, 0);
+            Vector i = triangle.Item2 - triangle.Item1;
+            Vector j = triangle.Item3 - triangle.Item1;
+            Vector pointRadiusVector = point - triangle.Item1;
+            Matrix matrix = new Matrix(i.X, i.Y, j.X, j.Y, 0, 0);
 
             if (!matrix.HasInverse)
             {
                 throw new ArgumentException("Triangle doesn't exist!");
             }
 
-            matrix.Invert();
-            Vector localCoordinates = matrix.Transform(CalculateVector(triangle.Item1, point));
+            matrix.Invert();            
+            Vector localCoordinates = matrix.Transform(pointRadiusVector);
 
             return new Tuple<double, double, double>(1 - localCoordinates.X - localCoordinates.Y, localCoordinates.X, localCoordinates.Y);
-        }
-
-        private static Vector CalculateVector(Point start, Point end)
-        {
-            return new Vector(end.X - start.X, end.Y - start.Y);
         }
     }
 }
