@@ -120,7 +120,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         public virtual void EndPointMoveIteraction()
         {
             this.Restrictor.EndIteraction();
-            this.ElementsManager.DeleteMovingLineOverlay(this.MovingLine);
+            this.ClearMovingLine();
         }
 
         public virtual void EndCommand()
@@ -131,25 +131,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.ClearElements();
         }
 
-        private void ClearElements()
-        {
-            if (this.MovingLine != null)
-            {
-                this.elementsManager.DeleteMovingLineOverlay(this.MovingLine);
-                this.MovingLine = null;
-            }
-
-            foreach (LineOverlay line in this.lines)
-            {
-                this.elementsManager.DeleteLineOverlay(line);
-            }
-
-            this.lines.Clear();
-            this.points.Clear();
-            this.edges.Clear();
-        }
-
-
         public virtual void HandleParameterInputed(ParameterInputedEventArgs e)
         {
             // Do nothing...
@@ -159,6 +140,34 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         public virtual void HandleCancelInputed()
         {
             // Do nothing
+        }
+
+        protected void ClearLinesOverlays()
+        {
+            foreach (LineOverlay line in this.lines)
+            {
+                this.elementsManager.DeleteLineOverlay(line);
+            }
+
+            this.lines.Clear();
+        }
+
+        protected void ClearMovingLine()
+        {
+            if (this.MovingLine != null)
+            {
+                this.elementsManager.DeleteMovingLineOverlay(this.MovingLine);
+                this.MovingLine = null;
+            }
+        }
+
+        private void ClearElements()
+        {
+            this.ClearMovingLine();
+            this.ClearLinesOverlays();
+
+            this.points.Clear();
+            this.edges.Clear();
         }
     }
 }

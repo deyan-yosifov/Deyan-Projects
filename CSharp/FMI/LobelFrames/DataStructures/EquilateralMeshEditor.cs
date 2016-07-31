@@ -228,6 +228,91 @@ namespace LobelFrames.DataStructures
             return new MeshPatchDeletionInfo(verticesToDelete, boundaryEdgesToDelete, boundaryTrianglesToDelete);
         }
 
+        public Vertex FindEndOfEdgesRayInPlane(Vertex rayStartVertex, Vertex rayDirectionVertex)
+        {
+            Vector3D rayDirection = rayDirectionVertex.Point - rayStartVertex.Point;
+
+            Vertex currentEndVertex = rayDirectionVertex;
+            bool shouldSearchForNextVertex = true;
+
+            while (shouldSearchForNextVertex)
+            {
+                shouldSearchForNextVertex = false;
+
+                foreach (Vertex neighbour in this.Mesh.GetVertexNeighbours(currentEndVertex))
+                {
+                    Vector3D direction = neighbour.Point - currentEndVertex.Point;
+
+                    if (direction.IsColinearWithSameDirection(rayDirection))
+                    {
+                        currentEndVertex = neighbour;
+                        shouldSearchForNextVertex = true;
+                        break;
+                    }
+                }
+            }
+
+            return currentEndVertex;
+        }
+
+        private bool TryGetExtendedEdgesConnection(Vertex start, Vertex end, out IEnumerable<Edge> extendedEdgesOnConnectingLine)
+        {
+            VertexConnectionInfo connectionInfo;
+            if (this.TryConnectVerticesWithColinearEdges(start, end, out connectionInfo))
+            {
+                extendedEdgesOnConnectingLine = this.GetExtendedEdgesConnection(start, end, connectionInfo);
+                return true;
+            }
+
+            extendedEdgesOnConnectingLine = null;
+            return false;
+        }
+
+        private IEnumerable<Edge> GetExtendedEdgesConnection(Vertex start, Vertex end, VertexConnectionInfo connectionInfo)
+        {
+            foreach (Edge edge in this.GetExtendingEdgesInDirection(end, start).Reverse())
+            {
+                yield return edge;
+            }
+
+            foreach (Edge edge in connectionInfo.ConnectingEdges)
+            {
+                yield return edge;
+            }
+
+            foreach (Edge edge in this.GetExtendingEdgesInDirection(start, end))
+            {
+                yield return edge;
+            }
+        }
+
+        private IEnumerable<Edge> GetExtendingEdgesInDirection(Vertex start, Vertex end)
+        {
+            Vector3D rayDirection = end.Point - start.Point;
+
+            Vertex currentEndVertex = end;
+            bool shouldSearchForNextVertex = true;
+
+            while (shouldSearchForNextVertex)
+            {
+                shouldSearchForNextVertex = false;
+
+                foreach (Edge edge in this.Mesh.GetEdges(currentEndVertex))
+                {
+                    Vertex nextEndVertex = currentEndVertex == edge.Start ? edge.End : edge.Start;
+                    Vector3D direction = nextEndVertex.Point - currentEndVertex.Point;
+
+                    if (direction.IsColinearWithSameDirection(rayDirection))
+                    {
+                        shouldSearchForNextVertex = true;
+                        currentEndVertex = nextEndVertex;
+                        yield return edge;
+                        break;
+                    }
+                }
+            }
+        }
+
         private HashSet<Triangle> FindBoundaryTrianglesToDelete(Vertex[][] polylineSideVertices, HashSet<Vertex> verticesToDelete, HashSet<Vertex> visitedVertices)
         {
             HashSet<Triangle> boundaryTrianglesToDelete = new HashSet<Triangle>();
@@ -403,33 +488,6 @@ namespace LobelFrames.DataStructures
             }
 
             return sideVertices;
-        }
-
-        private Vertex FindEndOfEdgesRayInPlane(Vertex rayStartVertex, Vertex rayDirectionVertex)
-        {
-            Vector3D rayDirection = rayDirectionVertex.Point - rayStartVertex.Point;
-
-            Vertex currentEndVertex = rayDirectionVertex;
-            bool shouldSearchForNextVertex = true;
-
-            while (shouldSearchForNextVertex)
-            {
-                shouldSearchForNextVertex = false;
-
-                foreach (Vertex neighbour in this.Mesh.GetVertexNeighbours(currentEndVertex))
-                {
-                    Vector3D direction = neighbour.Point - currentEndVertex.Point;
-
-                    if (direction.IsColinearWithSameDirection(rayDirection))
-                    {
-                        currentEndVertex = neighbour;
-                        shouldSearchForNextVertex = true;
-                        break;
-                    }
-                }
-            }
-
-            return currentEndVertex;
         }
 
         private void AddTrianglesToLobelMesh(Edge[] firstEdges, Vector3D yAxis, int numberOfRows)
