@@ -1,4 +1,5 @@
-﻿using Deyo.Controls.Controls3D.Visuals;
+﻿using Deyo.Controls.Controls3D;
+using Deyo.Controls.Controls3D.Visuals;
 using System;
 using System.Windows.Media.Media3D;
 
@@ -8,13 +9,13 @@ namespace LobelFrames.IteractionHandling
     {
         private readonly PointVisual clickedVisual;
 
-        public PointClickEventArgs(Point3D clickedPoint)
-            : base(clickedPoint)
+        internal PointClickEventArgs(Point3D clickedPoint, SceneEditor editor)
+            : base(clickedPoint, editor)
         {
         }
 
-        public PointClickEventArgs(PointVisual clickedVisual)
-            : base(clickedVisual.Position)
+        internal PointClickEventArgs(PointVisual clickedVisual, SceneEditor editor)
+            : base(clickedVisual.Position, editor)
         {
             this.clickedVisual = clickedVisual;
         }

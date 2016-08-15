@@ -33,7 +33,7 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             get
             {
-                return this.meshEditor;
+                return this.meshEditor.ElementsProvider;
             }
         }
 

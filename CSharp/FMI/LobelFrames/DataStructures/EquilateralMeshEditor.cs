@@ -8,7 +8,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures
 {
-    public class EquilateralMeshEditor : IMeshElementsProvider
+    public class EquilateralMeshEditor
     {
         private static readonly double Cos;
         private static readonly double Sin;
@@ -71,59 +71,11 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        public IEnumerable<Triangle> Triangles
+        public IMeshElementsProvider ElementsProvider
         {
             get
             {
-                return this.Mesh.GetTriangles();
-            }
-        }
-
-        public IEnumerable<Edge> Edges
-        {
-            get
-            {
-                return this.Mesh.GetEdges();
-            }
-        }
-
-        public IEnumerable<Vertex> Vertices
-        {
-            get
-            {
-                return this.Mesh.GetVertices();
-            }
-        }
-
-        public IEnumerable<Edge> Contour
-        {
-            get
-            {
-                return this.Mesh.GetContourEdges();
-            }
-        }
-
-        public int VerticesCount
-        {
-            get
-            {
-                return this.mesh.VerticesCount;
-            }
-        }
-
-        public int EdgesCount
-        {
-            get
-            {
-                return this.mesh.EdgesCount;
-            }
-        }
-
-        public int TrianglesCount
-        {
-            get
-            {
-                return this.mesh.TrianglesCount;
+                return this.mesh;
             }
         }
 
@@ -133,6 +85,17 @@ namespace LobelFrames.DataStructures
             {
                 return this.mesh;
             }
+        }
+
+        // TODO:
+        //public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(...)
+        //{
+
+        //}
+
+        public void FoldMeshPatch(MeshPatchFoldingInfo foldingInfo)
+        {
+            this.Mesh.FoldMeshPatch(foldingInfo);
         }
 
         public void DeleteMeshPatch(MeshPatchDeletionInfo deletionInfo)
@@ -205,27 +168,30 @@ namespace LobelFrames.DataStructures
             return mayBeConnected;
         }
 
-        public MeshPatchDeletionInfo GetMeshPatchToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal)
+        public MeshPatchVertexSelectionInfo GetMeshPatchVertexSelection(Vertex[] convexPlanarPolylineBoundary, Vector3D semiSpaceNormal)
         {
-            Guard.ThrowExceptionIfLessThan(convexPlanarPolylineCutBoundary.Length, 2, "convexPlanarPolygoneCutBoundary.Length");
+            Guard.ThrowExceptionIfLessThan(convexPlanarPolylineBoundary.Length, 2, "convexPlanarPolygoneBoundary.Length");
+            Guard.ThrowExceptionIfTrue(semiSpaceNormal.LengthSquared.IsZero(), "Semi-space normal cannot have zero length!");
+            
+            convexPlanarPolylineBoundary[0] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineBoundary[1], convexPlanarPolylineBoundary[0]);
+            convexPlanarPolylineBoundary[convexPlanarPolylineBoundary.Length - 1] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineBoundary.PeekFromEnd(1), convexPlanarPolylineBoundary.PeekLast());
 
-            if (cutSemiplaneNormal.LengthSquared.IsZero())
-            {
-                return new MeshPatchDeletionInfo(Enumerable.Empty<Vertex>(), Enumerable.Empty<Edge>(), Enumerable.Empty<Triangle>());
-            }
-
-            convexPlanarPolylineCutBoundary[0] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary[1], convexPlanarPolylineCutBoundary[0]);
-            convexPlanarPolylineCutBoundary[convexPlanarPolylineCutBoundary.Length - 1] = this.FindEndOfEdgesRayInPlane(convexPlanarPolylineCutBoundary.PeekFromEnd(1), convexPlanarPolylineCutBoundary.PeekLast());
-
-            Vertex[][] polylineSideVertices = this.GetAllVerticesOnPolylineSides(convexPlanarPolylineCutBoundary);
+            Vertex[][] polylineSideVertices = this.GetAllVerticesOnPolylineSides(convexPlanarPolylineBoundary);
 
             HashSet<Vertex> verticesToDelete, visitedVertices;
-            this.FindVerticesToDelete(polylineSideVertices, cutSemiplaneNormal, out verticesToDelete, out visitedVertices);
+            this.FindVerticesSelection(polylineSideVertices, semiSpaceNormal, out verticesToDelete, out visitedVertices);
 
-            HashSet<Triangle> boundaryTrianglesToDelete = this.FindBoundaryTrianglesToDelete(polylineSideVertices, verticesToDelete, visitedVertices);
+            return new MeshPatchVertexSelectionInfo(polylineSideVertices, verticesToDelete, visitedVertices);
+        }
+
+        public MeshPatchDeletionInfo GetMeshPatchToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal)
+        {
+            MeshPatchVertexSelectionInfo vertexSelection = this.GetMeshPatchVertexSelection(convexPlanarPolylineCutBoundary, cutSemiplaneNormal);
+
+            HashSet<Triangle> boundaryTrianglesToDelete = this.FindBoundaryTrianglesToDelete(vertexSelection);
             IEnumerable<Edge> boundaryEdgesToDelete = this.FindBoundaryEdgesToDelete(boundaryTrianglesToDelete);
 
-            return new MeshPatchDeletionInfo(verticesToDelete, boundaryEdgesToDelete, boundaryTrianglesToDelete);
+            return new MeshPatchDeletionInfo(vertexSelection.InnerVertices, boundaryEdgesToDelete, boundaryTrianglesToDelete);
         }
 
         public Vertex FindEndOfEdgesRayInPlane(Vertex rayStartVertex, Vertex rayDirectionVertex)
@@ -313,16 +279,16 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        private HashSet<Triangle> FindBoundaryTrianglesToDelete(Vertex[][] polylineSideVertices, HashSet<Vertex> verticesToDelete, HashSet<Vertex> visitedVertices)
+        private HashSet<Triangle> FindBoundaryTrianglesToDelete(MeshPatchVertexSelectionInfo vertexSelection)
         {
             HashSet<Triangle> boundaryTrianglesToDelete = new HashSet<Triangle>();
             HashSet<Triangle> visitedTriangles = new HashSet<Triangle>();
 
-            for (int sideIndex = 0; sideIndex < polylineSideVertices.Length; sideIndex++)
+            for (int sideIndex = 0; sideIndex < vertexSelection.SelectionPolylineSideVertices.Length; sideIndex++)
             {
-                Vertex[] sideVertices = polylineSideVertices[sideIndex];
+                Vertex[] sideVertices = vertexSelection.SelectionPolylineSideVertices[sideIndex];
                 int vertexStartIndex = sideIndex == 0 ? 0 : 1;
-                int vertexEndIndex = (sideIndex == polylineSideVertices.Length - 1) ? (sideVertices.Length - 1) : (sideVertices.Length - 2);
+                int vertexEndIndex = (sideIndex == vertexSelection.SelectionPolylineSideVertices.Length - 1) ? (sideVertices.Length - 1) : (sideVertices.Length - 2);
 
                 for (int vertexIndex = vertexStartIndex; vertexIndex <= vertexEndIndex; vertexIndex++)
                 {
@@ -337,13 +303,13 @@ namespace LobelFrames.DataStructures
 
                             foreach (Vertex triangleVertex in triangle.Vertices)
                             {
-                                if (!visitedVertices.Contains(triangleVertex))
+                                if (!vertexSelection.IsVertexFromPatch(triangleVertex))
                                 {
                                     containOnlyVisitedVertices = false;
                                     break;
                                 }
 
-                                if (!containsVertexThatWillNotBeDeleted && !verticesToDelete.Contains(triangleVertex))
+                                if (!containsVertexThatWillNotBeDeleted && !vertexSelection.IsInnerVertex(triangleVertex))
                                 {
                                     containsVertexThatWillNotBeDeleted = true;
                                 }
@@ -392,7 +358,7 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        private void FindVerticesToDelete(Vertex[][] polylineSideVertices, Vector3D cutSemiplaneNormal, out HashSet<Vertex> verticesToDelete, out HashSet<Vertex> visitedVertices)
+        private void FindVerticesSelection(Vertex[][] polylineSideVertices, Vector3D cutSemiplaneNormal, out HashSet<Vertex> verticesToDelete, out HashSet<Vertex> visitedVertices)
         {
             verticesToDelete = new HashSet<Vertex>();
             visitedVertices = new HashSet<Vertex>();

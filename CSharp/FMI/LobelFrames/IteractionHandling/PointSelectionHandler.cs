@@ -12,11 +12,13 @@ namespace LobelFrames.IteractionHandling
     {
         private readonly ISceneElementsManager sceneManager;
         private readonly IteractionRestrictor restrictor;
+        private readonly SceneEditor editor;
 
         internal PointSelectionHandler(ISceneElementsManager sceneManager, SceneEditor editor)
         {
             this.sceneManager = sceneManager;
-            this.restrictor = new IteractionRestrictor(editor);
+            this.editor = editor;
+            this.restrictor = new IteractionRestrictor(this.editor);
         }
 
         public IteractionHandlingType IteractionType
@@ -43,11 +45,11 @@ namespace LobelFrames.IteractionHandling
 
             if (this.sceneManager.TryGetPointFromViewPoint(viewportPosition, out visual))
             {
-                clickArgs = new PointClickEventArgs(visual);
+                clickArgs = new PointClickEventArgs(visual, this.editor);
             }
             else if (this.restrictor.TryGetIteractionPoint(viewportPosition, out position))
             {
-                clickArgs = new PointClickEventArgs(position);
+                clickArgs = new PointClickEventArgs(position, this.editor);
             }
 
             bool hasHandledClick = clickArgs != null;
@@ -88,7 +90,7 @@ namespace LobelFrames.IteractionHandling
         {
             if (this.PointMove != null)
             {
-                this.PointMove(this, new PointEventArgs(point));
+                this.PointMove(this, new PointEventArgs(point, this.editor));
             }
         }
 

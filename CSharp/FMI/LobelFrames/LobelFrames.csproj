@@ -60,8 +60,11 @@
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\NonEditableMesh.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
+    <Compile Include="DataStructures\Surfaces\MeshPatchFoldingInfo.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchDeletionInfo.cs" />
+    <Compile Include="DataStructures\Surfaces\MeshPatchRotationCache.cs" />
+    <Compile Include="DataStructures\Surfaces\MeshPatchVertexSelectionInfo.cs" />
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchAdditionInfo.cs" />
     <Compile Include="DataStructures\UniqueEdgesSet.cs" />
@@ -125,6 +128,7 @@
     <Compile Include="ViewModels\Commands\History\DeleteSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeleteMeshPatchAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeselectSurfaceAction.cs" />
+    <Compile Include="ViewModels\Commands\History\FoldMeshPatchAction.cs" />
     <Compile Include="ViewModels\Commands\History\IteractiveSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\ModifySurfaceUndoableActionBase.cs" />
     <Compile Include="ViewModels\Commands\History\MoveSurfaceAction.cs" />

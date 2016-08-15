@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LobelFrames.DataStructures
 {
-    public class TriangularMesh
+    public class TriangularMesh : IMeshElementsProvider
     {
         private readonly HashSet<Edge> edges;
         private readonly HashSet<Vertex> vertices;
@@ -43,6 +43,38 @@ namespace LobelFrames.DataStructures
             get
             {
                 return this.triangles.Count;
+            }
+        }
+
+        public IEnumerable<Triangle> Triangles
+        {
+            get
+            {
+                return this.GetTriangles();
+            }
+        }
+
+        public IEnumerable<Edge> Edges
+        {
+            get
+            {
+                return this.GetEdges();
+            }
+        }
+
+        public IEnumerable<Vertex> Vertices
+        {
+            get
+            {
+                return this.GetVertices();
+            }
+        }
+
+        public IEnumerable<Edge> Contour
+        {
+            get
+            {
+                return this.GetContourEdges();
             }
         }
 
@@ -153,6 +185,12 @@ namespace LobelFrames.DataStructures
                 this.AddVertex(triangle.B);
                 this.AddVertex(triangle.C);
             }
+        }
+
+        public void FoldMeshPatch(MeshPatchFoldingInfo foldingInfo)
+        {
+            // TODO:
+            throw new NotImplementedException();
         }
 
         public void DeleteMeshPatch(MeshPatchDeletionInfo meshPatchToDelete)

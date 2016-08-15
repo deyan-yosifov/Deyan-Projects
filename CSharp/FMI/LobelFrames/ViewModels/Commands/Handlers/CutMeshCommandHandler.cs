@@ -154,7 +154,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
             else if (this.IsShowingTrianglesToDelete)
             {
-                if (this.deleteMeshPatchAction.DeletionInfo.VerticesToDelete.Count() == this.Surface.MeshEditor.VerticesCount)
+                if (this.deleteMeshPatchAction.DeletionInfo.VerticesToDelete.Count() == this.Surface.MeshEditor.ElementsProvider.VerticesCount)
                 {
                     this.Editor.DoAction(new DeleteSurfaceAction(this.Editor.Context));
                 }

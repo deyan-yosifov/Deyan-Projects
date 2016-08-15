@@ -111,8 +111,6 @@ namespace LobelFrames.DataStructures
             }
         }
 
-
-
         public IEnumerable<Vertex> Vertices
         {
             get
