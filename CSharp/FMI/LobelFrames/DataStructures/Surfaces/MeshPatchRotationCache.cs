@@ -82,6 +82,14 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
+        public MeshPatchVertexSelectionInfo MeshPatch
+        {
+            get
+            {
+                return this.meshPatch;
+            }
+        }
+
         public double CurrentRotationAngle
         {
             get

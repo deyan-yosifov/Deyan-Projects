@@ -60,9 +60,9 @@ namespace LobelFrames.ViewModels.Commands.History
                 isVertexToDelete = this.IsVertexNotContainedInBothPatchesInnerVertices;
             }
 
-            foreach (Edge edge in this.foldingInfo.EdgesToDelete)
+            foreach (Triangle triangle in this.foldingInfo.TrianglesToAdd)
             {
-                foreach (Vertex vertex in edge.Vertices)
+                foreach (Vertex vertex in triangle.Vertices)
                 {
                     if (isVertexToDelete(vertex))
                     {

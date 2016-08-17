@@ -87,11 +87,17 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        // TODO:
-        //public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(...)
-        //{
+        public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache rotationCache)
+        {
+            // TODO:
+            throw new NotImplementedException();
+        }
 
-        //}
+        public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache firstRotationCache, MeshPatchRotationCache secondRotationCache)
+        {
+            // TODO:
+            throw new NotImplementedException();
+        }
 
         public void FoldMeshPatch(MeshPatchFoldingInfo foldingInfo)
         {

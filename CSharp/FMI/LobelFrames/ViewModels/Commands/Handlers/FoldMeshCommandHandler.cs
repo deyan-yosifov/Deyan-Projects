@@ -6,6 +6,7 @@ using Deyo.Core.Mathematics.Geometry;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
+using LobelFrames.ViewModels.Commands.History;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
@@ -62,9 +63,10 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             {
                 if (this.Points.Count == 3)
                 {
-                    // End rotation
-                    // MeshPatchFoldingInfo foldingInfo = this.Surface.MeshEditor.GetMeshPatchFoldingInfo(...);
-                    // Execute folding undoable action...
+                    MeshPatchFoldingInfo foldingInfo = this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache);
+                    FoldMeshPatchAction foldAction = new FoldMeshPatchAction(this.Surface, foldingInfo);
+                    this.Editor.DoAction(foldAction);
+                    this.Editor.CloseCommandContext();
                 }
             }
             else if (this.Points.Count < 5)
