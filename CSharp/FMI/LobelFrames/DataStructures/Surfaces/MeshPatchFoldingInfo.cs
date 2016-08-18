@@ -8,22 +8,22 @@ namespace LobelFrames.DataStructures.Surfaces
     {
         private readonly Matrix3D firstRotationMatrix;
         private readonly Matrix3D secondRotationMatrix;
-        private readonly HashSet<Vertex> firstPatchInnerVertices;
-        private readonly HashSet<Vertex> secondPatchInnerVertices;
+        private readonly VerticesSet firstPatchInnerVertices;
+        private readonly VerticesSet secondPatchInnerVertices;
         private readonly IEnumerable<Triangle> trianglesToDelete;
         private readonly IEnumerable<Edge> edgesToDelete;
         private readonly IEnumerable<Triangle> trianglesToAdd;
         private readonly IEnumerable<Vertex> verticesToDelete;
         private readonly bool isFoldingSinglePatch;
 
-        public MeshPatchFoldingInfo(Matrix3D rotationMatrix, HashSet<Vertex> meshPatchInnerVertices, IEnumerable<Triangle> trianglesToDelete,
+        public MeshPatchFoldingInfo(Matrix3D rotationMatrix, VerticesSet meshPatchInnerVertices, IEnumerable<Triangle> trianglesToDelete,
             IEnumerable<Edge> edgesToDelete, IEnumerable<Triangle> trianglesToAdd, IEnumerable<Vertex> verticesToDelete)
             : this(rotationMatrix, Matrix3D.Identity, meshPatchInnerVertices, null, trianglesToDelete, edgesToDelete, trianglesToAdd, verticesToDelete)
         {
         }
 
         public MeshPatchFoldingInfo(Matrix3D firstPatchRotationMatrix, Matrix3D secondPatchRotationMatrix,
-            HashSet<Vertex> firstPatchInnerVertices, HashSet<Vertex> secondPatchInnerVertices, IEnumerable<Triangle> trianglesToDelete, 
+            VerticesSet firstPatchInnerVertices, VerticesSet secondPatchInnerVertices, IEnumerable<Triangle> trianglesToDelete, 
             IEnumerable<Edge> edgesToDelete, IEnumerable<Triangle> trianglesToAdd, IEnumerable<Vertex> verticesToDelete)
         {
             this.firstRotationMatrix = firstPatchRotationMatrix;
@@ -53,7 +53,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public HashSet<Vertex> FirstPatchInnerVertices
+        public VerticesSet FirstPatchInnerVertices
         {
             get
             {
@@ -61,7 +61,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public HashSet<Vertex> SecondPatchInnerVertices
+        public VerticesSet SecondPatchInnerVertices
         {
             get
             {

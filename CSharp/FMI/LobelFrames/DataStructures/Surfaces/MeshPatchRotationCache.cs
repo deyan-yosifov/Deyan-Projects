@@ -17,6 +17,7 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly Vector3D zeroAngleVector;
         private readonly Vector3D positiveAnglesNormal;
         private double previousAngle;
+        private Matrix3D currentRotationMatrix;
 
         public MeshPatchRotationCache(IMeshElementsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Point3D rotationCenter, Vector3D rotationAxis, Vector3D zeroAngleVector)
         {
@@ -56,6 +57,15 @@ namespace LobelFrames.DataStructures.Surfaces
             }
 
             this.previousAngle = 0;
+            this.currentRotationMatrix = Matrix3D.Identity;
+        }
+
+        public Point3D this[Vertex vertex]
+        {
+            get
+            {
+                return this.vertexToRotatedPositionCache[vertex];
+            }
         }
 
         public Point3D Center
@@ -98,6 +108,14 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
+        public Matrix3D CurrentRotationMatrix
+        {
+            get
+            {
+                return this.currentRotationMatrix;
+            }
+        }
+
         public IEnumerable<Tuple<Point3D, Point3D>> GetRotatedEdges(Point3D rotationPlanePoint)
         {
             Vector3D rotationDirection = rotationPlanePoint - this.Center;
@@ -134,6 +152,8 @@ namespace LobelFrames.DataStructures.Surfaces
             {
                 this.vertexToRotatedPositionCache[vertex] = matrix.Transform(vertex.Point);
             }
+
+            this.currentRotationMatrix = matrix;
         }
     }
 }

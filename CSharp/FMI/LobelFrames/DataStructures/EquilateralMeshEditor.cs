@@ -89,8 +89,53 @@ namespace LobelFrames.DataStructures
 
         public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache rotationCache)
         {
-            // TODO:
-            throw new NotImplementedException();
+            Matrix3D matrix = rotationCache.CurrentRotationMatrix;
+            VerticesSet innerVertices = rotationCache.MeshPatch.InnerVertices;
+            Dictionary<Vertex, Vertex> boundaryVerticesDuplicates = new Dictionary<Vertex, Vertex>();            
+            // TODO: Consider using unique edges set or at least edges equality comparer!
+            UniqueEdgesSet uniqueEdgesToAdd = new UniqueEdgesSet();
+            Dictionary<Edge, Edge> boundaryEdgeDuplicates = new Dictionary<Edge, Edge>();
+            Dictionary<Triangle, Triangle> boundaryTriangleDuplicates = new Dictionary<Triangle, Triangle>();
+
+            foreach (Vertex vertex in rotationCache.MeshPatch.AllPatchVertices)
+            {
+                if (!rotationCache.MeshPatch.InnerVertices.Contains(vertex))
+                {
+                    foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
+                    {
+                        if (boundaryTriangleDuplicates.ContainsKey(triangle))
+                        {
+                            continue;
+                        }
+
+                        bool isPatchTriangle = true;
+
+                        foreach (Vertex triangleVertex in triangle.Vertices)
+                        {
+                            if (!rotationCache.MeshPatch.AllPatchVertices.Contains(triangleVertex))
+                            {
+                                isPatchTriangle = false;
+                                break;
+                            }
+
+                            if (!rotationCache.MeshPatch.InnerVertices.Contains(triangleVertex) && !boundaryVerticesDuplicates.ContainsKey(triangleVertex))
+                            {
+                                boundaryVerticesDuplicates[triangleVertex] = new Vertex(rotationCache[triangleVertex]);
+                            }
+                        }
+
+                        if (!isPatchTriangle)
+                        {
+                            continue;
+                        }
+
+                        // TODO: find edges and trianlges to remove
+                        // TODO: create trianlge to add using unique edges set!
+                    }
+                }
+            }
+
+            return new MeshPatchFoldingInfo(matrix, innerVertices, boundaryTriangleDuplicates.Keys, boundaryEdgeDuplicates.Keys, boundaryTriangleDuplicates.Values, Enumerable.Empty<Vertex>());
         }
 
         public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache firstRotationCache, MeshPatchRotationCache secondRotationCache)
@@ -187,7 +232,7 @@ namespace LobelFrames.DataStructures
             HashSet<Vertex> verticesToDelete, visitedVertices;
             this.FindVerticesSelection(polylineSideVertices, semiSpaceNormal, out verticesToDelete, out visitedVertices);
 
-            return new MeshPatchVertexSelectionInfo(polylineSideVertices, verticesToDelete, visitedVertices);
+            return new MeshPatchVertexSelectionInfo(polylineSideVertices, new VerticesSet(verticesToDelete), new VerticesSet(visitedVertices));
         }
 
         public MeshPatchDeletionInfo GetMeshPatchToDelete(Vertex[] convexPlanarPolylineCutBoundary, Vector3D cutSemiplaneNormal)

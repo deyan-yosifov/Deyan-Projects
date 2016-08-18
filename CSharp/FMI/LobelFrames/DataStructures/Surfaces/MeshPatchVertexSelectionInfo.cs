@@ -6,10 +6,10 @@ namespace LobelFrames.DataStructures.Surfaces
     public class MeshPatchVertexSelectionInfo
     {
         private readonly Vertex[][] polylineSideVertices;
-        private readonly HashSet<Vertex> innerVertices;
-        private readonly HashSet<Vertex> allVertices;
+        private readonly VerticesSet innerVertices;
+        private readonly VerticesSet allVertices;
         
-        public MeshPatchVertexSelectionInfo(Vertex[][] polylineSideVertices, HashSet<Vertex> innerVertices, HashSet<Vertex> allVertices)
+        public MeshPatchVertexSelectionInfo(Vertex[][] polylineSideVertices, VerticesSet innerVertices, VerticesSet allVertices)
         {
             this.polylineSideVertices = polylineSideVertices;
             this.innerVertices = innerVertices;
@@ -32,25 +32,19 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public IEnumerable<Vertex> InnerVertices
+        public VerticesSet InnerVertices
         {
             get
             {
-                foreach (Vertex vertex in this.innerVertices)
-                {
-                    yield return vertex;
-                }
+                return this.innerVertices;
             }
         }
 
-        public IEnumerable<Vertex> AllPatchVertices
+        public VerticesSet AllPatchVertices
         {
             get
             {
-                foreach (Vertex vertex in this.allVertices)
-                {
-                    yield return vertex;
-                }
+                return this.allVertices;
             }
         }
 

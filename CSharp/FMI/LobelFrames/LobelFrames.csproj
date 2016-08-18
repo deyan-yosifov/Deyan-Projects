@@ -69,6 +69,7 @@
     <Compile Include="DataStructures\Surfaces\MeshPatchAdditionInfo.cs" />
     <Compile Include="DataStructures\UniqueEdgesSet.cs" />
     <Compile Include="DataStructures\VertexIndexer.cs" />
+    <Compile Include="DataStructures\VerticesSet.cs" />
     <Compile Include="FormatProviders\BezierSurfaceModel.cs" />
     <Compile Include="FormatProviders\CameraModel.cs" />
     <Compile Include="FormatProviders\LinesOfTextLobelFormatProviderBase.cs" />
