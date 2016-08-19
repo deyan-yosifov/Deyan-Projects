@@ -63,6 +63,7 @@
     <Compile Include="DataStructures\Surfaces\MeshPatchFoldingInfo.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchDeletionInfo.cs" />
+    <Compile Include="DataStructures\Surfaces\MeshPatchFoldingInfoCalculationContext.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchRotationCache.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchVertexSelectionInfo.cs" />
     <Compile Include="DataStructures\Surfaces\NonEditableSurface.cs" />

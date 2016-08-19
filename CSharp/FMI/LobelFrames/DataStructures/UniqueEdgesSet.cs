@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace LobelFrames.DataStructures
 {
-    public class UniqueEdgesSet
+    public class UniqueEdgesSet : IEnumerable<Edge>, IEnumerable
     {
         private readonly Dictionary<Edge, Edge> uniqueEdgesSet;
 
@@ -21,8 +22,22 @@ namespace LobelFrames.DataStructures
             {
                 edge = oldEdge;
             }
+            else
+            {
+                this.uniqueEdgesSet.Add(edge, edge);
+            }
 
             return edge;
+        }
+
+        public IEnumerator<Edge> GetEnumerator()
+        {
+            return this.uniqueEdgesSet.Keys.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.uniqueEdgesSet.Keys.GetEnumerator();
         }
     }
 }

@@ -89,59 +89,28 @@ namespace LobelFrames.DataStructures
 
         public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache rotationCache)
         {
-            Matrix3D matrix = rotationCache.CurrentRotationMatrix;
+            MeshPatchFoldingInfoCalculationContext context = this.CalculateFirstRotationFoldingContext(rotationCache);
             VerticesSet innerVertices = rotationCache.MeshPatch.InnerVertices;
-            Dictionary<Vertex, Vertex> boundaryVerticesDuplicates = new Dictionary<Vertex, Vertex>();            
-            // TODO: Consider using unique edges set or at least edges equality comparer!
-            UniqueEdgesSet uniqueEdgesToAdd = new UniqueEdgesSet();
-            Dictionary<Edge, Edge> boundaryEdgeDuplicates = new Dictionary<Edge, Edge>();
-            Dictionary<Triangle, Triangle> boundaryTriangleDuplicates = new Dictionary<Triangle, Triangle>();
+            Matrix3D matrix = rotationCache.CurrentRotationMatrix;
+            IEnumerable<Triangle> trianglesToDelete = context.BoundaryTriangleDuplicates.Keys;
+            IEnumerable<Edge> edgesToDelete = context.BoundaryEdgesToDelete;
+            IEnumerable<Triangle> trianglesToAdd = context.BoundaryTriangleDuplicates.Values;
 
-            foreach (Vertex vertex in rotationCache.MeshPatch.AllPatchVertices)
-            {
-                if (!rotationCache.MeshPatch.InnerVertices.Contains(vertex))
-                {
-                    foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
-                    {
-                        if (boundaryTriangleDuplicates.ContainsKey(triangle))
-                        {
-                            continue;
-                        }
-
-                        bool isPatchTriangle = true;
-
-                        foreach (Vertex triangleVertex in triangle.Vertices)
-                        {
-                            if (!rotationCache.MeshPatch.AllPatchVertices.Contains(triangleVertex))
-                            {
-                                isPatchTriangle = false;
-                                break;
-                            }
-
-                            if (!rotationCache.MeshPatch.InnerVertices.Contains(triangleVertex) && !boundaryVerticesDuplicates.ContainsKey(triangleVertex))
-                            {
-                                boundaryVerticesDuplicates[triangleVertex] = new Vertex(rotationCache[triangleVertex]);
-                            }
-                        }
-
-                        if (!isPatchTriangle)
-                        {
-                            continue;
-                        }
-
-                        // TODO: find edges and trianlges to remove
-                        // TODO: create trianlge to add using unique edges set!
-                    }
-                }
-            }
-
-            return new MeshPatchFoldingInfo(matrix, innerVertices, boundaryTriangleDuplicates.Keys, boundaryEdgeDuplicates.Keys, boundaryTriangleDuplicates.Values, Enumerable.Empty<Vertex>());
+            return new MeshPatchFoldingInfo(matrix, innerVertices, trianglesToDelete, edgesToDelete, trianglesToAdd, Enumerable.Empty<Vertex>());
         }
 
         public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache firstRotationCache, MeshPatchRotationCache secondRotationCache)
         {
-            // TODO:
-            throw new NotImplementedException();
+            MeshPatchFoldingInfoCalculationContext context = this.CalculateTwoPatchesFoldingContext(firstRotationCache, secondRotationCache);
+            Matrix3D firstRotationMatrix = firstRotationCache.CurrentRotationMatrix;
+            Matrix3D secondRotationMatrix = secondRotationCache.CurrentRotationMatrix;
+            VerticesSet firstInnerVertices = firstRotationCache.MeshPatch.InnerVertices;
+            VerticesSet secondInnerVertices = secondRotationCache.MeshPatch.InnerVertices;
+            IEnumerable<Triangle> trianglesToDelete = context.BoundaryTriangleDuplicates.Keys;
+            IEnumerable<Edge> edgesToDelete = context.BoundaryEdgesToDelete;
+            IEnumerable<Triangle> trianglesToAdd = context.BoundaryTriangleDuplicates.Values;
+
+            return new MeshPatchFoldingInfo(firstRotationMatrix, secondRotationMatrix, firstInnerVertices, secondInnerVertices, trianglesToDelete, edgesToDelete, trianglesToAdd, Enumerable.Empty<Vertex>());
         }
 
         public void FoldMeshPatch(MeshPatchFoldingInfo foldingInfo)
@@ -272,62 +241,95 @@ namespace LobelFrames.DataStructures
             return currentEndVertex;
         }
 
-        private bool TryGetExtendedEdgesConnection(Vertex start, Vertex end, out IEnumerable<Edge> extendedEdgesOnConnectingLine)
+        private MeshPatchFoldingInfoCalculationContext CalculateTwoPatchesFoldingContext(MeshPatchRotationCache firstRotationCache, MeshPatchRotationCache secondRotationCache)
         {
-            VertexConnectionInfo connectionInfo;
-            if (this.TryConnectVerticesWithColinearEdges(start, end, out connectionInfo))
-            {
-                extendedEdgesOnConnectingLine = this.GetExtendedEdgesConnection(start, end, connectionInfo);
-                return true;
-            }
+            MeshPatchFoldingInfoCalculationContext context = this.CalculateFirstRotationFoldingContext(firstRotationCache);
+            // TODO: Add second rotation stuff to context...
 
-            extendedEdgesOnConnectingLine = null;
-            return false;
+            return context;
         }
 
-        private IEnumerable<Edge> GetExtendedEdgesConnection(Vertex start, Vertex end, VertexConnectionInfo connectionInfo)
+        private MeshPatchFoldingInfoCalculationContext CalculateFirstRotationFoldingContext(MeshPatchRotationCache firstRotationCache)
         {
-            foreach (Edge edge in this.GetExtendingEdgesInDirection(end, start).Reverse())
+            MeshPatchFoldingInfoCalculationContext context = new MeshPatchFoldingInfoCalculationContext();
+
+            foreach (Vertex vertex in firstRotationCache.MeshPatch.AllPatchVertices)
             {
-                yield return edge;
-            }
-
-            foreach (Edge edge in connectionInfo.ConnectingEdges)
-            {
-                yield return edge;
-            }
-
-            foreach (Edge edge in this.GetExtendingEdgesInDirection(start, end))
-            {
-                yield return edge;
-            }
-        }
-
-        private IEnumerable<Edge> GetExtendingEdgesInDirection(Vertex start, Vertex end)
-        {
-            Vector3D rayDirection = end.Point - start.Point;
-
-            Vertex currentEndVertex = end;
-            bool shouldSearchForNextVertex = true;
-
-            while (shouldSearchForNextVertex)
-            {
-                shouldSearchForNextVertex = false;
-
-                foreach (Edge edge in this.Mesh.GetEdges(currentEndVertex))
+                if (!firstRotationCache.MeshPatch.InnerVertices.Contains(vertex))
                 {
-                    Vertex nextEndVertex = currentEndVertex == edge.Start ? edge.End : edge.Start;
-                    Vector3D direction = nextEndVertex.Point - currentEndVertex.Point;
-
-                    if (direction.IsColinearWithSameDirection(rayDirection))
+                    foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
                     {
-                        shouldSearchForNextVertex = true;
-                        currentEndVertex = nextEndVertex;
-                        yield return edge;
-                        break;
+                        if (context.BoundaryTriangleDuplicates.ContainsKey(triangle))
+                        {
+                            continue;
+                        }
+
+                        bool isPatchTriangle = true;
+
+                        foreach (Vertex triangleVertex in triangle.Vertices)
+                        {
+                            if (!firstRotationCache.MeshPatch.AllPatchVertices.Contains(triangleVertex))
+                            {
+                                isPatchTriangle = false;
+                                break;
+                            }
+
+                            if (!firstRotationCache.MeshPatch.InnerVertices.Contains(triangleVertex) && !context.BoundaryVerticesDuplicates.ContainsKey(triangleVertex))
+                            {
+                                context.BoundaryVerticesDuplicates[triangleVertex] = new Vertex(firstRotationCache[triangleVertex]);
+                            }
+                        }
+
+                        if (!isPatchTriangle)
+                        {
+                            continue;
+                        }
+
+                        this.AddToContextBoundaryPatchTriangleDuplicate(context, triangle);
                     }
                 }
             }
+            return context;
+        }
+
+        private void AddToContextBoundaryPatchTriangleDuplicate(MeshPatchFoldingInfoCalculationContext context, Triangle triangle)
+        {
+            Edge[] duplicatedTriangleEdges = new Edge[3];
+            int edgeIndex = 0;
+
+            foreach (Edge edge in triangle.Edges)
+            {
+                bool isBoundaryEdge = false;
+
+                Vertex start;
+                if (context.BoundaryVerticesDuplicates.TryGetValue(edge.Start, out start))
+                {
+                    isBoundaryEdge = true;
+                }
+                else
+                {
+                    start = edge.Start;
+                }
+
+                Vertex end;
+                if (context.BoundaryVerticesDuplicates.TryGetValue(edge.End, out end))
+                {
+                    isBoundaryEdge = true;
+                }
+                else
+                {
+                    end = edge.End;
+                }
+
+                if (isBoundaryEdge)
+                {
+                    context.BoundaryEdgesToDelete.Add(edge);
+                }
+
+                duplicatedTriangleEdges[edgeIndex++] = isBoundaryEdge ? context.UniqueEdgesToAdd.GetEdge(start, end) : edge;
+            }
+
+            context.BoundaryTriangleDuplicates.Add(triangle, new Triangle(duplicatedTriangleEdges[0], duplicatedTriangleEdges[1], duplicatedTriangleEdges[2]));
         }
 
         private HashSet<Triangle> FindBoundaryTrianglesToDelete(MeshPatchVertexSelectionInfo vertexSelection)
