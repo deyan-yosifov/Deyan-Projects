@@ -189,33 +189,39 @@ namespace LobelFrames.DataStructures
 
         public void FoldMeshPatch(MeshPatchFoldingInfo foldingInfo)
         {
-            // TODO:
-            throw new NotImplementedException();
+            foreach (Vertex vertex in foldingInfo.FirstPatchInnerVertices)
+            {
+                vertex.Point = foldingInfo.FirstRotationMatrix.Transform(vertex.Point);
+            }
+
+            if (!foldingInfo.IsFoldingSinglePatch)
+            {
+                foreach (Vertex vertex in foldingInfo.SecondPatchInnerVertices)
+                {
+                    vertex.Point = foldingInfo.SecondRotationMatrix.Transform(vertex.Point);
+                }
+            }
+
+            foreach (Triangle triangle in foldingInfo.TrianglesToAdd)
+            {
+                this.AddTriangle(triangle, true);
+            }
+
+            this.DeleteTriangles(foldingInfo.TrianglesToDelete);
+            this.DeleteEdges(foldingInfo.EdgesToDelete);
+            this.DeleteVerticesWithRelatedEdgesAndTriangles(foldingInfo.VerticesToDelete);
         }
 
         public void DeleteMeshPatch(MeshPatchDeletionInfo meshPatchToDelete)
         {
-            foreach (Triangle triangle in meshPatchToDelete.BoundaryTrianglesToDelete)
-            {
-                foreach (Vertex vertex in triangle.Vertices)
-                {
-                    this.vertexToTriangles[vertex].Remove(triangle);
-                }
+            this.DeleteTriangles(meshPatchToDelete.BoundaryTrianglesToDelete);
+            this.DeleteEdges(meshPatchToDelete.BoundaryEdgesToDelete);
+            this.DeleteVerticesWithRelatedEdgesAndTriangles(meshPatchToDelete.VerticesToDelete);            
+        }
 
-                this.triangles.Remove(triangle);
-            }
-
-            foreach (Edge edge in meshPatchToDelete.BoundaryEdgesToDelete)
-            {
-                foreach (Vertex vertex in edge.Vertices)
-                {
-                    this.vertexToEdges[vertex].Remove(edge);
-                }
-
-                this.edges.Remove(edge);
-            }
-
-            foreach (Vertex vertex in meshPatchToDelete.VerticesToDelete)
+        private void DeleteVerticesWithRelatedEdgesAndTriangles(IEnumerable<Vertex> verticesToDelete)
+        {
+            foreach (Vertex vertex in verticesToDelete)
             {
                 foreach (Triangle triangle in this.GetTriangles(vertex).ToArray())
                 {
@@ -240,6 +246,32 @@ namespace LobelFrames.DataStructures
                 this.vertexToTriangles.Remove(vertex);
                 this.vertexToEdges.Remove(vertex);
                 this.vertices.Remove(vertex);
+            }
+        }
+
+        private void DeleteEdges(IEnumerable<Edge> edgesToDelete)
+        {
+            foreach (Edge edge in edgesToDelete)
+            {
+                foreach (Vertex vertex in edge.Vertices)
+                {
+                    this.vertexToEdges[vertex].Remove(edge);
+                }
+
+                this.edges.Remove(edge);
+            }
+        }
+
+        private void DeleteTriangles(IEnumerable<Triangle> trianglesToDelete)
+        {
+            foreach (Triangle triangle in trianglesToDelete)
+            {
+                foreach (Vertex vertex in triangle.Vertices)
+                {
+                    this.vertexToTriangles[vertex].Remove(triangle);
+                }
+
+                this.triangles.Remove(triangle);
             }
         }
 
