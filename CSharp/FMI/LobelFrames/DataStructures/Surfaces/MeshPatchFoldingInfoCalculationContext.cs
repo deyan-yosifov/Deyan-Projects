@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using Deyo.Core.Mathematics.Algebra;
+using System.Linq;
 
 namespace LobelFrames.DataStructures.Surfaces
 {
     public class MeshPatchFoldingInfoCalculationContext
     {
-        private readonly Dictionary<Vertex, Vertex> boundaryVerticesDuplicates = new Dictionary<Vertex, Vertex>();
-        private readonly UniqueEdgesSet uniqueEdgesToAdd = new UniqueEdgesSet();
-        private readonly HashSet<Edge> boundaryEdgesToDelete = new HashSet<Edge>();
-        private readonly Dictionary<Triangle, Triangle> boundaryTriangleDuplicates = new Dictionary<Triangle, Triangle>();
+        private readonly Dictionary<Vertex, Vertex> boundaryVerticesDuplicates;
+        private readonly UniqueEdgesSet uniqueEdgesToAdd;
+        private readonly HashSet<Edge> boundaryEdgesToDelete;
+        private readonly Dictionary<Triangle, Triangle> boundaryTriangleDuplicates;
+        private readonly HashSet<Vertex> axisVertices;
+        private readonly Vertex foldingCenter;
 
-        public MeshPatchFoldingInfoCalculationContext()
+        public MeshPatchFoldingInfoCalculationContext(Vertex foldingCenter)
         {
+            this.foldingCenter = foldingCenter;
+            this.axisVertices = new HashSet<Vertex>();
             this.boundaryVerticesDuplicates = new Dictionary<Vertex, Vertex>();
             this.uniqueEdgesToAdd = new UniqueEdgesSet();
             this.boundaryEdgesToDelete = new HashSet<Edge>();
@@ -47,6 +53,22 @@ namespace LobelFrames.DataStructures.Surfaces
             get
             {
                 return this.boundaryTriangleDuplicates;
+            }
+        }
+
+        public HashSet<Vertex> AxisVertices
+        {
+            get
+            {
+                return this.axisVertices;
+            }
+        }
+
+        public Vertex FoldingCenter
+        {
+            get
+            {
+                return this.foldingCenter;
             }
         }
     }

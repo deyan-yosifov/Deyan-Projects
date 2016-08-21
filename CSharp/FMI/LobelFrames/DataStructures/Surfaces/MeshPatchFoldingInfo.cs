@@ -8,33 +8,35 @@ namespace LobelFrames.DataStructures.Surfaces
     {
         private readonly Matrix3D firstRotationMatrix;
         private readonly Matrix3D secondRotationMatrix;
-        private readonly VerticesSet firstPatchInnerVertices;
-        private readonly VerticesSet secondPatchInnerVertices;
+        private readonly VerticesSet firstPatchInnerVerticesToTransform;
+        private readonly VerticesSet secondPatchInnerVerticesToTransform;
+        private readonly VerticesSet axisVertices;
         private readonly IEnumerable<Triangle> trianglesToDelete;
         private readonly IEnumerable<Edge> edgesToDelete;
         private readonly IEnumerable<Triangle> trianglesToAdd;
         private readonly IEnumerable<Vertex> verticesToDelete;
         private readonly bool isFoldingSinglePatch;
 
-        public MeshPatchFoldingInfo(Matrix3D rotationMatrix, VerticesSet meshPatchInnerVertices, IEnumerable<Triangle> trianglesToDelete,
-            IEnumerable<Edge> edgesToDelete, IEnumerable<Triangle> trianglesToAdd, IEnumerable<Vertex> verticesToDelete)
-            : this(rotationMatrix, Matrix3D.Identity, meshPatchInnerVertices, null, trianglesToDelete, edgesToDelete, trianglesToAdd, verticesToDelete)
+        public MeshPatchFoldingInfo(Matrix3D rotationMatrix, VerticesSet meshPatchInnerVerticesToTransform, VerticesSet axisVertices,
+            IEnumerable<Triangle> trianglesToDelete, IEnumerable<Edge> edgesToDelete, IEnumerable<Triangle> trianglesToAdd, IEnumerable<Vertex> verticesToDelete)
+            : this(rotationMatrix, Matrix3D.Identity, meshPatchInnerVerticesToTransform, null, axisVertices, trianglesToDelete, edgesToDelete, trianglesToAdd, verticesToDelete)
         {
         }
 
         public MeshPatchFoldingInfo(Matrix3D firstPatchRotationMatrix, Matrix3D secondPatchRotationMatrix,
-            VerticesSet firstPatchInnerVertices, VerticesSet secondPatchInnerVertices, IEnumerable<Triangle> trianglesToDelete, 
-            IEnumerable<Edge> edgesToDelete, IEnumerable<Triangle> trianglesToAdd, IEnumerable<Vertex> verticesToDelete)
+            VerticesSet firstPatchInnerVerticesToTransform, VerticesSet secondPatchInnerVerticesToTransform, VerticesSet axisVertices,
+            IEnumerable<Triangle> trianglesToDelete, IEnumerable<Edge> edgesToDelete, IEnumerable<Triangle> trianglesToAdd, IEnumerable<Vertex> verticesToDelete)
         {
             this.firstRotationMatrix = firstPatchRotationMatrix;
             this.secondRotationMatrix = secondPatchRotationMatrix;
-            this.firstPatchInnerVertices = firstPatchInnerVertices;
-            this.secondPatchInnerVertices = secondPatchInnerVertices;
+            this.firstPatchInnerVerticesToTransform = firstPatchInnerVerticesToTransform;
+            this.secondPatchInnerVerticesToTransform = secondPatchInnerVerticesToTransform;
+            this.axisVertices = axisVertices;
             this.trianglesToDelete = trianglesToDelete;
             this.edgesToDelete = edgesToDelete;
             this.trianglesToAdd = trianglesToAdd;
             this.verticesToDelete = verticesToDelete;
-            this.isFoldingSinglePatch = secondPatchInnerVertices == null;
+            this.isFoldingSinglePatch = secondPatchInnerVerticesToTransform == null;
         }
 
         public Matrix3D FirstRotationMatrix
@@ -53,19 +55,27 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public VerticesSet FirstPatchInnerVertices
+        public VerticesSet FirstPatchInnerVerticesToTransform
         {
             get
             {
-                return this.firstPatchInnerVertices;
+                return this.firstPatchInnerVerticesToTransform;
             }
         }
 
-        public VerticesSet SecondPatchInnerVertices
+        public VerticesSet SecondPatchInnerVerticesToTransform
         {
             get
             {
-                return this.secondPatchInnerVertices;
+                return this.secondPatchInnerVerticesToTransform;
+            }
+        }
+
+        public VerticesSet AxisVertices
+        {
+            get
+            {
+                return this.axisVertices;
             }
         }
 

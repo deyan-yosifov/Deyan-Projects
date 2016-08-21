@@ -12,14 +12,14 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly MeshPatchVertexSelectionInfo meshPatch;
         private readonly HashSet<Edge> edges;
         private readonly Dictionary<Vertex, Point3D> vertexToRotatedPositionCache;
-        private readonly Point3D center;
+        private readonly Vertex center;
         private readonly Vector3D axis;
         private readonly Vector3D zeroAngleVector;
         private readonly Vector3D positiveAnglesNormal;
         private double previousAngle;
         private Matrix3D currentRotationMatrix;
 
-        public MeshPatchRotationCache(IMeshElementsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Point3D rotationCenter, Vector3D rotationAxis, Vector3D zeroAngleVector)
+        public MeshPatchRotationCache(IMeshElementsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Vertex rotationCenter, Vector3D rotationAxis, Vector3D zeroAngleVector)
         {
             Guard.ThrowExceptionIfNull(elementsProvider, "elementsProvider");
             Guard.ThrowExceptionIfNull(meshPatch, "meshPatch");
@@ -68,7 +68,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public Point3D Center
+        public Vertex Center
         {
             get
             {
@@ -116,9 +116,23 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public IEnumerable<Tuple<Point3D, Point3D>> GetRotatedEdges(Point3D rotationPlanePoint)
+        public IEnumerable<Vertex> AxisVertices
         {
-            Vector3D rotationDirection = rotationPlanePoint - this.Center;
+            get
+            {
+                foreach (Vertex vertex in this.MeshPatch.AllPatchVertices)
+                {
+                    if ((vertex.Point - this.Center.Point).IsColinear(this.Axis))
+                    {
+                        yield return vertex;
+                    }
+                }
+            }
+        }
+
+        public void PrepareCacheForRotation(Point3D rotationPlanePoint)
+        {
+            Vector3D rotationDirection = rotationPlanePoint - this.Center.Point;
             double axisCoordinate = Vector3D.DotProduct(this.Axis, rotationDirection);
             Guard.ThrowExceptionIfTrue(rotationDirection.LengthSquared.IsZero(), "rotationPlanePoint cannot coinside with rotation center!");
             Guard.ThrowExceptionIfFalse(axisCoordinate.IsZero(), "rotationPlanePoint must be in the rotation plane!");
@@ -136,6 +150,11 @@ namespace LobelFrames.DataStructures.Surfaces
                 this.CalculateRotationCache(angleInDegrees);
                 this.previousAngle = angleInDegrees;
             }
+        }
+
+        public IEnumerable<Tuple<Point3D, Point3D>> GetRotatedEdges(Point3D rotationPlanePoint)
+        {
+            this.PrepareCacheForRotation(rotationPlanePoint);
 
             foreach (Edge edge in this.edges)
             {
@@ -146,7 +165,7 @@ namespace LobelFrames.DataStructures.Surfaces
         private void CalculateRotationCache(double angleInDegrees)
         {
             Matrix3D matrix = new Matrix3D();
-            matrix.RotateAt(new Quaternion(this.axis, angleInDegrees), this.center);
+            matrix.RotateAt(new Quaternion(this.axis, angleInDegrees), this.center.Point);
 
             foreach (Vertex vertex in this.meshPatch.AllPatchVertices)
             {

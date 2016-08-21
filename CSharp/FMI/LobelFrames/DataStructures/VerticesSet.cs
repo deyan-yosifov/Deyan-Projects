@@ -8,6 +8,11 @@ namespace LobelFrames.DataStructures
     {
         private readonly HashSet<Vertex> vertices;
 
+        public VerticesSet(IEnumerable<Vertex> vertices)
+            : this(new HashSet<Vertex>(vertices))
+        {
+        }
+
         public VerticesSet(HashSet<Vertex> vertices)
         {
             this.vertices = vertices;

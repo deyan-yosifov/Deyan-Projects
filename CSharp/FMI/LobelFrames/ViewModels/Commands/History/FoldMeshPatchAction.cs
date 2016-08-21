@@ -38,9 +38,9 @@ namespace LobelFrames.ViewModels.Commands.History
                     Matrix3D secondMatrix = this.foldingInfo.SecondRotationMatrix;
                     secondMatrix.Invert();
 
-                    this.unfoldingInfo = new MeshPatchFoldingInfo(firstMatrix, secondMatrix, this.foldingInfo.FirstPatchInnerVertices,
-                        this.foldingInfo.SecondPatchInnerVertices, Enumerable.Empty<Triangle>(), Enumerable.Empty<Edge>(),
-                        this.foldingInfo.TrianglesToDelete, verticesToDelete);
+                    this.unfoldingInfo = new MeshPatchFoldingInfo(firstMatrix, secondMatrix, this.foldingInfo.FirstPatchInnerVerticesToTransform,
+                        this.foldingInfo.SecondPatchInnerVerticesToTransform, this.foldingInfo.AxisVertices,
+                        Enumerable.Empty<Triangle>(), Enumerable.Empty<Edge>(), this.foldingInfo.TrianglesToDelete, verticesToDelete);
                 }
 
                 return this.unfoldingInfo;
@@ -50,21 +50,21 @@ namespace LobelFrames.ViewModels.Commands.History
         private IEnumerable<Vertex> CalculateVerticesToDeleteWhenUnfolding()
         {
             HashSet<Vertex> verticesToDelete = new HashSet<Vertex>();
-            Func<Vertex, bool> isVertexToDelete;
+            Func<Vertex, bool> isNotInnerVertex;
             if (this.foldingInfo.IsFoldingSinglePatch)
             {
-                isVertexToDelete = this.IsVertexNotContainedInFirstPatchInnerVertices;
+                isNotInnerVertex = this.IsVertexNotContainedInFirstPatchInnerVertices;
             }
             else
             {
-                isVertexToDelete = this.IsVertexNotContainedInBothPatchesInnerVertices;
+                isNotInnerVertex = this.IsVertexNotContainedInBothPatchesInnerVertices;
             }
 
             foreach (Triangle triangle in this.foldingInfo.TrianglesToAdd)
             {
                 foreach (Vertex vertex in triangle.Vertices)
                 {
-                    if (isVertexToDelete(vertex))
+                    if (isNotInnerVertex(vertex) && !this.foldingInfo.AxisVertices.Contains(vertex))
                     {
                         if (verticesToDelete.Add(vertex))
                         {
@@ -77,12 +77,12 @@ namespace LobelFrames.ViewModels.Commands.History
 
         private bool IsVertexNotContainedInFirstPatchInnerVertices(Vertex vertex)
         {
-            return !this.foldingInfo.FirstPatchInnerVertices.Contains(vertex);
+            return !this.foldingInfo.FirstPatchInnerVerticesToTransform.Contains(vertex);
         }
 
         private bool IsVertexNotContainedInBothPatchesInnerVertices(Vertex vertex)
         {
-            return !(this.foldingInfo.FirstPatchInnerVertices.Contains(vertex) || this.foldingInfo.SecondPatchInnerVertices.Contains(vertex));
+            return !(this.foldingInfo.FirstPatchInnerVerticesToTransform.Contains(vertex) || this.foldingInfo.SecondPatchInnerVerticesToTransform.Contains(vertex));
         }
 
         protected override void DoOverride()

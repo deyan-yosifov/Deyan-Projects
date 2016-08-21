@@ -12,6 +12,15 @@ namespace LobelFrames.DataStructures
         {
             this.uniqueEdgesSet = new Dictionary<Edge, Edge>(new EdgesEqualityComparer());
         }
+
+        public UniqueEdgesSet(IEnumerable<Edge> initialEdges)
+            : this()
+        {
+            foreach (Edge initialEdge in initialEdges)
+            {
+                this.uniqueEdgesSet.Add(initialEdge, initialEdge);
+            }
+        }
         
         public Edge GetEdge(Vertex a, Vertex b)
         {

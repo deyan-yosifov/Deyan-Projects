@@ -189,14 +189,14 @@ namespace LobelFrames.DataStructures
 
         public void FoldMeshPatch(MeshPatchFoldingInfo foldingInfo)
         {
-            foreach (Vertex vertex in foldingInfo.FirstPatchInnerVertices)
+            foreach (Vertex vertex in foldingInfo.FirstPatchInnerVerticesToTransform)
             {
                 vertex.Point = foldingInfo.FirstRotationMatrix.Transform(vertex.Point);
             }
 
             if (!foldingInfo.IsFoldingSinglePatch)
             {
-                foreach (Vertex vertex in foldingInfo.SecondPatchInnerVertices)
+                foreach (Vertex vertex in foldingInfo.SecondPatchInnerVerticesToTransform)
                 {
                     vertex.Point = foldingInfo.SecondRotationMatrix.Transform(vertex.Point);
                 }
@@ -223,25 +223,8 @@ namespace LobelFrames.DataStructures
         {
             foreach (Vertex vertex in verticesToDelete)
             {
-                foreach (Triangle triangle in this.GetTriangles(vertex).ToArray())
-                {
-                    this.triangles.Remove(triangle);
-
-                    foreach (Vertex triangleVertex in triangle.Vertices)
-                    {
-                        this.vertexToTriangles[triangleVertex].Remove(triangle);
-                    }
-                }
-
-                foreach (Edge edge in this.GetEdges(vertex).ToArray())
-                {
-                    this.edges.Remove(edge);
-
-                    foreach (Vertex edgeVertex in edge.Vertices)
-                    {
-                        this.vertexToEdges[edgeVertex].Remove(edge);
-                    }
-                }
+                this.DeleteTriangles(this.GetTriangles(vertex).ToArray());
+                this.DeleteEdges(this.GetEdges(vertex).ToArray());
 
                 this.vertexToTriangles.Remove(vertex);
                 this.vertexToEdges.Remove(vertex);

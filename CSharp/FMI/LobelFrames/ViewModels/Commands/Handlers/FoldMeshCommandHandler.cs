@@ -55,6 +55,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             this.firstRotationCache = null;
             this.secondRotationCache = null;
+            this.IsShowingPossibleRotatePositions = false;
         }
 
         public override void HandlePointClicked(PointClickEventArgs e)
@@ -63,10 +64,21 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             {
                 if (this.Points.Count == 3)
                 {
-                    MeshPatchFoldingInfo foldingInfo = this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache);
-                    FoldMeshPatchAction foldAction = new FoldMeshPatchAction(this.Surface, foldingInfo);
-                    this.Editor.DoAction(foldAction);
-                    this.Editor.CloseCommandContext();
+                    Point3D rotationPoint;
+                    if (e.TryGetProjectedPoint(this.firstRotationCache.Center.Point, this.firstRotationCache.Axis, out rotationPoint))
+                    {
+                        this.firstRotationCache.PrepareCacheForRotation(rotationPoint);
+                    }
+
+                    this.EndFoldMeshCommand();
+                }
+                else if (this.Points.Count == 5)
+                {
+                    // TODO: Change possible rotation to match two patches...
+                }
+                else
+                {
+                    throw new InvalidOperationException("Possible rotation positions should be shown only when 3 or 5 points are selected!");
                 }
             }
             else if (this.Points.Count < 5)
@@ -78,12 +90,22 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
+        private void EndFoldMeshCommand()
+        {
+            MeshPatchFoldingInfo foldingInfo = this.secondRotationCache == null ?
+                this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache) :
+                this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache, this.secondRotationCache);
+            FoldMeshPatchAction foldAction = new FoldMeshPatchAction(this.Surface, foldingInfo);
+            this.Editor.DoAction(foldAction);
+            this.Editor.CloseCommandContext();
+        }
+
         public override void HandlePointMove(PointEventArgs e)
         {
             if (this.IsShowingPossibleRotatePositions && this.Points.Count == 3)
             {
                 Point3D rotationPoint;
-                if (e.TryGetProjectedPoint(this.firstRotationCache.Center, this.firstRotationCache.Axis, out rotationPoint))
+                if (e.TryGetProjectedPoint(this.firstRotationCache.Center.Point, this.firstRotationCache.Axis, out rotationPoint))
                 {
                     int lineIndex = 0;
                     foreach (Tuple<Point3D, Point3D> edge in this.firstRotationCache.GetRotatedEdges(rotationPoint))
@@ -364,7 +386,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             MeshPatchVertexSelectionInfo patch = this.Surface.MeshEditor.GetMeshPatchVertexSelection(new Vertex[] { axis, center, plane }, normal);
             MeshPatchRotationCache rotationCache =
-                new MeshPatchRotationCache(this.Surface.MeshEditor.ElementsProvider, patch, center.Point, axisVector, zeroAngleVector);
+                new MeshPatchRotationCache(this.Surface.MeshEditor.ElementsProvider, patch, center, axisVector, zeroAngleVector);
 
             return rotationCache;
         }
@@ -373,7 +395,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             this.firstRotationCache = this.CalculateRotationCache(this.Points[1], this.Points[2]);
             this.ClearLinesOverlays();
-            foreach (Tuple<Point3D, Point3D> rotatedEdge in this.firstRotationCache.GetRotatedEdges(this.firstRotationCache.Center + this.firstRotationCache.ZeroAngleVector))
+            foreach (Tuple<Point3D, Point3D> rotatedEdge in this.firstRotationCache.GetRotatedEdges(this.firstRotationCache.Center.Point + this.firstRotationCache.ZeroAngleVector))
             {
                 this.Lines.Add(this.ElementsManager.CreateLineOverlay(rotatedEdge.Item1, rotatedEdge.Item2));
             }
