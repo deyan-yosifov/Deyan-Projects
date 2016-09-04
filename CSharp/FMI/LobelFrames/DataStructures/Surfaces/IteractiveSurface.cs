@@ -149,6 +149,17 @@ namespace LobelFrames.DataStructures.Surfaces
         }
 
         protected void RenderSurfaceMesh()
+        {          
+            if (this.meshVisual == null)
+            {
+                this.meshVisual = this.SceneManager.CreateMesh(this);
+            }
+
+            this.meshVisual.Mesh.Geometry = this.GenerateMeshGeometry();
+            this.meshVisual.Mesh.Geometry.Freeze();
+        }
+
+        protected virtual MeshGeometry3D GenerateMeshGeometry()
         {
             MeshGeometry3D meshGeometry = new MeshGeometry3D();
 
@@ -164,12 +175,7 @@ namespace LobelFrames.DataStructures.Surfaces
                 meshGeometry.TriangleIndices.Add(vertexIndexer[triangle.C]);
             }
 
-            if (this.meshVisual == null)
-            {
-                this.meshVisual = this.SceneManager.CreateMesh(this);
-            }
-
-            this.meshVisual.Mesh.Geometry = meshGeometry;
+            return meshGeometry;
         }
 
         protected void HideSurfacePoints()

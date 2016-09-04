@@ -44,5 +44,24 @@ namespace LobelFrames.DataStructures.Surfaces
                 return this.meshEditor;
             }
         }
+
+        protected override MeshGeometry3D GenerateMeshGeometry()
+        {
+            MeshGeometry3D geometry = new MeshGeometry3D();
+
+            foreach (Triangle triangle in this.ElementsProvider.Triangles)
+            {
+                geometry.TriangleIndices.Add(geometry.Positions.Count);
+                geometry.TriangleIndices.Add(geometry.Positions.Count + 1);
+                geometry.TriangleIndices.Add(geometry.Positions.Count + 2);
+
+                foreach (Vertex vertex in triangle.Vertices)
+                {
+                    geometry.Positions.Add(vertex.Point);
+                }
+            }
+
+            return geometry;
+        }
     }
 }

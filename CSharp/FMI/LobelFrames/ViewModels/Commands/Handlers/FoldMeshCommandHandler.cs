@@ -129,7 +129,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             {
                 if (this.IsShowingPossibleRotatePositions)
                 {
-                    // Try end rotation
+                    this.HandleRotationAngleParameterInput(e);
                 }
                 else
                 {
@@ -140,7 +140,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             {
                 if (this.IsShowingPossibleRotatePositions)
                 {
-                    // End rotation
+                    this.EndFoldMeshCommand();
                 }                
             }
         }
@@ -316,6 +316,28 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
 
             return false;
+        }
+
+        private void HandleRotationAngleParameterInput(ParameterInputedEventArgs e)
+        {
+            double rotationAngle;
+            if (double.TryParse(e.Parameter, out rotationAngle))
+            {
+                int multiple = (int)(rotationAngle / 360);
+                rotationAngle = rotationAngle - multiple * 360;
+
+                if (rotationAngle < 0)
+                {
+                    rotationAngle += 360;
+                }
+
+                this.firstRotationCache.PrepareCacheForRotation(rotationAngle);
+                this.EndFoldMeshCommand();
+            }
+            else
+            {
+                this.Editor.ShowHint(Hints.InvalidRotationAngleParameterValue, HintType.Warning);
+            }
         }
 
         private void DoOnNoPointSelected()

@@ -145,6 +145,13 @@ namespace LobelFrames.DataStructures.Surfaces
                 angleInDegrees = 360 - angleInDegrees;
             }
 
+            this.PrepareCacheForRotation(angleInDegrees);
+        }
+
+        public void PrepareCacheForRotation(double angleInDegrees)
+        {
+            Guard.ThrowExceptionIfNotInRange(angleInDegrees, 0, 360, true, false, "angleInDegrees");
+
             if (this.previousAngle != angleInDegrees)
             {
                 this.CalculateRotationCache(angleInDegrees);

@@ -48,12 +48,27 @@ namespace Deyo.Core.Common
             }
         }
 
-        public static void ThrowExceptionInNotInRange<T>(T value, T minValue, T maxValue, string parameterName)
+        public static void ThrowExceptionIfNotInRange<T>(T value, T minValue, T maxValue, string parameterName)
             where T : IComparable
         {
-            if (value.CompareTo(minValue) < 0 || value.CompareTo(maxValue) > 0)
+            Guard.ThrowExceptionIfNotInRange(value, minValue, maxValue, true, true, parameterName);
+        }
+
+        public static void ThrowExceptionIfNotInRange<T>(T value, T minValue, T maxValue, bool includeMin, bool includeMax, string parameterName)
+            where T : IComparable
+        {
+            bool isMinFulfilled = includeMin ? value.CompareTo(minValue) >= 0 : value.CompareTo(minValue) > 0;
+            bool isMaxFulfilled = includeMax ? value.CompareTo(maxValue) <= 0 : value.CompareTo(maxValue) < 0;
+            bool areBothFulfilled = isMinFulfilled && isMaxFulfilled;
+
+            if (!areBothFulfilled)
             {
-                throw new ArgumentOutOfRangeException(string.Format("{0} should not be in range [{1}; {2}]!", parameterName, minValue, maxValue));
+                throw new ArgumentOutOfRangeException(string.Format("{0} should not be in range {1}{2}; {3}{4}!",
+                    parameterName,
+                    includeMin ? "[" : "(",
+                    minValue,
+                    maxValue,
+                    includeMax ? "]" : ")"));
             }
         }
 

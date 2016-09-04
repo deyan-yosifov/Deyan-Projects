@@ -6,6 +6,12 @@ namespace LobelFrames.ViewModels.Commands
 {
     public class InputManager : ViewModelBase
     {
+        private const char escape = (char)27;
+        private const char backspace = '\b';
+        private const char cariageReturn = '\r';
+        private const char newLine = '\n';
+        private const char minus = '-';
+        private const char plus = '+';
         private string inputLabel;
         private string inputValue;
         private bool isEnabled;
@@ -130,11 +136,6 @@ namespace LobelFrames.ViewModels.Commands
 
         private void HandleInputSymbol(char symbol)
         {
-            const char escape = (char)27;
-            const char backspace = '\b';
-            const char cariageReturn = '\r';
-            const char newLine = '\n';
-
             if (symbol == escape)
             {
                 this.HandleEscapeButtonInput();
@@ -155,7 +156,7 @@ namespace LobelFrames.ViewModels.Commands
                         {
                             this.EnsureInputingState();
 
-                            if (char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol))
+                            if (InputManager.IsValidInputSymbol(symbol))
                             {
                                 this.InputValue += symbol;
                             }
@@ -241,6 +242,11 @@ namespace LobelFrames.ViewModels.Commands
             {
                 this.ParameterInputed(this, args);
             }
+        }
+
+        private static bool IsValidInputSymbol(char symbol)
+        {
+            return char.IsLetterOrDigit(symbol) || InputManager.IsDecimalSeparator(symbol) || symbol == minus || symbol == plus;
         }
 
         private static bool IsDecimalSeparator(char symbol)

@@ -37,5 +37,6 @@ namespace LobelFrames.ViewModels.Commands
         public const string RotationPlanePointMustBeConnectedWithColinearEdgesWithAxisFirstRotationPoint = "Точката от равнината за ротация и първата точка от оста трябва да са свързани с колинеарни ръбове!";
         public const string RotationPlanePointCannotBeColinearWithRotationAxis = "Точката от равнината на ротация не може да е колинеарна с оста на ротация!";
         public const string RotationAxisPointsMustBeConnectedWithColinearEdges = "Точките от оста на ротация трябва да са свързани с колинеарни ръбове!";
+        public const string InvalidRotationAngleParameterValue = "Невалиден параметър! Ъгълът на ротация трябва да е десетично число!";
     }
 }
