@@ -163,6 +163,18 @@ namespace LobelFrames.DataStructures.Surfaces
         {
             this.PrepareCacheForRotation(rotationPlanePoint);
 
+            return this.GetRotatedEdges();
+        }
+
+        public IEnumerable<Tuple<Point3D, Point3D>> GetRotatedEdges(double rotationAngle)
+        {
+            this.PrepareCacheForRotation(rotationAngle);
+
+            return this.GetRotatedEdges();
+        }
+
+        private IEnumerable<Tuple<Point3D, Point3D>> GetRotatedEdges()
+        {
             foreach (Edge edge in this.edges)
             {
                 yield return new Tuple<Point3D, Point3D>(this.vertexToRotatedPositionCache[edge.Start], this.vertexToRotatedPositionCache[edge.End]);

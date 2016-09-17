@@ -1,11 +1,7 @@
 ﻿using Deyo.Core.Mathematics.Algebra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace Deyo.Core.Mathematics.Geometry
@@ -133,6 +129,25 @@ namespace Deyo.Core.Mathematics.Geometry
             Point3D intersection = linePoint + t * lineVector;
 
             return intersection;
+        }
+
+        public static bool TryFindPlanesIntersectionLine(Point3D firstPlanePoint, Vector3D firstPlaneNormal, Point3D secondPlanePoint, Vector3D secondPlaneNormal, out Point3D linePoint, out Vector3D lineVector)
+        {
+            lineVector = Vector3D.CrossProduct(firstPlaneNormal, secondPlaneNormal);
+
+            if (lineVector.LengthSquared.IsZero())
+            {
+                linePoint = new Point3D();
+                lineVector = new Vector3D();
+
+                return false;
+            }
+
+            lineVector.Normalize();
+            Vector3D slope = Vector3D.CrossProduct(firstPlaneNormal, lineVector);
+            linePoint = IntersectionsHelper.IntersectLineAndPlane(firstPlanePoint, slope, secondPlanePoint, secondPlaneNormal);
+
+            return true;
         }
     }
 }

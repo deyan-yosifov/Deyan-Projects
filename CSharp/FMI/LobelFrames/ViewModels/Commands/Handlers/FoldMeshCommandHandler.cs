@@ -19,6 +19,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         private readonly Dictionary<int, Action> pointsCountToActionWhenPointSelectionChanged;
         private MeshPatchRotationCache firstRotationCache;
         private MeshPatchRotationCache secondRotationCache;
+        private Tuple<double, double>[] rotationAngles;
+        private int currentRotationAnglesIndex;
 
         public FoldMeshCommandHandler(ILobelSceneEditor editor, ISceneElementsManager elementsManager)
             : base(editor, elementsManager)
@@ -383,7 +385,83 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         {
             this.ClearLinesOverlays();
 
-            // TODO: Try calculate first rotation option and show it.
+            this.firstRotationCache = this.CalculateRotationCache(this.Points[1], this.Points[2]);
+            this.secondRotationCache = this.CalculateRotationCache(this.Points[3], this.Points[4]);
+
+            Tuple<double, double>[] angles;
+            if (this.ValidateRotationPatchesAreNotIntersecting() && this.TryFindPossibleRotationAngles(out angles))
+            {
+                this.BeginShowingPossibleRotationPositions(angles);
+            }
+            else
+            {
+                this.AddExtendedLineSegment(this.Points[0], this.Points[1]);
+                this.AddExtendedLineSegment(this.Points[0], this.Points[2]);
+                this.AddExtendedLineSegment(this.Points[0], this.Points[3]);
+                this.AddExtendedLineSegment(this.Points[0], this.Points[4]);
+            }
+        }
+
+        private bool TryFindPossibleRotationAngles(out Tuple<double, double>[] angles)
+        {
+            Point3D commonCenter = this.Points[0].Position;
+            Vector3D firstAxisDirection = this.Points[1].Position - commonCenter;
+            firstAxisDirection.Normalize();
+            Vector3D secondAxisDirection = this.Points[3].Position - commonCenter;
+            secondAxisDirection.Normalize();
+            Vector3D firstSideDirection = this.Points[2].Position - commonCenter;
+            firstSideDirection.Normalize();
+            Vector3D secondSideDirection = this.Points[4].Position - commonCenter;
+            secondSideDirection.Normalize();
+
+            Point3D firstCircleCenter = commonCenter + firstAxisDirection * Vector3D.DotProduct(firstAxisDirection, firstSideDirection);
+            Point3D secondCircleCenter = commonCenter + secondAxisDirection * Vector3D.DotProduct(secondAxisDirection, secondSideDirection);
+
+            Point3D linePoint;
+            Vector3D lineVector;
+            if (IntersectionsHelper.TryFindPlanesIntersectionLine(firstCircleCenter, firstAxisDirection, secondCircleCenter, secondAxisDirection, out linePoint, out lineVector))
+            {
+                // TODO: Try find common intersection between two circles and this line...
+            }
+
+            angles = null;
+            return false;
+        }
+
+        private bool ValidateRotationPatchesAreNotIntersecting()
+        {
+            MeshPatchVertexSelectionInfo firstPatch = this.firstRotationCache.MeshPatch;
+            MeshPatchVertexSelectionInfo secondPatch = this.secondRotationCache.MeshPatch;
+
+            VerticesSet setToCheck, setToEnumerate;
+
+            if (firstPatch.AllPatchVertices.Count > secondPatch.AllPatchVertices.Count)
+            {
+                setToCheck = firstPatch.AllPatchVertices;
+                setToEnumerate = secondPatch.AllPatchVertices;
+            }
+            else
+            {
+                setToCheck = secondPatch.AllPatchVertices;
+                setToEnumerate = firstPatch.AllPatchVertices;
+            }
+
+            int coinsideCount = 0;
+            foreach (Vertex vertex in setToEnumerate)
+            {
+                if (setToCheck.Contains(vertex))
+                {
+                    coinsideCount++;
+
+                    if (coinsideCount > 1)
+                    {
+                        this.Editor.ShowHint(Hints.FoldMeshPatchesCannotIntersect, HintType.Warning);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void AddExtendedLineSegment(PointVisual fromPoint, PointVisual toPoint)
@@ -424,6 +502,53 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.IsShowingPossibleRotatePositions = true;
             this.ClearMovingLine();
             this.UpdateInputLabel();
+        }
+
+        private void BeginShowingPossibleRotationPositions(Tuple<double, double>[] possibleRotations)
+        {
+            this.rotationAngles = possibleRotations;
+            this.currentRotationAnglesIndex = 0;
+            this.ClearLinesOverlays();
+
+            this.ShowRotationPossibility(this.rotationAngles[this.currentRotationAnglesIndex].Item1, this.rotationAngles[this.currentRotationAnglesIndex].Item2);
+
+            this.IsShowingPossibleRotatePositions = true;
+            this.ClearMovingLine();
+            this.UpdateInputLabel();
+        }
+
+        private void ShowRotationPossibility(double firstRotationAngle, double secondRotationAngle)
+        {
+            if (this.Lines.Count == 0)
+            {
+                foreach (Tuple<Point3D, Point3D> rotatedEdge in this.GetBothPatchesRotatedEdges(firstRotationAngle, secondRotationAngle))
+                {
+                    this.Lines.Add(this.ElementsManager.CreateLineOverlay(rotatedEdge.Item1, rotatedEdge.Item2));
+                }
+            }
+            else
+            {
+                int index = 0;
+
+                foreach (Tuple<Point3D, Point3D> rotatedEdge in this.GetBothPatchesRotatedEdges(firstRotationAngle, secondRotationAngle))
+                {
+                    this.ElementsManager.MoveLineOverlay(this.Lines[index], rotatedEdge.Item1, rotatedEdge.Item2);
+                    index++;
+                }
+            }
+        }
+
+        private IEnumerable<Tuple<Point3D, Point3D>> GetBothPatchesRotatedEdges(double firstRotationAngle, double secondRotationAngle)
+        {
+            foreach (Tuple<Point3D, Point3D> rotatedEdge in this.firstRotationCache.GetRotatedEdges(firstRotationAngle))
+            {
+                yield return rotatedEdge;
+            }
+
+            foreach (Tuple<Point3D, Point3D> rotatedEdge in this.secondRotationCache.GetRotatedEdges(secondRotationAngle))
+            {
+                yield return rotatedEdge;
+            }
         }
     }
 }
