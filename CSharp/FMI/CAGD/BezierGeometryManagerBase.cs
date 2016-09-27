@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
+using Deyo.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
@@ -109,7 +110,7 @@ namespace CAGD
         {
             while (this.visibleControlLines.Count > 0)
             {
-                this.controlLinesPool.PushElementToPool(this.visibleControlLines.RemoveLast());
+                this.controlLinesPool.PushElementToPool(this.visibleControlLines.PopLast());
             }
         }
 
@@ -133,7 +134,7 @@ namespace CAGD
         {
             while (this.visibleSurfaceLines.Count > 0)
             {
-                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.RemoveLast());
+                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.PopLast());
             }
         }
 
@@ -220,7 +221,7 @@ namespace CAGD
 
             while (visibleLines.Count > visibleCount)
             {
-                linesPool.PushElementToPool(visibleLines.RemoveLast());
+                linesPool.PushElementToPool(visibleLines.PopLast());
             }
         }
 
@@ -228,7 +229,7 @@ namespace CAGD
         {
             while (this.visibleControlLines.Count > 0)
             {
-                this.controlLinesPool.PushElementToPool(this.visibleControlLines.RemoveLast());
+                this.controlLinesPool.PushElementToPool(this.visibleControlLines.PopLast());
             }
         }
 
@@ -236,7 +237,7 @@ namespace CAGD
         {
             while (this.visibleSurfaceLines.Count > 0)
             {
-                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.RemoveLast());
+                this.surfaceLinesPool.PushElementToPool(this.visibleSurfaceLines.PopLast());
             }
         }
 

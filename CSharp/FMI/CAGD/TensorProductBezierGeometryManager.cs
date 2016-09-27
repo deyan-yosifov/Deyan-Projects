@@ -1,6 +1,7 @@
 ﻿using Deyo.Controls.Controls3D;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
+using Deyo.Core.Mathematics.Geometry.CAGD;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace CAGD
     public class TensorProductBezierGeometryManager : BezierGeometryManagerBase<TensorProductBezierGeometryContext>
     {
         private PointVisual[,] controlPoints;
+        private Point3D[,] controlPointValues;
         private Point3D[,] surfacePoints;
 
         public TensorProductBezierGeometryManager(Scene3D scene)
             : base(scene)
         {
+            this.controlPointValues = null;
             this.controlPoints = null;
             this.surfacePoints = null;
         }
@@ -150,61 +153,20 @@ namespace CAGD
         {
             this.HideControlPoints();
             this.controlPoints = null;
-        }
-
-        private BezierCurve CalculateUBezierCurve(BezierCurve[] vCurves, double u)
-        {
-            int vCount = this.controlPoints.GetLength(1);
-            Point3D[] bezierPoints = new Point3D[vCount];
-
-            for (int v = 0; v < vCount; v++)
-            {
-                bezierPoints[v] = vCurves[v].GetPointOnCurve(u);
-            }
-
-            return new BezierCurve(bezierPoints);
-        }
-
-        private BezierCurve[] CalculateVCurves()
-        {
-            int uCount = this.controlPoints.GetLength(0);
-            int vCount = this.controlPoints.GetLength(1);
-            BezierCurve[] vCurves = new BezierCurve[vCount];
-
-            for (int v = 0; v < vCount; v++)
-            {
-                Point3D[] bezierPoints = new Point3D[uCount];
-
-                for (int u = 0; u < uCount; u++)
-                {
-                    bezierPoints[u] = this.controlPoints[u, v].Position;
-                }
-
-                vCurves[v] = new BezierCurve(bezierPoints);
-            }
-
-            return vCurves;
+            this.controlPointValues = null;
         }
 
         private void RecalculateSurfacePoints(int uDevisions, int vDevisions)
         {
-            int uCount = uDevisions + 1;
-            int vCount = vDevisions + 1;
-            this.surfacePoints = new Point3D[uCount, vCount];
-
-            BezierCurve[] vCurves = this.CalculateVCurves();
-
-            for (int i = 0; i < uCount; i++)
+            for (int i = 0; i < this.controlPoints.GetLength(0); i++)
             {
-                double u = (double)i / uDevisions;
-                BezierCurve uCurve = this.CalculateUBezierCurve(vCurves, u);
-
-                for (int j = 0; j < vCount; j++)
+                for (int j = 0; j < this.controlPoints.GetLength(1); j++)
                 {
-                    double v = (double)j / vDevisions;
-                    this.surfacePoints[i, j] = uCurve.GetPointOnCurve(v);
+                    this.controlPointValues[i, j] = this.controlPoints[i, j].Position;
                 }
             }
+
+            this.surfacePoints = new BezierRectangle(this.controlPointValues).GetMeshPoints(uDevisions, vDevisions);
         }
 
         private void GenerateNewControlPointsGeometry(Point3D[,] points, bool showControlPoints)
@@ -218,6 +180,7 @@ namespace CAGD
 
                 int uLength = points.GetLength(0);
                 int vLength = points.GetLength(1);
+                this.controlPointValues = points;
                 this.controlPoints = new PointVisual[uLength, vLength];
 
                 for (int i = 0; i < uLength; i++)

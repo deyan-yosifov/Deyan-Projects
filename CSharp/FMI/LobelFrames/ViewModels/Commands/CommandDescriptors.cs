@@ -58,7 +58,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.GlueMesh, null);
             this.RegisterCommandDescriptor(CommandType.LobelSettings, this.viewModel.ChangeLobelSettings);
 
-            this.RegisterCommandDescriptor(CommandType.AddBezierSurface, null);
+            this.RegisterCommandDescriptor(CommandType.AddBezierSurface, this.viewModel.AddBezierSurface);
             this.RegisterCommandDescriptor(CommandType.ApproximateWithLobelMesh, null);
             this.RegisterCommandDescriptor(CommandType.BezierSettings, this.viewModel.ChangeBezierSettings);
 

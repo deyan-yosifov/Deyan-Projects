@@ -176,7 +176,22 @@
                            PlacementTarget="{Binding ElementName=bezierSettingsButton}" 
                            Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
-                            <TextBlock Text="{Binding Label}" />
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Label}" />
+
+                                <StackPanel Grid.Row="1" Orientation="Vertical">
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding UDevisions}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding VDevisions}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding UDegree}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding VDegree}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding InitialWidth}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding InitialHeight}" />
+                                </StackPanel>
+                            </Grid>
                         </Border>
                     </Popup>
                 </Grid>

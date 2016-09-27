@@ -105,34 +105,6 @@ namespace LobelFrames.DataStructures
             }
         }
 
-        public IEnumerable<Edge> GetEdges(Vertex vertex)
-        {
-            Guard.ThrowExceptionIfFalse(this.isInitialized, "isInitialized");
-
-            return this.mesh.GetEdges(vertex);
-        }
-
-        public IEnumerable<Vertex> GetVertexNeighbours(Vertex vertex)
-        {
-            Guard.ThrowExceptionIfFalse(this.isInitialized, "isInitialized");
-
-            return this.mesh.GetVertexNeighbours(vertex);
-        }
-
-        public IEnumerable<Triangle> GetTriangles(Vertex vertex)
-        {
-            Guard.ThrowExceptionIfFalse(this.isInitialized, "isInitialized");
-
-            return this.mesh.GetTriangles(vertex);
-        }
-
-        public IEnumerable<Triangle> GetTriangles(Edge edge)
-        {
-            Guard.ThrowExceptionIfFalse(this.isInitialized, "isInitialized");
-
-            return this.mesh.GetTriangles(edge);
-        }
-
         public void AddTriangle(Vertex a, Vertex b, Vertex c)
         {
             Guard.ThrowExceptionIfTrue(this.isInitialized, "isInitialized");

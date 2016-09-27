@@ -180,12 +180,12 @@ namespace LobelFrames.ViewModels
 
         public void AddLobelMesh()
         {
-            using (this.HistoryManager.BeginUndoGroup())
-            {
-                LobelSurface surface = new LobelSurface(this.ElementsPool, this.Settings.LobelSettings.MeshRows.Value, this.Settings.LobelSettings.MeshColumns.Value, this.Settings.LobelSettings.MeshTriangleSide.Value);
-                this.DoAction(new AddSurfaceAction(surface, this.Context));
-                this.DoAction(new SelectSurfaceAction(surface, this.Context));
-            }
+            LobelSurface surface = new LobelSurface(
+                this.ElementsPool, 
+                this.Settings.LobelSettings.MeshRows.Value, 
+                this.Settings.LobelSettings.MeshColumns.Value, 
+                this.Settings.LobelSettings.MeshTriangleSide.Value);
+            this.AddIteractiveSurface(surface);
         }
 
         public void SelectMesh()
@@ -216,6 +216,19 @@ namespace LobelFrames.ViewModels
         public void FoldMesh()
         {
             this.CommandContext.BeginCommand(CommandType.FoldMesh);
+        }
+
+        public void AddBezierSurface()
+        {
+            BezierSurface surface = new BezierSurface(
+                this.ElementsPool,
+                this.Settings.BezierSettings.UDevisions.Value,
+                this.Settings.BezierSettings.VDevisions.Value,
+                this.Settings.BezierSettings.UDegree.Value,
+                this.Settings.BezierSettings.VDegree.Value,
+                this.Settings.BezierSettings.InitialWidth.Value,
+                this.Settings.BezierSettings.InitialHeight.Value);
+            this.AddIteractiveSurface(surface);
         }
 
         public void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
@@ -369,6 +382,15 @@ namespace LobelFrames.ViewModels
         private void HandlePointMove(object sender, PointEventArgs e)
         {
             this.CommandContext.CommandHandler.HandlePointMove(e);
+        }
+
+        private void AddIteractiveSurface(IteractiveSurface surface)
+        {
+            using (this.HistoryManager.BeginUndoGroup())
+            {
+                this.DoAction(new AddSurfaceAction(surface, this.Context));
+                this.DoAction(new SelectSurfaceAction(surface, this.Context));
+            }
         }
     }
 }

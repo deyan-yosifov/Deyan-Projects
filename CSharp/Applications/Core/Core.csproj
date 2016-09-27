@@ -61,6 +61,9 @@
     <Compile Include="Common\PreservableState.cs" />
     <Compile Include="Common\PropertiesChangedEventArgs.cs" />
     <Compile Include="Mathematics\Algebra\AlgebraExtensions.cs" />
+    <Compile Include="Mathematics\Geometry\CAGD\BezierCurve.cs" />
+    <Compile Include="Mathematics\Geometry\CAGD\BezierRectangle.cs" />
+    <Compile Include="Mathematics\Geometry\CAGD\BezierTriangle.cs" />
     <Compile Include="Mathematics\Geometry\GeometryHelper.cs" />
     <Compile Include="Mathematics\Geometry\IntersectionsHelper.cs" />
     <Compile Include="Mathematics\Geometry\IntersectionType.cs" />

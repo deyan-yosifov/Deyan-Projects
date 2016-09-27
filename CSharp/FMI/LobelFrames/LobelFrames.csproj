@@ -53,10 +53,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />
     <Compile Include="DataStructures\EquilateralMeshEditor.cs" />
     <Compile Include="DataStructures\IMeshElementsProvider.cs" />
+    <Compile Include="DataStructures\IMeshElementsRelationsProvider.cs" />
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\NonEditableMesh.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />

@@ -40,7 +40,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             MeshPatchVertexSelectionInfo patch = this.Surface.MeshEditor.GetMeshPatchVertexSelection(new Vertex[] { axis, center, plane }, normal);
             MeshPatchRotationCache rotationCache =
-                new MeshPatchRotationCache(this.Surface.MeshEditor.ElementsProvider, patch, center, axisVector, boundaryVector);
+                new MeshPatchRotationCache(this.Surface.MeshEditor.ElementsRelationsProvider, patch, center, axisVector, boundaryVector);
 
             return rotationCache;
         }

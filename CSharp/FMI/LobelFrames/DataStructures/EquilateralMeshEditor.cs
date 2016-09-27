@@ -79,6 +79,14 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public IMeshElementsRelationsProvider ElementsRelationsProvider
+        {
+            get
+            {
+                return this.mesh;
+            }
+        }
+
         private TriangularMesh Mesh
         {
             get

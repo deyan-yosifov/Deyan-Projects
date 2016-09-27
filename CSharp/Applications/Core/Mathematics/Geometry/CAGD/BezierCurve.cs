@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Deyo.Core.Common;
+using System;
 using System.Windows.Media.Media3D;
 
-namespace CAGD
+namespace Deyo.Core.Mathematics.Geometry.CAGD
 {
     public class BezierCurve
     {
@@ -10,6 +10,8 @@ namespace CAGD
 
         public BezierCurve(Point3D[] controlPoints)
         {
+            Guard.ThrowExceptionIfLessThan(controlPoints.Length, 2, "controlPoints.Length");
+
             this.points = controlPoints;
         }
 

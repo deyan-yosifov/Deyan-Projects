@@ -7,9 +7,12 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public class BezierSurface : IteractiveSurface
     {
-        public BezierSurface(ISceneElementsManager sceneManager)
+        private readonly BezierMesh mesh;
+
+        public BezierSurface(ISceneElementsManager sceneManager, int uDevisions, int vDevisions, int uDegree, int vDegree, double width, double height)
             : base(sceneManager)
         {
+            this.mesh = new BezierMesh(uDevisions, vDevisions, uDegree, vDegree, width, height);
         }
 
         public override SurfaceType Type
@@ -22,27 +25,34 @@ namespace LobelFrames.DataStructures.Surfaces
 
         public override IMeshElementsProvider ElementsProvider
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return this.mesh;
+            }
         }
 
-        public override void Select()
+        protected override IEnumerable<Vertex> SurfaceVerticesToRender
         {
-            throw new NotImplementedException();
+            get
+            {
+                for (int u = 0; u <= this.mesh.UDegree; u++)
+                {
+                    for (int v = 0; v <= this.mesh.VDegree; v++)
+                    {
+                        yield return new Vertex(this.mesh[u, v]);
+                    }
+                }
+            }
         }
 
-        public override void Deselect()
+        protected override void MoveMeshVertices(Vector3D moveDirection)
         {
-            throw new NotImplementedException();
-        }
-
-        public override void Move(Vector3D direction)
-        {
-            throw new NotImplementedException();
+            this.mesh.MoveMeshVertices(moveDirection);
         }
 
         public override IEnumerable<Edge> GetContour()
         {
-            throw new NotImplementedException();
+            return this.mesh.Contour;
         }
     }
 }

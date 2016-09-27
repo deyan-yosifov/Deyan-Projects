@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace LobelFrames.DataStructures
 {
-    public class TriangularMesh : IMeshElementsProvider
+    public class TriangularMesh : IMeshElementsProvider, IMeshElementsRelationsProvider
     {
         private readonly HashSet<Edge> edges;
         private readonly HashSet<Vertex> vertices;

@@ -9,7 +9,7 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public class MeshPatchRotationCache
     {
-        private readonly IMeshElementsProvider elementsProvider;
+        private readonly IMeshElementsRelationsProvider elementsProvider;
         private readonly MeshPatchVertexSelectionInfo meshPatch;
         private readonly HashSet<Edge> edges;
         private readonly Dictionary<Vertex, Point3D> vertexToRotatedPositionCache;
@@ -21,7 +21,7 @@ namespace LobelFrames.DataStructures.Surfaces
         private double previousAngle;
         private Matrix3D currentRotationMatrix;
 
-        public MeshPatchRotationCache(IMeshElementsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Vertex rotationCenter, Vector3D rotationAxis, Vector3D boundaryDirection)
+        public MeshPatchRotationCache(IMeshElementsRelationsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Vertex rotationCenter, Vector3D rotationAxis, Vector3D boundaryDirection)
         {
             Guard.ThrowExceptionIfNull(elementsProvider, "elementsProvider");
             Guard.ThrowExceptionIfNull(meshPatch, "meshPatch");

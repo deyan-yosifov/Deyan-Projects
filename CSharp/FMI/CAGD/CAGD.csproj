@@ -53,12 +53,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BezierCurve.cs" />
     <Compile Include="BezierGeometryContextBase.cs" />
     <Compile Include="BezierGeometryManagerBase.cs" />
-    <Compile Include="BezierTriangle.cs" />
     <Compile Include="BezierViewModelBase.cs" />
-    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="InfoButton.xaml.cs">
       <DependentUpon>InfoButton.xaml</DependentUpon>
     </Compile>

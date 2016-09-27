@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
-namespace CAGD
+namespace Deyo.Core.Mathematics.Geometry.CAGD
 {
     public class BezierTriangle
     {
@@ -75,9 +75,9 @@ namespace CAGD
             }
         }
 
-        public Point3D GetPointOnCurve(double uBarycentricCoordinate, double vBarycentricCoordinate)
+        public Point3D GetMeshPoint(double uBarycentricCoordinate, double vBarycentricCoordinate)
         {
-            return this.GetPointOnCurve(uBarycentricCoordinate, vBarycentricCoordinate, 1 - uBarycentricCoordinate - vBarycentricCoordinate);
+            return this.GetMeshPoint(uBarycentricCoordinate, vBarycentricCoordinate, 1 - uBarycentricCoordinate - vBarycentricCoordinate);
         }
 
         public static int GetMeshPointsCount(int devisions)
@@ -132,16 +132,16 @@ namespace CAGD
         public void IterateTrianlges(bool skipNonParallelTriangles, Action<Point3D, Point3D, Point3D> actionOnTrianglePoints)
         {
             this.IterateTriangleIndexes(skipNonParallelTriangles, (i, j, k) =>
-                {
-                    Point3D a = this.points[i];
-                    Point3D b = this.points[j];
-                    Point3D c = this.points[k];
+            {
+                Point3D a = this.points[i];
+                Point3D b = this.points[j];
+                Point3D c = this.points[k];
 
-                    actionOnTrianglePoints(a, b, c);
-                });
+                actionOnTrianglePoints(a, b, c);
+            });
         }
 
-        private Point3D GetPointOnCurve(double u, double v, double w)
+        private Point3D GetMeshPoint(double u, double v, double w)
         {
             if (this.Degree == 1)
             {
@@ -152,11 +152,11 @@ namespace CAGD
             Point3D[] nextPoints = new Point3D[this.points.Length - this.Degree - 1];
 
             this.IterateTrianlges(true, (a, b, c) =>
-                {
-                    nextPoints[pointIndex++] = BezierTriangle.InterpolatePoints(a, b, c, u, v, w);
-                });
+            {
+                nextPoints[pointIndex++] = BezierTriangle.InterpolatePoints(a, b, c, u, v, w);
+            });
 
-            return new BezierTriangle(nextPoints).GetPointOnCurve(u, v, w);
+            return new BezierTriangle(nextPoints).GetMeshPoint(u, v, w);
         }
 
         private static Point3D InterpolatePoints(Point3D a, Point3D b, Point3D c, double u, double v, double w)

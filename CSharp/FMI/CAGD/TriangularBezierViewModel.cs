@@ -1,4 +1,5 @@
 ﻿using Deyo.Controls.Controls3D;
+using Deyo.Core.Mathematics.Geometry.CAGD;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
@@ -88,7 +89,7 @@ namespace CAGD
 
             BezierTriangle.IterateTriangleCoordinates(this.SurfaceDegree, (u, v) =>
                 {
-                    points[index++] = this.initialBezierTriangle.GetPointOnCurve(u, v);
+                    points[index++] = this.initialBezierTriangle.GetMeshPoint(u, v);
                 });
 
             return points;
