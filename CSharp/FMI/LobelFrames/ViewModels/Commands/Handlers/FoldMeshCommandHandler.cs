@@ -9,6 +9,7 @@ using LobelFrames.IteractionHandling;
 using LobelFrames.ViewModels.Commands.History;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.ViewModels.Commands.Handlers
@@ -19,6 +20,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         private readonly Dictionary<int, Action> pointsCountToActionWhenPointSelectionChanged;
         private MeshPatchRotationCache firstRotationCache;
         private MeshPatchRotationCache secondRotationCache;
+        private FoldMeshCalculator foldCalculator;
         private Tuple<double, double>[] rotationAngles;
         private int currentRotationAnglesIndex;
 
@@ -48,6 +50,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.Editor.EnableSurfacePointerHandler(IteractionHandlingType.PointIteraction);
             this.Editor.InputManager.DisableKeyboardInputValueEditing = true;
             this.UpdateInputLabel();
+            this.foldCalculator = new FoldMeshCalculator(this.Surface);
         }
 
         public override void EndCommand()
@@ -57,6 +60,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
             this.firstRotationCache = null;
             this.secondRotationCache = null;
+            this.foldCalculator = null;
             this.IsShowingPossibleRotatePositions = false;
         }
 
@@ -76,7 +80,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 }
                 else if (this.Points.Count == 5)
                 {
-                    // TODO: Change possible rotation to match two patches...
+                    this.currentRotationAnglesIndex = (this.currentRotationAnglesIndex + 1) % this.rotationAngles.Length;
+                    this.ShowRotationPossibility(this.rotationAngles[this.currentRotationAnglesIndex].Item1, this.rotationAngles[this.currentRotationAnglesIndex].Item2);
                 }
                 else
                 {
@@ -205,9 +210,10 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                     this.Editor.InputManager.DisableKeyboardInputValueEditing = true;
                     break;
                 case 5:
-                    hint = Hints.SwitchBetweenPossibleRotationAngles;
-                    this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, true);
-                    this.Editor.InputManager.HandleEmptyParameterInput = false;
+                    hint = this.IsShowingPossibleRotatePositions ? Hints.SwitchBetweenPossibleRotationAngles : Hints.NoPossibleFoldingPositions;
+                    this.Editor.InputManager.Start(Labels.PressEscapeToStepBack, string.Empty, !this.IsShowingPossibleRotatePositions);
+                    this.Editor.InputManager.HandleEmptyParameterInput = this.IsShowingPossibleRotatePositions;
+                    this.Editor.InputManager.DisableKeyboardInputValueEditing = false;
                     break;
                 default:
                     throw new NotSupportedException(string.Format("Not supported points count: {0}", this.Points.Count));
@@ -227,7 +233,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.pointsCountToPointClickHandlers.Add(0, this.TryHandleFirstPointSelection);
             this.pointsCountToPointClickHandlers.Add(1, this.TryHandleRotationAxisSecondPointSelection);
             this.pointsCountToPointClickHandlers.Add(2, this.TryHandleFirstRotationPlanePointSelection);
-            this.pointsCountToPointClickHandlers.Add(3, this.TryHandleRotationAxisSecondPointSelection);
+            this.pointsCountToPointClickHandlers.Add(3, this.TryHandleSecondRotationAxisSecondPointSelection);
             this.pointsCountToPointClickHandlers.Add(4, this.TryHandleSecondRotationPlanePointSelection);
         }
 
@@ -275,6 +281,21 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
 
             return false;
+        }
+
+        private bool TryHandleSecondRotationAxisSecondPointSelection(PointClickEventArgs e)
+        {
+            bool isColinearWithFirstAxis = (this.Points[0].Position - this.Points[1].Position).IsColinear(this.Points[0].Position - e.Point);
+
+            if (isColinearWithFirstAxis)
+            {
+                this.Editor.ShowHint(Hints.RotationAxisesCannotBeColinear, HintType.Warning);
+                return false;
+            }
+            else
+            {
+                return this.TryHandleRotationAxisSecondPointSelection(e);
+            }
         }
 
         private bool TryHandleFirstRotationPlanePointSelection(PointClickEventArgs e)
@@ -325,14 +346,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             double rotationAngle;
             if (double.TryParse(e.Parameter, out rotationAngle))
             {
-                int multiple = (int)(rotationAngle / 360);
-                rotationAngle = rotationAngle - multiple * 360;
-
-                if (rotationAngle < 0)
-                {
-                    rotationAngle += 360;
-                }
-
+                rotationAngle = this.foldCalculator.NormalizeRotationAngle(rotationAngle);
                 this.firstRotationCache.PrepareCacheForRotation(rotationAngle);
                 this.EndFoldMeshCommand();
             }
@@ -367,6 +381,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         private void DoOnFirstRotationPlanePointSelected()
         {
             this.ClearLinesOverlays();
+            this.firstRotationCache = null;
 
             this.AddExtendedLineSegment(this.Points[0], this.Points[1]);
             this.AddExtendedLineSegment(this.Points[0], this.Points[2]);
@@ -375,10 +390,18 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         private void DoOnSecondRotationAxisSecondPointSelected()
         {
             this.ClearLinesOverlays();
+            this.IsShowingPossibleRotatePositions = false;
+            this.firstRotationCache = null;
+            this.secondRotationCache = null;
 
             this.AddExtendedLineSegment(this.Points[0], this.Points[1]);
             this.AddExtendedLineSegment(this.Points[0], this.Points[2]);
             this.AddExtendedLineSegment(this.Points[0], this.Points[3]);
+
+            if (this.MovingLine == null)
+            {
+                this.MovingLine = this.ElementsManager.BeginMovingLineOverlay(this.Points[0].Position);
+            }
         }
 
         private void DoOnSecondRotationPlanePointSelected()
@@ -404,61 +427,24 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private bool TryFindPossibleRotationAngles(out Tuple<double, double>[] angles)
         {
-            Point3D commonCenter = this.Points[0].Position;
-            Vector3D firstAxisDirection = this.Points[1].Position - commonCenter;
-            firstAxisDirection.Normalize();
-            Vector3D secondAxisDirection = this.Points[3].Position - commonCenter;
-            secondAxisDirection.Normalize();
-            Vector3D firstSideDirection = this.Points[2].Position - commonCenter;
-            firstSideDirection.Normalize();
-            Vector3D secondSideDirection = this.Points[4].Position - commonCenter;
-            secondSideDirection.Normalize();
+            angles = this.foldCalculator.CalculatePossibleFoldAngles(this.firstRotationCache, this.secondRotationCache).ToArray();
 
-            Point3D firstCircleCenter = commonCenter + firstAxisDirection * Vector3D.DotProduct(firstAxisDirection, firstSideDirection);
-            Point3D secondCircleCenter = commonCenter + secondAxisDirection * Vector3D.DotProduct(secondAxisDirection, secondSideDirection);
-
-            Point3D linePoint;
-            Vector3D lineVector;
-            if (IntersectionsHelper.TryFindPlanesIntersectionLine(firstCircleCenter, firstAxisDirection, secondCircleCenter, secondAxisDirection, out linePoint, out lineVector))
+            if (angles.Length == 0)
             {
-                // TODO: Try find common intersection between two circles and this line...
+                angles = null;
+                this.Editor.ShowHint(Hints.NoPossibleFoldingPositions, HintType.Warning);
+                return false;
             }
 
-            angles = null;
-            return false;
+            return true;
         }
 
         private bool ValidateRotationPatchesAreNotIntersecting()
         {
-            MeshPatchVertexSelectionInfo firstPatch = this.firstRotationCache.MeshPatch;
-            MeshPatchVertexSelectionInfo secondPatch = this.secondRotationCache.MeshPatch;
-
-            VerticesSet setToCheck, setToEnumerate;
-
-            if (firstPatch.AllPatchVertices.Count > secondPatch.AllPatchVertices.Count)
+            if (this.foldCalculator.ArePatchesIntersectingInMoreThanOnePoint(this.firstRotationCache.MeshPatch, this.secondRotationCache.MeshPatch))
             {
-                setToCheck = firstPatch.AllPatchVertices;
-                setToEnumerate = secondPatch.AllPatchVertices;
-            }
-            else
-            {
-                setToCheck = secondPatch.AllPatchVertices;
-                setToEnumerate = firstPatch.AllPatchVertices;
-            }
-
-            int coinsideCount = 0;
-            foreach (Vertex vertex in setToEnumerate)
-            {
-                if (setToCheck.Contains(vertex))
-                {
-                    coinsideCount++;
-
-                    if (coinsideCount > 1)
-                    {
-                        this.Editor.ShowHint(Hints.FoldMeshPatchesCannotIntersect, HintType.Warning);
-                        return false;
-                    }
-                }
+                this.Editor.ShowHint(Hints.FoldMeshPatchesCannotIntersect, HintType.Warning);
+                return false;
             }
 
             return true;
@@ -466,29 +452,13 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private void AddExtendedLineSegment(PointVisual fromPoint, PointVisual toPoint)
         {
-            Vertex first = this.Surface.GetVertexFromPointVisual(fromPoint);
-            Vertex second = this.Surface.GetVertexFromPointVisual(toPoint);
-            Vertex extendedEnd = this.Surface.MeshEditor.FindEndOfEdgesRayInPlane(first, second);
-
-            this.Lines.Add(this.ElementsManager.CreateLineOverlay(first.Point, extendedEnd.Point));
+            Vertex extendedEnd = this.foldCalculator.CalculateExtendedRayEndVertex(fromPoint, toPoint);
+            this.Lines.Add(this.ElementsManager.CreateLineOverlay(fromPoint.Position, extendedEnd.Point));
         }
 
         private MeshPatchRotationCache CalculateRotationCache(PointVisual secondAxisPoint, PointVisual rotationPlanePoint)
         {
-            Vertex center = this.Surface.GetVertexFromPointVisual(this.Points[0]);
-            Vertex axis = this.Surface.GetVertexFromPointVisual(secondAxisPoint);
-            Vertex plane = this.Surface.GetVertexFromPointVisual(rotationPlanePoint);
-
-            Vector3D axisVector = axis.Point - center.Point;
-            Vector3D normal = Vector3D.CrossProduct(center.Point - axis.Point, plane.Point - axis.Point);
-            Point3D projectedRotationPlanePoint = IntersectionsHelper.IntersectLineAndPlane(plane.Point, axisVector, center.Point, axisVector);
-            Vector3D zeroAngleVector = projectedRotationPlanePoint - center.Point;
-
-            MeshPatchVertexSelectionInfo patch = this.Surface.MeshEditor.GetMeshPatchVertexSelection(new Vertex[] { axis, center, plane }, normal);
-            MeshPatchRotationCache rotationCache =
-                new MeshPatchRotationCache(this.Surface.MeshEditor.ElementsProvider, patch, center, axisVector, zeroAngleVector);
-
-            return rotationCache;
+            return this.foldCalculator.CalculateRotationCache(this.Points[0], secondAxisPoint, rotationPlanePoint);
         }
 
         private void BeginRotationAnimation()

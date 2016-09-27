@@ -105,7 +105,7 @@ namespace LobelFrames.IteractionHandling
 
         public bool TryHandleMouseDown(PointerEventArgs<MouseButtonEventArgs> e)
         {
-            return true;          
+            return e.OriginalArgs.LeftButton == MouseButtonState.Pressed; 
         }
 
         public bool TryHandleMouseUp(PointerEventArgs<MouseButtonEventArgs> e)

@@ -33,11 +33,13 @@ namespace LobelFrames.ViewModels.Commands
         public const string SelectSecondAxisSecondRotationPointOrPressEnterToRotate = "Избери втора точка от втората ос на ротация или натисни Enter за започване на ротация!";
         public const string SelectPointFromSecondRotationPlane = "Избери точка от втората равнина на ротация!";
         public const string ClickOrInputRotationValue = "Избери ъгъла на ротация с кликане с мишката или въвеждане с клавиатурата!";
-        public const string SwitchBetweenPossibleRotationAngles = "Сменяйте със кликане възможните позиции на ротация или натиснете Enter за завършване!";
+        public const string SwitchBetweenPossibleRotationAngles = "Сменяйте с кликане възможните позиции на ротация или натиснете Enter за завършване!";
         public const string RotationPlanePointMustBeConnectedWithColinearEdgesWithAxisFirstRotationPoint = "Точката от равнината за ротация и първата точка от оста трябва да са свързани с колинеарни ръбове!";
         public const string RotationPlanePointCannotBeColinearWithRotationAxis = "Точката от равнината на ротация не може да е колинеарна с оста на ротация!";
         public const string RotationAxisPointsMustBeConnectedWithColinearEdges = "Точките от оста на ротация трябва да са свързани с колинеарни ръбове!";
         public const string InvalidRotationAngleParameterValue = "Невалиден параметър! Ъгълът на ротация трябва да е десетично число!";
         public const string FoldMeshPatchesCannotIntersect = "Двата региона на огъване не могат да се пресичат взаимно!";
+        public const string RotationAxisesCannotBeColinear = "Двете оси на огъване не може да са колинеарни!";
+        public const string NoPossibleFoldingPositions = "С текущата селекция няма възможни ъгли на огъване. Сменете селекцията с Escape.";
     }
 }

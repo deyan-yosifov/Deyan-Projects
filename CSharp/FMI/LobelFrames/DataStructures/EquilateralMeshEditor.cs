@@ -89,7 +89,7 @@ namespace LobelFrames.DataStructures
 
         public MeshPatchFoldingInfo GetMeshPatchFoldingInfo(MeshPatchRotationCache rotationCache)
         {
-            MeshPatchFoldingInfoCalculationContext context = this.CalculateFirstRotationFoldingContext(rotationCache);
+            MeshPatchFoldingInfoCalculationContext context = this.CalculateFirstRotationFoldingContext(rotationCache, false);
             VerticesSet axisVertices = new VerticesSet(context.AxisVertices);
             VerticesSet innerVertices = new VerticesSet(this.GetVerticesToTransform(rotationCache, axisVertices));
             Matrix3D matrix = rotationCache.CurrentRotationMatrix;
@@ -246,15 +246,22 @@ namespace LobelFrames.DataStructures
 
         private MeshPatchFoldingInfoCalculationContext CalculateTwoPatchesFoldingContext(MeshPatchRotationCache firstRotationCache, MeshPatchRotationCache secondRotationCache)
         {
-            MeshPatchFoldingInfoCalculationContext context = this.CalculateFirstRotationFoldingContext(firstRotationCache);
-            // TODO: Add second rotation stuff to context...
+            MeshPatchFoldingInfoCalculationContext context = this.CalculateFirstRotationFoldingContext(firstRotationCache, true);
+            this.AddRotationCacheToFoldingContext(secondRotationCache, context);
 
             return context;
         }
 
-        private MeshPatchFoldingInfoCalculationContext CalculateFirstRotationFoldingContext(MeshPatchRotationCache rotationCache)
+        private MeshPatchFoldingInfoCalculationContext CalculateFirstRotationFoldingContext(MeshPatchRotationCache rotationCache, bool shouldProcessBoundaryDirectionVertices)
         {
-            MeshPatchFoldingInfoCalculationContext context = new MeshPatchFoldingInfoCalculationContext(rotationCache.Center);
+            MeshPatchFoldingInfoCalculationContext context = new MeshPatchFoldingInfoCalculationContext(rotationCache.Center, shouldProcessBoundaryDirectionVertices);
+            this.AddRotationCacheToFoldingContext(rotationCache, context);
+
+            return context;
+        }
+
+        private void AddRotationCacheToFoldingContext(MeshPatchRotationCache rotationCache, MeshPatchFoldingInfoCalculationContext context)
+        {
             foreach (Vertex vertex in rotationCache.AxisVertices)
             {
                 context.AxisVertices.Add(vertex);
@@ -266,42 +273,100 @@ namespace LobelFrames.DataStructures
             {
                 if (!rotationCache.MeshPatch.InnerVertices.Contains(vertex) && !context.AxisVertices.Contains(vertex))
                 {
-                    foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
-                    {
-                        if (!visitedTriangles.Add(triangle))
-                        {
-                            continue;
-                        }
-
-                        bool isPatchTriangle = true;
-
-                        foreach (Vertex triangleVertex in triangle.Vertices)
-                        {
-                            if (!rotationCache.MeshPatch.AllPatchVertices.Contains(triangleVertex))
-                            {
-                                isPatchTriangle = false;
-                                break;
-                            }
-
-                            if (!rotationCache.MeshPatch.InnerVertices.Contains(triangleVertex) &&
-                                !context.AxisVertices.Contains(triangleVertex) &&
-                                !context.BoundaryVerticesDuplicates.ContainsKey(triangleVertex))
-                            {
-                                context.BoundaryVerticesDuplicates.Add(triangleVertex, new Vertex(rotationCache[triangleVertex]));
-                            }
-                        }
-
-                        if (!isPatchTriangle)
-                        {
-                            continue;
-                        }
-
-                        this.AddToContextBoundaryPatchTriangleDuplicate(context, triangle);
-                    }
+                    this.ProcessVertexTriangles(rotationCache, context, visitedTriangles, vertex);
                 }
             }
 
-            return context;
+            if (context.ShouldProcessBoundaryDirectionVertices && !context.HasProcessedFirstPatchBoundary)
+            {
+                context.HasProcessedFirstPatchBoundary = true;
+            }
+        }
+
+        private void ProcessVertexTriangles(MeshPatchRotationCache rotationCache, MeshPatchFoldingInfoCalculationContext context, HashSet<Triangle> visitedTriangles, Vertex vertex)
+        {
+            foreach (Triangle triangle in this.Mesh.GetTriangles(vertex))
+            {
+                if (!visitedTriangles.Add(triangle))
+                {
+                    continue;
+                }
+
+                bool isPatchTriangle = true;
+
+                foreach (Vertex triangleVertex in triangle.Vertices)
+                {
+                    if (!rotationCache.MeshPatch.AllPatchVertices.Contains(triangleVertex))
+                    {
+                        isPatchTriangle = false;
+                        break;
+                    }
+
+                    this.EnsurePatchTriangleVertexDuplicate(rotationCache, context, triangleVertex);
+                }
+
+                if (!isPatchTriangle)
+                {
+                    continue;
+                }
+
+                this.AddToContextBoundaryPatchTriangleDuplicate(context, triangle);
+            }
+        }
+
+        private void EnsurePatchTriangleVertexDuplicate(MeshPatchRotationCache rotationCache, MeshPatchFoldingInfoCalculationContext context, Vertex triangleVertex)
+        {
+            if (!rotationCache.MeshPatch.InnerVertices.Contains(triangleVertex) &&
+                !context.AxisVertices.Contains(triangleVertex) &&
+                !context.BoundaryVerticesDuplicates.ContainsKey(triangleVertex))
+            {
+                if (context.HasProcessedFirstPatchBoundary)
+                {
+                    this.ProcessSecondRotationPatchTriangleVertex(rotationCache, context, triangleVertex);
+                }
+                else
+                {
+                    this.ProcessFirstRotationPatchTriangleVertex(rotationCache, context, triangleVertex);
+                }
+            }
+        }
+
+        private void ProcessFirstRotationPatchTriangleVertex(MeshPatchRotationCache rotationCache, MeshPatchFoldingInfoCalculationContext context, Vertex triangleVertex)
+        {
+            Vertex duplicate = new Vertex(rotationCache[triangleVertex]);
+            context.BoundaryVerticesDuplicates.Add(triangleVertex, duplicate);
+
+            if (context.ShouldProcessBoundaryDirectionVertices)
+            {
+                Vector3D radiusVector = triangleVertex.Point - rotationCache.Center.Point;
+                if (radiusVector.IsColinear(rotationCache.BoundaryDirection))
+                {
+                    double coordinate = Vector3D.DotProduct(radiusVector, rotationCache.BoundaryDirection);
+                    int multiple = (int)Math.Round(coordinate / this.SideSize);
+                    context.AddBoundaryPointIndexDuplicate(multiple, duplicate);
+                }
+            }
+        }
+
+        private void ProcessSecondRotationPatchTriangleVertex(MeshPatchRotationCache rotationCache, MeshPatchFoldingInfoCalculationContext context, Vertex triangleVertex)
+        {
+            Vertex duplicate = null;
+            Vector3D radiusVector = triangleVertex.Point - rotationCache.Center.Point;
+            if (radiusVector.IsColinear(rotationCache.BoundaryDirection))
+            {
+                double coordinate = Vector3D.DotProduct(radiusVector, rotationCache.BoundaryDirection);
+                int multiple = (int)Math.Round(coordinate / this.SideSize);
+                if (!context.TryGetFirstPatchBoundaryDuplicate(multiple, out duplicate))
+                {
+                    duplicate = new Vertex(rotationCache[triangleVertex]);
+                }
+            }
+            else
+            {
+                duplicate = new Vertex(rotationCache[triangleVertex]);
+            }
+
+            context.BoundaryVerticesDuplicates.Add(triangleVertex, duplicate);
         }
 
         private IEnumerable<Vertex> GetVerticesToTransform(MeshPatchRotationCache rotationCache, VerticesSet axisVertices)

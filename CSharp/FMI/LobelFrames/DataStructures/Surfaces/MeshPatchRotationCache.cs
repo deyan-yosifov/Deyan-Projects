@@ -1,5 +1,6 @@
 ﻿using Deyo.Core.Common;
 using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
@@ -14,24 +15,29 @@ namespace LobelFrames.DataStructures.Surfaces
         private readonly Dictionary<Vertex, Point3D> vertexToRotatedPositionCache;
         private readonly Vertex center;
         private readonly Vector3D axis;
+        private readonly Vector3D boundaryDirection;
         private readonly Vector3D zeroAngleVector;
         private readonly Vector3D positiveAnglesNormal;
         private double previousAngle;
         private Matrix3D currentRotationMatrix;
 
-        public MeshPatchRotationCache(IMeshElementsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Vertex rotationCenter, Vector3D rotationAxis, Vector3D zeroAngleVector)
+        public MeshPatchRotationCache(IMeshElementsProvider elementsProvider, MeshPatchVertexSelectionInfo meshPatch, Vertex rotationCenter, Vector3D rotationAxis, Vector3D boundaryDirection)
         {
             Guard.ThrowExceptionIfNull(elementsProvider, "elementsProvider");
             Guard.ThrowExceptionIfNull(meshPatch, "meshPatch");
-            Guard.ThrowExceptionIfTrue(rotationAxis.LengthSquared.IsZero(), "rotationAxis vector length cannot be zero!");
-            Guard.ThrowExceptionIfTrue(zeroAngleVector.LengthSquared.IsZero(), "zeroAngleVector vector length cannot be zero!");
-            Guard.ThrowExceptionIfFalse(Vector3D.DotProduct(rotationAxis, zeroAngleVector).IsZero(), "zeroAngleVector must be parallel to rotation plane!");
-
+            Guard.ThrowExceptionIfTrue(Vector3D.CrossProduct(rotationAxis, boundaryDirection).LengthSquared.IsZero(), "rotationAxis and boundaryDirection vectors cannot be coplanar!");
+                        
             this.elementsProvider = elementsProvider;
             this.meshPatch = meshPatch;
             this.center = rotationCenter;
             this.axis = rotationAxis;
             this.axis.Normalize();
+            this.boundaryDirection = boundaryDirection;
+            this.boundaryDirection.Normalize();
+
+            Point3D planePoint = this.center.Point + boundaryDirection;
+            Point3D projectedRotationPlanePoint = IntersectionsHelper.IntersectLineAndPlane(planePoint, rotationAxis, this.center.Point, rotationAxis);
+            Vector3D zeroAngleVector = projectedRotationPlanePoint - this.center.Point;
             this.zeroAngleVector = zeroAngleVector;
             this.zeroAngleVector.Normalize();
             this.positiveAnglesNormal = Vector3D.CrossProduct(this.axis, this.zeroAngleVector);
@@ -84,6 +90,14 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
+        public Vector3D BoundaryDirection
+        {
+            get
+            {
+                return this.boundaryDirection;
+            }
+        }
+
         public Vector3D ZeroAngleVector
         {
             get
@@ -132,18 +146,7 @@ namespace LobelFrames.DataStructures.Surfaces
 
         public void PrepareCacheForRotation(Point3D rotationPlanePoint)
         {
-            Vector3D rotationDirection = rotationPlanePoint - this.Center.Point;
-            double axisCoordinate = Vector3D.DotProduct(this.Axis, rotationDirection);
-            Guard.ThrowExceptionIfTrue(rotationDirection.LengthSquared.IsZero(), "rotationPlanePoint cannot coinside with rotation center!");
-            Guard.ThrowExceptionIfFalse(axisCoordinate.IsZero(), "rotationPlanePoint must be in the rotation plane!");
-
-            double angleSignCoordinate = Vector3D.DotProduct(this.positiveAnglesNormal, rotationDirection);
-            double angleInDegrees = Vector3D.AngleBetween(this.zeroAngleVector, rotationDirection);
-
-            if (angleSignCoordinate.IsLessThan(0))
-            {
-                angleInDegrees = 360 - angleInDegrees;
-            }
+            double angleInDegrees = this.CalculateNormalizedAngleInDegrees(rotationPlanePoint);
 
             this.PrepareCacheForRotation(angleInDegrees);
         }
@@ -157,6 +160,24 @@ namespace LobelFrames.DataStructures.Surfaces
                 this.CalculateRotationCache(angleInDegrees);
                 this.previousAngle = angleInDegrees;
             }
+        }
+
+        public double CalculateNormalizedAngleInDegrees(Point3D rotationPlanePoint)
+        {
+            Vector3D rotationDirection = rotationPlanePoint - this.Center.Point;
+            double axisCoordinate = Vector3D.DotProduct(this.Axis, rotationDirection);
+            Guard.ThrowExceptionIfTrue(rotationDirection.LengthSquared.IsZero(), "rotationPlanePoint cannot coinside with rotation center!");
+            Guard.ThrowExceptionIfFalse(axisCoordinate.IsZero(), "rotationPlanePoint must be in the rotation plane!");
+
+            double angleSignCoordinate = Vector3D.DotProduct(this.positiveAnglesNormal, rotationDirection);
+            double angleInDegrees = Vector3D.AngleBetween(this.zeroAngleVector, rotationDirection);
+
+            if (angleSignCoordinate.IsLessThan(0))
+            {
+                angleInDegrees = 360 - angleInDegrees;
+            }
+
+            return angleInDegrees;
         }
 
         public IEnumerable<Tuple<Point3D, Point3D>> GetRotatedEdges(Point3D rotationPlanePoint)
