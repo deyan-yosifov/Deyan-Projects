@@ -115,9 +115,16 @@ namespace LobelFrames.FormatProviders
                     return LobelSceneFormatProviderBase.GetLobelSurfaceModel((LobelSurface)surface);
                 case SurfaceType.NonEditable:
                     return LobelSceneFormatProviderBase.GetNonEditableSurfaceModel((NonEditableSurface)surface);
+                case SurfaceType.Bezier:
+                    return LobelSceneFormatProviderBase.GetBezierSurfaceModel((BezierSurface)surface);
                 default:
                     throw new NotSupportedException(string.Format("Not supported surface type: {0}", surface.Type));
             }
+        }
+
+        private static SurfaceModel GetBezierSurfaceModel(BezierSurface bezierSurface)
+        {
+            return new BezierSurfaceModel(bezierSurface.ElementsProvider);
         }
 
         private static SurfaceModel GetNonEditableSurfaceModel(NonEditableSurface nonEditableSurface)
