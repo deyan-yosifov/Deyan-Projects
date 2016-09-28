@@ -6,9 +6,12 @@ namespace LobelFrames.FormatProviders
 {
     public class BezierSurfaceModel : SurfaceModel
     {
-        public BezierSurfaceModel(IMeshElementsProvider elementsProvider)
-            : base(elementsProvider)
+        private readonly BezierMesh mesh;
+
+        public BezierSurfaceModel(BezierMesh mesh)
+            : base(mesh)
         {
+            this.mesh = mesh;
         }
 
         public override SurfaceType Type
@@ -16,6 +19,14 @@ namespace LobelFrames.FormatProviders
             get
             {
                 return SurfaceType.Bezier;
+            }
+        }
+
+        public BezierMesh Mesh
+        {
+            get
+            {
+                return this.mesh;
             }
         }
     }

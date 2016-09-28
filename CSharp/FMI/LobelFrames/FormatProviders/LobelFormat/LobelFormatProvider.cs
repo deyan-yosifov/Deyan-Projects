@@ -16,6 +16,8 @@ namespace LobelFrames.FormatProviders.LobelFormat
         public const string CameraUpDirectionToken = "cudir";
         public const string LobelSurfaceToken = "ls";
         public const string BezierSurfaceToken = "bs";
+        public const string BezierSurfaceDevisions = "bdev";
+        public const string BezierSurfaceDegrees = "bdeg";
         public const string NonEditableSurfaceToken = "ns";
         public const string SelectedSurfaceIndexToken = "sel";
         private LobelFormatImporter importer;

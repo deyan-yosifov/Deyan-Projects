@@ -152,7 +152,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             {
                 Guard.ThrowExceptionIfNull(firstRotationInfo, "firstRotationInfo");
                 Guard.ThrowExceptionIfNull(secondRotationInfo, "secondRotationInfo");
-                Guard.ThrowExceptionInNotEqual(firstRotationInfo.Center, secondRotationInfo.Center, "Both rotation must have the same center!");
+                Guard.ThrowExceptionIfNotEqual(firstRotationInfo.Center, secondRotationInfo.Center, "Both rotation must have the same center!");
 
                 this.firstRotationInfo = firstRotationInfo;
                 this.secondRotationInfo = secondRotationInfo;

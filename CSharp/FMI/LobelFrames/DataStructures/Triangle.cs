@@ -21,9 +21,9 @@ namespace LobelFrames.DataStructures
             vertices.Add(a);
             vertices.Add(b);
             vertices.Add(c);
-            Guard.ThrowExceptionInNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
+            Guard.ThrowExceptionIfNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
             Triangle.AddEdgesVerticesToSet(vertices, sideA, sideB, sideC);
-            Guard.ThrowExceptionInNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
+            Guard.ThrowExceptionIfNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
 
             this.a = a;
             this.b = b;
@@ -37,7 +37,7 @@ namespace LobelFrames.DataStructures
         {
             HashSet<Vertex> vertices = new HashSet<Vertex>();
             Triangle.AddEdgesVerticesToSet(vertices, sideA, sideB, sideC);
-            Guard.ThrowExceptionInNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
+            Guard.ThrowExceptionIfNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
 
             int i = 0;
             foreach (Vertex vertex in vertices)

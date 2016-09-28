@@ -40,7 +40,7 @@ namespace Deyo.Core.Common
             }
         }
 
-        public static void ThrowExceptionInNotEqual(object value, object expectedValue, string parameterName)
+        public static void ThrowExceptionIfNotEqual(object value, object expectedValue, string parameterName)
         {
             if (!value.IsEqualTo(expectedValue))
             {

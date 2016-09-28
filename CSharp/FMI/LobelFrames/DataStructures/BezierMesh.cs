@@ -10,12 +10,12 @@ namespace LobelFrames.DataStructures
     {
         public const int DevisionsMinimum = 1;
         public const int DegreeMinimum = 1;
-        private Point3D[,] controlPoints;
+        private readonly Point3D[,] controlPoints;
+        private readonly int uDegree;
+        private readonly int vDegree;
         private Triangle[,] triangles;
         private int uDevisions;
         private int vDevisions;
-        private int uDegree;
-        private int vDegree;
         private bool isMeshInvalidated;
 
         public BezierMesh(int uDevisions, int vDevisions, int uDegree, int vDegree, double initialWidth, double initialHeight)
@@ -30,6 +30,22 @@ namespace LobelFrames.DataStructures
             this.uDegree = uDegree;
             this.vDegree = vDegree;
             this.controlPoints = BezierMesh.CalculateInitalControlPoints(initialWidth, initialHeight, uDegree + 1, vDegree + 1);
+            this.InvalidateMesh();
+        }
+
+        public BezierMesh(Point3D[,] controlPoints, int uDevisions, int vDevisions)
+        {
+            Guard.ThrowExceptionIfNull(controlPoints, "controlPoints");
+            Guard.ThrowExceptionIfLessThan(uDevisions, DevisionsMinimum, "uDevisions");
+            Guard.ThrowExceptionIfLessThan(vDevisions, DevisionsMinimum, "vDevisions");
+            Guard.ThrowExceptionIfLessThan(controlPoints.GetLength(0), DegreeMinimum + 1, "controlPoints.GetLength(0)");
+            Guard.ThrowExceptionIfLessThan(controlPoints.GetLength(1), DegreeMinimum + 1, "controlPoints.GetLength(1)");
+
+            this.controlPoints = controlPoints;
+            this.uDevisions = uDevisions;
+            this.vDevisions = vDevisions;
+            this.uDegree = controlPoints.GetLength(0) - 1;
+            this.vDegree = controlPoints.GetLength(1) - 1; 
             this.InvalidateMesh();
         }
 

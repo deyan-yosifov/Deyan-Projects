@@ -12,6 +12,10 @@ namespace LobelFrames.FormatProviders.LobelFormat
         private int nonEditableSurfaceIndex;
         private int surfaceIndex;
         private int? selectedSurfaceIndex;
+        private int uBezierDegree;
+        private int vBezierDegree;
+        private int uBezierDevisions;
+        private int vBezierDevisions;
 
         public LobelFormatExporter(LinesOfTextWriter writer)
         {
@@ -56,8 +60,25 @@ namespace LobelFrames.FormatProviders.LobelFormat
             this.writer.WriteCommentLine(string.Format("Bezier surface index: {0}", this.bezierSurfaceIndex));
             this.writer.WriteLine(LobelFormatProvider.BezierSurfaceToken, string.Format("BezierSurface{0}", this.bezierSurfaceIndex++));
 
-            // TODO: Export bezier geometry...
-            throw new NotImplementedException();
+            if (this.uBezierDegree != bezierSurface.Mesh.UDegree || this.vBezierDegree != bezierSurface.Mesh.VDegree)
+            {
+                this.writer.WriteLine(LobelFormatProvider.BezierSurfaceDegrees, bezierSurface.Mesh.UDegree, bezierSurface.Mesh.VDegree);
+            }
+
+            if (this.uBezierDevisions != bezierSurface.Mesh.UDevisions || this.vBezierDevisions != bezierSurface.Mesh.VDevisions)
+            {
+                this.writer.WriteLine(LobelFormatProvider.BezierSurfaceDevisions, bezierSurface.Mesh.UDevisions, bezierSurface.Mesh.VDevisions);
+            }
+
+            for (int v = 0; v <= this.vBezierDegree; v++)
+            {
+                for (int u = 0; u <= this.uBezierDegree; u++)
+                {
+                    this.writer.WriteLine(LobelFormatProvider.VertexToken, bezierSurface.Mesh[u, v]);
+                }
+            }
+
+            this.writer.WriteLine();
         }
 
         public void ExportNonEditableSurface(NonEditableSurfaceModel nonEditableSurface)
@@ -116,6 +137,10 @@ namespace LobelFrames.FormatProviders.LobelFormat
             this.bezierSurfaceIndex = 0;
             this.nonEditableSurfaceIndex = 0;
             this.surfaceIndex = 0;
+            this.uBezierDegree = 0;
+            this.vBezierDegree = 0;
+            this.uBezierDevisions = 0;
+            this.vBezierDevisions = 0;
             this.selectedSurfaceIndex = null;
         }
     }

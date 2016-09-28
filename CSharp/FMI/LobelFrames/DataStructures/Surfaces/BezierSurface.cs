@@ -21,10 +21,15 @@ namespace LobelFrames.DataStructures.Surfaces
         private Point3D positionBeforeInteraction;
 
         public BezierSurface(ISceneElementsManager sceneManager, IUndoableActionDoer undoableActionDoer, int uDevisions, int vDevisions, int uDegree, int vDegree, double width, double height)
+            : this(sceneManager, undoableActionDoer, new BezierMesh(uDevisions, vDevisions, uDegree, vDegree, width, height))
+        {            
+        }
+
+        public BezierSurface(ISceneElementsManager sceneManager, IUndoableActionDoer undoableActionDoer, BezierMesh mesh)
             : base(sceneManager)
         {
             this.undoableActionDoer = undoableActionDoer;
-            this.mesh = new BezierMesh(uDevisions, vDevisions, uDegree, vDegree, width, height);
+            this.mesh = mesh;
             this.visibleControlLines = new List<LineOverlay>();
             this.controlVertexToIndicesMapping = new Dictionary<Vertex, Tuple<int, int>>();
 
@@ -71,6 +76,14 @@ namespace LobelFrames.DataStructures.Surfaces
             get
             {
                 return this.controlVertexToIndicesMapping.Keys;
+            }
+        }
+
+        internal BezierMesh Mesh
+        {
+            get
+            {
+                return this.mesh;
             }
         }
 

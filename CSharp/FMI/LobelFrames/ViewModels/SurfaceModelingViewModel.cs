@@ -288,7 +288,7 @@ namespace LobelFrames.ViewModels
 
             foreach (SurfaceModel model in scene.Surfaces)
             {
-                IteractiveSurface surface = LobelSceneFormatProviderBase.CreateIteractiveSurface(this.ElementsPool, model);
+                IteractiveSurface surface = LobelSceneFormatProviderBase.CreateIteractiveSurface(this.ElementsPool, this, model);
                 this.Context.AddSurface(surface);
 
                 if (model.IsSelected)

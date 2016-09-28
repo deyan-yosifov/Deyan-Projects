@@ -29,8 +29,8 @@ namespace LobelFrames.FormatProviders.ObjFormat
 
         public void BeginImport()
         {
-            Guard.ThrowExceptionInNotEqual(this.vertices.Count, 0, "vertices.Count");
-            Guard.ThrowExceptionInNotEqual(this.currentSurfaceGlobalIndexToVertex.Count, 0, "currentSurfaceGlobalIndexToVertex.Count");
+            Guard.ThrowExceptionIfNotEqual(this.vertices.Count, 0, "vertices.Count");
+            Guard.ThrowExceptionIfNotEqual(this.currentSurfaceGlobalIndexToVertex.Count, 0, "currentSurfaceGlobalIndexToVertex.Count");
         }
 
         public void ImportLine(string[] tokens)

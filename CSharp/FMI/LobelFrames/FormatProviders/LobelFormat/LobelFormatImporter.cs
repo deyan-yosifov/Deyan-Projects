@@ -16,6 +16,10 @@ namespace LobelFrames.FormatProviders.LobelFormat
         private NonEditableMesh currentMesh;
         private SurfaceType? currentSurfaceType;
         private int? selectedSurfaceIndex;
+        private int uBezierDegree;
+        private int vBezierDegree;
+        private int uBezierDevisions;
+        private int vBezierDevisions;
 
         public LobelFormatImporter(LobelScene scene)
         {
@@ -24,6 +28,10 @@ namespace LobelFrames.FormatProviders.LobelFormat
             this.currentSurfaceType = null;
             this.selectedSurfaceIndex = null;
             this.currentSurfaceVertices = null;
+            this.uBezierDegree = 0;
+            this.vBezierDegree = 0;
+            this.uBezierDevisions = 0;
+            this.vBezierDevisions = 0;
 
             this.lineTokensHandlers = new Dictionary<string, Action<string[]>>();
             this.lineTokensHandlers.Add(LobelFormatProvider.VertexToken, this.HandleVertexTokenLine);
@@ -34,6 +42,8 @@ namespace LobelFrames.FormatProviders.LobelFormat
             this.lineTokensHandlers.Add(LobelFormatProvider.CameraUpDirectionToken, this.HandleCameraUpDirectionTokenLine);
             this.lineTokensHandlers.Add(LobelFormatProvider.LobelSurfaceToken, this.HandleLobelSurfaceTokenLine);
             this.lineTokensHandlers.Add(LobelFormatProvider.BezierSurfaceToken, this.HandleBezierSurfaceTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.BezierSurfaceDegrees, this.HandleBezierDegreesTokenLine);
+            this.lineTokensHandlers.Add(LobelFormatProvider.BezierSurfaceDevisions, this.HandleBezierDevisionsTokenLine);
             this.lineTokensHandlers.Add(LobelFormatProvider.NonEditableSurfaceToken, this.HandleNonEditableSurfaceTokenLine);
             this.lineTokensHandlers.Add(LobelFormatProvider.SelectedSurfaceIndexToken, this.HandleSelectedSurfaceIndexTokenLine);
         }
@@ -45,6 +55,10 @@ namespace LobelFrames.FormatProviders.LobelFormat
             Guard.ThrowExceptionIfNotNull(this.selectedSurfaceIndex, "selectedSurfaceIndex");
             Guard.ThrowExceptionIfNotNull(this.currentSurfaceVertices, "currentSurfaceVertices");
             Guard.ThrowExceptionIfNotNull(this.scene.Camera, "scene.Camera");
+            Guard.ThrowExceptionIfNotEqual(this.uBezierDegree, 0, "uBezierDegree");
+            Guard.ThrowExceptionIfNotEqual(this.vBezierDegree, 0, "vBezierDegree");
+            Guard.ThrowExceptionIfNotEqual(this.uBezierDevisions, 0, "uBezierDevisions");
+            Guard.ThrowExceptionIfNotEqual(this.vBezierDevisions, 0, "vBezierDevisions");
         }
 
         public void EndImport()
@@ -152,7 +166,23 @@ namespace LobelFrames.FormatProviders.LobelFormat
 
         private void HandleBezierSurfaceTokenLine(string[] tokens)
         {
-            throw new NotImplementedException();
+            this.BeginSurface(SurfaceType.Bezier);
+        }
+
+        private void HandleBezierDegreesTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNotEqual(tokens.Length, 3, "tokens.Length");
+
+            this.uBezierDegree = int.Parse(tokens[1]);
+            this.vBezierDegree = int.Parse(tokens[2]);
+        }
+
+        private void HandleBezierDevisionsTokenLine(string[] tokens)
+        {
+            Guard.ThrowExceptionIfNotEqual(tokens.Length, 3, "tokens.Length");
+
+            this.uBezierDevisions = int.Parse(tokens[1]);
+            this.vBezierDevisions = int.Parse(tokens[2]);
         }
 
         private void HandleSelectedSurfaceIndexTokenLine(string[] tokens)
@@ -165,8 +195,13 @@ namespace LobelFrames.FormatProviders.LobelFormat
             this.PopPreviousSurface();
 
             this.currentSurfaceType = type;
-            this.currentMesh = new NonEditableMesh();
-            this.currentMesh.BeginInit();
+
+            if (this.currentSurfaceType != SurfaceType.Bezier)
+            {
+                this.currentMesh = new NonEditableMesh();
+                this.currentMesh.BeginInit();
+            }
+
             this.currentSurfaceVertices = new List<Vertex>();
         }
 
@@ -174,9 +209,12 @@ namespace LobelFrames.FormatProviders.LobelFormat
         {
             if (this.currentSurfaceType != null)
             {
-                this.currentMesh.EndInit();
+                if (this.currentSurfaceType != SurfaceType.Bezier)
+                {
+                    this.currentMesh.EndInit();
+                }
 
-                if (currentMesh.Triangles.Any())
+                if (this.currentSurfaceType == SurfaceType.Bezier || currentMesh.Triangles.Any())
                 {
                     SurfaceModel surface = this.CreateSurfaceModel();
                     this.scene.AddSurface(surface);
@@ -196,9 +234,33 @@ namespace LobelFrames.FormatProviders.LobelFormat
                     return new LobelSurfaceModel(this.currentMesh);
                 case SurfaceType.NonEditable:
                     return new NonEditableSurfaceModel(this.currentMesh);
+                case SurfaceType.Bezier:
+                    BezierMesh mesh = this.CreateBezierMesh();
+                    return new BezierSurfaceModel(mesh);
                 default:
                     throw new NotSupportedException(string.Format("Not supported surface type: {0}", this.currentSurfaceType));
             }
+        }
+
+        private BezierMesh CreateBezierMesh()
+        {
+            Guard.ThrowExceptionIfNull(this.currentSurfaceVertices, "currentSurfaceVertices");
+            Guard.ThrowExceptionIfNotEqual(this.currentSurfaceVertices.Count, (this.uBezierDegree + 1) * (this.vBezierDegree + 1), "currentSurfaceVertices.Count");
+
+            int index = 0;
+            Point3D[,] controlPoints = new Point3D[this.uBezierDegree + 1, this.vBezierDegree + 1];
+
+            for (int v = 0; v <= this.vBezierDegree; v++)
+            {
+                for (int u = 0; u <= this.uBezierDegree; u++)
+                {
+                    Vertex vertex = this.currentSurfaceVertices[index];
+                    controlPoints[u, v] = vertex.Point;
+                    index++;
+                }
+            }
+
+            return new BezierMesh(controlPoints, this.uBezierDevisions, this.vBezierDevisions);
         }
 
         private static void ParseThreeCoordinatesLine(string[] tokens, out double x, out double y, out double z)
