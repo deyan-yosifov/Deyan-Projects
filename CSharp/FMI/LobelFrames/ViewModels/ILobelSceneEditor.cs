@@ -7,7 +7,7 @@ using System;
 
 namespace LobelFrames.ViewModels
 {
-    public interface ILobelSceneEditor
+    public interface ILobelSceneEditor : IUndoableActionDoer
     {
         InputManager InputManager { get; }
         ILobelSceneContext Context { get; }
@@ -15,7 +15,6 @@ namespace LobelFrames.ViewModels
         void EnableSurfacePointerHandler(IteractionHandlingType iteractionType);
         void DisableSurfacePointerHandler();
         void ShowHint(string hint, HintType hintType);
-        void DoAction(IUndoRedoAction action);
         void CloseCommandContext();
         LobelScene SaveScene();
         void LoadScene(LobelScene scene);

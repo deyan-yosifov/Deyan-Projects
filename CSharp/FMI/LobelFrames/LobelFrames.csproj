@@ -136,6 +136,7 @@
     <Compile Include="ViewModels\Commands\History\FoldMeshPatchAction.cs" />
     <Compile Include="ViewModels\Commands\History\IteractiveSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\ModifySurfaceUndoableActionBase.cs" />
+    <Compile Include="ViewModels\Commands\History\MoveBezierPointAction.cs" />
     <Compile Include="ViewModels\Commands\History\MoveSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\SelectSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\InputManager.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="ViewModels\Commands\ParameterInputedEventArgs.cs" />
     <Compile Include="ViewModels\ILobelSceneContext.cs" />
     <Compile Include="ViewModels\ILobelSceneEditor.cs" />
+    <Compile Include="ViewModels\IUndoableActionDoer.cs" />
     <Compile Include="ViewModels\LabeledSliderViewModel.cs" />
     <Compile Include="ViewModels\SceneConstants.cs" />
     <Compile Include="ViewModels\Settings\BezierSettings.cs" />

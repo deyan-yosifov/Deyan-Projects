@@ -222,6 +222,7 @@ namespace LobelFrames.ViewModels
         {
             BezierSurface surface = new BezierSurface(
                 this.ElementsPool,
+                this,
                 this.Settings.BezierSettings.UDevisions.Value,
                 this.Settings.BezierSettings.VDevisions.Value,
                 this.Settings.BezierSettings.UDegree.Value,
@@ -335,10 +336,19 @@ namespace LobelFrames.ViewModels
 
         private void InitializeScene()
         {
-            byte directionIntensity = 250;
-            byte ambientIntensity = 125;
+            byte movingIntensity = 100;
+            byte directionIntensity = 175;
+            byte ambientIntensity = 75;
             this.scene.Editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
             this.scene.Editor.AddAmbientLight(Color.FromRgb(ambientIntensity, ambientIntensity, ambientIntensity));
+            VisualOwner owner = this.scene.Editor.AddDirectionalLight(Color.FromRgb(movingIntensity, movingIntensity, movingIntensity), new Vector3D());
+            DirectionalLight movingLight = (DirectionalLight)((ModelVisual3D)owner.Visual).Content;
+            ProjectionCamera initialCamera = null;
+            this.scene.Editor.DoActionOnCamera((perspective) => { initialCamera = perspective; }, (orthographic) => { initialCamera = orthographic; });
+            this.scene.Editor.CameraChanged += (s, e) =>
+                {
+                    movingLight.Direction = initialCamera.LookDirection;
+                };
             this.scene.Editor.Look(new Point3D(25, 25, 35), new Point3D());
 
             this.scene.StartListeningToMouseEvents();
