@@ -336,7 +336,7 @@ namespace LobelFrames.ViewModels
 
         private void InitializeScene()
         {
-            byte movingIntensity = 100;
+            byte movingIntensity = 125;
             byte directionIntensity = 175;
             byte ambientIntensity = 75;
             this.scene.Editor.AddDirectionalLight(Color.FromRgb(directionIntensity, directionIntensity, directionIntensity), new Vector3D(-1, -3, -5));
