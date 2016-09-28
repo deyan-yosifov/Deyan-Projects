@@ -13,8 +13,8 @@ namespace LobelFrames.DataStructures.Surfaces
         private MeshVisual meshVisual;
         private readonly List<PointVisual> visiblePoints;
         private readonly List<LineVisual> visibleSurfaceLines;
-        private readonly List<LineOverlay> visibleLineOverlays;
         private readonly Dictionary<PointVisual, Vertex> pointVisualToVertexMapping;
+        private bool isSelected;
 
         public IteractiveSurface(ISceneElementsManager sceneManager)
         {
@@ -23,13 +23,21 @@ namespace LobelFrames.DataStructures.Surfaces
             this.sceneManager = sceneManager;
             this.visiblePoints = new List<PointVisual>();
             this.visibleSurfaceLines = new List<LineVisual>();
-            this.visibleLineOverlays = new List<LineOverlay>();
             this.pointVisualToVertexMapping = new Dictionary<PointVisual, Vertex>();
+            this.isSelected = false;
         }
 
         public abstract SurfaceType Type { get; }
 
         public abstract IMeshElementsProvider ElementsProvider { get; }
+
+        public virtual IEnumerable<Vertex> BoundingVertices
+        {
+            get
+            {
+                return this.ElementsProvider.Vertices;
+            }
+        }
 
         protected ISceneElementsManager SceneManager
         {
@@ -47,14 +55,35 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
+        protected IEnumerable<PointVisual> VisiblePoints
+        {
+            get
+            {
+                foreach (PointVisual point in this.visiblePoints)
+                {
+                    yield return point;
+                }
+            }
+        }
+
+        protected bool IsSelected
+        {
+            get
+            {
+                return this.isSelected;
+            }
+        }
+
         public virtual void Select()
         {
             this.RenderSurfacePoints();
+            this.isSelected = true;
         }
 
         public virtual void Deselect()
         {
             this.HideSurfacePoints();
+            this.isSelected = false;
         }
 
         public virtual void Move(Vector3D direction)
@@ -84,15 +113,9 @@ namespace LobelFrames.DataStructures.Surfaces
                 this.SceneManager.DeleteSurfaceLine(surfaceLine);
             }
 
-            foreach (LineOverlay lineOverlay in this.visibleLineOverlays)
-            {
-                this.SceneManager.DeleteLineOverlay(lineOverlay);
-            }
-
             this.SceneManager.DeleteMesh(this.meshVisual);
 
             this.meshVisual = null;
-            this.visibleLineOverlays.Clear();
             this.visibleSurfaceLines.Clear();
         }
 

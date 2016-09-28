@@ -1,4 +1,5 @@
-﻿using Deyo.Controls.Controls3D.Visuals;
+﻿using Deyo.Controls.Controls3D.Iteractions;
+using Deyo.Controls.Controls3D.Visuals;
 using Deyo.Controls.Controls3D.Visuals.Overlays2D;
 using System;
 using System.Windows;
@@ -8,6 +9,8 @@ namespace LobelFrames.DataStructures.Surfaces
 {
     public interface ISceneElementsManager
     {
+        IteractivePointsHandler IteractivePointsHandler { get; }
+
         MeshVisual CreateMesh(IteractiveSurface owner);
 
         PointVisual CreatePoint(Point3D point);

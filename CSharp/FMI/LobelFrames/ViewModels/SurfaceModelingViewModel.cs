@@ -318,7 +318,7 @@ namespace LobelFrames.ViewModels
             {
                 foreach (IteractiveSurface surface in this.Context.Surfaces)
                 {
-                    foreach (Vertex vertex in surface.ElementsProvider.Vertices)
+                    foreach (Vertex vertex in surface.BoundingVertices)
                     {
                         yield return vertex.Point;
                     }
@@ -326,7 +326,7 @@ namespace LobelFrames.ViewModels
             }
             else
             {
-                foreach (Vertex vertex in this.Context.SelectedSurface.ElementsProvider.Vertices)
+                foreach (Vertex vertex in this.Context.SelectedSurface.BoundingVertices)
                 {
                     yield return vertex.Point;
                 }
@@ -350,8 +350,8 @@ namespace LobelFrames.ViewModels
             this.InputManager.CancelInputed += this.HandleInputManagerCancelInputed;
             this.HistoryManager.HistoryChanged += this.HandleHistoryChanges;
             this.SurfacePointerHandler.SurfaceHandler.SurfaceSelected += this.HandleSurfaceSelected;
-            this.SurfacePointerHandler.PointHandler.PointClicked += HandlePointClicked;
-            this.SurfacePointerHandler.PointHandler.PointMove += HandlePointMove;
+            this.SurfacePointerHandler.PointHandler.PointClicked += this.HandlePointClicked;
+            this.SurfacePointerHandler.PointHandler.PointMove += this.HandlePointMove;
         }
 
         private void HandleHistoryChanges(object sender, EventArgs e)

@@ -47,6 +47,11 @@ namespace Deyo.Controls.Controls3D.Iteractions
                 if (this.isEnabled != value)
                 {
                     this.isEnabled = value;
+
+                    if (!this.isEnabled)
+                    {
+                        this.ReleaseCapturedPoint();
+                    }
                 }
             }
         }
@@ -92,6 +97,14 @@ namespace Deyo.Controls.Controls3D.Iteractions
             set
             {
                 this.restrictor.CanMoveOnZAxis = value;
+            }
+        }
+
+        public PointVisual CapturedPoint
+        {
+            get
+            {
+                return this.capturedPoint;
             }
         }
 
@@ -157,16 +170,42 @@ namespace Deyo.Controls.Controls3D.Iteractions
             return this.restrictor.IsInIteraction;
         }
 
+        public event EventHandler PointCaptured;
+        public event EventHandler PointReleased;
+
         private void CapturePoint(PointVisual point)
         {
             this.capturedPoint = point;
             this.restrictor.BeginIteraction(point.Position);
+
+            this.OnPointCaptured();
         }
 
         private void ReleaseCapturedPoint()
         {
-            this.capturedPoint = null;
-            this.restrictor.EndIteraction();
+            if (this.restrictor.IsInIteraction)
+            {
+                this.capturedPoint = null;
+                this.restrictor.EndIteraction();
+
+                this.OnPointReleased();
+            }
+        }
+
+        private void OnPointCaptured()
+        {
+            if (this.PointCaptured != null)
+            {
+                this.PointCaptured(this, new EventArgs());
+            }
+        }
+
+        private void OnPointReleased()
+        {
+            if (this.PointReleased != null)
+            {
+                this.PointReleased(this, new EventArgs());
+            }
         }
     }
 }

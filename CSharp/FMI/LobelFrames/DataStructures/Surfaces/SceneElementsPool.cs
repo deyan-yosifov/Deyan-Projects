@@ -56,6 +56,14 @@ namespace LobelFrames.DataStructures.Surfaces
             this.InitializePointerHandlers();
         }
 
+        public IteractivePointsHandler IteractivePointsHandler
+        {
+            get
+            {
+                return this.iteractivePointsHandler;
+            }
+        }
+
         private SceneEditor SceneEditor
         {
             get
@@ -302,6 +310,6 @@ namespace LobelFrames.DataStructures.Surfaces
             pool.PushElementToPool(visual);
             this.lineOverlayToSegment3D.Remove(visual);
             this.visibleLineOverlays.Remove(visual);
-        }        
+        }
     }
 }
