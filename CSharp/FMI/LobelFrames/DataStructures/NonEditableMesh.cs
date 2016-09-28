@@ -108,7 +108,7 @@ namespace LobelFrames.DataStructures
         public void AddTriangle(Vertex a, Vertex b, Vertex c)
         {
             Guard.ThrowExceptionIfTrue(this.isInitialized, "isInitialized");
-            this.mesh.AddTriangle(new Triangle(this.uniqueEdges.GetEdge(a, b), this.uniqueEdges.GetEdge(a, c), this.uniqueEdges.GetEdge(b, c)), true);
+            this.mesh.AddTriangle(new Triangle(a, b, c, this.uniqueEdges.GetEdge(b, c), this.uniqueEdges.GetEdge(a, c), this.uniqueEdges.GetEdge(a, b)), true);
         }
     }
 }
