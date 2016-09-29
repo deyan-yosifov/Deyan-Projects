@@ -35,12 +35,19 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 LobelSceneFormatProviderBase formatProvider;
                 if (LobelFormatProviders.TryGetFormatProvider(extension, out formatProvider))
                 {
-                    LobelScene scene = formatProvider.Import(File.ReadAllBytes(dialog.FileName));
-                    base.Editor.LoadScene(scene);
+                    try
+                    {
+                        LobelScene scene = formatProvider.Import(File.ReadAllBytes(dialog.FileName));
+                        base.Editor.LoadScene(scene);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(string.Format("Грешка по време на отварянето на файлa: \"{0}\"", e.Message), "Грешка!");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Невалидно файлово разширение: " + extension);
+                    MessageBox.Show("Невалидно файлово разширение: " + extension, "Грешка!");
                 }
             }
 

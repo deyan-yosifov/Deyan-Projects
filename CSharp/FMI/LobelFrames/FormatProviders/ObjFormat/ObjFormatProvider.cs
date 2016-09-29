@@ -52,8 +52,15 @@ namespace LobelFrames.FormatProviders.ObjFormat
             base.EndImportOverride();
 
             Guard.ThrowExceptionIfNull(this.importer, "importer");
-            this.importer.EndImport();
-            this.importer = null;
+
+            try
+            {
+                this.importer.EndImport();
+            }
+            finally
+            {
+                this.importer = null;
+            }
         }
 
         protected override void BeginExportOverride()

@@ -62,11 +62,15 @@ namespace LobelFrames.FormatProviders.LobelFormat
 
             if (this.uBezierDegree != bezierSurface.Mesh.UDegree || this.vBezierDegree != bezierSurface.Mesh.VDegree)
             {
+                this.uBezierDegree = bezierSurface.Mesh.UDegree;
+                this.vBezierDegree = bezierSurface.Mesh.VDegree;
                 this.writer.WriteLine(LobelFormatProvider.BezierSurfaceDegrees, bezierSurface.Mesh.UDegree, bezierSurface.Mesh.VDegree);
             }
 
             if (this.uBezierDevisions != bezierSurface.Mesh.UDevisions || this.vBezierDevisions != bezierSurface.Mesh.VDevisions)
             {
+                this.uBezierDevisions = bezierSurface.Mesh.UDevisions;
+                this.vBezierDevisions = bezierSurface.Mesh.VDevisions;
                 this.writer.WriteLine(LobelFormatProvider.BezierSurfaceDevisions, bezierSurface.Mesh.UDevisions, bezierSurface.Mesh.VDevisions);
             }
 

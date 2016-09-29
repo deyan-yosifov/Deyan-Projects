@@ -44,7 +44,7 @@ namespace Deyo.Core.Common
         {
             if (!value.IsEqualTo(expectedValue))
             {
-                throw new ArgumentOutOfRangeException(string.Format("{0} should not be equal to {1}!", parameterName, expectedValue));
+                throw new ArgumentOutOfRangeException(string.Format("{0} should be equal to {1}!", parameterName, expectedValue));
             }
         }
 
@@ -63,7 +63,7 @@ namespace Deyo.Core.Common
 
             if (!areBothFulfilled)
             {
-                throw new ArgumentOutOfRangeException(string.Format("{0} should not be in range {1}{2}; {3}{4}!",
+                throw new ArgumentOutOfRangeException(string.Format("{0} should be in range {1}{2}; {3}{4}!",
                     parameterName,
                     includeMin ? "[" : "(",
                     minValue,

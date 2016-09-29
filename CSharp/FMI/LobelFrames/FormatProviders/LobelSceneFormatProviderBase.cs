@@ -28,17 +28,28 @@ namespace LobelFrames.FormatProviders
         {
             this.EnsureNotImportingOrExporting();
             this.isImportingOrExporting = true;
-            this.scene = new LobelScene();
-
+            LobelScene resultScene = new LobelScene();
+            this.scene = resultScene;
             this.BeginImportOverride();
-            this.ImportOverride(file);
-            this.EndImportOverride();
 
-            LobelScene scene = this.scene;
-            this.scene = null;
-            this.isImportingOrExporting = false;
+            try
+            {
+                this.ImportOverride(file);
+            }
+            finally
+            {
+                try
+                {
+                    this.EndImportOverride();
+                }
+                finally
+                {
+                    this.scene = null;
+                    this.isImportingOrExporting = false;
+                }
+            }
 
-            return scene;
+            return resultScene;
         }
 
         public byte[] Export(LobelScene scene)
