@@ -57,11 +57,14 @@
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />
     <Compile Include="DataStructures\EquilateralMeshEditor.cs" />
+    <Compile Include="DataStructures\IBezierMesh.cs" />
+    <Compile Include="DataStructures\IDescreteUVMesh.cs" />
     <Compile Include="DataStructures\IMeshElementsProvider.cs" />
     <Compile Include="DataStructures\IMeshElementsRelationsProvider.cs" />
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\NonEditableMesh.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
+    <Compile Include="DataStructures\Surfaces\IUVSurface.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchFoldingInfo.cs" />
     <Compile Include="DataStructures\Surfaces\ISceneElementsManager.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchDeletionInfo.cs" />
@@ -112,6 +115,7 @@
     <Compile Include="ViewModels\Commands\CommandStateEvaluator.cs" />
     <Compile Include="ViewModels\Commands\CommandType.cs" />
     <Compile Include="ViewModels\Commands\CommandTypeToDescriptorConverter.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\ApproximateMeshCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlerBase.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CommandHandlersFactory.cs" />
     <Compile Include="ViewModels\Commands\Handlers\CutMeshCommandHandler.cs" />

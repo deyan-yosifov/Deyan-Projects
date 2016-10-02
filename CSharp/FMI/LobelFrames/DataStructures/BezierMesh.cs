@@ -6,7 +6,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures
 {
-    public class BezierMesh : IMeshElementsProvider
+    public class BezierMesh : IBezierMesh, IDescreteUVMesh
     {
         public const int DevisionsMinimum = 1;
         public const int DegreeMinimum = 1;
@@ -47,6 +47,11 @@ namespace LobelFrames.DataStructures
             this.uDegree = controlPoints.GetLength(0) - 1;
             this.vDegree = controlPoints.GetLength(1) - 1; 
             this.InvalidateMesh();
+        }
+
+        public BezierMesh(IBezierMesh other)
+            : this(BezierMesh.GetControlPoints(other), other.UDevisions, other.VDevisions)
+        {
         }
 
         public Point3D this[int u, int v]
@@ -312,6 +317,23 @@ namespace LobelFrames.DataStructures
                     vertex.Point += moveDirection;
                 }
             }
+        }
+
+        private static Point3D[,] GetControlPoints(IBezierMesh other)
+        {
+            int uLength = other.UDegree + 1;
+            int vLength = other.VDegree + 1;
+            Point3D[,] controlPoints = new Point3D[uLength, vLength];
+
+            for (int u = 0; u < uLength; u++)
+            {
+                for (int v = 0; v < vLength; v++)
+                {
+                    controlPoints[u, v] = other[u, v];
+                }
+            }
+
+            return controlPoints;
         }
     }
 }

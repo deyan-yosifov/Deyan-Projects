@@ -6,9 +6,9 @@ namespace LobelFrames.FormatProviders
 {
     public class BezierSurfaceModel : SurfaceModel
     {
-        private readonly BezierMesh mesh;
+        private readonly IBezierMesh mesh;
 
-        public BezierSurfaceModel(BezierMesh mesh)
+        public BezierSurfaceModel(IBezierMesh mesh)
             : base(mesh)
         {
             this.mesh = mesh;
@@ -22,7 +22,7 @@ namespace LobelFrames.FormatProviders
             }
         }
 
-        public BezierMesh Mesh
+        public IBezierMesh Mesh
         {
             get
             {

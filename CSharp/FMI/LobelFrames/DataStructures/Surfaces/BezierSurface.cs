@@ -8,7 +8,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Surfaces
 {
-    public class BezierSurface : IteractiveSurface
+    public class BezierSurface : IteractiveSurface, IUVSurface
     {
         private readonly BezierMesh mesh;
         private readonly Dictionary<Vertex, Tuple<int, int>> controlVertexToIndicesMapping;
@@ -79,7 +79,15 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        internal BezierMesh Mesh
+        public IDescreteUVMesh DescreteUVMesh
+        {
+            get
+            {
+                return this.mesh;
+            }
+        }
+
+        public IBezierMesh BezierMesh
         {
             get
             {

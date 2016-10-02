@@ -1,4 +1,5 @@
 ﻿using Deyo.Core.Common;
+using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.ViewModels;
 using System;
@@ -137,7 +138,7 @@ namespace LobelFrames.FormatProviders
 
         private static SurfaceModel GetBezierSurfaceModel(BezierSurface bezierSurface)
         {
-            return new BezierSurfaceModel(bezierSurface.Mesh);
+            return new BezierSurfaceModel(bezierSurface.BezierMesh);
         }
 
         private static SurfaceModel GetNonEditableSurfaceModel(NonEditableSurface nonEditableSurface)
@@ -152,7 +153,8 @@ namespace LobelFrames.FormatProviders
 
         private static IteractiveSurface CreateBezierIteractiveSurface(ISceneElementsManager elementsManager, IUndoableActionDoer undoDoer, BezierSurfaceModel bezierSurfaceModel)
         {
-            return new BezierSurface(elementsManager, undoDoer, bezierSurfaceModel.Mesh);
+            BezierMesh mesh = new BezierMesh(bezierSurfaceModel.Mesh);
+            return new BezierSurface(elementsManager, undoDoer, mesh);
         }
 
         private static IteractiveSurface CreateLobelIteractiveSurface(ISceneElementsManager elementsManager, LobelSurfaceModel lobelSurfaceModel)

@@ -232,6 +232,11 @@ namespace LobelFrames.ViewModels
             this.AddIteractiveSurface(surface);
         }
 
+        public void ApproximateWithLobelMesh()
+        {
+            this.CommandContext.BeginCommand(CommandType.ApproximateWithLobelMesh);
+        }
+
         public void EnableSurfacePointerHandler(IteractionHandlingType iteractionType)
         {
             this.surfacePointerHandler.IteractionType = iteractionType;
