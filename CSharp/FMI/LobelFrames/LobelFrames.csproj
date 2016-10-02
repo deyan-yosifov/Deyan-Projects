@@ -53,6 +53,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStructures\Algorithms\UVMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />
