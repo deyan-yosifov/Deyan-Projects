@@ -2,16 +2,14 @@
 
 namespace LobelFrames.ViewModels.Settings
 {
-    public class GeneralSettings : SettingsBase
+    public class GeneralSettingsViewModel : SettingsBase, IGeneralSceneSettings
     {
         public const int DefaultHistoryStackSize = 20;
         private readonly LabeledSliderViewModel<int> historyStackSetting;
 
-        public GeneralSettings(ILobelSceneContext context)
-            : base(context)
+        public GeneralSettingsViewModel()
         {
             this.Label = "Настройки";
-            this.Context.MaxUndoStackSize = DefaultHistoryStackSize;
             this.historyStackSetting = new LabeledSliderViewModel<int>("Брой стъпки назад:", DefaultHistoryStackSize, 1, 50, 1);
             this.historyStackSetting.ValueChanged += this.HistoryStackSettingValueChanged;
         }
@@ -24,9 +22,22 @@ namespace LobelFrames.ViewModels.Settings
             }
         }
 
+        public int HistoryStackSize
+        {
+            get
+            {
+                return this.HistoryStackSetting.Value;
+            }
+        }
+
+        public event EventHandler HistoryStackSizeChanged;
+
         private void HistoryStackSettingValueChanged(object sender, EventArgs e)
         {
-            this.Context.MaxUndoStackSize = this.historyStackSetting.Value;
+            if (this.HistoryStackSizeChanged != null)
+            {
+                this.HistoryStackSizeChanged(this, new EventArgs());
+            }
         }
     }
 }

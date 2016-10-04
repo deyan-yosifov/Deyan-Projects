@@ -41,8 +41,8 @@ namespace LobelFrames.ViewModels
             this.hintManager = new HintManager();
             this.inputManager = new InputManager();
             this.elementsPool = new SceneElementsPool(scene);
-            this.context = new SurfaceModelingContext(CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
-            this.settings = new SettingsViewModel(this.context);
+            this.settings = new SettingsViewModel();
+            this.context = new SurfaceModelingContext(this.settings, CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
             this.zoomToContentsPointerHandler = new ZoomToContentsHandler(this.scene.Editor, this);
@@ -85,7 +85,7 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public SettingsViewModel Settings
+        public SettingsViewModel SettingsViewModel
         {
             get
             {
@@ -147,34 +147,34 @@ namespace LobelFrames.ViewModels
 
         public void ChangeGeneralSettings()
         {
-            this.Settings.GeneralSettings.IsOpen = !this.Settings.GeneralSettings.IsOpen;
+            this.SettingsViewModel.GeneralSettingsViewModel.IsOpen = !this.SettingsViewModel.GeneralSettingsViewModel.IsOpen;
         }
 
         public void ChangeLobelSettings()
         {
-            this.Settings.LobelSettings.IsOpen = !this.Settings.LobelSettings.IsOpen;
+            this.SettingsViewModel.LobelSettingsViewModel.IsOpen = !this.SettingsViewModel.LobelSettingsViewModel.IsOpen;
         }
 
         public void ChangeBezierSettings()
         {
-            this.Settings.BezierSettings.IsOpen = !this.Settings.BezierSettings.IsOpen;
+            this.SettingsViewModel.BezierSettingsViewModel.IsOpen = !this.SettingsViewModel.BezierSettingsViewModel.IsOpen;
         }
 
         public void BeforeCommandExecuted(CommandType type)
         {
             if (type != CommandType.Settings)
             {
-                this.Settings.GeneralSettings.IsOpen = false;
+                this.SettingsViewModel.GeneralSettingsViewModel.IsOpen = false;
             }
 
             if (type != CommandType.LobelSettings)
             {
-                this.Settings.LobelSettings.IsOpen = false;
+                this.SettingsViewModel.LobelSettingsViewModel.IsOpen = false;
             }
 
             if (type != CommandType.BezierSettings)
             {
-                this.Settings.BezierSettings.IsOpen = false;
+                this.SettingsViewModel.BezierSettingsViewModel.IsOpen = false;
             }
         }
 
@@ -182,9 +182,9 @@ namespace LobelFrames.ViewModels
         {
             LobelSurface surface = new LobelSurface(
                 this.ElementsPool, 
-                this.Settings.LobelSettings.MeshRows.Value, 
-                this.Settings.LobelSettings.MeshColumns.Value, 
-                this.Settings.LobelSettings.MeshTriangleSide.Value);
+                this.Context.Settings.LobelSettings.MeshRows, 
+                this.Context.Settings.LobelSettings.MeshColumns, 
+                this.Context.Settings.LobelSettings.MeshTriangleSide);
             this.AddIteractiveSurface(surface);
         }
 
@@ -223,12 +223,12 @@ namespace LobelFrames.ViewModels
             BezierSurface surface = new BezierSurface(
                 this.ElementsPool,
                 this,
-                this.Settings.BezierSettings.UDevisions.Value,
-                this.Settings.BezierSettings.VDevisions.Value,
-                this.Settings.BezierSettings.UDegree.Value,
-                this.Settings.BezierSettings.VDegree.Value,
-                this.Settings.BezierSettings.InitialWidth.Value,
-                this.Settings.BezierSettings.InitialHeight.Value);
+                this.Context.Settings.BezierSettings.UDevisions,
+                this.Context.Settings.BezierSettings.VDevisions,
+                this.Context.Settings.BezierSettings.UDegree,
+                this.Context.Settings.BezierSettings.VDegree,
+                this.Context.Settings.BezierSettings.InitialWidth,
+                this.Context.Settings.BezierSettings.InitialHeight);
             this.AddIteractiveSurface(surface);
         }
 

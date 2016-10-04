@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    public class UVMeshApproximationAlgorithm
+    public class UVMeshApproximationAlgorithm : ILobelMeshApproximator
     {
         private readonly IDescreteUVMesh meshToApproximate;
 

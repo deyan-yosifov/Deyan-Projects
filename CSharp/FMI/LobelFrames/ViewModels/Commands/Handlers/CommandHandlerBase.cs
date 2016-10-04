@@ -125,9 +125,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         public virtual void EndCommand()
         {
-            this.Editor.InputManager.IsEnabled = false;
-            this.Editor.InputManager.HandleCancelInputOnly = false;
-
+            this.Editor.InputManager.Reset();
             this.ClearElements();
         }
 

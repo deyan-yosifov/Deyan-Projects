@@ -23,7 +23,7 @@ namespace LobelFrames.Views
             this.CommandDescriptors = this.viewModel.CommandDescriptors;
             this.InputManager = this.viewModel.InputManager;
             this.HintManager = this.viewModel.HintManager;
-            this.Settings = this.viewModel.Settings;
+            this.Settings = this.viewModel.SettingsViewModel;
             this.DataContext = this.viewModel;
         }
 

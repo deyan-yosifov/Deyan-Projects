@@ -3,6 +3,7 @@ using Deyo.Core.Common.History;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Commands.Handlers;
+using LobelFrames.ViewModels.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,18 @@ namespace LobelFrames.ViewModels
         private readonly HistoryManager historyManager;
         private readonly HashSet<IteractiveSurface> surfaces;
         private readonly CommandContext currentCommandContext;
+        private readonly ILobelSceneSettings settings;
         private IteractiveSurface selectedSurface;
 
-        public SurfaceModelingContext(IEnumerable<ICommandHandler> commandHandlers)
+        public SurfaceModelingContext(ILobelSceneSettings settings, IEnumerable<ICommandHandler> commandHandlers)
         {
             this.historyManager = new HistoryManager();
             this.surfaces = new HashSet<IteractiveSurface>();
+            this.settings = settings;
             this.currentCommandContext = new CommandContext(this.historyManager, commandHandlers);
+
+            this.historyManager.MaxUndoSize = this.settings.GeneralSettings.HistoryStackSize;
+            this.settings.GeneralSettings.HistoryStackSizeChanged += this.GeneralSettings_HistoryStackSizeChanged;
         }
 
         public CommandContext CommandContext
@@ -71,15 +77,11 @@ namespace LobelFrames.ViewModels
             }
         }
 
-        public int MaxUndoStackSize
+        public ILobelSceneSettings Settings
         {
             get
             {
-                return this.historyManager.MaxUndoSize;
-            }
-            set
-            {
-                this.historyManager.MaxUndoSize = value;
+                return this.settings;
             }
         }
 
@@ -145,6 +147,11 @@ namespace LobelFrames.ViewModels
             }
 
             this.HistoryManager.Clear();
+        }
+
+        private void GeneralSettings_HistoryStackSizeChanged(object sender, EventArgs e)
+        {
+            this.historyManager.MaxUndoSize = this.settings.GeneralSettings.HistoryStackSize;
         }
     }
 }

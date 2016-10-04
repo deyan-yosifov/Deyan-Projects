@@ -4,20 +4,20 @@ using System;
 
 namespace LobelFrames.ViewModels.Settings
 {
-    public class SettingsViewModel : ViewModelBase
+    public class SettingsViewModel : ViewModelBase, ILobelSceneSettings
     {
-        private readonly GeneralSettings generalSettings;
-        private readonly LobelSettings lobelSettings;
-        private readonly BezierSettings bezierSettings;
+        private readonly GeneralSettingsViewModel generalSettings;
+        private readonly LobelSettingsViewModel lobelSettings;
+        private readonly BezierSettingsViewModel bezierSettings;
 
-        public SettingsViewModel(ILobelSceneContext context)
+        public SettingsViewModel()
         {
-            this.generalSettings = new GeneralSettings(context);
-            this.lobelSettings = new LobelSettings(context);
-            this.bezierSettings = new BezierSettings(context);
+            this.generalSettings = new GeneralSettingsViewModel();
+            this.lobelSettings = new LobelSettingsViewModel();
+            this.bezierSettings = new BezierSettingsViewModel();
         }
 
-        public GeneralSettings GeneralSettings
+        public GeneralSettingsViewModel GeneralSettingsViewModel
         {
             get
             {
@@ -25,7 +25,7 @@ namespace LobelFrames.ViewModels.Settings
             }
         }
 
-        public LobelSettings LobelSettings
+        public LobelSettingsViewModel LobelSettingsViewModel
         {
             get
             {
@@ -33,7 +33,31 @@ namespace LobelFrames.ViewModels.Settings
             }
         }
 
-        public BezierSettings BezierSettings
+        public BezierSettingsViewModel BezierSettingsViewModel
+        {
+            get
+            {
+                return this.bezierSettings;
+            }
+        }
+
+        public IGeneralSceneSettings GeneralSettings
+        {
+            get
+            {
+                return this.generalSettings;
+            }
+        }
+
+        public ILobelMeshSettings LobelSettings
+        {
+            get
+            {
+                return this.lobelSettings;
+            }
+        }
+
+        public IBezierSurfaceSettings BezierSettings
         {
             get
             {

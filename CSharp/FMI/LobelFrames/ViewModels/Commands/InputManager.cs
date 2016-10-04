@@ -21,10 +21,7 @@ namespace LobelFrames.ViewModels.Commands
 
         public InputManager()
         {
-            this.IsEnabled = false;
-            this.InputValue = string.Empty;
-            this.InputLabel = Labels.Default;
-            this.isInputingParameterWithKeyboard = false;
+            this.Reset();
         }
 
         public bool IsEnabled
@@ -129,6 +126,17 @@ namespace LobelFrames.ViewModels.Commands
         public void Stop()
         {
             this.IsEnabled = false;
+        }
+
+        public void Reset()
+        {
+            this.IsEnabled = false;
+            this.InputValue = string.Empty;
+            this.InputLabel = Labels.Default;
+            this.isInputingParameterWithKeyboard = false;
+            this.HandleCancelInputOnly = false;
+            this.HandleEmptyParameterInput = false;
+            this.DisableKeyboardInputValueEditing = false;
         }
 
         public event EventHandler<ParameterInputedEventArgs> ParameterInputed;

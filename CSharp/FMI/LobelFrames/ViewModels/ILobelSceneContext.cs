@@ -1,4 +1,5 @@
 ﻿using LobelFrames.DataStructures.Surfaces;
+using LobelFrames.ViewModels.Settings;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +15,7 @@ namespace LobelFrames.ViewModels
 
         bool HasActiveCommand { get; }
 
-        int MaxUndoStackSize { get; set; }
+        ILobelSceneSettings Settings { get; }
 
         IteractiveSurface SelectedSurface { get; set; }
 

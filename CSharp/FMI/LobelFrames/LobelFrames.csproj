@@ -53,6 +53,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
@@ -153,9 +154,13 @@
     <Compile Include="ViewModels\IUndoableActionDoer.cs" />
     <Compile Include="ViewModels\LabeledSliderViewModel.cs" />
     <Compile Include="ViewModels\SceneConstants.cs" />
-    <Compile Include="ViewModels\Settings\BezierSettings.cs" />
-    <Compile Include="ViewModels\Settings\GeneralSettings.cs" />
-    <Compile Include="ViewModels\Settings\LobelSettings.cs" />
+    <Compile Include="ViewModels\Settings\BezierSettingsViewModel.cs" />
+    <Compile Include="ViewModels\Settings\GeneralSettingsViewModel.cs" />
+    <Compile Include="ViewModels\Settings\IBezierSurfaceSettings.cs" />
+    <Compile Include="ViewModels\Settings\IGeneralSceneSettings.cs" />
+    <Compile Include="ViewModels\Settings\ILobelMeshSettings.cs" />
+    <Compile Include="ViewModels\Settings\ILobelSceneSettings.cs" />
+    <Compile Include="ViewModels\Settings\LobelSettingsViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsBase.cs" />
     <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />

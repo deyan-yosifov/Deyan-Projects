@@ -5,14 +5,8 @@ namespace LobelFrames.ViewModels.Settings
 {
     public abstract class SettingsBase : ViewModelBase
     {
-        private readonly ILobelSceneContext context;
         private bool isOpen;
         private string label;
-
-        public SettingsBase(ILobelSceneContext context)
-        {
-            this.context = context;
-        }
 
         public bool IsOpen
         {
@@ -35,14 +29,6 @@ namespace LobelFrames.ViewModels.Settings
             set
             {
                 this.SetProperty(ref this.label, value);
-            }
-        }
-
-        protected ILobelSceneContext Context
-        {
-            get
-            {
-                return this.context;
             }
         }
     }

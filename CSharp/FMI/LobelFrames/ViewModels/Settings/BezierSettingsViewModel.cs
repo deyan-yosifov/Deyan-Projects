@@ -3,7 +3,7 @@ using System;
 
 namespace LobelFrames.ViewModels.Settings
 {
-    public class BezierSettings : SettingsBase
+    public class BezierSettingsViewModel : SettingsBase, IBezierSurfaceSettings
     {
         private readonly LabeledSliderViewModel<int> uDevisions;
         private readonly LabeledSliderViewModel<int> vDevisions;
@@ -12,8 +12,7 @@ namespace LobelFrames.ViewModels.Settings
         private readonly LabeledSliderViewModel<double> initialWidth;
         private readonly LabeledSliderViewModel<double> initialHeight;
 
-        public BezierSettings(ILobelSceneContext context)
-            : base(context)
+        public BezierSettingsViewModel()
         {
             this.Label = "Настройки на повърхнини на Безие";
             this.uDevisions = new LabeledSliderViewModel<int>("U-деления:", 7, BezierMesh.DevisionsMinimum, 50, 1);
@@ -69,6 +68,54 @@ namespace LobelFrames.ViewModels.Settings
             get
             {
                 return this.initialHeight;
+            }
+        }
+
+        int IBezierSurfaceSettings.UDevisions
+        {
+            get
+            {
+                return this.uDevisions.Value;
+            }
+        }
+
+        int IBezierSurfaceSettings.VDevisions
+        {
+            get
+            {
+                return this.vDevisions.Value;
+            }
+        }
+
+        int IBezierSurfaceSettings.UDegree
+        {
+            get
+            {
+                return this.uDegree.Value;
+            }
+        }
+
+        int IBezierSurfaceSettings.VDegree
+        {
+            get
+            {
+                return this.vDegree.Value;
+            }
+        }
+
+        double IBezierSurfaceSettings.InitialWidth
+        {
+            get
+            {
+                return this.initialWidth.Value;
+            }
+        }
+
+        double IBezierSurfaceSettings.InitialHeight
+        {
+            get
+            {
+                return this.initialHeight.Value;
             }
         }
     }

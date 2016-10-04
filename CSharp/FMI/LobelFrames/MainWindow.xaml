@@ -134,7 +134,7 @@
                 </Border>
 
                 <Grid DataContext="{Binding ElementName=surface, Path=Settings}">
-                    <Popup DataContext="{Binding GeneralSettings}" x:Name="settingsPopup" IsOpen="{Binding IsOpen}" 
+                    <Popup DataContext="{Binding GeneralSettingsViewModel}" x:Name="settingsPopup" IsOpen="{Binding IsOpen}" 
                            PlacementTarget="{Binding ElementName=settingsButton}" 
                            Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
@@ -152,7 +152,7 @@
                         </Border>
                     </Popup>
 
-                    <Popup DataContext="{Binding LobelSettings}" x:Name="lobelSettingsPopup" IsOpen="{Binding IsOpen}" 
+                    <Popup DataContext="{Binding LobelSettingsViewModel}" x:Name="lobelSettingsPopup" IsOpen="{Binding IsOpen}" 
                            PlacementTarget="{Binding ElementName=lobelSettingsButton}" 
                            Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">
@@ -172,7 +172,7 @@
                         </Border>
                     </Popup>
 
-                    <Popup DataContext="{Binding BezierSettings}" x:Name="bezierSettingsPopup" IsOpen="{Binding IsOpen}" 
+                    <Popup DataContext="{Binding BezierSettingsViewModel}" x:Name="bezierSettingsPopup" IsOpen="{Binding IsOpen}" 
                            PlacementTarget="{Binding ElementName=bezierSettingsButton}" 
                            Placement="Bottom" HorizontalOffset="0" VerticalOffset="2" >
                         <Border BorderBrush="Black" BorderThickness="2" Background="White" Padding="5">

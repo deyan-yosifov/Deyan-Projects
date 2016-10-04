@@ -2,14 +2,13 @@
 
 namespace LobelFrames.ViewModels.Settings
 {
-    public class LobelSettings : SettingsBase
+    public class LobelSettingsViewModel : SettingsBase, ILobelMeshSettings
     {
         private readonly LabeledSliderViewModel<int> meshRows;
         private readonly LabeledSliderViewModel<int> meshColumns;
         private readonly LabeledSliderViewModel<double> meshTriangleSide;
 
-        public LobelSettings(ILobelSceneContext context)
-            : base(context)
+        public LobelSettingsViewModel()
         {
             this.Label = "Настройки на повърхнини на Лобел";
             this.meshRows = new LabeledSliderViewModel<int>("Брой редове в растера:", 7, 1, 20, 1);
@@ -38,6 +37,30 @@ namespace LobelFrames.ViewModels.Settings
             get
             {
                 return this.meshTriangleSide;
+            }
+        }
+
+        int ILobelMeshSettings.MeshRows
+        {
+            get
+            {
+                return this.meshRows.Value;
+            }
+        }
+
+        int ILobelMeshSettings.MeshColumns
+        {
+            get
+            {
+                return this.meshColumns.Value;
+            }
+        }
+
+        double ILobelMeshSettings.MeshTriangleSide
+        {
+            get
+            {
+                return this.meshTriangleSide.Value;
             }
         }
     }
