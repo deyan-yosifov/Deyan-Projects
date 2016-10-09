@@ -41,5 +41,11 @@ namespace LobelFrames.ViewModels.Commands
         public const string FoldMeshPatchesCannotIntersect = "Двата региона на огъване не могат да се пресичат взаимно!";
         public const string RotationAxisesCannotBeColinear = "Двете оси на огъване не може да са колинеарни!";
         public const string NoPossibleFoldingPositions = "С текущата селекция няма възможни ъгли на огъване. Сменете селекцията с Escape.";
+
+        // Approximate command
+        public const string ApproximatingPleaseWait = "Апроксимиране на провърхнината. Моля изчакайте...";
+        public const string FinishOrChooseOtherApproximation = "Завърши апроксимирането с Enter или започни ново, въвеждайки страна на триъгълника!";
+        public const string StartApproximation = "Започни апроксимиране, въвеждайки страна на триъгълника.";
+        public const string TriangleSideMustBePositive = "Страната на триъгълника трябва да бъде положително число!";
     }
 }

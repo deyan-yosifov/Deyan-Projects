@@ -5,6 +5,10 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     public interface ILobelMeshApproximator
     {
-        IEnumerable<Triangle> GetLobelMeshApproximation(double sideSize);
+        bool IsApproximating { get; }
+        void StartApproximating(double side);
+        void CancelApproximation();
+        event EventHandler<ApproximationEndedEventArgs> ApproximationEnded;
+        event EventHandler<ApproximationProgressEventArgs> ReportingApproximationProgress;        
     }
 }

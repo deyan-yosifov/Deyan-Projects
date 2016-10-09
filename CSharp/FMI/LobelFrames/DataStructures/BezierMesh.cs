@@ -14,6 +14,7 @@ namespace LobelFrames.DataStructures
         private readonly int uDegree;
         private readonly int vDegree;
         private Triangle[,] triangles;
+        private Point3D[,] surfacePoints;
         private int uDevisions;
         private int vDevisions;
         private bool isMeshInvalidated;
@@ -266,6 +267,7 @@ namespace LobelFrames.DataStructures
         {
             this.isMeshInvalidated = true;
             this.triangles = null;
+            this.surfacePoints = null;
         }
 
         private void EnsureMesh()
@@ -274,7 +276,7 @@ namespace LobelFrames.DataStructures
             {
                 this.isMeshInvalidated = false;
 
-                Point3D[,] surfacePoints = new BezierRectangle(this.controlPoints).GetMeshPoints(this.uDevisions, this.vDevisions);
+                this.surfacePoints = new BezierRectangle(this.controlPoints).GetMeshPoints(this.uDevisions, this.vDevisions);
 
                 int trianglesUCount = this.uDevisions * 2;
                 this.triangles = new Triangle[trianglesUCount, this.vDevisions];
@@ -283,10 +285,10 @@ namespace LobelFrames.DataStructures
                 {
                     for (int u = 0; u < (trianglesUCount); u += 2)
                     {
-                        Vertex a = u == 0 ? ( v == 0 ? new Vertex(surfacePoints[u / 2, v]) : this.triangles[u, v - 1].B ) : this.triangles[u - 1, v].C;
-                        Vertex b = u == 0 ? new Vertex(surfacePoints[u / 2, v + 1]) : this.triangles[u - 1, v].B;
-                        Vertex c = new Vertex(surfacePoints[u / 2 + 1, v + 1]);
-                        Vertex d = v == 0 ? new Vertex(surfacePoints[u / 2 + 1, v]) : this.triangles[u, v - 1].C;
+                        Vertex a = u == 0 ? ( v == 0 ? new Vertex(this.surfacePoints[u / 2, v]) : this.triangles[u, v - 1].B ) : this.triangles[u - 1, v].C;
+                        Vertex b = u == 0 ? new Vertex(this.surfacePoints[u / 2, v + 1]) : this.triangles[u - 1, v].B;
+                        Vertex c = new Vertex(this.surfacePoints[u / 2 + 1, v + 1]);
+                        Vertex d = v == 0 ? new Vertex(this.surfacePoints[u / 2 + 1, v]) : this.triangles[u, v - 1].C;
                         Edge ab = u == 0 ? new Edge(a, b) : this.triangles[u - 1, v].SideA;
                         Edge ad = v == 0 ? new Edge(a, d) : this.triangles[u, v - 1].SideA;
                         Edge ac = new Edge(a, c);
@@ -334,6 +336,13 @@ namespace LobelFrames.DataStructures
             }
 
             return controlPoints;
+        }
+
+        public Point3D GetMeshPoint(int uDevisionIndex, int vDevisionIndex)
+        {
+            this.EnsureMesh();
+
+            return this.surfacePoints[uDevisionIndex, vDevisionIndex];
         }
     }
 }

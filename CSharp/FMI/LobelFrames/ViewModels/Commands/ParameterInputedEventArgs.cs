@@ -9,6 +9,8 @@ namespace LobelFrames.ViewModels.Commands
         public ParameterInputedEventArgs(string parameter)
         {
             this.parameter = parameter;
+            this.Handled = false;
+            this.ClearHandledParameterValue = true;
         }
 
         public string Parameter
@@ -20,6 +22,12 @@ namespace LobelFrames.ViewModels.Commands
         }
 
         public bool Handled
+        {
+            get;
+            set;
+        }
+
+        public bool ClearHandledParameterValue
         {
             get;
             set;

@@ -53,8 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStructures\Algorithms\ApproximationEndedEventArgs.cs" />
+    <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationAlgorithm.cs" />
+    <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />

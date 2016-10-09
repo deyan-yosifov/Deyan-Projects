@@ -118,9 +118,9 @@ namespace LobelFrames.ViewModels.Commands
         public void Start(string label, string value, bool handleCancelOnly)
         {
             this.IsEnabled = true;
+            this.HandleCancelInputOnly = handleCancelOnly;
             this.InputLabel = label;
             this.InputValue = value;
-            this.HandleCancelInputOnly = handleCancelOnly;
         }
 
         public void Stop()
@@ -183,7 +183,11 @@ namespace LobelFrames.ViewModels.Commands
 
                 if (args.Handled)
                 {
-                    this.InputValue = string.Empty;
+                    if (args.ClearHandledParameterValue)
+                    {
+                        this.InputValue = string.Empty;
+                    }
+
                     this.isInputingParameterWithKeyboard = false;
                 }
             }
