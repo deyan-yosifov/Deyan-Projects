@@ -36,8 +36,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.currentLobelSide = -1;
             base.BeginCommand();
             this.surfaceToApproximate = this.Editor.Context.SelectedSurface;
-            IDescreteUVMesh meshToApproximate = ((IUVSurface)this.surfaceToApproximate).DescreteUVMesh;
-            this.approximator = new UVMeshApproximationAlgorithm(meshToApproximate);
+            IDescreteUVMesh meshToApproximate = ((IUVSurface)this.surfaceToApproximate).GetDescreteUVMesh();
+            this.approximator = new UVMeshApproximator(meshToApproximate);
             this.approximator.ReportingApproximationProgress += this.Approximator_ReportingApproximationProgress;
             this.approximator.ApproximationEnded += this.Approximator_ApproximationEnded;
             this.Editor.Context.SelectedSurface = null;
@@ -106,6 +106,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
             else
             {
+                this.ClearPreviousApproximationCalculations();
                 this.Editor.CloseCommandContext();
             }
         }

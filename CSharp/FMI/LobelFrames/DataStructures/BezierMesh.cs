@@ -6,7 +6,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures
 {
-    public class BezierMesh : IBezierMesh, IDescreteUVMesh
+    public class BezierMesh : IBezierMesh
     {
         public const int DevisionsMinimum = 1;
         public const int DegreeMinimum = 1;
@@ -14,7 +14,6 @@ namespace LobelFrames.DataStructures
         private readonly int uDegree;
         private readonly int vDegree;
         private Triangle[,] triangles;
-        private Point3D[,] surfacePoints;
         private int uDevisions;
         private int vDevisions;
         private bool isMeshInvalidated;
@@ -239,6 +238,80 @@ namespace LobelFrames.DataStructures
             }
         }
 
+        public void MoveMeshVertices(Vector3D moveDirection)
+        {
+            for (int i = 0; i < this.controlPoints.GetLength(0); i++)
+            {
+                for (int j = 0; j < this.controlPoints.GetLength(1); j++)
+                {
+                    this.controlPoints[i, j] += moveDirection;
+                }
+            }
+
+            if (!this.isMeshInvalidated)
+            {
+                foreach (Vertex vertex in this.Vertices)
+                {
+                    vertex.Point += moveDirection;
+                }
+            }
+        }
+
+        public NonEditableDescreteUVMesh GetCurrentMesh()
+        {
+            this.EnsureMesh();
+
+            Point3D[,] surfacePoints = new Point3D[this.UDevisions + 1, this.VDevisions + 1];
+
+            int uBorder = this.UDevisions - 1;
+            int vBorder = this.VDevisions - 1;
+
+            for (int v = 0; v <= vBorder; v++)
+            {
+                for (int u = 0; u <= uBorder; u++)
+                {
+                    Triangle triangle = this.triangles[u * 2, v];
+                    surfacePoints[u, v] = triangle.A.Point;
+                }
+            }
+
+            for (int u = 0; u <= uBorder; u++)
+            {
+                Triangle triangle = this.triangles[u * 2, vBorder];
+                surfacePoints[u, this.VDevisions] = triangle.B.Point;
+            }
+
+            int uLast = this.triangles.GetLength(0) - 1;
+
+            for (int v = 0; v <= vBorder; v++)
+            {
+                Triangle triangle = this.triangles[uLast, v];
+                surfacePoints[this.UDevisions, v] = triangle.C.Point;
+            }
+
+            Triangle borderTriangle = this.triangles[uLast, vBorder];
+            surfacePoints[this.UDevisions, this.vDevisions] = borderTriangle.B.Point;
+
+            return new NonEditableDescreteUVMesh(surfacePoints);
+        }
+
+        private static Point3D[,] GetControlPoints(IBezierMesh other)
+        {
+            int uLength = other.UDegree + 1;
+            int vLength = other.VDegree + 1;
+            Point3D[,] controlPoints = new Point3D[uLength, vLength];
+
+            for (int u = 0; u < uLength; u++)
+            {
+                for (int v = 0; v < vLength; v++)
+                {
+                    controlPoints[u, v] = other[u, v];
+                }
+            }
+
+            return controlPoints;
+        }
+
         private static Point3D[,] CalculateInitalControlPoints(double width, double height, int uCount, int vCount)
         {
             Point3D[,] points = new Point3D[uCount, vCount];
@@ -267,7 +340,6 @@ namespace LobelFrames.DataStructures
         {
             this.isMeshInvalidated = true;
             this.triangles = null;
-            this.surfacePoints = null;
         }
 
         private void EnsureMesh()
@@ -276,7 +348,7 @@ namespace LobelFrames.DataStructures
             {
                 this.isMeshInvalidated = false;
 
-                this.surfacePoints = new BezierRectangle(this.controlPoints).GetMeshPoints(this.uDevisions, this.vDevisions);
+                Point3D[,] surfacePoints = new BezierRectangle(this.controlPoints).GetMeshPoints(this.uDevisions, this.vDevisions);
 
                 int trianglesUCount = this.uDevisions * 2;
                 this.triangles = new Triangle[trianglesUCount, this.vDevisions];
@@ -285,10 +357,10 @@ namespace LobelFrames.DataStructures
                 {
                     for (int u = 0; u < (trianglesUCount); u += 2)
                     {
-                        Vertex a = u == 0 ? ( v == 0 ? new Vertex(this.surfacePoints[u / 2, v]) : this.triangles[u, v - 1].B ) : this.triangles[u - 1, v].C;
-                        Vertex b = u == 0 ? new Vertex(this.surfacePoints[u / 2, v + 1]) : this.triangles[u - 1, v].B;
-                        Vertex c = new Vertex(this.surfacePoints[u / 2 + 1, v + 1]);
-                        Vertex d = v == 0 ? new Vertex(this.surfacePoints[u / 2 + 1, v]) : this.triangles[u, v - 1].C;
+                        Vertex a = u == 0 ? (v == 0 ? new Vertex(surfacePoints[u / 2, v]) : this.triangles[u, v - 1].B) : this.triangles[u - 1, v].C;
+                        Vertex b = u == 0 ? new Vertex(surfacePoints[u / 2, v + 1]) : this.triangles[u - 1, v].B;
+                        Vertex c = new Vertex(surfacePoints[u / 2 + 1, v + 1]);
+                        Vertex d = v == 0 ? new Vertex(surfacePoints[u / 2 + 1, v]) : this.triangles[u, v - 1].C;
                         Edge ab = u == 0 ? new Edge(a, b) : this.triangles[u - 1, v].SideA;
                         Edge ad = v == 0 ? new Edge(a, d) : this.triangles[u, v - 1].SideA;
                         Edge ac = new Edge(a, c);
@@ -300,49 +372,6 @@ namespace LobelFrames.DataStructures
                     }
                 }
             }
-        }
-
-        public void MoveMeshVertices(Vector3D moveDirection)
-        {
-            for (int i = 0; i < this.controlPoints.GetLength(0); i++)
-            {
-                for (int j = 0; j < this.controlPoints.GetLength(1); j++)
-                {
-                    this.controlPoints[i, j] += moveDirection;
-                }
-            }
-
-            if (!this.isMeshInvalidated)
-            {
-                foreach (Vertex vertex in this.Vertices)
-                {
-                    vertex.Point += moveDirection;
-                }
-            }
-        }
-
-        private static Point3D[,] GetControlPoints(IBezierMesh other)
-        {
-            int uLength = other.UDegree + 1;
-            int vLength = other.VDegree + 1;
-            Point3D[,] controlPoints = new Point3D[uLength, vLength];
-
-            for (int u = 0; u < uLength; u++)
-            {
-                for (int v = 0; v < vLength; v++)
-                {
-                    controlPoints[u, v] = other[u, v];
-                }
-            }
-
-            return controlPoints;
-        }
-
-        public Point3D GetMeshPoint(int uDevisionIndex, int vDevisionIndex)
-        {
-            this.EnsureMesh();
-
-            return this.surfacePoints[uDevisionIndex, vDevisionIndex];
         }
     }
 }

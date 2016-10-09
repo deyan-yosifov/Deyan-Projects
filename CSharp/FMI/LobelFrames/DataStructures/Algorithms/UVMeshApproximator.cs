@@ -6,13 +6,13 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    public class UVMeshApproximationAlgorithm : ILobelMeshApproximator
+    public class UVMeshApproximator : ILobelMeshApproximator
     {
         private bool isApproximating;
         private UVMeshApproximationContext context;
         private readonly IDescreteUVMesh meshToApproximate;
 
-        public UVMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate)
+        public UVMeshApproximator(IDescreteUVMesh meshToApproximate)
         {
             this.meshToApproximate = meshToApproximate;
             this.isApproximating = false;
@@ -32,7 +32,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Guard.ThrowExceptionIfTrue(this.IsApproximating, "IsApproximating");
 
             this.isApproximating = true;
-            this.context = new UVMeshApproximationContext(side);
+            this.context = new UVMeshApproximationContext(new OctaTetraMeshApproximationAlgorithm(this.meshToApproximate, side));
             this.context.Worker.DoWork += this.Worker_DoWork;
             this.context.Worker.RunWorkerCompleted += this.Worker_RunWorkerCompleted;
             this.context.Worker.ProgressChanged += this.Worker_ProgressChanged;
@@ -42,8 +42,10 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Triangle first = this.CalculateFirstTriangle();
-            this.ReportProgress(first);
+            foreach (Triangle triangle in this.context.Algorithm.GetLobelFramesApproximatingTriangles())
+            {
+                this.ReportProgress(triangle);
+            }
 
             e.Result = true;
         }
@@ -108,27 +110,6 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             bool isCanceled = (bool)e.Result == false;
             this.EndApproximation(isCanceled);
-        }
-
-        private Triangle CalculateFirstTriangle()
-        {
-            Vertex a = new Vertex(this.meshToApproximate.GetMeshPoint(0, 0));
-            Point3D directionPoint = this.meshToApproximate.GetMeshPoint(0, 1);
-            Vector3D abDirection = directionPoint - a.Point;
-            abDirection.Normalize();
-
-            Vertex b = new Vertex(a.Point + this.context.TriangleSide * abDirection);
-            Point3D planePoint = this.meshToApproximate.GetMeshPoint(1, 0);
-            Vector3D planeNormal = Vector3D.CrossProduct(abDirection, planePoint - a.Point);
-            Vector3D hDirection = Vector3D.CrossProduct(planeNormal, abDirection);
-            hDirection.Normalize();
-
-            Point3D midPoint = a.Point + (this.context.TriangleSide * 0.5) * abDirection;
-            Vertex c = new Vertex(midPoint + (Math.Sqrt(3) * 0.5 * this.context.TriangleSide) * hDirection);
-
-            Triangle firstTriangle = new Triangle(a, b, c, new Edge(b, c), new Edge(a, c), new Edge(a, b));
-
-            return firstTriangle;
         }
     }
 }

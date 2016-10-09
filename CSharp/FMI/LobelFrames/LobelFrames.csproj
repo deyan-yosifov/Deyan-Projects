@@ -55,8 +55,10 @@
     </ApplicationDefinition>
     <Compile Include="DataStructures\Algorithms\ApproximationEndedEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
+    <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
-    <Compile Include="DataStructures\Algorithms\UVMeshApproximationAlgorithm.cs" />
+    <Compile Include="DataStructures\Algorithms\OctaTetraMeshApproximationAlgorithm.cs" />
+    <Compile Include="DataStructures\Algorithms\UVMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="DataStructures\IMeshElementsProvider.cs" />
     <Compile Include="DataStructures\IMeshElementsRelationsProvider.cs" />
     <Compile Include="DataStructures\MeshExtensions.cs" />
+    <Compile Include="DataStructures\NonEditableDescreteUVMesh.cs" />
     <Compile Include="DataStructures\NonEditableMesh.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\IUVSurface.cs" />

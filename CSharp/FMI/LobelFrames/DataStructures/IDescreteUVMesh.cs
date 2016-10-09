@@ -5,7 +5,7 @@ namespace LobelFrames.DataStructures
 {
     public interface IDescreteUVMesh
     {
-        Point3D GetMeshPoint(int uDevisionIndex, int vDevisionIndex);
+        Point3D this[int uDevisionIndex, int vDevisionIndex] { get; }
         int UDevisions { get; }
         int VDevisions { get; }
     }

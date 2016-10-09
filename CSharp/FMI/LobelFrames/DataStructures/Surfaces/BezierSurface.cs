@@ -79,7 +79,7 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public IDescreteUVMesh DescreteUVMesh
+        public IBezierMesh BezierMesh
         {
             get
             {
@@ -87,12 +87,9 @@ namespace LobelFrames.DataStructures.Surfaces
             }
         }
 
-        public IBezierMesh BezierMesh
+        public IDescreteUVMesh GetDescreteUVMesh()
         {
-            get
-            {
-                return this.mesh;
-            }
+            return this.mesh.GetCurrentMesh();
         }
 
         public override IEnumerable<Edge> GetContour()
