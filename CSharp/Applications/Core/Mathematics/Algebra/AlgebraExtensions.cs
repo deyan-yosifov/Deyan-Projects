@@ -179,6 +179,28 @@ namespace Deyo.Core.Mathematics.Algebra
             return dotProduct.IsGreaterThanOrEqualTo(0, epsilon);
         }
 
+        public static Point3D GetBarycentricCoordinates(this Point point, Point a, Point b, Point c)
+        {
+            double iX = b.X - a.X;
+            double iY = b.Y - a.Y;
+            double jX = c.X - a.X;
+            double jY = c.Y - a.Y;
+            double determinant = (iX * jY) - (iY * jX);
+
+            if (determinant == 0)
+            {
+                throw new ArgumentException("Triangle vertices cannot be colinear!");
+            }
+
+            double scaledPointRadiusVectorX = (point.X - a.X) / determinant;
+            double scaledPointRadiusVectorY = (point.Y - a.Y) / determinant;
+            double ijCoordinatesX = (scaledPointRadiusVectorX * jY) - (scaledPointRadiusVectorY * jX);
+            double ijCoordinatesY = (scaledPointRadiusVectorY * iX) - (scaledPointRadiusVectorX * iY);
+            Point3D barycentricCoordinates = new Point3D(1 - ijCoordinatesX - ijCoordinatesY, ijCoordinatesX, ijCoordinatesY);
+
+            return barycentricCoordinates;
+        }
+
         private static Matrix GetTransformationAt(this Matrix zeroCenteredTransform, double centerX, double centerY)
         {
             double offsetX = zeroCenteredTransform.OffsetX + (1 - zeroCenteredTransform.M11) * centerX - zeroCenteredTransform.M21 * centerY;

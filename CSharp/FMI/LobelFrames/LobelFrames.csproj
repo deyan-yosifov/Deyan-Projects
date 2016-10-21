@@ -60,6 +60,7 @@
     <Compile Include="DataStructures\Algorithms\OctaTetraMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
+    <Compile Include="DataStructures\Algorithms\UVMeshDescretePosition.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />
