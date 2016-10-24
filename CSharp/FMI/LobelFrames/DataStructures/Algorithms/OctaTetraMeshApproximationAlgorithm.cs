@@ -8,15 +8,11 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     public class OctaTetraMeshApproximationAlgorithm : ILobelMeshApproximatingAlgorithm
     {
-        private readonly IDescreteUVMesh meshToApproximate;
-        private readonly double triangleSide;
-        private readonly bool[,] coveredUVPoints;
+        private readonly OctaTetraApproximationContext context;
 
         public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide)
         {
-            this.meshToApproximate = meshToApproximate;
-            this.triangleSide = triangleSide;
-            this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
+            this.context = new OctaTetraApproximationContext(meshToApproximate, triangleSide);
         }
 
         public IEnumerable<Triangle> GetLobelFramesApproximatingTriangles()
@@ -49,13 +45,13 @@ namespace LobelFrames.DataStructures.Algorithms
             while (positionsToIterate.Count > 0)
             {
                 UVMeshDescretePosition positionToCheck = positionsToIterate.Dequeue();
-                Point3D meshPoint = this.meshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+                Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
                 Vector3D meshPointDirection = meshPoint - firstTriangle.A.Point;
                 Point projectedPoint = new Point(Vector3D.DotProduct(meshPointDirection, localXAxis), Vector3D.DotProduct(meshPointDirection, localYAxis));
 
                 if (OctaTetraMeshApproximationAlgorithm.IsPointInsideTriangle(projectedPoint, a, b, c))
                 {
-                    this.coveredUVPoints[positionToCheck.UIndex, positionToCheck.VIndex] = true;
+                    this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
 
                     for (int dU = -1; dU <= 1; dU += 1)
                     {
@@ -63,9 +59,9 @@ namespace LobelFrames.DataStructures.Algorithms
                         {
                             UVMeshDescretePosition nextPosition = new UVMeshDescretePosition(positionToCheck.UIndex + dU, positionToCheck.VIndex + dV);
 
-                            if (0 <= nextPosition.UIndex && nextPosition.UIndex < this.coveredUVPoints.GetLength(0) &&
-                                0 <= nextPosition.VIndex && nextPosition.VIndex < this.coveredUVPoints.GetLength(1) &&
-                                !this.coveredUVPoints[nextPosition.UIndex, nextPosition.VIndex] && iterationAddedPositions.Add(nextPosition))
+                            if (0 <= nextPosition.UIndex && nextPosition.UIndex < this.context.ULinesCount &&
+                                0 <= nextPosition.VIndex && nextPosition.VIndex < this.context.VLinesCount &&
+                                !this.context.IsPointCovered(nextPosition.UIndex, nextPosition.VIndex) && iterationAddedPositions.Add(nextPosition))
                             {
                                 positionsToIterate.Enqueue(nextPosition);
                             }
@@ -84,19 +80,19 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private Triangle CalculateFirstTriangle()
         {
-            Vertex a = new Vertex(this.meshToApproximate[0, 0]);
-            Point3D directionPoint = this.meshToApproximate[0, 1];
+            Vertex a = new Vertex(this.context.MeshToApproximate[0, 0]);
+            Point3D directionPoint = this.context.MeshToApproximate[0, 1];
             Vector3D abDirection = directionPoint - a.Point;
             abDirection.Normalize();
 
-            Vertex b = new Vertex(a.Point + this.triangleSide * abDirection);
-            Point3D planePoint = this.meshToApproximate[1, 0];
+            Vertex b = new Vertex(a.Point + this.context.TriangleSide * abDirection);
+            Point3D planePoint = this.context.MeshToApproximate[1, 0];
             Vector3D planeNormal = Vector3D.CrossProduct(abDirection, planePoint - a.Point);
             Vector3D hDirection = Vector3D.CrossProduct(planeNormal, abDirection);
             hDirection.Normalize();
 
-            Point3D midPoint = a.Point + (this.triangleSide * 0.5) * abDirection;
-            Vertex c = new Vertex(midPoint + (Math.Sqrt(3) * 0.5 * this.triangleSide) * hDirection);
+            Point3D midPoint = a.Point + (this.context.TriangleSide * 0.5) * abDirection;
+            Vertex c = new Vertex(midPoint + (Math.Sqrt(3) * 0.5 * this.context.TriangleSide) * hDirection);
 
             Triangle firstTriangle = new Triangle(a, b, c, new Edge(b, c), new Edge(a, c), new Edge(a, b));
 
