@@ -1,4 +1,5 @@
 ﻿using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -27,15 +28,7 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void MarkVisitedVerticesOnFirstTriangle(Triangle firstTriangle)
         {
-            Vector3D localXAxis = firstTriangle.B.Point - firstTriangle.A.Point;
-            Point a = new Point();
-            Point b = new Point(localXAxis.Length, 0);
-            localXAxis.Normalize();
-            Vector3D acDirection = firstTriangle.C.Point - firstTriangle.A.Point;
-            Vector3D localZAxis = Vector3D.CrossProduct(localXAxis, acDirection);
-            localZAxis.Normalize();
-            Vector3D localYAxis = Vector3D.CrossProduct(localZAxis, localXAxis);
-            Point c = new Point(Vector3D.DotProduct(acDirection, localXAxis), Vector3D.DotProduct(acDirection, localYAxis));
+            TriangleProjectionContext projectionContext = new TriangleProjectionContext(firstTriangle);
 
             HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
             Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
@@ -46,10 +39,8 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 UVMeshDescretePosition positionToCheck = positionsToIterate.Dequeue();
                 Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
-                Vector3D meshPointDirection = meshPoint - firstTriangle.A.Point;
-                Point projectedPoint = new Point(Vector3D.DotProduct(meshPointDirection, localXAxis), Vector3D.DotProduct(meshPointDirection, localYAxis));
 
-                if (OctaTetraMeshApproximationAlgorithm.IsPointInsideTriangle(projectedPoint, a, b, c))
+                if (projectionContext.IsPointProjectionInsideTriangle(meshPoint))
                 {
                     this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
 
@@ -71,11 +62,156 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        private static bool IsPointInsideTriangle(Point point, Point a, Point b, Point c)
+        private static double FindProjectionVolume(TriangleProjectionContext context, Point3D meshPointA, Point3D meshPointB, Point3D meshPointC)
         {
-            Point3D barycentricCoordinates = point.GetBarycentricCoordinates(a, b, c);
+            List<ProjectedPoint> projectionIntersection = new List<ProjectedPoint>(GetProjectionIntersection(context, meshPointA, meshPointB, meshPointC));
 
-            return barycentricCoordinates.X >= 0 && barycentricCoordinates.Y >= 0 && barycentricCoordinates.Z >= 0;
+            double volumeMultipliedBy6 = 0;
+
+            if (projectionIntersection.Count >= 3)
+            {
+                ProjectedPoint first = projectionIntersection[0];
+
+                for (int i = 2; i < projectionIntersection.Count; i++)
+                {
+                    ProjectedPoint second = projectionIntersection[i - 1];
+                    ProjectedPoint third = projectionIntersection[i];
+
+                    Vector triangleSideB = second.Point - first.Point;
+                    Vector triangleSideC = third.Point - first.Point;
+                    double areaMultipliedBy2 = Math.Abs(Vector.CrossProduct(triangleSideB, triangleSideC));
+                    volumeMultipliedBy6 += areaMultipliedBy2 * (first.Height + second.Height + third.Height);
+                }
+            }
+
+            return volumeMultipliedBy6;            
+        }
+
+        private static IEnumerable<ProjectedPoint> GetProjectionIntersection(TriangleProjectionContext c, Point3D aPoint, Point3D bPoint, Point3D cPoint)
+        {
+            ProjectedPoint[] projectedTriangle = { c.GetProjectedPoint(aPoint), c.GetProjectedPoint(bPoint), c.GetProjectedPoint(cPoint) };    
+            Dictionary<Point, ProjectedPoint> innerProjectionTrianglePoints = CalculateInnerProjectionTrianglePointSet(c, projectedTriangle);
+            Point[] contextSideVertices = new Point[] { c.TriangleA, c.TriangleB, c.TriangleB, c.TriangleC, c.TriangleC, c.TriangleA };
+            List<ProjectedPoint> intersectionPolygone = new List<ProjectedPoint>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                ProjectedSideIntersectionContext sideContext = new ProjectedSideIntersectionContext(innerProjectionTrianglePoints)
+                {
+                    ProjectionContext = c,
+                    ContextSideVertices = contextSideVertices,
+                    SideStart = projectedTriangle[i],
+                    SideEnd = i < 2 ? projectedTriangle[i + 1] : projectedTriangle[0],
+                };
+
+                foreach (ProjectedPoint sidePoint in GetIntersectionPoints(sideContext))
+                {
+                    yield return sidePoint;
+                }
+            }
+
+            if (intersectionPolygone.Count < 3)
+            {
+                foreach (ProjectedPoint contextInnerPoint in innerProjectionTrianglePoints.Values)
+                {
+                    yield return contextInnerPoint;
+                }
+            }
+        }
+
+        private static IEnumerable<ProjectedPoint> GetIntersectionPoints(ProjectedSideIntersectionContext sideContext)
+        {
+            TriangleProjectionContext c = sideContext.ProjectionContext;
+
+            if (c.IsPointProjectionInsideTriangle(sideContext.SideStart.Point))
+            {
+                yield return sideContext.SideStart;
+            }
+
+            List<SideInnerIntersectionInfo> innerIntersections = GetSortedInnerIntersections(sideContext);
+
+            foreach (SideInnerIntersectionInfo info in innerIntersections)
+            {
+                yield return info.IntersectionPoint;
+            }
+
+            if(innerIntersections.Count > 0)
+            {
+                ProjectedPoint? innerContextPoint = innerIntersections[innerIntersections.Count - 1].SideInnerPoint;
+
+                if (innerContextPoint.HasValue)
+                {
+                    yield return innerContextPoint.Value;
+                }
+            }
+        }
+
+        private static List<SideInnerIntersectionInfo> GetSortedInnerIntersections(ProjectedSideIntersectionContext sideContext)
+        {
+            List<SideInnerIntersectionInfo> innerIntersections = new List<SideInnerIntersectionInfo>();
+
+            for (int contextSideVertexIndex = 0; contextSideVertexIndex < 6; contextSideVertexIndex += 2)
+            {
+                Vector sideVector = sideContext.SideEnd.Point - sideContext.SideStart.Point;
+                Point contextSideStart = sideContext.ContextSideVertices[contextSideVertexIndex];
+                Point contextSideEnd = sideContext.ContextSideVertices[contextSideVertexIndex + 1];
+                Vector contextSide = contextSideEnd - contextSideStart;
+                IntersectionType type =
+                    IntersectionsHelper.FindIntersectionTypeBetweenLines(sideContext.SideStart.Point, sideVector, contextSideStart, contextSide);
+
+                if (type == IntersectionType.SinglePointSet)
+                {
+                    Point intersection = IntersectionsHelper.IntersectLines(sideContext.SideStart.Point, sideVector, contextSideStart, contextSide);
+
+                    Vector firstDelta = intersection - sideContext.SideStart.Point;
+                    double t = Vector.Multiply(firstDelta, sideVector) / sideVector.LengthSquared;
+
+                    Vector secondDelta = intersection - contextSideStart;
+                    double tContext = Vector.Multiply(secondDelta, sideVector) / sideVector.LengthSquared;
+
+                    if (0 < t && t < 1 && 0 < tContext && tContext < 1 && !(innerIntersections.Count > 0 && innerIntersections[0].SidePositionCoordinate == t))
+                    {
+                        double height = (1 - t) * sideContext.SideStart.Height + t * sideContext.SideEnd.Height;
+
+                        SideInnerIntersectionInfo info = new SideInnerIntersectionInfo()
+                        {
+                            IntersectionPoint = new ProjectedPoint() { Point = intersection, Height = height },
+                            SidePositionCoordinate = t,
+                        };
+
+                        ProjectedPoint contextTriangleInnerVertex;
+                        if (sideContext.TryGetInnerProjectionTrianglePoint(contextSideStart, out contextTriangleInnerVertex) ||
+                            sideContext.TryGetInnerProjectionTrianglePoint(contextSideEnd, out contextTriangleInnerVertex))
+                        {
+                            info.SideInnerPoint = contextTriangleInnerVertex;
+                        }
+
+                        innerIntersections.Add(info);
+                    }
+                }
+            }
+
+            innerIntersections.Sort();
+
+            return innerIntersections;
+        }
+
+        private static Dictionary<Point, ProjectedPoint> CalculateInnerProjectionTrianglePointSet(TriangleProjectionContext c, ProjectedPoint[] triangle)
+        {
+            Dictionary<Point, ProjectedPoint> innerProjectionTrianglePoints = new Dictionary<Point, ProjectedPoint>();
+
+            foreach (Point triangleVertex in c.TriangleVertices)
+            {
+                Point3D barycentrics = triangleVertex.GetBarycentricCoordinates(triangle[0].Point, triangle[1].Point, triangle[2].Point);
+
+                if (barycentrics.X > 0 && barycentrics.Y > 0 && barycentrics.Z > 0)
+                {
+                    double height = barycentrics.X * triangle[0].Height + barycentrics.Y * triangle[1].Height + barycentrics.Z * triangle[2].Height;
+                    innerProjectionTrianglePoints.Add(triangleVertex, new ProjectedPoint() { Point = triangleVertex, Height = height });
+                }
+            }
+
+            return innerProjectionTrianglePoints;
         }
 
         private Triangle CalculateFirstTriangle()
