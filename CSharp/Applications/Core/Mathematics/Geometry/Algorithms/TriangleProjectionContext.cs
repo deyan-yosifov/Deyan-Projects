@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media.Media3D;
 
-namespace LobelFrames.DataStructures.Algorithms
+namespace Deyo.Core.Mathematics.Geometry.Algorithms
 {
     public class TriangleProjectionContext
     {
@@ -16,13 +16,13 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly Point triangleB;
         private readonly Point triangleC;
 
-        public TriangleProjectionContext(Triangle projectionTriangle)
+        public TriangleProjectionContext(Point3D projectionTriangleA, Point3D projectionTriangleB, Point3D projectionTriangleC)
         {
-            Vector3D localXAxis = projectionTriangle.B.Point - projectionTriangle.A.Point;
+            Vector3D localXAxis = projectionTriangleB - projectionTriangleA;
             Point a = new Point();
             Point b = new Point(localXAxis.Length, 0);
             localXAxis.Normalize();
-            Vector3D acDirection = projectionTriangle.C.Point - projectionTriangle.A.Point;
+            Vector3D acDirection = projectionTriangleC - projectionTriangleA;
             Vector3D localZAxis = Vector3D.CrossProduct(localXAxis, acDirection);
             localZAxis.Normalize();
             Vector3D localYAxis = Vector3D.CrossProduct(localZAxis, localXAxis);
@@ -34,7 +34,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.localXAxis = localXAxis;
             this.localYAxis = localYAxis;
             this.localZAxis = localZAxis;
-            this.localCenter = projectionTriangle.A.Point;
+            this.localCenter = projectionTriangleA;
         }
 
         public Point TriangleA

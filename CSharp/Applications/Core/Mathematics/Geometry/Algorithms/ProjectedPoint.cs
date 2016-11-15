@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace LobelFrames.DataStructures.Algorithms
+namespace Deyo.Core.Mathematics.Geometry.Algorithms
 {
     public struct ProjectedPoint
     {

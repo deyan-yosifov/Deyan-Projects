@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace LobelFrames.DataStructures.Algorithms
+namespace Deyo.Core.Mathematics.Geometry.Algorithms
 {
-    public class SideInnerIntersectionInfo : IComparable<SideInnerIntersectionInfo>
+    internal class SideInnerIntersectionInfo : IComparable<SideInnerIntersectionInfo>
     {
         public ProjectedPoint IntersectionPoint { get; set; }
         public ProjectedPoint? SideInnerPoint { get; set; }

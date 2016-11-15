@@ -61,6 +61,11 @@
     <Compile Include="Common\PreservableState.cs" />
     <Compile Include="Common\PropertiesChangedEventArgs.cs" />
     <Compile Include="Mathematics\Algebra\AlgebraExtensions.cs" />
+    <Compile Include="Mathematics\Geometry\Algorithms\ProjectionIntersections.cs" />
+    <Compile Include="Mathematics\Geometry\Algorithms\ProjectedPoint.cs" />
+    <Compile Include="Mathematics\Geometry\Algorithms\ProjectedSideIntersectionContext.cs" />
+    <Compile Include="Mathematics\Geometry\Algorithms\SideInnerIntersectionInfo.cs" />
+    <Compile Include="Mathematics\Geometry\Algorithms\TriangleProjectionContext.cs" />
     <Compile Include="Mathematics\Geometry\CAGD\BezierCurve.cs" />
     <Compile Include="Mathematics\Geometry\CAGD\BezierRectangle.cs" />
     <Compile Include="Mathematics\Geometry\CAGD\BezierTriangle.cs" />
@@ -74,6 +79,7 @@
   <ItemGroup>
     <None Include="DeyoCore.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
