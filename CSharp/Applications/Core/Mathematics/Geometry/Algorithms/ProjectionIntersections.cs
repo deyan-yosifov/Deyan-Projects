@@ -30,7 +30,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                 }
             }
 
-            return volumeMultipliedBy6;
+            double orientedVolume = volumeMultipliedBy6 / 6;
+
+            return orientedVolume;
         }
 
         public static IEnumerable<ProjectedPoint> GetProjectionIntersection(TriangleProjectionContext c, Point3D aPoint, Point3D bPoint, Point3D cPoint)
