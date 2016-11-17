@@ -54,6 +54,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Mathematics\Algebra\AlgebraExtensionTests.cs" />
+    <Compile Include="Mathematics\Geometry\Algorithms\ProjectionIntersectionsTests.cs" />
     <Compile Include="Mathematics\Geometry\IntersectionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
