@@ -15,32 +15,28 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
         [TestMethod]
         public void InnerProjectionIntersectionTest()
         {
+            TriangleProjectionContext projectionContext = new TriangleProjectionContext(new Point3D(1, 1, 0), new Point3D(3, 3, 0), new Point3D(2, 5, 0));
+
             InputProjectionContext input = new InputProjectionContext()
             {
-                ProjectionContext = new TriangleProjectionContext(new Point3D(1, 1, 0), new Point3D(3, 3, 0), new Point3D(2, 5, 0)),
-                FirstTrianglePoint = new Point3D(2, 2.2, 13),
-                SecondTrianglePoint = new Point3D(2, 2.8, 5),
-                ThirdTrianglePoint = new Point3D(2.5, 3, 23)
+                ProjectionContext = projectionContext,
+                FirstTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0.3, 0.1) + projectionContext.ProjectionNormal * 3,
+                SecondTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0.1, 0.3) + projectionContext.ProjectionNormal * (-2),
+                ThirdTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0.4, 0.4)
             };
 
-            this.AssertProjectionIntersection(input, new Point[] { new Point(2, 2.2), new Point(2, 2.8), new Point(2.5, 3) });   
+            this.AssertProjectionIntersection(input, new Point3D[] { input.FirstTrianglePoint, input.SecondTrianglePoint, input.ThirdTrianglePoint });   
         }
 
-        private void AssertProjectionIntersection(InputProjectionContext input, Point[] expectedPoints)
+        private void AssertProjectionIntersection(InputProjectionContext input, Point3D[] expectedPoints)
         {
             ProjectedPoint[] result = ProjectionIntersections.GetProjectionIntersection(input.ProjectionContext,
-                input.FirstTrianglePoint, input.SecondTrianglePoint, input.ThirdTrianglePoint).ToArray();
-
-            ProjectedPoint firstProjection = input.ProjectionContext.GetProjectedPoint(input.FirstTrianglePoint);
-            ProjectedPoint secondProjection = input.ProjectionContext.GetProjectedPoint(input.SecondTrianglePoint);
-            ProjectedPoint thirdProjection = input.ProjectionContext.GetProjectedPoint(input.ThirdTrianglePoint);
-
+                input.FirstTrianglePoint, input.SecondTrianglePoint, input.ThirdTrianglePoint).ToArray();            
             ProjectedPoint[] expectedProjectedPoints = new ProjectedPoint[expectedPoints.Length];
 
             for (int i = 0; i < expectedPoints.Length; i++)
             {
-                expectedProjectedPoints[i] = 
-                    this.CalculateExpectedProjectedPoint(expectedPoints[i], firstProjection, secondProjection, thirdProjection);
+                expectedProjectedPoints[i] = input.ProjectionContext.GetProjectedPoint(expectedPoints[i]);
             }
 
             this.AssertPointsContourAreEqual(expectedProjectedPoints, result);
@@ -101,17 +97,6 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
         private bool AreEqual(ProjectedPoint first, ProjectedPoint second)
         {
             return first.Point.Equals(second.Point) && first.Height.IsEqualTo(second.Height);
-        }
-
-        private ProjectedPoint CalculateExpectedProjectedPoint
-            (Point expectedPoint, ProjectedPoint firstProjection, ProjectedPoint secondProjection, ProjectedPoint thirdProjection)
-        {
-            Point3D barycentrics = expectedPoint.GetBarycentricCoordinates(firstProjection.Point, secondProjection.Point, thirdProjection.Point);
-
-            double expectedHeight = 
-                barycentrics.X * firstProjection.Height + barycentrics.Y * secondProjection.Height + barycentrics.Z * thirdProjection.Height;
-
-            return new ProjectedPoint() { Point = expectedPoint, Height = expectedHeight };
         }
 
         private class InputProjectionContext

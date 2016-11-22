@@ -8,6 +8,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
 {
     public class TriangleProjectionContext
     {
+        private readonly Point3D aPoint;
+        private readonly Point3D bPoint;
+        private readonly Point3D cPoint;
         private readonly Vector3D localXAxis;
         private readonly Vector3D localYAxis;
         private readonly Vector3D localZAxis;
@@ -18,6 +21,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
 
         public TriangleProjectionContext(Point3D projectionTriangleA, Point3D projectionTriangleB, Point3D projectionTriangleC)
         {
+            this.aPoint = projectionTriangleA;
+            this.bPoint = projectionTriangleB;
+            this.cPoint = projectionTriangleC;
             Vector3D localXAxis = projectionTriangleB - projectionTriangleA;
             Point a = new Point();
             Point b = new Point(localXAxis.Length, 0);
@@ -61,6 +67,14 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             }
         }
 
+        public Vector3D ProjectionNormal
+        {
+            get
+            {
+                return this.localZAxis;
+            }
+        }
+
         public IEnumerable<Point> TriangleVertices
         {
             get
@@ -98,6 +112,15 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             };
 
             return projectedPoint;
+        }
+
+        public Point3D GetPointByBarycentricCoordinates(double u, double v)
+        {
+            double t = 1 - u - v;
+            Point3D center = new Point3D();
+            Point3D result = center + u * (this.aPoint - center) + v * (this.bPoint - center) + t * (this.cPoint - center);
+
+            return result;
         }
 
         private Point GetProjection(Point3D meshPoint)
