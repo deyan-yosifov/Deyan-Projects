@@ -28,6 +28,38 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
             this.AssertProjectionIntersection(input, new Point3D[] { input.FirstTrianglePoint, input.SecondTrianglePoint, input.ThirdTrianglePoint });   
         }
 
+        [TestMethod]
+        public void OnlyBorderPointsTest()
+        {
+            TriangleProjectionContext projectionContext = new TriangleProjectionContext(new Point3D(1, 1, 0), new Point3D(3, 3, 0), new Point3D(2, 5, 0));
+
+            InputProjectionContext input = new InputProjectionContext()
+            {
+                ProjectionContext = projectionContext,
+                FirstTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0.3, 0.7) + projectionContext.ProjectionNormal * 3,
+                SecondTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0, 0.3) + projectionContext.ProjectionNormal * (-2),
+                ThirdTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0.3, 0)
+            };
+
+            this.AssertProjectionIntersection(input, new Point3D[] { input.FirstTrianglePoint, input.SecondTrianglePoint, input.ThirdTrianglePoint });   
+        }
+
+        [TestMethod]
+        public void OnlyCoinsidingPointsTest()
+        {
+            TriangleProjectionContext projectionContext = new TriangleProjectionContext(new Point3D(1, 1, 0), new Point3D(3, 3, 0), new Point3D(2, 5, 0));
+
+            InputProjectionContext input = new InputProjectionContext()
+            {
+                ProjectionContext = projectionContext,
+                FirstTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0, 0) + projectionContext.ProjectionNormal * 3,
+                SecondTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(0, 1) + projectionContext.ProjectionNormal * (-2),
+                ThirdTrianglePoint = projectionContext.GetPointByBarycentricCoordinates(1, 0)
+            };
+
+            this.AssertProjectionIntersection(input, new Point3D[] { input.FirstTrianglePoint, input.SecondTrianglePoint, input.ThirdTrianglePoint });
+        }
+
         private void AssertProjectionIntersection(InputProjectionContext input, Point3D[] expectedPoints)
         {
             ProjectedPoint[] result = ProjectionIntersections.GetProjectionIntersection(input.ProjectionContext,
