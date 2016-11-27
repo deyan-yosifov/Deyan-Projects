@@ -32,6 +32,7 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             Vector3D localZAxis = Vector3D.CrossProduct(localXAxis, acDirection);
             localZAxis.Normalize();
             Vector3D localYAxis = Vector3D.CrossProduct(localZAxis, localXAxis);
+            localYAxis.Normalize();
             Point c = new Point(Vector3D.DotProduct(acDirection, localXAxis), Vector3D.DotProduct(acDirection, localYAxis));
 
             this.triangleA = a;
@@ -96,7 +97,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
         {
             Point3D barycentricCoordinates = projection.GetBarycentricCoordinates(this.triangleA, this.triangleB, this.triangleC);
 
-            return barycentricCoordinates.X >= 0 && barycentricCoordinates.Y >= 0 && barycentricCoordinates.Z >= 0;
+            return barycentricCoordinates.X.IsGreaterThanOrEqualTo(0) &&
+                barycentricCoordinates.Y.IsGreaterThanOrEqualTo(0) && 
+                barycentricCoordinates.Z.IsGreaterThanOrEqualTo(0);
         }
 
         public ProjectedPoint GetProjectedPoint(Point3D meshPoint)

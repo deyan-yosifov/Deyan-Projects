@@ -117,7 +117,8 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                     Vector secondDelta = intersection - contextSideStart;
                     double tContext = Vector.Multiply(secondDelta, sideVector) / sideVector.LengthSquared;
 
-                    if (0 < t && t < 1 && 0 < tContext && tContext < 1 && !(innerIntersections.Count > 0 && innerIntersections[0].SidePositionCoordinate == t))
+                    if (t.IsGreaterThan(0) && t.IsLessThan(1) && tContext.IsGreaterThan(0) && tContext.IsLessThan(1) && 
+                        !(innerIntersections.Count > 0 && innerIntersections[0].SidePositionCoordinate == t))
                     {
                         double height = (1 - t) * sideContext.SideStart.Height + t * sideContext.SideEnd.Height;
 
@@ -152,7 +153,7 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             {
                 Point3D barycentrics = triangleVertex.GetBarycentricCoordinates(triangle[0].Point, triangle[1].Point, triangle[2].Point);
 
-                if (barycentrics.X > 0 && barycentrics.Y > 0 && barycentrics.Z > 0)
+                if (barycentrics.X.IsGreaterThan(0) && barycentrics.Y.IsGreaterThan(0) && barycentrics.Z.IsGreaterThan(0))
                 {
                     double height = barycentrics.X * triangle[0].Height + barycentrics.Y * triangle[1].Height + barycentrics.Z * triangle[2].Height;
                     innerProjectionTrianglePoints.Add(triangleVertex, new ProjectedPoint() { Point = triangleVertex, Height = height });
