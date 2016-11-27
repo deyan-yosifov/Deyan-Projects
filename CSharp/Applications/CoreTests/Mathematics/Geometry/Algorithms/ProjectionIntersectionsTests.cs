@@ -1,4 +1,5 @@
 ﻿using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry;
 using Deyo.Core.Mathematics.Geometry.Algorithms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -12,12 +13,19 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
     [TestClass]
     public class ProjectionIntersectionsTests
     {
-        private TriangleProjectionContext[] projectionTrianglesToTest;
+        private readonly Point singleUnitA;
+        private readonly Point singleUnitB;
+        private readonly Point singleUnitC;
+        private readonly TriangleProjectionContext[] projectionTrianglesToTest;
 
         public ProjectionIntersectionsTests()
         {
+            this.singleUnitA = new Point();
+            this.singleUnitB = new Point(1, 0);
+            this.singleUnitC = new Point(0, 1);
             this.projectionTrianglesToTest = new TriangleProjectionContext[]
             {
+                new TriangleProjectionContext(new Point3D(0, 0, 0), new Point3D(1, 0, 0), new Point3D(0, 1, 0)),
                 new TriangleProjectionContext(new Point3D(1, 1, 0), new Point3D(3, 3, 0), new Point3D(2, 5, 0)),
                 new TriangleProjectionContext(new Point3D(3, 0, 0), new Point3D(0, -2, 0), new Point3D(0, 0, 6)),
                 new TriangleProjectionContext(new Point3D(1, 1, 0), new Point3D(0, 3, -2), new Point3D(2, 0, 11)),
@@ -53,6 +61,113 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
             PointRelativeToTriangle vertexC = PointRelativeToTriangle.CreateInstance(1, 0, 0);
 
             this.AssertProjectionIntersection(vertexA, vertexB, vertexC, vertexB, vertexC, vertexA); 
+        }
+
+        [TestMethod]
+        public void CoinsidingBoundingAndInnerPointsTest()
+        {
+            PointRelativeToTriangle vertexA = PointRelativeToTriangle.CreateInstance(0, 0, 3);
+            PointRelativeToTriangle vertexB = PointRelativeToTriangle.CreateInstance(0, 0.5, -2);
+            PointRelativeToTriangle vertexC = PointRelativeToTriangle.CreateInstance(0.3, 0.4, 0);
+
+            this.AssertProjectionIntersection(vertexA, vertexB, vertexC, vertexB, vertexC, vertexA); 
+        }
+
+        [TestMethod]
+        public void AllOuterPointsAndNoIntersectionTest()
+        {
+            PointRelativeToTriangle vertexA = PointRelativeToTriangle.CreateInstance(1, 1, 3);
+            PointRelativeToTriangle vertexB = PointRelativeToTriangle.CreateInstance(1, 0.5, -2);
+            PointRelativeToTriangle vertexC = PointRelativeToTriangle.CreateInstance(1.5, 0, 0);
+
+            this.AssertProjectionIntersection(vertexA, vertexB, vertexC); 
+        }
+
+        [TestMethod]
+        public void AllOuterPointsAndOnlyPointsIntersectionTest()
+        {
+            PointRelativeToTriangle vertexA = this.GetRelativePointFromUnitPointTriangle(new Point(1, 0), 5);
+            PointRelativeToTriangle vertexB = this.GetRelativePointFromUnitPointTriangle(new Point(1, 1), -7);
+            PointRelativeToTriangle vertexC = this.GetRelativePointFromUnitPointTriangle(new Point(0.5, 0.5), 1);
+
+            this.AssertProjectionIntersection(vertexA, vertexB, vertexC, vertexC, vertexA);
+        }
+
+        [TestMethod]
+        public void SixPointsIntersectionTest()
+        {
+            ProjectedPoint first = new ProjectedPoint() { Point = new Point(0.7, 0.7), Height = 5 };
+            ProjectedPoint second = new ProjectedPoint() { Point = new Point(-0.5, 0.7), Height = -7 };
+            ProjectedPoint third = new ProjectedPoint() { Point = new Point(0.5, -0.5), Height = 1 };
+
+            ProjectedPoint[] intersections = new ProjectedPoint[]
+            {
+                this.IntersectLineSegments(first, second, SingleUnitTriangleSide.BC),
+                this.IntersectLineSegments(first, second, SingleUnitTriangleSide.AC),
+                this.IntersectLineSegments(second, third, SingleUnitTriangleSide.AC),
+                this.IntersectLineSegments(second, third, SingleUnitTriangleSide.AB),
+                this.IntersectLineSegments(third, first, SingleUnitTriangleSide.AB),
+                this.IntersectLineSegments(third, first, SingleUnitTriangleSide.BC),
+            };
+
+            PointRelativeToTriangle vertexA = this.GetRelativePointFromUnitPointTriangle(first);
+            PointRelativeToTriangle vertexB = this.GetRelativePointFromUnitPointTriangle(second);
+            PointRelativeToTriangle vertexC = this.GetRelativePointFromUnitPointTriangle(third);
+            PointRelativeToTriangle[] expectedIntersections = this.GetIntersectionsRelativeFromUnitPointTriangle(intersections);
+
+            this.AssertProjectionIntersection(vertexA, vertexB, vertexC, expectedIntersections);
+        }
+
+        private PointRelativeToTriangle[] GetIntersectionsRelativeFromUnitPointTriangle(ProjectedPoint[] intersections)
+        {
+            PointRelativeToTriangle[] expectedRelativeIntersections = new PointRelativeToTriangle[intersections.Length];
+
+            for (int i = 0; i < expectedRelativeIntersections.Length; i++)
+            {
+                ProjectedPoint intersection = intersections[i];
+                PointRelativeToTriangle expected = this.GetRelativePointFromUnitPointTriangle(intersection);
+                expectedRelativeIntersections[i] = expected;
+            }
+
+            return expectedRelativeIntersections;
+        }
+
+        private ProjectedPoint IntersectLineSegments(ProjectedPoint a, ProjectedPoint b, SingleUnitTriangleSide side)
+        {
+            Point start, end;
+            this.GetSidePoints(side, out start, out end);
+
+            Point intersection;
+            if (!IntersectionsHelper.TryIntersectLineSegments(a.Point, b.Point, start, end, out intersection))
+            {
+                throw new ArgumentException("Line segments are not intersecting!");
+            }
+            
+            double t = (intersection - a.Point).Length / (b.Point - a.Point).Length;
+            double height = (1 - t) * a.Height + t * b.Height;
+
+            return new ProjectedPoint() { Point = intersection, Height = height };
+        }
+
+        private void GetSidePoints(SingleUnitTriangleSide side, out Point start, out Point end)
+        {
+            switch (side)
+            {
+                case SingleUnitTriangleSide.AB:
+                    start = this.singleUnitA;
+                    end = this.singleUnitB;
+                    break;
+                case SingleUnitTriangleSide.AC:
+                    start = this.singleUnitA;
+                    end = this.singleUnitC;
+                    break;
+                case SingleUnitTriangleSide.BC:
+                    start = this.singleUnitB;
+                    end = this.singleUnitC;
+                    break;
+                default:
+                    throw new NotSupportedException(string.Format("Not supported side type: {0}", side));
+            }
         }
 
         private void AssertProjectionIntersection(
@@ -139,6 +254,23 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
         private bool AreEqual(ProjectedPoint first, ProjectedPoint second)
         {
             return first.Point.Equals(second.Point) && first.Height.IsEqualTo(second.Height);
+        }
+
+        private PointRelativeToTriangle GetRelativePointFromUnitPointTriangle(ProjectedPoint projectedPoint)
+        {
+            return this.GetRelativePointFromUnitPointTriangle(projectedPoint.Point, projectedPoint.Height);
+        }
+
+        private PointRelativeToTriangle GetRelativePointFromUnitPointTriangle(Point point, double height)
+        {
+            Point3D barycentrics = point.GetBarycentricCoordinates(this.singleUnitA, this.singleUnitB, this.singleUnitC);
+
+            return PointRelativeToTriangle.CreateInstance(barycentrics.X, barycentrics.Y, height);
+        }
+
+        private enum SingleUnitTriangleSide
+        {
+            BC, AC, AB
         }
 
         private struct PointRelativeToTriangle

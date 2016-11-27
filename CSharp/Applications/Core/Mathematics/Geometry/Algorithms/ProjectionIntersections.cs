@@ -52,7 +52,7 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                     SideEnd = i < 2 ? projectedTriangle[i + 1] : projectedTriangle[0],
                 };
 
-                foreach (ProjectedPoint sidePoint in GetIntersectionPoints(sideContext))
+                foreach (ProjectedPoint sidePoint in ProjectionIntersections.GetIntersectionPoints(sideContext))
                 {
                     yield return sidePoint;
                 }
@@ -76,7 +76,7 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                 yield return sideContext.SideStart;
             }
 
-            List<SideInnerIntersectionInfo> innerIntersections = GetSortedInnerIntersections(sideContext);
+            List<SideInnerIntersectionInfo> innerIntersections = ProjectionIntersections.GetSortedInnerIntersections(sideContext);
 
             foreach (SideInnerIntersectionInfo info in innerIntersections)
             {
