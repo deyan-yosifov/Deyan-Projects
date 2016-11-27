@@ -253,7 +253,10 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
 
         private bool AreEqual(ProjectedPoint first, ProjectedPoint second)
         {
-            return first.Point.Equals(second.Point) && first.Height.IsEqualTo(second.Height);
+            return 
+            first.Point.X.IsEqualTo(second.Point.X) &&
+            first.Point.Y.IsEqualTo(second.Point.Y) && 
+            first.Height.IsEqualTo(second.Height);
         }
 
         private PointRelativeToTriangle GetRelativePointFromUnitPointTriangle(ProjectedPoint projectedPoint)

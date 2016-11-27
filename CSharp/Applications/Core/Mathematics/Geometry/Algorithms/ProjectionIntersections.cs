@@ -97,10 +97,10 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
         private static List<SideInnerIntersectionInfo> GetSortedInnerIntersections(ProjectedSideIntersectionContext sideContext)
         {
             List<SideInnerIntersectionInfo> innerIntersections = new List<SideInnerIntersectionInfo>();
+            Vector sideVector = sideContext.SideEnd.Point - sideContext.SideStart.Point;
 
             for (int contextSideVertexIndex = 0; contextSideVertexIndex < 6; contextSideVertexIndex += 2)
             {
-                Vector sideVector = sideContext.SideEnd.Point - sideContext.SideStart.Point;
                 Point contextSideStart = sideContext.ContextSideVertices[contextSideVertexIndex];
                 Point contextSideEnd = sideContext.ContextSideVertices[contextSideVertexIndex + 1];
                 Vector contextSide = contextSideEnd - contextSideStart;
@@ -115,10 +115,10 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                     double t = Vector.Multiply(firstDelta, sideVector) / sideVector.LengthSquared;
 
                     Vector secondDelta = intersection - contextSideStart;
-                    double tContext = Vector.Multiply(secondDelta, sideVector) / sideVector.LengthSquared;
+                    double tContext = Vector.Multiply(secondDelta, contextSide) / contextSide.LengthSquared;
 
                     if (t.IsGreaterThan(0) && t.IsLessThan(1) && tContext.IsGreaterThan(0) && tContext.IsLessThan(1) && 
-                        !(innerIntersections.Count > 0 && innerIntersections[0].SidePositionCoordinate == t))
+                        !(innerIntersections.Count > 0 && innerIntersections[0].SidePositionCoordinate.IsEqualTo(t)))
                     {
                         double height = (1 - t) * sideContext.SideStart.Height + t * sideContext.SideEnd.Height;
 
