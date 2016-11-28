@@ -118,6 +118,53 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
             this.AssertProjectionIntersection(vertexA, vertexB, vertexC, expectedIntersections);
         }
 
+        [TestMethod]
+        public void FourPointsIntersectionTest()
+        {
+            ProjectedPoint first = new ProjectedPoint() { Point = new Point(-0.2, 0.2), Height = 5 };
+            ProjectedPoint second = new ProjectedPoint() { Point = new Point(-0.5, 0.9), Height = -7 };
+            ProjectedPoint third = new ProjectedPoint() { Point = new Point(0.7, 0.7), Height = 1 };
+
+            ProjectedPoint[] intersections = new ProjectedPoint[]
+            {
+                this.IntersectLineSegments(second, third, SingleUnitTriangleSide.AC),
+                this.IntersectLineSegments(second, third, SingleUnitTriangleSide.BC),
+                this.IntersectLineSegments(third, first, SingleUnitTriangleSide.BC),
+                this.IntersectLineSegments(third, first, SingleUnitTriangleSide.AC),
+            };
+
+            PointRelativeToTriangle vertexA = this.GetRelativePointFromUnitPointTriangle(first);
+            PointRelativeToTriangle vertexB = this.GetRelativePointFromUnitPointTriangle(second);
+            PointRelativeToTriangle vertexC = this.GetRelativePointFromUnitPointTriangle(third);
+            PointRelativeToTriangle[] expectedIntersections = this.GetIntersectionsRelativeFromUnitPointTriangle(intersections);
+
+            this.AssertProjectionIntersection(vertexA, vertexB, vertexC, expectedIntersections);
+        }
+
+        [TestMethod]
+        public void BorderAndInnerPointsIntersectionTest()
+        {
+            ProjectedPoint first = new ProjectedPoint() { Point = new Point(1.2, 1.2), Height = 5 };
+            ProjectedPoint second = new ProjectedPoint() { Point = new Point(-1.2, 0.8), Height = -7 };
+            ProjectedPoint third = new ProjectedPoint() { Point = new Point(0.8, -1.2), Height = 1 };
+
+            Point3D b = new Point().GetBarycentricCoordinates(first.Point, second.Point, third.Point);
+
+            ProjectedPoint[] intersections = new ProjectedPoint[]
+            {
+                new ProjectedPoint() { Point = this.singleUnitC, Height = -1 },
+                new ProjectedPoint() { Point = this.singleUnitB, Height = -3 },
+                new ProjectedPoint() { Point = this.singleUnitA, Height = b.X * 5 + b.Y * (-7) + b.Z },
+            };
+
+            PointRelativeToTriangle vertexA = this.GetRelativePointFromUnitPointTriangle(first);
+            PointRelativeToTriangle vertexB = this.GetRelativePointFromUnitPointTriangle(second);
+            PointRelativeToTriangle vertexC = this.GetRelativePointFromUnitPointTriangle(third);
+            PointRelativeToTriangle[] expectedIntersections = this.GetIntersectionsRelativeFromUnitPointTriangle(intersections);
+
+            this.AssertProjectionIntersection(vertexA, vertexB, vertexC, expectedIntersections);
+        }
+
         private PointRelativeToTriangle[] GetIntersectionsRelativeFromUnitPointTriangle(ProjectedPoint[] intersections)
         {
             PointRelativeToTriangle[] expectedRelativeIntersections = new PointRelativeToTriangle[intersections.Length];
