@@ -1,4 +1,5 @@
-﻿using Deyo.Core.Mathematics.Algebra;
+﻿using Deyo.Core.Common;
+using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -40,7 +41,7 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             ProjectedPoint[] projectedTriangle = { c.GetProjectedPoint(aPoint), c.GetProjectedPoint(bPoint), c.GetProjectedPoint(cPoint) };
             Dictionary<Point, ProjectedPoint> innerProjectionTrianglePoints = CalculateInnerProjectionTrianglePointSet(c, projectedTriangle);
             Point[] contextSideVertices = new Point[] { c.TriangleA, c.TriangleB, c.TriangleB, c.TriangleC, c.TriangleC, c.TriangleA };
-            List<ProjectedPoint> intersectionPolygone = new List<ProjectedPoint>();
+            int intersectionPolygonePointsCount = 0;
 
             for (int i = 0; i < 3; i++)
             {
@@ -54,11 +55,12 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
 
                 foreach (ProjectedPoint sidePoint in ProjectionIntersections.GetIntersectionPoints(sideContext))
                 {
+                    intersectionPolygonePointsCount++;
                     yield return sidePoint;
                 }
             }
 
-            if (intersectionPolygone.Count < 3)
+            if (intersectionPolygonePointsCount < 3)
             {
                 foreach (ProjectedPoint contextInnerPoint in innerProjectionTrianglePoints.Values)
                 {
@@ -117,8 +119,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                     Vector secondDelta = intersection - contextSideStart;
                     double tContext = Vector.Multiply(secondDelta, contextSide) / contextSide.LengthSquared;
 
-                    if (t.IsGreaterThan(0) && t.IsLessThan(1) && tContext.IsGreaterThan(0) && tContext.IsLessThan(1) && 
-                        !(innerIntersections.Count > 0 && innerIntersections[0].SidePositionCoordinate.IsEqualTo(t)))
+                    if (t.IsGreaterThan(0) && t.IsLessThan(1) && 
+                        tContext.IsGreaterThanOrEqualTo(0) && tContext.IsLessThanOrEqualTo(1) && 
+                        !(innerIntersections.Count > 0 && innerIntersections.PeekLast().SidePositionCoordinate.IsEqualTo(t)))
                     {
                         double height = (1 - t) * sideContext.SideStart.Height + t * sideContext.SideEnd.Height;
 

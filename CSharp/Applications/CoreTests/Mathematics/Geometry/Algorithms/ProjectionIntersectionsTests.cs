@@ -153,7 +153,7 @@ namespace CoreTests.Mathematics.Geometry.Algorithms
             ProjectedPoint[] intersections = new ProjectedPoint[]
             {
                 new ProjectedPoint() { Point = this.singleUnitC, Height = -1 },
-                new ProjectedPoint() { Point = this.singleUnitB, Height = -3 },
+                new ProjectedPoint() { Point = this.singleUnitB, Height = 3 },
                 new ProjectedPoint() { Point = this.singleUnitA, Height = b.X * 5 + b.Y * (-7) + b.Z },
             };
 
