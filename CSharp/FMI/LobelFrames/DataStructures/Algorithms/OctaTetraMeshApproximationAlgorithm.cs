@@ -67,12 +67,12 @@ namespace LobelFrames.DataStructures.Algorithms
         private Triangle CalculateFirstTriangle()
         {
             Vertex a = new Vertex(this.context.MeshToApproximate[0, 0]);
-            Point3D directionPoint = this.context.MeshToApproximate[0, 1];
+            Point3D directionPoint = this.context.MeshToApproximate[1, 0];
             Vector3D abDirection = directionPoint - a.Point;
             abDirection.Normalize();
 
             Vertex b = new Vertex(a.Point + this.context.TriangleSide * abDirection);
-            Point3D planePoint = this.context.MeshToApproximate[1, 0];
+            Point3D planePoint = this.context.MeshToApproximate[0, 1];
             Vector3D planeNormal = Vector3D.CrossProduct(abDirection, planePoint - a.Point);
             Vector3D hDirection = Vector3D.CrossProduct(planeNormal, abDirection);
             hDirection.Normalize();
