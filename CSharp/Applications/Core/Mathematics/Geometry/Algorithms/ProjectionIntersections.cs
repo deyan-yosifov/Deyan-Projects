@@ -9,14 +9,14 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
 {
     public static class ProjectionIntersections
     {
-        public static double FindProjectionVolume(TriangleProjectionContext context, Point3D meshPointA, Point3D meshPointB, Point3D meshPointC)
+        public static bool TryFindCommonProjectionVolume(TriangleProjectionContext context, Point3D meshPointA, Point3D meshPointB, Point3D meshPointC, out double orientedVolume)
         {
             List<ProjectedPoint> projectionIntersection = new List<ProjectedPoint>(GetProjectionIntersection(context, meshPointA, meshPointB, meshPointC));
-
-            double volumeMultipliedBy6 = 0;
+            bool hasCommonProjection = projectionIntersection.Count > 0;
 
             if (projectionIntersection.Count >= 3)
             {
+                double volumeMultipliedBy6 = 0;
                 ProjectedPoint first = projectionIntersection[0];
 
                 for (int i = 2; i < projectionIntersection.Count; i++)
@@ -29,11 +29,15 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
                     double areaMultipliedBy2 = Math.Abs(Vector.CrossProduct(triangleSideB, triangleSideC));
                     volumeMultipliedBy6 += areaMultipliedBy2 * (first.Height + second.Height + third.Height);
                 }
+
+                orientedVolume = volumeMultipliedBy6 / 6;
+            }
+            else
+            {
+                orientedVolume = 0;
             }
 
-            double orientedVolume = volumeMultipliedBy6 / 6;
-
-            return orientedVolume;
+            return hasCommonProjection;
         }
 
         public static IEnumerable<ProjectedPoint> GetProjectionIntersection(TriangleProjectionContext c, Point3D aPoint, Point3D bPoint, Point3D cPoint)
