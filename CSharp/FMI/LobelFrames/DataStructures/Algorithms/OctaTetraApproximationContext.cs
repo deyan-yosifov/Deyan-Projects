@@ -11,6 +11,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly bool[,] coveredUVPoints;
         private readonly UniqueEdgesSet uniqueEdges;
         private readonly Dictionary<Point3D, Vertex> uniqueVertices;
+        private readonly HashSet<NonEditableTriangle> existingTriangles;
         private int coveredPointsCount;
 
         public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide)
@@ -19,7 +20,8 @@ namespace LobelFrames.DataStructures.Algorithms
             this.triangleSide = triangleSide;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.uniqueEdges = new UniqueEdgesSet();
-            this.uniqueVertices = new Dictionary<Point3D, Vertex>();
+            this.uniqueVertices = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
+            this.existingTriangles = new HashSet<NonEditableTriangle>();
             this.coveredPointsCount = 0;
         }
 
@@ -83,17 +85,24 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex b = this.GetUniqueVertex(bPoint);
             Vertex c = this.GetUniqueVertex(cPoint);
 
-            Edge ab = this.uniqueEdges.GetEdge(b, c);
+            Edge ab = this.uniqueEdges.GetEdge(a, b);
             Edge ac = this.uniqueEdges.GetEdge(a, c);
             Edge bc = this.uniqueEdges.GetEdge(b, c);
+
+            this.existingTriangles.Add(new NonEditableTriangle(a.Point, b.Point, c.Point));
 
             return new Triangle(a, b, c, bc, ac, ab);
         }
 
-        // TODO: 
-        public bool IsTriangleExisting(Point3D a, Point3D b, Point3D c)
+        public bool IsTriangleExisting(Point3D aPoint, Point3D bPoint, Point3D cPoint)
         {
-            throw new NotImplementedException();
+            Vertex a = this.GetUniqueVertex(aPoint);
+            Vertex b = this.GetUniqueVertex(bPoint);
+            Vertex c = this.GetUniqueVertex(cPoint);
+            NonEditableTriangle triangle = new NonEditableTriangle(a.Point, b.Point, c.Point);
+            bool isExisting = !this.existingTriangles.Contains(triangle);
+
+            return isExisting;
         }
 
         private Vertex GetUniqueVertex(Point3D point)

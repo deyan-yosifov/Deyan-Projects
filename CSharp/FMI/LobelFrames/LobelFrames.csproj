@@ -73,6 +73,8 @@
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\NonEditableDescreteUVMesh.cs" />
     <Compile Include="DataStructures\NonEditableMesh.cs" />
+    <Compile Include="DataStructures\NonEditableTriangle.cs" />
+    <Compile Include="DataStructures\PointsEqualityComparer.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\IUVSurface.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchFoldingInfo.cs" />
