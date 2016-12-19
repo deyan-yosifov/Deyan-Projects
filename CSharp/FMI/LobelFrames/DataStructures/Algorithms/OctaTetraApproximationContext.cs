@@ -10,7 +10,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly double triangleSide;
         private readonly bool[,] coveredUVPoints;
         private readonly UniqueEdgesSet uniqueEdges;
-        private readonly Dictionary<Point3D, Vertex> uniqueVertices;
+        private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
         private readonly HashSet<NonEditableTriangle> existingTriangles;
         private int coveredPointsCount;
 
@@ -20,7 +20,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.triangleSide = triangleSide;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.uniqueEdges = new UniqueEdgesSet();
-            this.uniqueVertices = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
+            this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
             this.existingTriangles = new HashSet<NonEditableTriangle>();
             this.coveredPointsCount = 0;
         }
@@ -108,10 +108,10 @@ namespace LobelFrames.DataStructures.Algorithms
         private Vertex GetUniqueVertex(Point3D point)
         {
             Vertex vertex;
-            if(!this.uniqueVertices.TryGetValue(point, out vertex))
+            if(!this.pointToUniqueVertex.TryGetValue(point, out vertex))
             {
                 vertex = new Vertex(point);
-                this.uniqueVertices.Add(point, vertex);
+                this.pointToUniqueVertex.Add(point, vertex);
             }
 
             return vertex;
