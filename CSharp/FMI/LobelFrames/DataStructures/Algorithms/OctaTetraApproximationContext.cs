@@ -7,6 +7,7 @@ namespace LobelFrames.DataStructures.Algorithms
     internal class OctaTetraApproximationContext
     {
         private readonly IDescreteUVMesh meshToApproximate;
+        private readonly Queue<OctaTetraApproximationStep> recursionQueue;
         private readonly double triangleSide;
         private readonly bool[,] coveredUVPoints;
         private readonly UniqueEdgesSet uniqueEdges;
@@ -20,6 +21,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.triangleSide = triangleSide;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.uniqueEdges = new UniqueEdgesSet();
+            this.recursionQueue = new Queue<OctaTetraApproximationStep>();
             this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
             this.existingTriangles = new HashSet<NonEditableTriangle>();
             this.coveredPointsCount = 0;
@@ -30,6 +32,14 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.meshToApproximate;
+            }
+        }
+
+        public Queue<OctaTetraApproximationStep> RecursionQueue
+        {
+            get
+            {
+                return this.recursionQueue;
             }
         }
 

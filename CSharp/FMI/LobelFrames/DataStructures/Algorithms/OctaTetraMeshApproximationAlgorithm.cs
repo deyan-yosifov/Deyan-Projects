@@ -24,10 +24,10 @@ namespace LobelFrames.DataStructures.Algorithms
 
             yield return firstTriangle;
 
-            //while (this.context.HasMorePointsToCover)
-            //{
-            //    // TODO: calculate recursively best triangles...
-            //}
+            while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
+            {
+                // TODO: calculate recursively best triangles...
+            }
         }
 
         private void MarkVisitedVerticesOnFirstTriangle(Triangle firstTriangle)
