@@ -99,7 +99,7 @@ function promptWeekTableRange(){
   
   var result = ui.prompt(
      'Избери дата от седмицата и диапозон на данните в седмицата!',
-    "Примерен формат за датата и диапазона: 31-1-2015 9:23",
+    "Примерен формат за датата и диапазона: 31-1-2017 9:23",
       ui.ButtonSet.OK_CANCEL);  
   
   if(result.getSelectedButton() == ui.Button.OK){
