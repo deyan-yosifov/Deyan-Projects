@@ -71,7 +71,7 @@ function promptDate()
   
   var result = ui.prompt(
      'Избери дата!',
-    "Примерен формат за датата: 31-1-2015",
+    "Примерен формат за датата: 31-1-2017",
       ui.ButtonSet.OK_CANCEL);  
   
   if(result.getSelectedButton() == ui.Button.OK){
