@@ -9,6 +9,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly IDescreteUVMesh meshToApproximate;
         private readonly Queue<OctaTetraApproximationStep> recursionQueue;
         private readonly double triangleSide;
+        private readonly double tetrahedronHeight;
         private readonly bool[,] coveredUVPoints;
         private readonly UniqueEdgesSet uniqueEdges;
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
@@ -19,6 +20,7 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             this.meshToApproximate = meshToApproximate;
             this.triangleSide = triangleSide;
+            this.tetrahedronHeight = Math.Sqrt(2.0 / 3) * triangleSide;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.uniqueEdges = new UniqueEdgesSet();
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
@@ -48,6 +50,14 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.triangleSide;
+            }
+        }
+
+        public double TetrahedronHeight
+        {
+            get
+            {
+                return this.tetrahedronHeight;
             }
         }
 

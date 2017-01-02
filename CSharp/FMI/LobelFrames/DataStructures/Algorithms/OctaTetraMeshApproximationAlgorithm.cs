@@ -30,6 +30,30 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
+        private IEnumerable<Triangle> CreateNonExistingNeigbouringTriangles(Edge edge, Vertex opositeVertex, Vector3D triangleUnitNormal)
+        {
+            foreach (Point3D neighbouringTriangleOpositeVertex in this.GetNeighbouringTrianglesOpositeVertices(edge, opositeVertex, triangleUnitNormal))
+            {
+                if (!this.context.IsTriangleExisting(edge.Start.Point, edge.End.Point, neighbouringTriangleOpositeVertex))
+                {
+                    yield return this.context.CreateTriangle(edge.Start.Point, edge.End.Point, neighbouringTriangleOpositeVertex);
+                }
+            }
+        }
+
+        private IEnumerable<Point3D> GetNeighbouringTrianglesOpositeVertices(Edge edge, Vertex opositeVertex, Vector3D triangleUnitNormal)
+        {
+            Point3D triangleCenter = opositeVertex.Point + (1.0 / 3) * ((edge.Start.Point - opositeVertex.Point) + (edge.End.Point - opositeVertex.Point));
+            Point3D tetrahedronTop = triangleCenter + this.context.TetrahedronHeight * triangleUnitNormal;
+            Point3D edgeCenter = edge.Start.Point + 0.5 * (edge.End.Point - edge.Start.Point);
+            Point3D octahedronPoint = edgeCenter + (edgeCenter - opositeVertex.Point);
+            Point3D opositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
+
+            yield return tetrahedronTop;
+            yield return octahedronPoint;
+            yield return opositeTetrahedronTop;
+        }
+
         private void MarkVisitedVerticesOnFirstTriangle(Triangle firstTriangle)
         {
             TriangleProjectionContext projectionContext = 
