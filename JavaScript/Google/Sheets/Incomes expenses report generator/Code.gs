@@ -120,6 +120,7 @@ function alert(text)
 var reportSheet = null;
 
 var reportConstants = {  
+  appName: "Месечни приходи/разходи",
   tablesRowOffset: 12,
   regex: {
     deyan: '"*Деян*"',    
@@ -200,6 +201,29 @@ function getRangeText(rStart, cStart, rEnd, cEnd, isAbsolute)
 
 function getMonthAndYear(date){
   return monthNames[date.getMonth()] + " " + date.getFullYear();
+};
+
+function tryGetCurrentReportMonthDate(){
+	guardVariables();
+	var name = reportSheet.getName();	
+	var monthAndYear = name.split(" ");
+	var date = null;
+	
+	var isValid = monthAndYear.length == 2;
+	
+	if(isValid){
+		var day = 1;
+		var monthIndex = monthNames.indexOf(monthAndYear[0]);
+		var year = parseInt(monthAndYear[1]);
+		
+		isValid = monthIndex > -1 && year > 2000;
+		
+		if(isValid){
+			date = new Date(year, monthIndex, day);
+		}
+	}
+		
+	return date;	
 };
 
 function generateStatisticTable(json){
@@ -392,7 +416,6 @@ function generateMonthReportSheet() {
   reportSheet.setName(getMonthAndYear(date));
 };
 
-
 function getWeekAndWeekIndex(date){
   var weeks = getWeeksInMonth(date);
   var dateNum = date.getDate();
@@ -434,6 +457,40 @@ function generateWeekStatisticsTable() {
   generateWeekTable(weekInfo.week, weekInfo.weekIndex, valuesStart, valuesEnd);  
 };
 
+function alertSomething(){
+	alert("Sample code...");
+};
+
+function promptWeekStatisticChanges(monthDate){
+	var weeks = getWeeksInMonth(monthDate);
+	
+	var htmlOutput = HtmlService
+     .createHtmlOutput('<p>Some sample paragraph</p>' + '<br />' + '<input type="button" value="Execute code" onclick="google.script.run.alertSomething()" />')
+     .setWidth(250)
+     .setHeight(300);
+	SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Настройки за седмични статистики");
+	// TODO: return dialog result.
+};
+
+function setupWeekStatistics(){
+	useActiveSheet();
+	
+	var monthDate = tryGetCurrentReportMonthDate();	
+	if(!monthDate){
+		alert("Invalid sheet name - cannot parse current month info!");
+		return;
+	}
+	
+	var weekStatisticChanges = promptWeekStatisticChanges(monthDate);
+	
+	if(weekStatisticChanges){
+		for(var i = 0; i < weekStatisticChanges.length; i+=1){
+			var weekStatisticChange = weekStatisticChanges[i];
+			generateWeekTable(weekStatisticChange.week, weekStatisticChange.weekIndex, weekStatisticChange.valuesStart, weekStatisticChange.valuesEnd);  
+		}
+	}	
+};
+
 /**
  * Adds a custom menu to the active spreadsheet, containing a single menu item
  * for invoking the testCode() function specified above.
@@ -449,10 +506,16 @@ function onOpen() {
       name : "Генерирай месечен репорт",
       functionName : "generateMonthReportSheet"
     },
+	/*
     {
       name : "Генерирай таблица за седмична статистика",
       functionName : "generateWeekStatisticsTable"
     },
+	*/
+    {
+      name : "Настрой седмични статистики",
+      functionName : "setupWeekStatistics"
+    },
   ];
-  spreadsheet.addMenu("Месечни приходи/разходи", entries);
+  spreadsheet.addMenu(reportConstants.appName, entries);
 };
