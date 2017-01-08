@@ -156,6 +156,22 @@ function guardVariables()
   }
 };
 
+function getDisplayValue(range){
+	guardVariables();
+	var cellRange = reportSheet.getRange(range);
+	var value = cellRange.getDisplayValue();
+	
+	return value;
+};
+
+function getFormulaValue(range){
+	guardVariables();
+	var cellRange = reportSheet.getRange(range);
+	var value = cellRange.getFormula();
+	
+	return value;
+};
+
 function setCellValue(range, value, json)
 {
   guardVariables();
@@ -332,8 +348,14 @@ function generateStatisticTable(json){
   }  
 };
 
+function getWeekStatisticTableStart(weekIndex){
+	var tableStart = parseInt(reportConstants.rows.start) + ((weekIndex + 1) * reportConstants.tablesRowOffset);
+	
+	return tableStart;
+};
+
 function generateWeekTable(week, weekIndex, valuesStart, valuesEnd){
-    var tableStart = parseInt(reportConstants.rows.start) + ((weekIndex + 1) * reportConstants.tablesRowOffset);
+    var tableStart = getWeekStatisticTableStart(weekIndex);
     var tableHeader = week.start.getDate() + "-" + week.end.getDate() + " " + getMonthAndYear(week.start);
     
     generateStatisticTable({
@@ -463,11 +485,42 @@ function alertSomething(){
 
 function promptWeekStatisticChanges(monthDate){
 	var weeks = getWeeksInMonth(monthDate);
+	var minValue = reportConstants.rows.start;
+	var maxValue = reportConstants.rows.end;
+	var html = '<table><tr><th>Седмица</th><th>От ред</th><th>До ред</th></tr>';
+	
+	for(var i = 0; i < weeks.length; i+=1){
+		var week = weeks[i];
+		var startRow = getWeekStatisticTableStart(i);
+		var headerRange = getRangeText(startRow - 1, "resultHeaders");
+		var weekHeaderValue = getDisplayValue(headerRange);
+		var formulaRange = getRangeText(startRow + 1, "resultTotal");
+		var formulaValue = getFormulaValue(formulaRange);
+		var bracketIndex = formulaValue.indexOf("(");
+		var rangeDelimiterIndex = formulaValue.indexOf(":");
+		var commaIndex = formulaValue.indexOf(",");
+		var weekStart = formulaValue.substring(bracketIndex + 2, rangeDelimiterIndex);
+		var weekEnd = formulaValue.substring(rangeDelimiterIndex + 2, commaIndex);
+		
+		html += '<tr>';
+		html += '<td>' + weekHeaderValue + '</td>';
+		html += '<td><input type="number" min="' + minValue + '" max="' + maxValue + '" value="' + weekStart + '" \></td>';
+		html += '<td><input type="number" min="' + minValue + '" max="' + maxValue + '" value="' + weekEnd + '" \></td>';
+		html += '</tr>';
+	}
+	
+	html += '</table>';
+	
+	html += '<p>'
+	html += '<input type="button" value="Запази" onclick="google.script.run.alertSomething()" />';
+	html += '&nbsp;&nbsp;&nbsp;';
+	html += '<input type="button" value="Отмени" onclick="google.script.host.close()" />';
+	html += '</p>';
 	
 	var htmlOutput = HtmlService
-     .createHtmlOutput('<p>Some sample paragraph</p>' + '<br />' + '<input type="button" value="Execute code" onclick="google.script.run.alertSomething()" />')
-     .setWidth(250)
-     .setHeight(300);
+     .createHtmlOutput(html)
+     .setWidth(300)
+     .setHeight(230);
 	SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Настройки за седмични статистики");
 	// TODO: return dialog result.
 };
