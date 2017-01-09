@@ -55,6 +55,14 @@ function logAsJSON(instance)
   Logger.log(JSON.stringify(instance));
 };
 
+function stringifyDate(date){
+	var day = date.getDate();
+	var month = date.getMonth();
+	var year = date.getFullYear();
+	
+	return day + "-" + (month + 1) + "-" + year;
+};
+
 function parseDate(text){
   var nums = text.split("-");
   var day = parseInt(nums[0]);
@@ -479,8 +487,48 @@ function generateWeekStatisticsTable() {
   generateWeekTable(weekInfo.week, weekInfo.weekIndex, valuesStart, valuesEnd);  
 };
 
-function alertSomething(){
-	alert("Sample code...");
+function applyWeekStatisticsChanges(){
+	var changes = "";	
+	var hasMoreChangesToCheck = true;
+	var weekIndex = 0;
+	
+	while(hasMoreChangesToCheck){
+		var weekStartInput = document.getElementById("fromRowWeek" + weekIndex);
+		var weekEndInput = document.getElementById("toRowWeek" + weekIndex);		
+		hasMoreChangesToCheck = (weekStartInput != null && weekEndInput != null);
+		
+		if(hasMoreChangesToCheck){
+			var initialStart = parseInt(weekStartInput.getAttribute("data-initialValue"));
+			var initialEnd = parseInt(weekEndInput.getAttribute("data-initialValue"));
+			var startValue = weekStartInput.value;
+			var endValue = weekStartInput.value;
+			
+			if(initialStart != startValue || initialEnd != endValue){
+				var weekStartDate = weekStartInput.getAttribute("data-date");
+				var weekEndDate = weekEndInput.getAttribute("data-date");
+				changes += weekStartDate + ":" + weekEndDate + " " + startValue + ":" + endValue;
+				changes += "<br />"
+			}
+		}
+		
+		weekIndex += 1;
+	}
+	
+	if(changes){
+		alert(changes);
+	} else{
+		alert("No changes!");
+	}
+	
+	// TODO:	
+	/*
+	if(weekStatisticChanges){
+		for(var i = 0; i < weekStatisticChanges.length; i+=1){
+			var weekStatisticChange = weekStatisticChanges[i];
+			generateWeekTable(weekStatisticChange.week, weekStatisticChange.weekIndex, weekStatisticChange.valuesStart, weekStatisticChange.valuesEnd);  
+		}
+	}
+	*/
 };
 
 function promptWeekStatisticChanges(monthDate){
@@ -504,15 +552,23 @@ function promptWeekStatisticChanges(monthDate){
 		
 		html += '<tr>';
 		html += '<td>' + weekHeaderValue + '</td>';
-		html += '<td><input type="number" min="' + minValue + '" max="' + maxValue + '" value="' + weekStart + '" \></td>';
-		html += '<td><input type="number" min="' + minValue + '" max="' + maxValue + '" value="' + weekEnd + '" \></td>';
+		html += '<td><input type="number" id="fromRowWeek' + i + 
+		'" data-initialValue="' + weekStart + 
+		'" data-date="' + stringifyDate(week.start) + 
+		'" min="' + minValue + '" max="' + maxValue + 
+		'" value="' + weekStart + '" \></td>';
+		html += '<td><input type="number" id="toRowWeek' + i + 
+		'" data-initialValue="' + weekEnd + 
+		'" data-date="' + stringifyDate(week.end) + 
+		'" min="' + minValue + '" max="' + maxValue + 
+		'" value="' + weekEnd + '" \></td>';
 		html += '</tr>';
 	}
 	
 	html += '</table>';
 	
 	html += '<p>'
-	html += '<input type="button" value="Запази" onclick="google.script.run.alertSomething()" />';
+	html += '<input type="button" value="Запази" onclick="google.script.run.applyWeekStatisticsChanges()" />';
 	html += '&nbsp;&nbsp;&nbsp;';
 	html += '<input type="button" value="Отмени" onclick="google.script.host.close()" />';
 	html += '</p>';
@@ -522,7 +578,6 @@ function promptWeekStatisticChanges(monthDate){
      .setWidth(300)
      .setHeight(230);
 	SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Настройки за седмични статистики");
-	// TODO: return dialog result.
 };
 
 function setupWeekStatistics(){
@@ -534,14 +589,7 @@ function setupWeekStatistics(){
 		return;
 	}
 	
-	var weekStatisticChanges = promptWeekStatisticChanges(monthDate);
-	
-	if(weekStatisticChanges){
-		for(var i = 0; i < weekStatisticChanges.length; i+=1){
-			var weekStatisticChange = weekStatisticChanges[i];
-			generateWeekTable(weekStatisticChange.week, weekStatisticChange.weekIndex, weekStatisticChange.valuesStart, weekStatisticChange.valuesEnd);  
-		}
-	}	
+	promptWeekStatisticChanges(monthDate);		
 };
 
 /**
