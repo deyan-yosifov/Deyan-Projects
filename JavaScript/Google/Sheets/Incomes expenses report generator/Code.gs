@@ -493,8 +493,11 @@ function applyWeekStatisticsChanges(){
 	var weekIndex = 0;
 	
 	while(hasMoreChangesToCheck){
-		var weekStartInput = document.getElementById("fromRowWeek" + weekIndex);
-		var weekEndInput = document.getElementById("toRowWeek" + weekIndex);		
+		var fromId = "fromRowWeek" + weekIndex;
+		var toId = "toRowWeek" + weekIndex;
+		//alert("Shit happens " + fromId + " " + toId);
+		var weekStartInput = getElementById(fromId);
+		var weekEndInput = getElementById(toId);		
 		hasMoreChangesToCheck = (weekStartInput != null && weekEndInput != null);
 		
 		if(hasMoreChangesToCheck){
@@ -575,8 +578,8 @@ function promptWeekStatisticChanges(monthDate){
 	
 	var htmlOutput = HtmlService
      .createHtmlOutput(html)
-     .setWidth(300)
-     .setHeight(230);
+     .setWidth(330)
+     .setHeight(250);
 	SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Настройки за седмични статистики");
 };
 
