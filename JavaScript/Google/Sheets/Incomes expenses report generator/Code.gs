@@ -487,6 +487,10 @@ function generateWeekStatisticsTable() {
   generateWeekTable(weekInfo.week, weekInfo.weekIndex, valuesStart, valuesEnd);  
 };
 
+/*
+http://stackoverflow.com/questions/1027104/how-to-verify-an-element-exists-in-the-dom-using-jquery
+http://stackoverflow.com/questions/28960797/take-data-from-custom-dialogbox-textarea-and-add-the-values-to-sheets
+*/
 function applyWeekStatisticsChanges(){
 	var changes = "";	
 	var hasMoreChangesToCheck = true;
@@ -495,9 +499,9 @@ function applyWeekStatisticsChanges(){
 	while(hasMoreChangesToCheck){
 		var fromId = "fromRowWeek" + weekIndex;
 		var toId = "toRowWeek" + weekIndex;
-		//alert("Shit happens " + fromId + " " + toId);
-		var weekStartInput = getElementById(fromId);
-		var weekEndInput = getElementById(toId);		
+		var weekStartInput = $("#" + fromId).get(0);
+		var weekEndInput = $("#" + toId).get(0);	
+		alert("Shit happens " + fromId + " " + toId);	
 		hasMoreChangesToCheck = (weekStartInput != null && weekEndInput != null);
 		
 		if(hasMoreChangesToCheck){
@@ -575,6 +579,7 @@ function promptWeekStatisticChanges(monthDate){
 	html += '&nbsp;&nbsp;&nbsp;';
 	html += '<input type="button" value="Отмени" onclick="google.script.host.close()" />';
 	html += '</p>';
+	html += '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>';
 	
 	var htmlOutput = HtmlService
      .createHtmlOutput(html)
