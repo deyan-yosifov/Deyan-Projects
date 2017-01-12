@@ -538,6 +538,10 @@ function applyWeekStatisticsChanges(){
 	*/
 };
 
+function showWeekStatisticsData(data){
+	alert("Form data:  " + data);
+};
+
 function promptWeekStatisticChanges(monthDate){
 	var weeks = getWeeksInMonth(monthDate);
 	var minValue = reportConstants.rows.start;
@@ -575,11 +579,12 @@ function promptWeekStatisticChanges(monthDate){
 	html += '</table>';
 	
 	html += '<p>'
-	html += '<input type="button" value="Запази" onclick="google.script.run.applyWeekStatisticsChanges()" />';
+	html += '<input type="button" value="Запази" onclick="parseWeekStatistics()" />';
 	html += '&nbsp;&nbsp;&nbsp;';
 	html += '<input type="button" value="Отмени" onclick="google.script.host.close()" />';
 	html += '</p>';
 	html += '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>';
+	html += '<script>function parseWeekStatistics(){ google.script.run.withSuccessHandler(close).showWeekStatisticsData($("#fromRowWeek0").val());}; function close(){google.script.host.close();};</script>';
 	
 	var htmlOutput = HtmlService
      .createHtmlOutput(html)
