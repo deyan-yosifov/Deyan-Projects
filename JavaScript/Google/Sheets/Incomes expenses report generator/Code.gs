@@ -102,23 +102,6 @@ function parseWeekTableInfo(text){
   };
 };
 
-function promptWeekTableRange(){
-  var ui = SpreadsheetApp.getUi();
-  
-  var result = ui.prompt(
-     'Избери дата от седмицата и диапозон на данните в седмицата!',
-    "Примерен формат за датата и диапазона: 31-1-2017 9:23",
-      ui.ButtonSet.OK_CANCEL);  
-  
-  if(result.getSelectedButton() == ui.Button.OK){
-    var text = result.getResponseText();
-    return parseWeekTableInfo(text);
-  }
-  else{
-    return false;
-  }
-}
-
 function alert(text)
 {  
   var ui = SpreadsheetApp.getUi();
@@ -463,83 +446,21 @@ function getWeekAndWeekIndex(date){
   throw {"message": "Calculations error! Cannot find week index!"};
 };
 
-function generateWeekStatisticsTable() {
-  useActiveSheet();
-  
-  var weekTableInfo = promptWeekTableRange();
-  //var weekTableInfo = parseWeekTableInfo("31-1-2015 9:23");
-  
-  if(!weekTableInfo){
-    return;
-  }
-  
-  var date = weekTableInfo.date;
-  var valuesStart = weekTableInfo.fromValues;
-  var valuesEnd = weekTableInfo.toValues;
-  
-  if(weekTableInfo.date.getFullYear() < 2000){
-    alert("Invalid date input: " + weekTableInfo.date);
-    return;
-  }
-  
-  var weekInfo = getWeekAndWeekIndex(date);
-  
-  generateWeekTable(weekInfo.week, weekInfo.weekIndex, valuesStart, valuesEnd);  
-};
-
-/*
-http://stackoverflow.com/questions/1027104/how-to-verify-an-element-exists-in-the-dom-using-jquery
-http://stackoverflow.com/questions/28960797/take-data-from-custom-dialogbox-textarea-and-add-the-values-to-sheets
-*/
-function applyWeekStatisticsChanges(){
-	var changes = "";	
-	var hasMoreChangesToCheck = true;
-	var weekIndex = 0;
+function applyWeekStatisticsChanges(weekStatisticInfos){	
+	useActiveSheet();
 	
-	while(hasMoreChangesToCheck){
-		var fromId = "fromRowWeek" + weekIndex;
-		var toId = "toRowWeek" + weekIndex;
-		var weekStartInput = $("#" + fromId).get(0);
-		var weekEndInput = $("#" + toId).get(0);	
-		alert("Shit happens " + fromId + " " + toId);	
-		hasMoreChangesToCheck = (weekStartInput != null && weekEndInput != null);
+	for(var i = 0; i < weekStatisticInfos.length; i+=1){
+		var weekInfo = weekStatisticInfos[i];
 		
-		if(hasMoreChangesToCheck){
-			var initialStart = parseInt(weekStartInput.getAttribute("data-initialValue"));
-			var initialEnd = parseInt(weekEndInput.getAttribute("data-initialValue"));
-			var startValue = weekStartInput.value;
-			var endValue = weekStartInput.value;
+		if(weekInfo.initialValues.start != weekInfo.finalValues.start || weekInfo.initialValues.end != weekInfo.finalValues.end){
+			var week = {
+				start: parseDate(weekInfo.dates.start),
+				end: parseDate(weekInfo.dates.end)
+			};
 			
-			if(initialStart != startValue || initialEnd != endValue){
-				var weekStartDate = weekStartInput.getAttribute("data-date");
-				var weekEndDate = weekEndInput.getAttribute("data-date");
-				changes += weekStartDate + ":" + weekEndDate + " " + startValue + ":" + endValue;
-				changes += "<br />"
-			}
-		}
-		
-		weekIndex += 1;
-	}
-	
-	if(changes){
-		alert(changes);
-	} else{
-		alert("No changes!");
-	}
-	
-	// TODO:	
-	/*
-	if(weekStatisticChanges){
-		for(var i = 0; i < weekStatisticChanges.length; i+=1){
-			var weekStatisticChange = weekStatisticChanges[i];
-			generateWeekTable(weekStatisticChange.week, weekStatisticChange.weekIndex, weekStatisticChange.valuesStart, weekStatisticChange.valuesEnd);  
+			generateWeekTable(week, i, weekInfo.finalValues.start, weekInfo.finalValues.end);
 		}
 	}
-	*/
-};
-
-function showWeekStatisticsData(data){
-	alert("Form data:  " + JSON.stringify(data));
 };
 
 function promptWeekStatisticChanges(monthDate){
@@ -595,7 +516,7 @@ function promptWeekStatisticChanges(monthDate){
 		html += 'weekInfos[' + i + '].finalValues.start = parseInt($("#fromRowWeek' + i + '").val());';
 		html += 'weekInfos[' + i + '].finalValues.end = parseInt($("#toRowWeek' + i + '").val());';
 	}
-	html += 'google.script.run.withSuccessHandler(closeDialog).showWeekStatisticsData(weekInfos);';
+	html += 'google.script.run.withSuccessHandler(closeDialog).applyWeekStatisticsChanges(weekInfos);';
 	html += '};';
 	html += 'function closeDialog(){';
 	html += 'google.script.host.close();';
@@ -636,12 +557,6 @@ function onOpen() {
       name : "Генерирай месечен репорт",
       functionName : "generateMonthReportSheet"
     },
-	/*
-    {
-      name : "Генерирай таблица за седмична статистика",
-      functionName : "generateWeekStatisticsTable"
-    },
-	*/
     {
       name : "Настрой седмични статистики",
       functionName : "setupWeekStatistics"
