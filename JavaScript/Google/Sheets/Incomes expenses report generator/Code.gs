@@ -539,13 +539,14 @@ function applyWeekStatisticsChanges(){
 };
 
 function showWeekStatisticsData(data){
-	alert("Form data:  " + data);
+	alert("Form data:  " + JSON.stringify(data));
 };
 
 function promptWeekStatisticChanges(monthDate){
 	var weeks = getWeeksInMonth(monthDate);
 	var minValue = reportConstants.rows.start;
 	var maxValue = reportConstants.rows.end;
+	var weekInfos = [];
 	var html = '<table><tr><th>Седмица</th><th>От ред</th><th>До ред</th></tr>';
 	
 	for(var i = 0; i < weeks.length; i+=1){
@@ -558,21 +559,24 @@ function promptWeekStatisticChanges(monthDate){
 		var bracketIndex = formulaValue.indexOf("(");
 		var rangeDelimiterIndex = formulaValue.indexOf(":");
 		var commaIndex = formulaValue.indexOf(",");
-		var weekStart = formulaValue.substring(bracketIndex + 2, rangeDelimiterIndex);
-		var weekEnd = formulaValue.substring(rangeDelimiterIndex + 2, commaIndex);
+		var weekStartValue = formulaValue.substring(bracketIndex + 2, rangeDelimiterIndex);
+		var weekEndValue = formulaValue.substring(rangeDelimiterIndex + 2, commaIndex);
+		weekInfos[i] = {
+			dates : {
+				start : stringifyDate(week.start),
+				end : stringifyDate(week.end)
+			},
+			initialValues : {
+				start : parseInt(weekStartValue),
+				end : parseInt(weekEndValue)
+			},
+			finalValues : { }
+		};
 		
 		html += '<tr>';
 		html += '<td>' + weekHeaderValue + '</td>';
-		html += '<td><input type="number" id="fromRowWeek' + i + 
-		'" data-initialValue="' + weekStart + 
-		'" data-date="' + stringifyDate(week.start) + 
-		'" min="' + minValue + '" max="' + maxValue + 
-		'" value="' + weekStart + '" \></td>';
-		html += '<td><input type="number" id="toRowWeek' + i + 
-		'" data-initialValue="' + weekEnd + 
-		'" data-date="' + stringifyDate(week.end) + 
-		'" min="' + minValue + '" max="' + maxValue + 
-		'" value="' + weekEnd + '" \></td>';
+		html += '<td><input type="number" id="fromRowWeek' + i + '" min="' + minValue + '" max="' + maxValue + '" value="' + weekStartValue + '" \></td>';
+		html += '<td><input type="number" id="toRowWeek' + i + '" min="' + minValue + '" max="' + maxValue + '" value="' + weekEndValue + '" \></td>';
 		html += '</tr>';
 	}
 	
@@ -581,10 +585,22 @@ function promptWeekStatisticChanges(monthDate){
 	html += '<p>'
 	html += '<input type="button" value="Запази" onclick="parseWeekStatistics()" />';
 	html += '&nbsp;&nbsp;&nbsp;';
-	html += '<input type="button" value="Отмени" onclick="google.script.host.close()" />';
+	html += '<input type="button" value="Отмени" onclick="closeDialog()" />';
 	html += '</p>';
 	html += '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>';
-	html += '<script>function parseWeekStatistics(){ google.script.run.withSuccessHandler(close).showWeekStatisticsData($("#fromRowWeek0").val());}; function close(){google.script.host.close();};</script>';
+	html += '<script>';
+	html += 'function parseWeekStatistics(){';
+	html += 'var weekInfos = JSON.parse(' + "'" + JSON.stringify(weekInfos) + "'" + ');';
+	for(var i = 0; i < weekInfos.length; i+= 1){
+		html += 'weekInfos[' + i + '].finalValues.start = parseInt($("#fromRowWeek' + i + '").val());';
+		html += 'weekInfos[' + i + '].finalValues.end = parseInt($("#toRowWeek' + i + '").val());';
+	}
+	html += 'google.script.run.withSuccessHandler(closeDialog).showWeekStatisticsData(weekInfos);';
+	html += '};';
+	html += 'function closeDialog(){';
+	html += 'google.script.host.close();';
+	html += '};';
+	html += '</script>';
 	
 	var htmlOutput = HtmlService
      .createHtmlOutput(html)
