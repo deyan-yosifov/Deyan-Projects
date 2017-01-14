@@ -480,8 +480,9 @@ function promptWeekStatisticChanges(monthDate){
 		var bracketIndex = formulaValue.indexOf("(");
 		var rangeDelimiterIndex = formulaValue.indexOf(":");
 		var commaIndex = formulaValue.indexOf(",");
-		var weekStartValue = formulaValue.substring(bracketIndex + 2, rangeDelimiterIndex);
-		var weekEndValue = formulaValue.substring(rangeDelimiterIndex + 2, commaIndex);
+		var isMultiCellsRange = (rangeDelimiterIndex > -1);
+		var weekStartValue = formulaValue.substring(bracketIndex + 2, (isMultiCellsRange ? rangeDelimiterIndex : commaIndex));
+		var weekEndValue = (isMultiCellsRange ? formulaValue.substring(rangeDelimiterIndex + 2, commaIndex) : weekStartValue);
 		weekInfos[i] = {
 			dates : {
 				start : stringifyDate(week.start),
