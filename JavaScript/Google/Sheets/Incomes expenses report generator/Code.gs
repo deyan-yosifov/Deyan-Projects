@@ -362,10 +362,10 @@ function useActiveSheet(){
   reportSheet = SpreadsheetApp.getActiveSheet();
 };
 
-function generateMonthReportSheet() {
+function generateMonthReportSheet(date) {
   useActiveSheet();
   var cellValue = null;  
-  var date = promptDate();
+//  var date = promptDate();
 //  var date = parseDate("2-1-2015");
   
   if(!date)
@@ -531,6 +531,45 @@ function promptWeekStatisticChanges(monthDate){
 	SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Настройки за седмични статистики");
 };
 
+function promptReportSheetMonthAndYear(){
+	var currentDate = new Date();
+	var year = currentDate.getFullYear();
+	var monthIndex = currentDate.getMonth();
+	
+	var html = '<select id="monthSelect">';
+	for (var i = 0; i < monthNames.length; i+=1){
+		html += '<option value="' + i + '"' + ((i == monthIndex) ? ' selected>' : '>') + monthNames[i] + '</option>';
+	}
+	
+	html += '</select>';	
+	html += '&nbsp;&nbsp;&nbsp;';
+	html += '<input type="number" id="yearInput"' + ' min="' + 2000 + '" max="' + 2100 + '" value="' + year + '" \>';
+	html += '<p>'
+	html += '<input type="button" value="Генерирай" onclick="applyMonthReportSelections()" />';
+	html += '&nbsp;&nbsp;&nbsp;';
+	html += '<input type="button" value="Отмени" onclick="closeDialog()" />';
+	html += '</p>';
+	html += '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>';
+	html += '<script>';
+	html += 'function applyMonthReportSelections(){';
+	html += 'var selectedMonthIndex = parseInt($("#monthSelect").val());';
+	html += 'var selectedYear = parseInt($("#yearInput").val());';
+	html += 'var selectedDate = new Date(selectedYear, selectedMonthIndex, 1);';	
+	html += 'google.script.run.withSuccessHandler(closeDialog).alert($("#monthSelect").val() + " " + $("#yearInput").val());';
+	//html += 'google.script.run.withSuccessHandler(closeDialog).generateMonthReportSheet(selectedDate);';
+	html += '};';
+	html += 'function closeDialog(){';
+	html += 'google.script.host.close();';
+	html += '};';
+	html += '</script>';
+	
+	var htmlOutput = HtmlService
+     .createHtmlOutput(html)
+     .setWidth(280)
+     .setHeight(90);
+	SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Избери месец и година за репорта");
+};
+
 function setupWeekStatistics(){
 	useActiveSheet();
 	
@@ -541,6 +580,24 @@ function setupWeekStatistics(){
 	}
 	
 	promptWeekStatisticChanges(monthDate);		
+};
+
+function setupMonthReportSheet(){
+	useActiveSheet();
+	
+	var shouldSetupMonthReportSheet = true;
+	var monthDate = tryGetCurrentReportMonthDate();
+	
+	if(monthDate){
+		var ui = SpreadsheetApp.getUi();
+		var message = 'Текущият таб изглежда е вече генериран репорт. Генериране на нов репорт в същия таб би могло да изгуби инфомацията за седмични статистики. Сигурен ли си, че искаш да продължиш?';
+		var response = ui.alert('Внимание!', message, ui.ButtonSet.YES_NO);
+		shouldSetupMonthReportSheet = (response == ui.Button.YES);
+	}
+	
+	if(shouldSetupMonthReportSheet){
+		promptReportSheetMonthAndYear();
+	}
 };
 
 /**
@@ -556,7 +613,7 @@ function onOpen() {
   var entries = [
     {
       name : "Генерирай месечен репорт",
-      functionName : "generateMonthReportSheet"
+      functionName : "setupMonthReportSheet"
     },
     {
       name : "Настрой седмични статистики",
