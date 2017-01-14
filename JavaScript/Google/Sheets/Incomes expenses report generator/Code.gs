@@ -73,24 +73,6 @@ function parseDate(text){
   return date;
 };
 
-function promptDate()
-{
-  var ui = SpreadsheetApp.getUi();
-  
-  var result = ui.prompt(
-     'Избери дата!',
-    "Примерен формат за датата: 31-1-2017",
-      ui.ButtonSet.OK_CANCEL);  
-  
-  if(result.getSelectedButton() == ui.Button.OK){
-    var text = result.getResponseText();
-    return parseDate(text);
-  }
-  else{
-    return false;
-  }
-};
-
 function parseWeekTableInfo(text){
   var vals = text.split(" ");
   var range = vals[1].split(":");
@@ -362,22 +344,11 @@ function useActiveSheet(){
   reportSheet = SpreadsheetApp.getActiveSheet();
 };
 
-function generateMonthReportSheet(date) {
+function generateMonthReportSheet(dateText) {
   useActiveSheet();
-  var cellValue = null;  
-//  var date = promptDate();
-//  var date = parseDate("2-1-2015");
   
-  if(!date)
-  {
-    return;
-  } 
-  else if(date.getFullYear() < 2000)
-  {
-    alert("Invalid date input: " + date);
-    return;
-  }
-    
+  var cellValue = null;  
+  var date = parseDate(dateText);     
   var bold = { fontWeight: "bold" };
   var bigBold = { fontWeight: "bold", fontSize: 12 };
   setCellValue(getRangeText("header", "value"), "Стойност в лв.", bold);
@@ -538,7 +509,7 @@ function promptReportSheetMonthAndYear(){
 	
 	var html = '<select id="monthSelect">';
 	for (var i = 0; i < monthNames.length; i+=1){
-		html += '<option value="' + i + '"' + ((i == monthIndex) ? ' selected>' : '>') + monthNames[i] + '</option>';
+		html += '<option value="' + (i + 1) + '"' + ((i == monthIndex) ? ' selected>' : '>') + monthNames[i] + '</option>';
 	}
 	
 	html += '</select>';	
@@ -552,11 +523,10 @@ function promptReportSheetMonthAndYear(){
 	html += '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>';
 	html += '<script>';
 	html += 'function applyMonthReportSelections(){';
-	html += 'var selectedMonthIndex = parseInt($("#monthSelect").val());';
-	html += 'var selectedYear = parseInt($("#yearInput").val());';
-	html += 'var selectedDate = new Date(selectedYear, selectedMonthIndex, 1);';	
-	html += 'google.script.run.withSuccessHandler(closeDialog).alert($("#monthSelect").val() + " " + $("#yearInput").val());';
-	//html += 'google.script.run.withSuccessHandler(closeDialog).generateMonthReportSheet(selectedDate);';
+	html += 'var selectedMonthNumber = $("#monthSelect").val();';
+	html += 'var selectedYear = $("#yearInput").val();';
+	html += 'var dateText = "1-" + selectedMonthNumber + "-" + selectedYear;';
+	html += 'google.script.run.withSuccessHandler(closeDialog).generateMonthReportSheet(dateText);';
 	html += '};';
 	html += 'function closeDialog(){';
 	html += 'google.script.host.close();';
