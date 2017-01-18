@@ -24,9 +24,29 @@ namespace LobelFrames.DataStructures.Algorithms
 
             yield return firstTriangle;
 
+            foreach(Point3D neighbour in this.GetNeighbouringTrianglesOpositeVertices(firstTriangle.SideA, firstTriangle.A, CalculateNormal(firstTriangle)))
+            {
+                yield return this.context.CreateTriangle(firstTriangle.B.Point, firstTriangle.C.Point, neighbour);
+            }
+
             while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
             {
                 // TODO: calculate recursively best triangles...
+            }
+        }
+
+        private static Vector3D CalculateNormal(Triangle triangle)
+        {
+            Vector3D normal = Vector3D.CrossProduct(triangle.B.Point - triangle.A.Point, triangle.C.Point - triangle.A.Point);
+
+            if (normal.LengthSquared.IsZero())
+            {
+                return new Vector3D();
+            }
+            else
+            {
+                normal.Normalize();
+                return normal;
             }
         }
 
