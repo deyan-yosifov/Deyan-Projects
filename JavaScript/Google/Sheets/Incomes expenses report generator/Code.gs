@@ -95,6 +95,15 @@ var reportSheet = null;
 var reportConstants = {  
   appName: "Месечни приходи/разходи",
   tablesRowOffset: 12,
+  ownerNames: {
+	deyan: "Деян",
+	radostina: "Радостина",
+  },
+  types: {
+	income: "Приход",
+	mutualExpense: "Общ разход",
+	personalExpense: "Личен разход",  
+  },
   regex: {
     deyan: '"*Деян*"',    
     radostina: '"*Радостина*"',
@@ -272,7 +281,7 @@ function generateStatisticTable(json){
   
   currentRow+=2;
   var mutualExpensesRow = currentRow;
-  setCellValue(getRangeText(currentRow, "resultHeaders"), "Общ разход");
+  setCellValue(getRangeText(currentRow, "resultHeaders"), reportConstants.types.mutualExpense);
   cellValue = "=SUMIF(" + typeRange + ", " + mutualExpense + ", " + valueRange + ')';
   setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + typeRange + ", " + mutualExpense + ", " + deyanRange + ')';
@@ -281,7 +290,7 @@ function generateStatisticTable(json){
   setCellValue(getRangeText(currentRow, "resultRadostina"), cellValue, decimalFormat);
   
   currentRow++;
-  setCellValue(getRangeText(currentRow, "resultHeaders"), "Личен разход");
+  setCellValue(getRangeText(currentRow, "resultHeaders"), reportConstants.types.personalExpense);
   cellValue = "=SUMIF(" + typeRange + ", " + personalExpense + ", " + valueRange + ')';
   setCellValue(getRangeText(currentRow, "resultTotal"), cellValue, decimalFormat);
   cellValue = "=SUMIF(" + typeRange + ", " + personalExpense + ", " + deyanRange + ')';
@@ -344,6 +353,24 @@ function useActiveSheet(){
   reportSheet = SpreadsheetApp.getActiveSheet();
 };
 
+function setDataValidation(rangeText, valuesList){
+	guardVariables();
+	
+	var cellRange = reportSheet.getRange(rangeText);
+	cellRange.setDataValidation(null);
+	cellRange.setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(valuesList).setAllowInvalid(false).build());
+};
+
+function addDataValidations(){	
+	var ownerNameColumnRange = getRangeText(reportConstants.rows.start, reportConstants.columns.ownerName, reportConstants.rows.end, reportConstants.columns.ownerName);
+	var ownerNamesList = [reportConstants.ownerNames.deyan, reportConstants.ownerNames.radostina];
+	setDataValidation(ownerNameColumnRange, ownerNamesList);
+	
+	var typesColumnRange = getRangeText(reportConstants.rows.start, reportConstants.columns.type, reportConstants.rows.end, reportConstants.columns.type);
+	var typesList = [reportConstants.types.mutualExpense, reportConstants.types.personalExpense, reportConstants.types.income];
+	setDataValidation(typesColumnRange, typesList);	
+};
+
 function generateMonthReportSheet(dateText) {
   useActiveSheet();
   
@@ -355,11 +382,11 @@ function generateMonthReportSheet(dateText) {
   setCellValue(getRangeText("header", "description"), "Описание на приход/разход", bold);
   setCellValue(getRangeText("header", "ownerName"), "Кой?", bold);
   setCellValue(getRangeText("header", "type"), "Вид приход/разход", bold);
-  setCellValue(getRangeText("header", "deyanHelper"), "Деян");
-  setCellValue(getRangeText("header", "radostinaHelper"), "Радостина");
+  setCellValue(getRangeText("header", "deyanHelper"), reportConstants.ownerNames.deyan);
+  setCellValue(getRangeText("header", "radostinaHelper"), reportConstants.ownerNames.radostina);
   setCellValue(getRangeText("header", "resultTotal"), "Общи резултати", bigBold);
-  setCellValue(getRangeText("header", "resultDeyan"), "Деян", bigBold);
-  setCellValue(getRangeText("header", "resultRadostina"), "Радостина", bigBold);
+  setCellValue(getRangeText("header", "resultDeyan"), reportConstants.ownerNames.deyan, bigBold);
+  setCellValue(getRangeText("header", "resultRadostina"), reportConstants.ownerNames.radostina, bigBold);
   
   cellValue = '=SUMIF(' + getRangeText('start','ownerName') + ', ' + reportConstants.regex.deyan + ', ' + getRangeText('start','value') + ')';
   setCellValue(getRangeText("start", "deyanHelper", "end", "deyanHelper"), cellValue);
@@ -396,6 +423,7 @@ function generateMonthReportSheet(dateText) {
     reportSheet.autoResizeColumn(columnIndex);
   }
   
+  addDataValidations();  
   reportSheet.setFrozenRows(1);  
   reportSheet.setName(getMonthAndYear(date));
 };
