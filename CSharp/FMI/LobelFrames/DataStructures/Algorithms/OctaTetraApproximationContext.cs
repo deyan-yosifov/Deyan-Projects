@@ -105,13 +105,9 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex b = this.GetUniqueVertex(bPoint);
             Vertex c = this.GetUniqueVertex(cPoint);
 
-            Edge ab = this.uniqueEdges.GetEdge(a, b);
-            Edge ac = this.uniqueEdges.GetEdge(a, c);
-            Edge bc = this.uniqueEdges.GetEdge(b, c);
-
             this.existingTriangles.Add(new NonEditableTriangle(a.Point, b.Point, c.Point));
 
-            return new Triangle(a, b, c, bc, ac, ab);
+            return this.CreateTriangle(a, b, c);
         }
 
         public bool IsTriangleExisting(Point3D aPoint, Point3D bPoint, Point3D cPoint)
@@ -119,10 +115,39 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex a = this.GetUniqueVertex(aPoint);
             Vertex b = this.GetUniqueVertex(bPoint);
             Vertex c = this.GetUniqueVertex(cPoint);
+
             NonEditableTriangle triangle = new NonEditableTriangle(a.Point, b.Point, c.Point);
             bool isExisting = !this.existingTriangles.Contains(triangle);
 
             return isExisting;
+        }
+
+        public bool TryCreateNonExistingTriangle(Point3D aPoint, Point3D bPoint, Point3D cPoint, out Triangle triangle)
+        {
+            Vertex a = this.GetUniqueVertex(aPoint);
+            Vertex b = this.GetUniqueVertex(bPoint);
+            Vertex c = this.GetUniqueVertex(cPoint);
+            NonEditableTriangle t = new NonEditableTriangle(a.Point, b.Point, c.Point);
+
+            if(this.existingTriangles.Add(t))
+            {
+                triangle = this.CreateTriangle(a, b, c);
+                return true;
+            }
+            else
+            {
+                triangle = null;
+                return false;
+            }
+        }
+
+        private Triangle CreateTriangle(Vertex a, Vertex b, Vertex c)
+        {
+            Edge ab = this.uniqueEdges.GetEdge(a, b);
+            Edge ac = this.uniqueEdges.GetEdge(a, c);
+            Edge bc = this.uniqueEdges.GetEdge(b, c);
+
+            return new Triangle(a, b, c, bc, ac, ab);
         }
 
         private Vertex GetUniqueVertex(Point3D point)

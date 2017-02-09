@@ -8,66 +8,38 @@ namespace LobelFrames.DataStructures
     public class Triangle
     {
         private const int VerticesCount = 3;
-        private readonly Edge sideA;
-        private readonly Edge sideB;
-        private readonly Edge sideC;
-        private readonly Vertex a;
-        private readonly Vertex b;
-        private readonly Vertex c;
+        private readonly Edge[] edges;
+        private readonly Vertex[] vertices;
 
         public Triangle(Vertex a, Vertex b, Vertex c, Edge sideA, Edge sideB, Edge sideC)
         {
-            HashSet<Vertex> vertices = new HashSet<Vertex>();
-            vertices.Add(a);
-            vertices.Add(b);
-            vertices.Add(c);
-            Guard.ThrowExceptionIfNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
-            Triangle.AddEdgesVerticesToSet(vertices, sideA, sideB, sideC);
-            Guard.ThrowExceptionIfNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
+            HashSet<Vertex> verticesSet = new HashSet<Vertex>();
+            verticesSet.Add(a);
+            verticesSet.Add(b);
+            verticesSet.Add(c);
+            Guard.ThrowExceptionIfNotEqual(verticesSet.Count, Triangle.VerticesCount, "vertices.count");
+            Triangle.AddEdgesVerticesToSet(verticesSet, sideA, sideB, sideC);
+            Guard.ThrowExceptionIfNotEqual(verticesSet.Count, Triangle.VerticesCount, "vertices.count");
 
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.sideA = sideA;
-            this.sideB = sideB;
-            this.sideC = sideC;
+            this.vertices = new Vertex[] { a, b, c };
+            this.edges = new Edge[] { sideA, sideB, sideC };
         }
 
         public Triangle(Edge sideA, Edge sideB, Edge sideC)
         {
-            HashSet<Vertex> vertices = new HashSet<Vertex>();
-            Triangle.AddEdgesVerticesToSet(vertices, sideA, sideB, sideC);
-            Guard.ThrowExceptionIfNotEqual(vertices.Count, Triangle.VerticesCount, "vertices.count");
+            HashSet<Vertex> verticesSet = new HashSet<Vertex>();
+            Triangle.AddEdgesVerticesToSet(verticesSet, sideA, sideB, sideC);
+            Guard.ThrowExceptionIfNotEqual(verticesSet.Count, Triangle.VerticesCount, "vertices.count");
 
-            int i = 0;
-            foreach (Vertex vertex in vertices)
-            {
-                if (i == 0)
-                {
-                    this.a = vertex;
-                }
-                else if (i == 1)
-                {
-                    this.b = vertex;
-                }
-                else
-                {
-                    this.c = vertex;
-                }
-
-                i++;
-            }
-
-            this.sideA = sideA;
-            this.sideB = sideB;
-            this.sideC = sideC;
+            this.vertices = verticesSet.ToArray();
+            this.edges = new Edge[] { sideA, sideB, sideC };
         }
 
         public Edge SideA
         {
             get
             {
-                return this.sideA;
+                return this.edges[0];
             }
         }
 
@@ -75,7 +47,7 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                return this.sideB;
+                return this.edges[1];
             }
         }
 
@@ -83,7 +55,7 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                return this.sideC;
+                return this.edges[2];
             }
         }
 
@@ -91,7 +63,7 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                return this.a;
+                return this.vertices[0];
             }
         }
 
@@ -99,7 +71,7 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                return this.b;
+                return this.vertices[1];
             }
         }
 
@@ -107,7 +79,7 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                return this.c;
+                return this.vertices[2];
             }
         }
 
@@ -115,9 +87,10 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                yield return A;
-                yield return B;
-                yield return C;
+                foreach (Vertex vertex in this.vertices)
+                {
+                    yield return vertex;
+                }
             }
         }
 
@@ -125,10 +98,21 @@ namespace LobelFrames.DataStructures
         {
             get
             {
-                yield return SideA;
-                yield return SideB;
-                yield return SideC;
+                foreach(Edge edge in this.edges)
+                {
+                    yield return edge;
+                }
             }
+        }
+
+        public Vertex GetVertex(int index)
+        {
+            return this.vertices[index];
+        }
+
+        public Edge GetEdge(int index)
+        {
+            return this.edges[index];
         }
 
         private static void AddEdgesVerticesToSet(HashSet<Vertex> vertices, Edge sideA, Edge sideB, Edge sideC)

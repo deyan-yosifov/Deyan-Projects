@@ -24,9 +24,13 @@ namespace LobelFrames.DataStructures.Algorithms
 
             yield return firstTriangle;
 
-            foreach(Point3D neighbour in this.GetNeighbouringTrianglesOpositeVertices(firstTriangle.SideA, firstTriangle.A, CalculateNormal(firstTriangle)))
+            // TODO: Delete this stuff...
+            for(int i = 0; i < 3; i++)
             {
-                yield return this.context.CreateTriangle(firstTriangle.B.Point, firstTriangle.C.Point, neighbour);
+                foreach(Triangle triangle in this.CreateNonExistingNeigbouringTriangles(firstTriangle, i))
+                {
+                    yield return triangle;
+                }
             }
 
             while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
@@ -35,13 +39,13 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        private static Vector3D CalculateNormal(Triangle triangle)
+        private static Vector3D CalculateTriangleUnitNormal(Point3D a, Point3D b, Point3D c)
         {
-            Vector3D normal = Vector3D.CrossProduct(triangle.B.Point - triangle.A.Point, triangle.C.Point - triangle.A.Point);
+            Vector3D normal = Vector3D.CrossProduct(b - a, c - a);
 
             if (normal.LengthSquared.IsZero())
             {
-                return new Vector3D();
+                throw new ArgumentException("Triangle points cannot be colinear!");
             }
             else
             {
@@ -50,28 +54,36 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        private IEnumerable<Triangle> CreateNonExistingNeigbouringTriangles(Edge edge, Vertex opositeVertex, Vector3D triangleUnitNormal)
+        private IEnumerable<Triangle> CreateNonExistingNeigbouringTriangles(Triangle triangle, int sideIndex)
         {
-            foreach (Point3D neighbouringTriangleOpositeVertex in this.GetNeighbouringTrianglesOpositeVertices(edge, opositeVertex, triangleUnitNormal))
-            {
-                if (!this.context.IsTriangleExisting(edge.Start.Point, edge.End.Point, neighbouringTriangleOpositeVertex))
-                {
-                    yield return this.context.CreateTriangle(edge.Start.Point, edge.End.Point, neighbouringTriangleOpositeVertex);
-                }
-            }
-        }
+            Vertex opositeVertex = triangle.GetVertex(sideIndex);
+            Vertex edgeStart = triangle.GetVertex((sideIndex + 1) % 3);
+            Vertex edgeEnd = triangle.GetVertex((sideIndex + 2) % 3);
+            Vector3D triangleUnitNormal = CalculateTriangleUnitNormal(triangle.A.Point, triangle.B.Point, triangle.C.Point);
 
-        private IEnumerable<Point3D> GetNeighbouringTrianglesOpositeVertices(Edge edge, Vertex opositeVertex, Vector3D triangleUnitNormal)
-        {
-            Point3D triangleCenter = opositeVertex.Point + (1.0 / 3) * ((edge.Start.Point - opositeVertex.Point) + (edge.End.Point - opositeVertex.Point));
+            Point3D triangleCenter = opositeVertex.Point + (1.0 / 3) * ((edgeStart.Point - opositeVertex.Point) + (edgeEnd.Point - opositeVertex.Point));
             Point3D tetrahedronTop = triangleCenter + this.context.TetrahedronHeight * triangleUnitNormal;
-            Point3D edgeCenter = edge.Start.Point + 0.5 * (edge.End.Point - edge.Start.Point);
+            Point3D edgeCenter = edgeStart.Point + 0.5 * (edgeEnd.Point - edgeStart.Point);
             Point3D octahedronPoint = edgeCenter + (edgeCenter - opositeVertex.Point);
-            Point3D opositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
+            Point3D oppositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
+            
+            Triangle tetrahedronTriangle;
+            if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, tetrahedronTop, out tetrahedronTriangle))
+            {
+                yield return tetrahedronTriangle;
+            }
 
-            yield return tetrahedronTop;
-            yield return octahedronPoint;
-            yield return opositeTetrahedronTop;
+            Triangle octahedronTriangle;
+            if (this.context.TryCreateNonExistingTriangle(edgeStart.Point, edgeEnd.Point, octahedronPoint, out octahedronTriangle))
+            {
+                yield return octahedronTriangle;
+            }
+
+            Triangle oppositeTetrahedronTriangle;
+            if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
+            {
+                yield return oppositeTetrahedronTriangle;
+            }
         }
 
         private void MarkVisitedVerticesOnFirstTriangle(Triangle firstTriangle)
