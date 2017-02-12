@@ -1,9 +1,7 @@
 ﻿using Deyo.Core.Mathematics.Algebra;
-using Deyo.Core.Mathematics.Geometry;
 using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
@@ -20,77 +18,26 @@ namespace LobelFrames.DataStructures.Algorithms
         public IEnumerable<Triangle> GetLobelFramesApproximatingTriangles()
         {
             Triangle firstTriangle = this.CalculateFirstTriangle();
-            this.MarkVisitedVerticesOnFirstTriangle(firstTriangle);
+            this.InitializeRecursionForFirstTriangle(firstTriangle);
 
             yield return firstTriangle;
 
-            // TODO: Delete this stuff...
-            for(int i = 0; i < 3; i++)
+            while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
             {
-                foreach(Triangle triangle in this.CreateNonExistingNeigbouringTriangles(firstTriangle, i))
+                // TODO: Delete this stuff...
+                OctaTetraApproximationStep step = this.context.RecursionQueue.Dequeue();
+                foreach(Triangle triangle in step.TrianglesBundle)
                 {
                     yield return triangle;
                 }
             }
-
-            while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
-            {
-                // TODO: calculate recursively best triangles...
-            }
         }
 
-        private static Vector3D CalculateTriangleUnitNormal(Point3D a, Point3D b, Point3D c)
-        {
-            Vector3D normal = Vector3D.CrossProduct(b - a, c - a);
-
-            if (normal.LengthSquared.IsZero())
-            {
-                throw new ArgumentException("Triangle points cannot be colinear!");
-            }
-            else
-            {
-                normal.Normalize();
-                return normal;
-            }
-        }
-
-        private IEnumerable<Triangle> CreateNonExistingNeigbouringTriangles(Triangle triangle, int sideIndex)
-        {
-            Vertex opositeVertex = triangle.GetVertex(sideIndex);
-            Vertex edgeStart = triangle.GetVertex((sideIndex + 1) % 3);
-            Vertex edgeEnd = triangle.GetVertex((sideIndex + 2) % 3);
-            Vector3D triangleUnitNormal = CalculateTriangleUnitNormal(triangle.A.Point, triangle.B.Point, triangle.C.Point);
-
-            Point3D triangleCenter = opositeVertex.Point + (1.0 / 3) * ((edgeStart.Point - opositeVertex.Point) + (edgeEnd.Point - opositeVertex.Point));
-            Point3D tetrahedronTop = triangleCenter + this.context.TetrahedronHeight * triangleUnitNormal;
-            Point3D edgeCenter = edgeStart.Point + 0.5 * (edgeEnd.Point - edgeStart.Point);
-            Point3D octahedronPoint = edgeCenter + (edgeCenter - opositeVertex.Point);
-            Point3D oppositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
-            
-            Triangle tetrahedronTriangle;
-            if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, tetrahedronTop, out tetrahedronTriangle))
-            {
-                yield return tetrahedronTriangle;
-            }
-
-            Triangle octahedronTriangle;
-            if (this.context.TryCreateNonExistingTriangle(edgeStart.Point, edgeEnd.Point, octahedronPoint, out octahedronTriangle))
-            {
-                yield return octahedronTriangle;
-            }
-
-            Triangle oppositeTetrahedronTriangle;
-            if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
-            {
-                yield return oppositeTetrahedronTriangle;
-            }
-        }
-
-        private void MarkVisitedVerticesOnFirstTriangle(Triangle firstTriangle)
+        private void InitializeRecursionForFirstTriangle(Triangle firstTriangle)
         {
             TriangleProjectionContext projectionContext = 
                 new TriangleProjectionContext(firstTriangle.A.Point, firstTriangle.B.Point, firstTriangle.C.Point);
-
+            TriangleRecursionContext triangleRecursionContext = new TriangleRecursionContext(firstTriangle, this.context);
             HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
             Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
             positionsToIterate.Enqueue(new UVMeshDescretePosition(0, 0));
@@ -100,8 +47,10 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 UVMeshDescretePosition positionToCheck = positionsToIterate.Dequeue();
                 Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+                Point3D barycentricCoordinates = projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
+                bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
 
-                if (projectionContext.IsPointProjectionInsideTriangle(meshPoint))
+                if (isInside)
                 {
                     this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
 
@@ -120,7 +69,13 @@ namespace LobelFrames.DataStructures.Algorithms
                         }
                     }
                 }
+                else
+                {
+                    triangleRecursionContext.Update(positionToCheck, barycentricCoordinates);
+                }
             }
+
+            triangleRecursionContext.EnqueueRecursionSteps();
         }
 
         private Triangle CalculateFirstTriangle()

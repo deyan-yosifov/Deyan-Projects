@@ -86,20 +86,19 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             }
         }
 
-        public bool IsPointProjectionInsideTriangle(Point3D point)
+        public Point3D GetProjectionBarycentricCoordinates(Point3D point)
         {
             Point projection = this.GetProjection(point);
 
-            return this.IsPointProjectionInsideTriangle(projection);
+            return projection.GetBarycentricCoordinates(this.triangleA, this.triangleB, this.triangleC);
         }
 
         public bool IsPointProjectionInsideTriangle(Point projection)
         {
             Point3D barycentricCoordinates = projection.GetBarycentricCoordinates(this.triangleA, this.triangleB, this.triangleC);
+            bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
 
-            return barycentricCoordinates.X.IsGreaterThanOrEqualTo(0) &&
-                barycentricCoordinates.Y.IsGreaterThanOrEqualTo(0) && 
-                barycentricCoordinates.Z.IsGreaterThanOrEqualTo(0);
+            return isInside;
         }
 
         public ProjectedPoint GetProjectedPoint(Point3D meshPoint)

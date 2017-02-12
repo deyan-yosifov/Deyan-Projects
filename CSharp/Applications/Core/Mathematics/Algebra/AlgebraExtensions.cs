@@ -201,6 +201,13 @@ namespace Deyo.Core.Mathematics.Algebra
             return barycentricCoordinates;
         }
 
+        public static bool AreBarycentricCoordinatesInsideTriangle(this Point3D barycentricCoordinates)
+        {
+            return barycentricCoordinates.X.IsGreaterThanOrEqualTo(0) &&
+                barycentricCoordinates.Y.IsGreaterThanOrEqualTo(0) &&
+                barycentricCoordinates.Z.IsGreaterThanOrEqualTo(0);
+        }
+
         private static Matrix GetTransformationAt(this Matrix zeroCenteredTransform, double centerX, double centerY)
         {
             double offsetX = zeroCenteredTransform.OffsetX + (1 - zeroCenteredTransform.M11) * centerX - zeroCenteredTransform.M21 * centerY;
