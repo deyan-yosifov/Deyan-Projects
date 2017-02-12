@@ -1,22 +1,23 @@
 ﻿using Deyo.Core.Common;
 using Deyo.Core.Mathematics.Algebra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class TriangleRecursionContext
+    internal sealed class TriangleRecursionInitializer : IDisposable
     {
         private readonly Triangle triangle;
         private readonly OctaTetraApproximationContext context;
-        private bool hasEnqueuedSteps;
+        private bool isDisposed;
 
-        public TriangleRecursionContext(Triangle triangle, OctaTetraApproximationContext context)
+        public TriangleRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
         {
             this.triangle = triangle;
             this.context = context;
-            this.hasEnqueuedSteps = false;
+            this.isDisposed = false;
         }
 
         private Point3D A
@@ -49,9 +50,9 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private UVMeshDescretePosition? CInitialRecursionPosition { get; set; }
         
-        public void Update(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)
+        public void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)
         {
-            Guard.ThrowExceptionIfTrue(this.hasEnqueuedSteps, "hasEnqueuedSteps");
+            Guard.ThrowExceptionIfTrue(this.isDisposed, "hasEnqueuedSteps");
 
             if (barycentricCoordinates.X.IsLessThan(0))
             {
@@ -69,19 +70,7 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public void EnqueueRecursionSteps()
-        {
-            Guard.ThrowExceptionIfTrue(this.hasEnqueuedSteps, "hasEnqueuedSteps");
-
-            this.hasEnqueuedSteps = true;
-
-            foreach (OctaTetraApproximationStep step in this.CalculateNextApproximationSteps())
-            {
-                this.context.RecursionQueue.Enqueue(step);
-            }
-        }
-
-        private IEnumerable<OctaTetraApproximationStep> CalculateNextApproximationSteps()
+        private IEnumerable<OctaTetraApproximationStep> CalculateRecursionNextApproximationSteps()
         {
             OctaTetraApproximationStep aStep;
             if(this.TryCalculateApproximationStep(this.AInitialRecursionPosition, 0, out aStep))
@@ -154,6 +143,18 @@ namespace LobelFrames.DataStructures.Algorithms
             if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
             {
                 yield return oppositeTetrahedronTriangle;
+            }
+        }
+
+        void IDisposable.Dispose()
+        {
+            Guard.ThrowExceptionIfTrue(this.isDisposed, "isDisposed");
+
+            this.isDisposed = true;
+
+            foreach (OctaTetraApproximationStep step in this.CalculateRecursionNextApproximationSteps())
+            {
+                this.context.RecursionQueue.Enqueue(step);
             }
         }
     }

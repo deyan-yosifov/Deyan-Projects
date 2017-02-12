@@ -35,47 +35,47 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void InitializeRecursionForFirstTriangle(Triangle firstTriangle)
         {
-            TriangleProjectionContext projectionContext = 
-                new TriangleProjectionContext(firstTriangle.A.Point, firstTriangle.B.Point, firstTriangle.C.Point);
-            TriangleRecursionContext triangleRecursionContext = new TriangleRecursionContext(firstTriangle, this.context);
-            HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
-            Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
-            positionsToIterate.Enqueue(new UVMeshDescretePosition(0, 0));
-            iterationAddedPositions.Add(new UVMeshDescretePosition(0, 0));
-
-            while (positionsToIterate.Count > 0)
+            using (TriangleRecursionInitializer triangleRecursionContext = new TriangleRecursionInitializer(firstTriangle, this.context))
             {
-                UVMeshDescretePosition positionToCheck = positionsToIterate.Dequeue();
-                Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
-                Point3D barycentricCoordinates = projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
-                bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
+                TriangleProjectionContext projectionContext =
+                        new TriangleProjectionContext(firstTriangle.A.Point, firstTriangle.B.Point, firstTriangle.C.Point);
+                HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
+                Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
+                positionsToIterate.Enqueue(new UVMeshDescretePosition(0, 0));
+                iterationAddedPositions.Add(new UVMeshDescretePosition(0, 0));
 
-                if (isInside)
+                while (positionsToIterate.Count > 0)
                 {
-                    this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
+                    UVMeshDescretePosition positionToCheck = positionsToIterate.Dequeue();
+                    Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+                    Point3D barycentricCoordinates = projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
+                    bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
 
-                    for (int dU = -1; dU <= 1; dU += 1)
+                    if (isInside)
                     {
-                        for (int dV = -1; dV <= 1; dV += 1)
-                        {
-                            UVMeshDescretePosition nextPosition = new UVMeshDescretePosition(positionToCheck.UIndex + dU, positionToCheck.VIndex + dV);
+                        this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
 
-                            if (0 <= nextPosition.UIndex && nextPosition.UIndex < this.context.ULinesCount &&
-                                0 <= nextPosition.VIndex && nextPosition.VIndex < this.context.VLinesCount &&
-                                !this.context.IsPointCovered(nextPosition.UIndex, nextPosition.VIndex) && iterationAddedPositions.Add(nextPosition))
+                        for (int dU = -1; dU <= 1; dU += 1)
+                        {
+                            for (int dV = -1; dV <= 1; dV += 1)
                             {
-                                positionsToIterate.Enqueue(nextPosition);
+                                UVMeshDescretePosition nextPosition = new UVMeshDescretePosition(positionToCheck.UIndex + dU, positionToCheck.VIndex + dV);
+
+                                if (0 <= nextPosition.UIndex && nextPosition.UIndex < this.context.ULinesCount &&
+                                    0 <= nextPosition.VIndex && nextPosition.VIndex < this.context.VLinesCount &&
+                                    !this.context.IsPointCovered(nextPosition.UIndex, nextPosition.VIndex) && iterationAddedPositions.Add(nextPosition))
+                                {
+                                    positionsToIterate.Enqueue(nextPosition);
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    triangleRecursionContext.Update(positionToCheck, barycentricCoordinates);
+                    else
+                    {
+                        triangleRecursionContext.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
+                    }
                 }
             }
-
-            triangleRecursionContext.EnqueueRecursionSteps();
         }
 
         private Triangle CalculateFirstTriangle()
