@@ -18,6 +18,16 @@ namespace Puzzle3DSolver
             return new DescreteVector() { X = a.X + b.X, Y = a.Y + b.Y, Z = a.Z + b.Z };
         }
 
+        public static DescreteVector operator -(DescreteVector a, DescreteVector b)
+        {
+            return new DescreteVector() { X = a.X - b.X, Y = a.Y - b.Y, Z = a.Z - b.Z };
+        }
+
+        public static int operator *(DescreteVector a, DescreteVector b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is DescreteVector)

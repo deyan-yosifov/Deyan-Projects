@@ -23,6 +23,7 @@ namespace Puzzle3DSolver
         {
             InitializeComponent();
             Sticks3DSet puzzle3DSolution = this.FindPuzzle3DSolution();
+            puzzle3DSolution.Explode();
             this.InitializeViewport(puzzle3DSolution);
         }
 

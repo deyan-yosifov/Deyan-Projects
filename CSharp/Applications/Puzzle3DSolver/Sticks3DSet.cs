@@ -45,5 +45,27 @@ namespace Puzzle3DSolver
                 this.HasCollisions |= this.subBlocks.Add(new ColoredCubeBlock() { Color = stick.Color, Position = cubePosition });
             }
         }
+
+        public void Explode()
+        {
+            this.subBlocks.Clear();
+
+            for (int i = 0; i < this.sticks.Count; i++)
+            {
+                Stick3DPosition position = this.positions[i];
+                DescreteVector center = new DescreteVector() { X = 4, Y = 4, Z = 4 };
+                DescreteVector radiusVector = position.StartPosition - center;
+                double directionCoordinate = radiusVector * position.UDir;
+                int explodeCoeficient = directionCoordinate < 0 ? -2 : 2;
+                DescreteVector expodeVector = explodeCoeficient * position.UDir;
+                Stick3D stick = this.sticks[i];
+                Stick3DRotation rotation = this.rotations[i];
+
+                foreach (DescreteVector cubePosition in stick.EnumerateNonEmptySubBlocks(position, rotation))
+                {
+                    this.subBlocks.Add(new ColoredCubeBlock() { Color = stick.Color, Position = cubePosition + expodeVector });
+                }
+            }
+        }
     }
 }
