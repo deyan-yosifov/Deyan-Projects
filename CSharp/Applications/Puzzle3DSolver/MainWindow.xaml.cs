@@ -2,6 +2,7 @@
 using Deyo.Controls.Controls3D.Cameras;
 using Deyo.Controls.Controls3D.Shapes;
 using Deyo.Controls.Controls3D.Visuals;
+using Deyo.Core.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,16 @@ namespace Puzzle3DSolver
         public MainWindow()
         {
             InitializeComponent();
-            Sticks3DSet puzzle3DSolution = this.FindPuzzle3DSolution();
+
+            Stick3D[] puzzleSticks = Cross3D.InitializePuzzleSticks();
+            Sticks3DSet puzzle3DSolution = this.FindPuzzle3DSolution(puzzleSticks);
             puzzle3DSolution.Explode();
             this.InitializeViewport(puzzle3DSolution);
         }
 
-        private Sticks3DSet FindPuzzle3DSolution()
+        private Sticks3DSet FindPuzzle3DSolution(Stick3D[] puzzleSticks)
         {
+            Guard.ThrowExceptionIfNotEqual(puzzleSticks.Length, 6, "puzzleSticks.Length");
             // TODO: Implement recursion to find the Sticks3DSet that has no collisions.
 
             Sticks3DSet cross = new Sticks3DSet();
@@ -38,8 +42,7 @@ namespace Puzzle3DSolver
             {
                 for (int i = 0; i < positions.Length; i++)
                 {
-                    Color color = Cross3D.GetStickColor(i + 1);
-                    cross.AddStick(new Stick3D(color), positions[i], rotation);
+                    cross.AddStick(puzzleSticks[i], positions[i], Stick3DRotation.Rotate0);
                 }
             }
 

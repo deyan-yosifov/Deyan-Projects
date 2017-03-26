@@ -57,25 +57,61 @@ namespace Puzzle3DSolver
             };
         }
 
-        public static Color GetStickColor(int stickNumber)
+        internal static Stick3D[] InitializePuzzleSticks()
         {
-            switch (stickNumber)
-            {
-                case 1:
-                    return Colors.Purple;
-                case 2:
-                    return Colors.Green;
-                case 3:
-                    return Colors.Blue;
-                case 4: 
-                    return Colors.Pink;
-                case 5:
-                    return Colors.Orange;
-                case 6:
-                    return Colors.Yellow;
-                default:
-                    throw new NotSupportedException("Not supported stick number: " + stickNumber);
-            }
+            Stick3D first = new Stick3D(Colors.Purple);
+
+            Stick3D second = new Stick3D(Colors.Green);
+            second.InitializeHole(1, 0, 3);
+            second.InitializeHole(1, 0, 4);
+            second.InitializeHole(0, 1, 2);
+            second.InitializeHole(1, 1, 2);
+            second.InitializeHole(1, 1, 3);
+            second.InitializeHole(1, 1, 4);
+            second.InitializeHole(0, 1, 5);
+            second.InitializeHole(1, 1, 5);
+
+            Stick3D third = new Stick3D(Colors.Blue);
+            third.InitializeHole(1, 0, 3);
+            third.InitializeHole(1, 0, 4);
+            third.InitializeHole(0, 1, 2);
+            third.InitializeHole(1, 1, 2);
+            third.InitializeHole(0, 1, 3);
+            third.InitializeHole(1, 1, 3);
+            third.InitializeHole(1, 1, 4);
+
+            Stick3D forth = new Stick3D(Colors.Pink);
+            forth.InitializeHole(0, 0, 3);
+            forth.InitializeHole(1, 0, 3);
+            forth.InitializeHole(0, 0, 4);
+            forth.InitializeHole(1, 0, 4);
+            forth.InitializeHole(1, 0, 5);
+            forth.InitializeHole(1, 1, 4);
+            forth.InitializeHole(1, 1, 5);
+
+            Stick3D fifth = new Stick3D(Colors.Orange);
+            fifth.InitializeHole(1, 0, 2);
+            fifth.InitializeHole(0, 0, 3);
+            fifth.InitializeHole(1, 0, 3);
+            fifth.InitializeHole(0, 0, 4);
+            fifth.InitializeHole(1, 0, 4);
+            fifth.InitializeHole(1, 0, 5);
+            fifth.InitializeHole(1, 1, 2);
+            fifth.InitializeHole(1, 1, 3);
+            fifth.InitializeHole(1, 1, 4);
+            fifth.InitializeHole(1, 1, 5);
+
+            Stick3D sixth = new Stick3D(Colors.Yellow);
+            sixth.InitializeHole(1, 0, 2);
+            sixth.InitializeHole(1, 0, 3);
+            sixth.InitializeHole(1, 0, 4);
+            sixth.InitializeHole(1, 0, 5);
+            sixth.InitializeHole(1, 1, 2);
+            sixth.InitializeHole(1, 1, 3);
+            sixth.InitializeHole(1, 1, 4);
+            sixth.InitializeHole(1, 1, 5);
+
+            return new Stick3D[] { first, second, third, forth, fifth, sixth };
         }
     }
 }
