@@ -1,0 +1,11 @@
+﻿<Window x:Class="Puzzle3DSolver.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls3D="clr-namespace:Deyo.Controls.Controls3D;assembly=Deyo.Controls"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid Background="Lavender">
+        <Border BorderBrush="Red" BorderThickness="2">
+            <controls3D:Scene3D x:Name="viewport" />
+        </Border>
+    </Grid>
+</Window>
