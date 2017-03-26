@@ -42,7 +42,7 @@ namespace Puzzle3DSolver
 
             foreach (DescreteVector cubePosition in stick.EnumerateNonEmptySubBlocks(position, rotation))
             {
-                this.HasCollisions |= this.subBlocks.Add(new ColoredCubeBlock() { Color = stick.Color, Position = cubePosition });
+                this.HasCollisions |= !this.subBlocks.Add(new ColoredCubeBlock() { Color = stick.Color, Position = cubePosition });
             }
         }
 

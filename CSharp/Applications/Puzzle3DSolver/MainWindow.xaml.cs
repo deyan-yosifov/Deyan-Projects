@@ -26,27 +26,70 @@ namespace Puzzle3DSolver
 
             Stick3D[] puzzleSticks = Cross3D.InitializePuzzleSticks();
             Sticks3DSet puzzle3DSolution = this.FindPuzzle3DSolution(puzzleSticks);
-            puzzle3DSolution.Explode();
-            this.InitializeViewport(puzzle3DSolution);
+
+            if (puzzle3DSolution == null)
+            {
+                MessageBox.Show("No puzzle solution found!");
+            }
+            else
+            {
+                puzzle3DSolution.Explode();
+                this.InitializeViewport(puzzle3DSolution);
+            }
         }
 
         private Sticks3DSet FindPuzzle3DSolution(Stick3D[] puzzleSticks)
         {
             Guard.ThrowExceptionIfNotEqual(puzzleSticks.Length, 6, "puzzleSticks.Length");
-            // TODO: Implement recursion to find the Sticks3DSet that has no collisions.
-
-            Sticks3DSet cross = new Sticks3DSet();
-            Stick3DPosition[] positions = Cross3D.GetStickPositions().ToArray();
             
-            foreach (Stick3DRotation rotation in Enum.GetValues(typeof(Stick3DRotation)))
-            {
-                for (int i = 0; i < positions.Length; i++)
-                {
-                    cross.AddStick(puzzleSticks[i], positions[i], Stick3DRotation.Rotate0);
-                }
-            }
+            List<Stick3DPosition> positions = new List<Stick3DPosition>();
+            List<Stick3DRotation> rotations = new List<Stick3DRotation>();
+
+            Sticks3DSet cross = this.FindPuzzle3DSolution(0, new Sticks3DSet(), puzzleSticks, positions, rotations);
 
             return cross;
+        }
+
+        private Sticks3DSet FindPuzzle3DSolution(int stickIndex, Sticks3DSet set, Stick3D[] puzzleSticks, List<Stick3DPosition> positions, List<Stick3DRotation> rotations)
+        {
+            if (set.HasCollisions)
+            {
+                return null;
+            }
+
+            if (stickIndex == puzzleSticks.Length)
+            {
+                return set;
+            }
+
+            foreach (Stick3DPosition position in Cross3D.GetStickPositions())
+            {
+                positions.Add(position);
+
+                foreach (Stick3DRotation rotation in Enum.GetValues(typeof(Stick3DRotation)))
+                {
+                    rotations.Add(rotation);
+
+                    set = new Sticks3DSet();
+                    for (int i = 0; i <= stickIndex; i++)
+                    {
+                        set.AddStick(puzzleSticks[i], positions[i], rotations[i]);
+                    }
+
+                    set = this.FindPuzzle3DSolution(stickIndex + 1, set, puzzleSticks, positions, rotations);
+
+                    if (set != null)
+                    {
+                        return set;
+                    }
+
+                    rotations.PopLast();
+                }
+
+                positions.PopLast();
+            }
+
+            return null;
         }
 
         private void InitializeViewport(Sticks3DSet sticks)
