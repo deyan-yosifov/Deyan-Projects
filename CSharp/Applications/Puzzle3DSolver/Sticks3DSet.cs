@@ -46,17 +46,16 @@ namespace Puzzle3DSolver
             }
         }
 
-        public void Explode()
+        public void Explode(DescreteVector center, int explodeAmount)
         {
             this.subBlocks.Clear();
 
             for (int i = 0; i < this.sticks.Count; i++)
             {
                 Stick3DPosition position = this.positions[i];
-                DescreteVector center = new DescreteVector() { X = 4, Y = 4, Z = 4 };
                 DescreteVector radiusVector = position.StartPosition - center;
                 double directionCoordinate = radiusVector * position.UDir;
-                int explodeCoeficient = directionCoordinate < 0 ? -2 : 2;
+                int explodeCoeficient = directionCoordinate < 0 ? -explodeAmount : explodeAmount;
                 DescreteVector expodeVector = explodeCoeficient * position.UDir;
                 Stick3D stick = this.sticks[i];
                 Stick3DRotation rotation = this.rotations[i];

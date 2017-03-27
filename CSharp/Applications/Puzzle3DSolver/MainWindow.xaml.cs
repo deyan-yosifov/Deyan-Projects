@@ -33,7 +33,7 @@ namespace Puzzle3DSolver
             }
             else
             {
-                puzzle3DSolution.Explode();
+                puzzle3DSolution.Explode(new DescreteVector() { X = Stick3D.StickLength / 2, Y = Stick3D.StickLength / 2, Z = Stick3D.StickLength / 2 }, Stick3D.SectionSize);
                 this.InitializeViewport(puzzle3DSolution);
             }
         }
