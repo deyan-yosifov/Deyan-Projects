@@ -103,7 +103,10 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void ReportProgress(Triangle triangleToAdd)
         {
-            this.context.Worker.ReportProgress(0, triangleToAdd);
+            if (this.IsApproximating)
+            {
+                this.context.Worker.ReportProgress(0, triangleToAdd);
+            }
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
