@@ -1,5 +1,6 @@
 ﻿using Deyo.Core.Common;
 using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly Vector3D triangleUnitNormal;
         private readonly Point3D triangleCenter;
         private readonly OctaTetraApproximationContext context;
+        private readonly TriangleProjectionContext projectionContext;
         private readonly ComparableRecursionPosition?[] sidesRecursionPositions;
         private bool isDisposed;
 
@@ -21,7 +23,8 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             this.triangle = triangle;
             this.context = context;
-            this.sidesRecursionPositions = new ComparableRecursionPosition?[3];            
+            this.sidesRecursionPositions = new ComparableRecursionPosition?[3];
+            this.projectionContext = new TriangleProjectionContext(triangle.A.Point, triangle.B.Point, triangle.C.Point);
             Vector3D normal = Vector3D.CrossProduct(this.triangle.B.Point - this.triangle.A.Point, this.triangle.C.Point - this.triangle.A.Point);
             normal.Normalize();
             this.triangleUnitNormal = normal;
@@ -30,7 +33,25 @@ namespace LobelFrames.DataStructures.Algorithms
             this.isDisposed = false;
         }
 
-        public void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)
+        public bool UpdateRecursionFromPositionAndGetIsInsideProjection(UVMeshDescretePosition positionToCheck)
+        {
+            Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+            Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
+            bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
+
+            if (isInside)
+            {
+                this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
+            }
+            else
+            {
+                this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
+            }
+
+            return isInside;
+        }
+
+        private void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)
         {
             Guard.ThrowExceptionIfTrue(this.isDisposed, "isDisposed");
 
@@ -77,7 +98,7 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 Triangle[] bundle = this.CreateNonExistingNeigbouringTriangles(sideIndex).ToArray();
 
-                if(bundle.Length != 0)
+                if(bundle.Length > 0)
                 {
                     step = new OctaTetraApproximationStep()
                     {
@@ -105,22 +126,26 @@ namespace LobelFrames.DataStructures.Algorithms
             Point3D oppositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
 
             Triangle tetrahedronTriangle;
-            if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, tetrahedronTop, out tetrahedronTriangle))
+            if (!this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, tetrahedronTop, out tetrahedronTriangle))
             {
-                yield return tetrahedronTriangle;
+                yield break;
             }
 
             Triangle octahedronTriangle;
-            if (this.context.TryCreateNonExistingTriangle(edgeStart.Point, edgeEnd.Point, octahedronPoint, out octahedronTriangle))
+            if (!this.context.TryCreateNonExistingTriangle(edgeStart.Point, edgeEnd.Point, octahedronPoint, out octahedronTriangle))
             {
-                yield return octahedronTriangle;
+                yield break;
             }
 
             Triangle oppositeTetrahedronTriangle;
-            if (this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
+            if (!this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
             {
-                yield return oppositeTetrahedronTriangle;
+                yield break;
             }
+
+            yield return tetrahedronTriangle;
+            yield return octahedronTriangle;
+            yield return oppositeTetrahedronTriangle;
         }
 
         void IDisposable.Dispose()

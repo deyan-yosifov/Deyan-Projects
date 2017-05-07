@@ -2,6 +2,7 @@
 using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
@@ -24,11 +25,68 @@ namespace LobelFrames.DataStructures.Algorithms
 
             while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
             {
-                // TODO: Delete this stuff...
                 OctaTetraApproximationStep step = this.context.RecursionQueue.Dequeue();
-                foreach(Triangle triangle in step.TrianglesBundle)
+
+                Triangle triangle;
+                IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles;
+                if (this.TryFindBestTriangleFromStepBundle(step, out triangle, out verticesFromIntersectingMeshTriangles))
                 {
                     yield return triangle;
+
+                    this.InitializeRecursionForBestTriangle(triangle, verticesFromIntersectingMeshTriangles);
+                }
+            }
+        }
+
+        private bool TryFindBestTriangleFromStepBundle
+            (OctaTetraApproximationStep step, out Triangle bestTriangle, out IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
+        {
+            bestTriangle = null;
+            verticesFromIntersectingMeshTriangles = null;
+            double bestAbsoluteOrientedVolume = double.MaxValue;
+
+            foreach (Triangle triangle in step.TrianglesBundle)
+            {
+                TriangleProjectionContext projectionContext = new TriangleProjectionContext(triangle.A.Point, triangle.B.Point, triangle.C.Point);
+
+                int intersectingTriangleIndex;
+                if (this.TryFindIntersectingMeshTriangleIndex(projectionContext, step.InitialRecursionPosition, out intersectingTriangleIndex))
+                {
+                    ProjectionVolumeFinderIterationHandler volumeFinder = 
+                        new ProjectionVolumeFinderIterationHandler(this.context.MeshToApproximate, projectionContext);
+                    IEnumerable<int> initialTriangles = Enumerable.Repeat(intersectingTriangleIndex, 1);
+
+                    DescreteUVMeshRecursiveTrianglesIterator.Iterate(volumeFinder, this.context.MeshToApproximate, initialTriangles);
+
+                    if (volumeFinder.ResultAbsoluteVolume < bestAbsoluteOrientedVolume)
+                    {
+                        bestTriangle = triangle;
+                        verticesFromIntersectingMeshTriangles = volumeFinder.VerticesFromIntersectingMeshTriangles;
+                        bestAbsoluteOrientedVolume = volumeFinder.ResultAbsoluteVolume;
+                    }
+                }
+            }
+
+            return bestAbsoluteOrientedVolume < double.MaxValue;
+        }
+
+        private bool TryFindIntersectingMeshTriangleIndex(TriangleProjectionContext projection, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
+        {
+            IEnumerable<int> initialTriangles = this.context.MeshToApproximate.GetNeighbouringTriangleIndices(initialPosition);
+            IntersectingTriangleFinderIterationHandler finder = new IntersectingTriangleFinderIterationHandler(this.context.MeshToApproximate, projection);
+            DescreteUVMeshRecursiveTrianglesIterator.Iterate(finder, this.context.MeshToApproximate, initialTriangles);
+            intersectingTriangleIndex = finder.IntersectingTriangleIndex;
+
+            return intersectingTriangleIndex > -1;
+        }
+
+        private void InitializeRecursionForBestTriangle(Triangle triangle, IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
+        {
+            using (TriangleRecursionInitializer triangleRecursionContext = new TriangleRecursionInitializer(triangle, this.context))
+            {
+                foreach (UVMeshDescretePosition positionToCheck in verticesFromIntersectingMeshTriangles)
+                {
+                    triangleRecursionContext.UpdateRecursionFromPositionAndGetIsInsideProjection(positionToCheck);
                 }
             }
         }
@@ -37,8 +95,6 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             using (TriangleRecursionInitializer triangleRecursionContext = new TriangleRecursionInitializer(firstTriangle, this.context))
             {
-                TriangleProjectionContext projectionContext =
-                        new TriangleProjectionContext(firstTriangle.A.Point, firstTriangle.B.Point, firstTriangle.C.Point);
                 HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
                 Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
                 positionsToIterate.Enqueue(new UVMeshDescretePosition(0, 0));
@@ -47,14 +103,10 @@ namespace LobelFrames.DataStructures.Algorithms
                 while (positionsToIterate.Count > 0)
                 {
                     UVMeshDescretePosition positionToCheck = positionsToIterate.Dequeue();
-                    Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
-                    Point3D barycentricCoordinates = projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
-                    bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
+                    bool isInside = triangleRecursionContext.UpdateRecursionFromPositionAndGetIsInsideProjection(positionToCheck);
 
                     if (isInside)
                     {
-                        this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
-
                         for (int dU = -1; dU <= 1; dU += 1)
                         {
                             for (int dV = -1; dV <= 1; dV += 1)
@@ -69,10 +121,6 @@ namespace LobelFrames.DataStructures.Algorithms
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        triangleRecursionContext.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
                     }
                 }
             }

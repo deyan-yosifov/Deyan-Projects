@@ -348,19 +348,18 @@ namespace LobelFrames.DataStructures
             {
                 this.isMeshInvalidated = false;
 
-                Point3D[,] surfacePoints = new BezierRectangle(this.controlPoints).GetMeshPoints(this.uDevisions, this.vDevisions);
+                Point3D[,] meshPoints = new BezierRectangle(this.controlPoints).GetMeshPoints(this.uDevisions, this.vDevisions);
+                NonEditableDescreteUVMesh mesh = new NonEditableDescreteUVMesh(meshPoints);
+                this.triangles = new Triangle[mesh.TrianglesUCount, mesh.TrianglesVCount];
 
-                int trianglesUCount = this.uDevisions * 2;
-                this.triangles = new Triangle[trianglesUCount, this.vDevisions];
-
-                for (int v = 0; v < this.vDevisions; v++)
+                for (int v = 0; v < mesh.TrianglesVCount; v++)
                 {
-                    for (int u = 0; u < (trianglesUCount); u += 2)
+                    for (int u = 0; u < mesh.TrianglesUCount; u += 2)
                     {
-                        Vertex a = u == 0 ? (v == 0 ? new Vertex(surfacePoints[u / 2, v]) : this.triangles[u, v - 1].B) : this.triangles[u - 1, v].C;
-                        Vertex b = u == 0 ? new Vertex(surfacePoints[u / 2, v + 1]) : this.triangles[u - 1, v].B;
-                        Vertex c = new Vertex(surfacePoints[u / 2 + 1, v + 1]);
-                        Vertex d = v == 0 ? new Vertex(surfacePoints[u / 2 + 1, v]) : this.triangles[u, v - 1].C;
+                        Vertex a = u == 0 ? (v == 0 ? new Vertex(mesh.GetPointA(u, v)) : this.triangles[u, v - 1].B) : this.triangles[u - 1, v].C;
+                        Vertex b = u == 0 ? new Vertex(mesh.GetPointB(u, v)) : this.triangles[u - 1, v].B;
+                        Vertex c = new Vertex(mesh.GetPointC(u, v));
+                        Vertex d = v == 0 ? new Vertex(mesh.GetPointC(u + 1, v)) : this.triangles[u, v - 1].C;
                         Edge ab = u == 0 ? new Edge(a, b) : this.triangles[u - 1, v].SideA;
                         Edge ad = v == 0 ? new Edge(a, d) : this.triangles[u, v - 1].SideA;
                         Edge ac = new Edge(a, c);

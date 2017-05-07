@@ -55,11 +55,17 @@
     </ApplicationDefinition>
     <Compile Include="DataStructures\Algorithms\ApproximationEndedEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
+    <Compile Include="DataStructures\Algorithms\DescreteUVMeshRecursiveTrianglesIterator.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
+    <Compile Include="DataStructures\Algorithms\IntersectingTriangleFinderIterationHandler.cs" />
+    <Compile Include="DataStructures\Algorithms\IDescreteUVTrianglesIterationHandler.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationContext.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationStep.cs" />
+    <Compile Include="DataStructures\Algorithms\ProjectionVolumeFinderIterationHandler.cs" />
+    <Compile Include="DataStructures\Algorithms\TriangleIterationHandlerBase.cs" />
+    <Compile Include="DataStructures\Algorithms\TriangleIterationResult.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
