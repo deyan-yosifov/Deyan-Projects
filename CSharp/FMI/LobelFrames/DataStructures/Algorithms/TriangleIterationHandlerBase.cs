@@ -6,30 +6,40 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal abstract class TriangleIterationHandlerBase : IDescreteUVTrianglesIterationHandler
     {
-        private readonly IDescreteUVMesh mesh;
+        private readonly OctaTetraApproximationContext approximationContext;
         private readonly TriangleProjectionContext projection;
+        private readonly Triangle selfTriangle;
         private bool hasRecursionEnded;
 
-        public TriangleIterationHandlerBase(IDescreteUVMesh mesh, TriangleProjectionContext projection)
+        public TriangleIterationHandlerBase(OctaTetraApproximationContext approximationContext, Triangle triangle)
         {
-            this.mesh = mesh;
-            this.projection = projection;
+            this.approximationContext = approximationContext;
             this.hasRecursionEnded = false;
+            this.projection = new TriangleProjectionContext(triangle.A.Point, triangle.B.Point, triangle.C.Point);
+            this.selfTriangle = triangle;
         }
 
-        protected IDescreteUVMesh Mesh
-        {
-            get
-            {
-                return this.mesh;
-            }
-        }
-
-        protected TriangleProjectionContext Projection
+        protected TriangleProjectionContext SelfProjection
         {
             get
             {
                 return this.projection;
+            }
+        }
+
+        protected Triangle SelfTriangle
+        {
+            get
+            {
+                return this.selfTriangle;
+            }
+        }
+
+        protected OctaTetraApproximationContext ApproximationContext
+        {
+            get
+            {
+                return this.approximationContext;
             }
         }
 

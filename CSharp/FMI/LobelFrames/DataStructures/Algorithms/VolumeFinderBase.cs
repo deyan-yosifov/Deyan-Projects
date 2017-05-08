@@ -5,14 +5,14 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class ProjectionVolumeFinderIterationHandler : TriangleIterationHandlerBase
+    internal abstract class VolumeFinderBase : TriangleIterationHandlerBase
     {
         private readonly HashSet<UVMeshDescretePosition> verticesFromIntersectingTriangles;
         private double totalOrientedVolume;
         private double totalCommonArea;
 
-        public ProjectionVolumeFinderIterationHandler(IDescreteUVMesh mesh, TriangleProjectionContext projection)
-            : base(mesh, projection)
+        public VolumeFinderBase(OctaTetraApproximationContext approximationContext, Triangle triangle)
+            : base(approximationContext, triangle)
         {
             this.verticesFromIntersectingTriangles = new HashSet<UVMeshDescretePosition>();
             this.totalOrientedVolume = 0;
@@ -43,16 +43,20 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        protected override TriangleIterationResult HandleNextInterationTriangleOverride
+        protected abstract void GetProjectionInfo
+            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition,
+            out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext);
+
+        protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride
             (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition)
         {
-            Point3D a = this.Mesh[aPosition];
-            Point3D b = this.Mesh[bPosition];
-            Point3D c = this.Mesh[cPosition];
+            Point3D a, b, c;
+            TriangleProjectionContext projectionContext;
+            this.GetProjectionInfo(triangleIndex, aPosition, bPosition, cPosition, out a, out b, out c, out projectionContext);
             bool addNeigboursToRecursion = false;
 
             double orientedVolume, commonArea;
-            if (ProjectionIntersections.TryFindCommonProjectionVolume(this.Projection, a, b, c, out orientedVolume, out commonArea))
+            if (ProjectionIntersections.TryFindCommonProjectionVolume(projectionContext, a, b, c, out orientedVolume, out commonArea))
             {
                 this.totalOrientedVolume += orientedVolume;
                 this.totalCommonArea += commonArea;

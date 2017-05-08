@@ -103,9 +103,11 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void ReportProgress(Triangle triangleToAdd)
         {
-            if (this.IsApproximating)
+            UVMeshApproximationContext contextLocalVariable = this.context;
+
+            if (this.IsApproximating && contextLocalVariable != null)
             {
-                this.context.Worker.ReportProgress(0, triangleToAdd);
+                contextLocalVariable.Worker.ReportProgress(0, triangleToAdd);
             }
         }
 

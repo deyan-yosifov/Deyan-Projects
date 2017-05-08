@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Core.Mathematics.Geometry.Algorithms;
+using System;
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
 
@@ -11,6 +12,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly double triangleSide;
         private readonly double tetrahedronHeight;
         private readonly bool[,] coveredUVPoints;
+        private readonly TriangleProjectionContext[] trianglesProjectionCache;
         private readonly UniqueEdgesSet uniqueEdges;
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
         private readonly HashSet<NonEditableTriangle> existingTriangles;
@@ -22,6 +24,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.triangleSide = triangleSide;
             this.tetrahedronHeight = Math.Sqrt(2.0 / 3) * triangleSide;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
+            this.trianglesProjectionCache = new TriangleProjectionContext[meshToApproximate.TrianglesCount];
             this.uniqueEdges = new UniqueEdgesSet();
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
             this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
@@ -97,6 +100,21 @@ namespace LobelFrames.DataStructures.Algorithms
                 this.coveredUVPoints[u, v] = true;
                 this.coveredPointsCount++;
             }
+        }
+
+        public TriangleProjectionContext GetProjectionContext(int triangleIndex)
+        {
+            TriangleProjectionContext projection = this.trianglesProjectionCache[triangleIndex];
+
+            if (projection == null)
+            {
+                UVMeshDescretePosition a, b, c;
+                this.MeshToApproximate.GetTriangleVertices(triangleIndex, out a, out b, out c);
+                projection = new TriangleProjectionContext(this.MeshToApproximate[a], this.MeshToApproximate[b], this.MeshToApproximate[c]);
+                this.trianglesProjectionCache[triangleIndex] = projection;
+            }
+
+            return projection;
         }
 
         public Triangle CreateTriangle(Point3D aPoint, Point3D bPoint, Point3D cPoint)

@@ -49,13 +49,12 @@ namespace LobelFrames.DataStructures.Algorithms
 
             foreach (Triangle triangle in step.TrianglesBundle)
             {
-                TriangleProjectionContext projectionContext = new TriangleProjectionContext(triangle.A.Point, triangle.B.Point, triangle.C.Point);
-
                 int intersectingTriangleIndex;
-                if (this.TryFindIntersectingMeshTriangleIndex(projectionContext, step.InitialRecursionPosition, out intersectingTriangleIndex))
+                if (this.TryFindIntersectingMeshTriangleIndex(triangle, step.InitialRecursionPosition, out intersectingTriangleIndex))
                 {
-                    ProjectionVolumeFinderIterationHandler volumeFinder = 
-                        new ProjectionVolumeFinderIterationHandler(this.context.MeshToApproximate, projectionContext);
+                    VolumeFinderBase volumeFinder =
+                        new SurfaceProjectingVolumeFinder(this.context, triangle);
+                        //new SelfProjectingVolumeFinder(this.context, triangle);
                     IEnumerable<int> initialTriangles = Enumerable.Repeat(intersectingTriangleIndex, 1);
 
                     DescreteUVMeshRecursiveTrianglesIterator.Iterate(volumeFinder, this.context.MeshToApproximate, initialTriangles);
@@ -81,11 +80,12 @@ namespace LobelFrames.DataStructures.Algorithms
             return bestVolumePerArea < double.MaxValue;
         }
 
-        private bool TryFindIntersectingMeshTriangleIndex(TriangleProjectionContext projection, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
+        private bool TryFindIntersectingMeshTriangleIndex(Triangle triangle, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
         {
             IEnumerable<int> initialTriangles = this.context.MeshToApproximate.GetNeighbouringTriangleIndices(initialPosition);
-            IntersectingTriangleFinderIterationHandler finder = 
-                new IntersectingTriangleFinderIterationHandler(this.context.MeshToApproximate, projection);
+            IntersectingTriangleFinderBase finder =
+                new SurfaceProjectingIntersectingTriangleFinder(this.context, triangle);
+                //new SelfProjectingIntersectingTriangleFinder(this.context, triangle);
             DescreteUVMeshRecursiveTrianglesIterator.Iterate(finder, this.context.MeshToApproximate, initialTriangles);
             intersectingTriangleIndex = finder.IntersectingTriangleIndex;
 
