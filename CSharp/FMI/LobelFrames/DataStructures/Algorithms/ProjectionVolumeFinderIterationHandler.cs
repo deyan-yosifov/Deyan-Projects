@@ -9,12 +9,14 @@ namespace LobelFrames.DataStructures.Algorithms
     {
         private readonly HashSet<UVMeshDescretePosition> verticesFromIntersectingTriangles;
         private double totalOrientedVolume;
+        private double totalCommonArea;
 
         public ProjectionVolumeFinderIterationHandler(IDescreteUVMesh mesh, TriangleProjectionContext projection)
             : base(mesh, projection)
         {
             this.verticesFromIntersectingTriangles = new HashSet<UVMeshDescretePosition>();
             this.totalOrientedVolume = 0;
+            this.totalCommonArea = 0;
         }
 
         public double ResultAbsoluteVolume
@@ -22,6 +24,14 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.verticesFromIntersectingTriangles.Count > 0 ? Math.Abs(this.totalOrientedVolume) : double.MaxValue;
+            }
+        }
+
+        public double ResultCommonArea
+        {
+            get
+            {
+                return this.totalCommonArea;
             }
         }
 
@@ -41,10 +51,11 @@ namespace LobelFrames.DataStructures.Algorithms
             Point3D c = this.Mesh[cPosition];
             bool addNeigboursToRecursion = false;
 
-            double orientedVolume;
-            if (ProjectionIntersections.TryFindCommonProjectionVolume(this.Projection, a, b, c, out orientedVolume))
+            double orientedVolume, commonArea;
+            if (ProjectionIntersections.TryFindCommonProjectionVolume(this.Projection, a, b, c, out orientedVolume, out commonArea))
             {
                 this.totalOrientedVolume += orientedVolume;
+                this.totalCommonArea += commonArea;
                 this.verticesFromIntersectingTriangles.Add(aPosition);
                 this.verticesFromIntersectingTriangles.Add(bPosition);
                 this.verticesFromIntersectingTriangles.Add(cPosition);

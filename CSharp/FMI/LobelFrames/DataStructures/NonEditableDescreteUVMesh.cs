@@ -121,19 +121,26 @@ namespace LobelFrames.DataStructures
         {
             int maxTriangleUIndex = meshPosition.UIndex * 2;
             int maxTriangleVIndex = meshPosition.VIndex;
-            int uStart = Math.Max(maxTriangleUIndex - 2, 0);
-            int vStart = Math.Max(maxTriangleVIndex - 1, 0);
-            int uMax = Math.Min(maxTriangleUIndex, this.trianglesUCount - 1);
-            int vMax = Math.Min(maxTriangleVIndex, this.trianglesVCount - 1);
+            int uStart = maxTriangleUIndex - 2;
+            int vStart = maxTriangleVIndex - 1;
 
-            for (int u = uStart; u <= uMax; u++)
+            for (int v = vStart; v <= maxTriangleVIndex; v++)
             {
-                for (int v = vStart; v <= vMax; v++)
+                if (0 <= v && v < this.trianglesVCount)
                 {
-                    int index = this.CalculateTriangleIndex(u, v);
+                    for (int u = uStart; u <= maxTriangleUIndex; u++)
+                    {
+                        if (0 <= u && u < this.trianglesUCount)
+                        {
+                            int index = this.CalculateTriangleIndex(u, v);
 
-                    yield return index;
+                            yield return index;
+                        }
+                    }
                 }
+
+                uStart += 1;
+                maxTriangleUIndex += 1;
             }
         }
 

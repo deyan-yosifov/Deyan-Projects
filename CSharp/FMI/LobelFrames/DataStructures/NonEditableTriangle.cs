@@ -35,5 +35,10 @@ namespace LobelFrames.DataStructures
         {
             return this.orderedPoints[0].GetHashCode() ^ this.orderedPoints[1].GetHashCode() ^ this.orderedPoints[2].GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return string.Format("<a={0}; b={1}; c={2}>", this.orderedPoints[0], this.orderedPoints[1], this.orderedPoints[2]);
+        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
@@ -24,9 +26,9 @@ namespace LobelFrames.DataStructures.Algorithms
             Point3D a = this.Mesh[aPosition];
             Point3D b = this.Mesh[bPosition];
             Point3D c = this.Mesh[cPosition];
+            IEnumerable<ProjectedPoint> intersection = ProjectionIntersections.GetProjectionIntersection(this.Projection, a, b, c);
 
-            double orientedVolume;
-            if (ProjectionIntersections.TryFindCommonProjectionVolume(this.Projection, a, b, c, out orientedVolume))
+            if (intersection.Any())
             {
                 this.IntersectingTriangleIndex = triangleIndex;
             }
