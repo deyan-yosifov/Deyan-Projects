@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LobelFrames.DataStructures.Algorithms;
+using System;
 
 namespace LobelFrames.ViewModels.Settings
 {
@@ -10,5 +11,6 @@ namespace LobelFrames.ViewModels.Settings
         int VDegree { get; }
         double InitialWidth { get; }
         double InitialHeight { get; }
+        LobelApproximationAlgorithmType AlgorithmType { get; }
     }
 }

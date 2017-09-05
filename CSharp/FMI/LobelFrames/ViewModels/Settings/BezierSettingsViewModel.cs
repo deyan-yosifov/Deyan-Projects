@@ -1,5 +1,8 @@
 ﻿using LobelFrames.DataStructures;
+using LobelFrames.DataStructures.Algorithms;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LobelFrames.ViewModels.Settings
 {
@@ -11,6 +14,8 @@ namespace LobelFrames.ViewModels.Settings
         private readonly LabeledSliderViewModel<int> vDegree;
         private readonly LabeledSliderViewModel<double> initialWidth;
         private readonly LabeledSliderViewModel<double> initialHeight;
+        private readonly LabeledSliderViewModel<int> algorithmType;
+        private readonly Dictionary<LobelApproximationAlgorithmType, Tuple<string, string>> algorithmToShortNameAndDescription;
 
         public BezierSettingsViewModel()
         {
@@ -21,6 +26,15 @@ namespace LobelFrames.ViewModels.Settings
             this.vDegree = new LabeledSliderViewModel<int>("V-степен:", 3, BezierMesh.DegreeMinimum, 6, 1);
             this.initialWidth = new LabeledSliderViewModel<double>("Първоначална ширина:", 15, 1, 100, 0.2);
             this.initialHeight = new LabeledSliderViewModel<double>("Първоначална дължина:", 15, 1, 100, 0.2);
+
+            int maxAlgorithmValue = Enum.GetValues(typeof(LobelApproximationAlgorithmType)).Length - 1;
+            this.algorithmToShortNameAndDescription = new Dictionary<LobelApproximationAlgorithmType,Tuple<string,string>>();
+            this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.FirstAlgorithm, "FA", "This is the first algorithm");
+            this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.SecondAlgorithm, "SA", "This is the second algorithm");
+            this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.ThirdAlgorithm, "TA", "This is the third algorithm");
+            this.algorithmType = new LabeledSliderViewModel<int>("Вид апроксимация:", 1, 0, maxAlgorithmValue, 1);
+            this.algorithmType.TextValueConverter = this.GetAlgorithmTextValue;
+            this.algorithmType.LongTextValueConverter = this.GetAlgorithmLongTextValue;
         }
 
         public LabeledSliderViewModel<int> UDevisions
@@ -71,6 +85,14 @@ namespace LobelFrames.ViewModels.Settings
             }
         }
 
+        public LabeledSliderViewModel<int> AlgorithmType
+        {
+            get
+            {
+                return this.algorithmType;
+            }
+        }
+
         int IBezierSurfaceSettings.UDevisions
         {
             get
@@ -117,6 +139,38 @@ namespace LobelFrames.ViewModels.Settings
             {
                 return this.initialHeight.Value;
             }
+        }
+
+
+        LobelApproximationAlgorithmType IBezierSurfaceSettings.AlgorithmType
+        {
+            get
+            {
+                LobelApproximationAlgorithmType algorithm = (LobelApproximationAlgorithmType)this.algorithmType.Value;
+
+                return algorithm;
+            }
+        }
+
+        private void InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType algorithm, string shortName, string description)
+        {
+            this.algorithmToShortNameAndDescription.Add(algorithm, new Tuple<string, string>(shortName, description));
+        }
+
+        private string GetAlgorithmTextValue(int value)
+        {
+            LobelApproximationAlgorithmType algorithm = (LobelApproximationAlgorithmType)value;
+            Tuple<string, string> shortNameAndDescription = this.algorithmToShortNameAndDescription[algorithm];
+
+            return shortNameAndDescription.Item1;
+        }
+
+        private string GetAlgorithmLongTextValue(int value)
+        {
+            LobelApproximationAlgorithmType algorithm = (LobelApproximationAlgorithmType)value;
+            Tuple<string, string> shortNameAndDescription = this.algorithmToShortNameAndDescription[algorithm];
+
+            return shortNameAndDescription.Item2;
         }
     }
 }

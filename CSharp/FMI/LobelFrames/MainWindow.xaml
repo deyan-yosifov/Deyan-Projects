@@ -190,6 +190,7 @@
                                     <lobelFrames:LabeledSliderView DataContext="{Binding VDegree}" />
                                     <lobelFrames:LabeledSliderView DataContext="{Binding InitialWidth}" />
                                     <lobelFrames:LabeledSliderView DataContext="{Binding InitialHeight}" />
+                                    <lobelFrames:LabeledSliderView DataContext="{Binding AlgorithmType}" />
                                 </StackPanel>
                             </Grid>
                         </Border>

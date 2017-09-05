@@ -9,7 +9,7 @@
         <TextBlock Margin="0 5" FontSize="13" Text="{Binding Label}" />
         <StackPanel Orientation="Horizontal" Margin="5 0">
             <Border BorderThickness="0.5" SnapsToDevicePixels="True" BorderBrush="Black" Margin="0">
-                <TextBlock Margin="4 0" MinWidth="15" Text="{Binding Value}" />
+                <TextBlock Margin="4 0" MinWidth="23" TextAlignment="Center" Text="{Binding TextValue}" ToolTip="{Binding LongTextValue}" />
             </Border>
             <Slider Value="{Binding Value, Mode=TwoWay}" Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}" TickFrequency="{Binding Step}" IsSnapToTickEnabled="True" Width="100" />
         </StackPanel>

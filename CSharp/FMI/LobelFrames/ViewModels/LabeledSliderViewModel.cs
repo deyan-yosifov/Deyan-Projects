@@ -19,6 +19,7 @@ namespace LobelFrames.ViewModels
             this.minValue = minValue;
             this.maxValue = maxValue;
             this.step = step;
+            this.TextValueConverter = GetDefaultTextValue;
         }
 
         public string Label
@@ -84,14 +85,47 @@ namespace LobelFrames.ViewModels
             }
         }
 
+        public string TextValue
+        {
+            get
+            {
+                return this.GetValueAsText(this.TextValueConverter);
+            }
+        }
+
+        public string LongTextValue
+        {
+            get
+            {
+                return this.GetValueAsText(this.LongTextValueConverter);
+            }
+        }
+
+        public Func<T, string> TextValueConverter { get; set; }
+
+        public Func<T, string> LongTextValueConverter { get; set; }
+
         public event EventHandler ValueChanged;
+
+        private static string GetDefaultTextValue(T value)
+        {
+            return value.ToString();
+        }
 
         private void OnValueChanged()
         {
+            this.OnPropertyChanged("TextValue");
+            this.OnPropertyChanged("LongTextValue");
+
             if (this.ValueChanged != null)
             {
                 this.ValueChanged(this, new EventArgs());
             }
+        }
+
+        private string GetValueAsText(Func<T, string> textConverter)
+        {
+            return textConverter == null ? null : textConverter(this.Value);
         }
     }
 }
