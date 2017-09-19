@@ -60,12 +60,14 @@
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\IntersectingTriangleFinderBase.cs" />
     <Compile Include="DataStructures\Algorithms\LobelApproximationAlgorithmType.cs" />
-    <Compile Include="DataStructures\Algorithms\SelfProjectingIntersectingTriangleFinder.cs" />
+    <Compile Include="DataStructures\Algorithms\LobelMeshProjectingApproximationAlgorithm.cs" />
+    <Compile Include="DataStructures\Algorithms\LobelProjectingIntersectingTriangleFinder.cs" />
     <Compile Include="DataStructures\Algorithms\IDescreteUVTrianglesIterationHandler.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationContext.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationStep.cs" />
-    <Compile Include="DataStructures\Algorithms\SelfProjectingVolumeFinder.cs" />
+    <Compile Include="DataStructures\Algorithms\LobelProjectingVolumeFinder.cs" />
+    <Compile Include="DataStructures\Algorithms\SurfaceProjectingApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\SurfaceProjectingIntersectingTriangleFinder.cs" />
     <Compile Include="DataStructures\Algorithms\SurfaceProjectingVolumeFinder.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleIterationHandlerBase.cs" />
@@ -74,7 +76,7 @@
     <Compile Include="DataStructures\Algorithms\UVMeshApproximator.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshDescretePosition.cs" />
-    <Compile Include="DataStructures\Algorithms\VolumeFinderBase.cs" />
+    <Compile Include="DataStructures\Algorithms\ProjectingVolumeFinderBase.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />

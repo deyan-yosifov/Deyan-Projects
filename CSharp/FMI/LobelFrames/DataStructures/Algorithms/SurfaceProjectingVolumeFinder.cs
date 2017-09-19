@@ -4,7 +4,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class SurfaceProjectingVolumeFinder : VolumeFinderBase
+    internal class SurfaceProjectingVolumeFinder : ProjectingVolumeFinderBase
     {
         public SurfaceProjectingVolumeFinder(OctaTetraApproximationContext approximationContext, Triangle triangle)
             : base(approximationContext, triangle)

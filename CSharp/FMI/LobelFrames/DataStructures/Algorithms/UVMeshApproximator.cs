@@ -8,15 +8,17 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     public class UVMeshApproximator : ILobelMeshApproximator
     {
+        private readonly IDescreteUVMesh meshToApproximate;
+        private readonly LobelApproximationAlgorithmType algorithmType;
         private bool isApproximating;
         private UVMeshApproximationContext context;
-        private readonly IDescreteUVMesh meshToApproximate;
 
-        public UVMeshApproximator(IDescreteUVMesh meshToApproximate)
+        public UVMeshApproximator(IDescreteUVMesh meshToApproximate, LobelApproximationAlgorithmType algorithmType)
         {
             this.meshToApproximate = meshToApproximate;
+            this.algorithmType = algorithmType;
             this.isApproximating = false;
-            this.context = null;
+            this.context = null;            
         }
 
         public bool IsApproximating
@@ -32,12 +34,26 @@ namespace LobelFrames.DataStructures.Algorithms
             Guard.ThrowExceptionIfTrue(this.IsApproximating, "IsApproximating");
 
             this.isApproximating = true;
-            this.context = new UVMeshApproximationContext(new OctaTetraMeshApproximationAlgorithm(this.meshToApproximate, side));
+            ILobelMeshApproximatingAlgorithm algorithm = this.CreateAlgorithm(side);
+            this.context = new UVMeshApproximationContext(algorithm);
             this.context.Worker.DoWork += this.Worker_DoWork;
             this.context.Worker.RunWorkerCompleted += this.Worker_RunWorkerCompleted;
             this.context.Worker.ProgressChanged += this.Worker_ProgressChanged;
 
             this.context.Worker.RunWorkerAsync();
+        }
+
+        private ILobelMeshApproximatingAlgorithm CreateAlgorithm(double side)
+        {
+            switch (this.algorithmType)
+            {
+                case LobelApproximationAlgorithmType.LobelMeshProjecting:
+                    return new LobelMeshProjectingApproximationAlgorithm(this.meshToApproximate, side);
+                case LobelApproximationAlgorithmType.SurfaceMeshProjecting:
+                    return new SurfaceProjectingApproximationAlgorithm(this.meshToApproximate, side);
+                default:
+                    throw new NotSupportedException(string.Format("Not supported algorithm type: {0}", this.algorithmType));
+            }
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)

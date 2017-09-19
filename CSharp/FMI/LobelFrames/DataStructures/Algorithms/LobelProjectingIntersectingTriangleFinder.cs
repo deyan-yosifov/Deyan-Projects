@@ -6,9 +6,9 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class SelfProjectingIntersectingTriangleFinder : IntersectingTriangleFinderBase
+    internal class LobelProjectingIntersectingTriangleFinder : IntersectingTriangleFinderBase
     {
-        public SelfProjectingIntersectingTriangleFinder(OctaTetraApproximationContext approximationContext, Triangle triangle)
+        public LobelProjectingIntersectingTriangleFinder(OctaTetraApproximationContext approximationContext, Triangle triangle)
             : base(approximationContext, triangle)
         {
         }

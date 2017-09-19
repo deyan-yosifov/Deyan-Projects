@@ -7,13 +7,21 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    public class OctaTetraMeshApproximationAlgorithm : ILobelMeshApproximatingAlgorithm
+    internal abstract class OctaTetraMeshApproximationAlgorithm : ILobelMeshApproximatingAlgorithm
     {
         private readonly OctaTetraApproximationContext context;
 
         public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide)
         {
             this.context = new OctaTetraApproximationContext(meshToApproximate, triangleSide);
+        }
+
+        protected OctaTetraApproximationContext Context
+        {
+            get
+            {
+                return this.context;
+            }
         }
 
         public IEnumerable<Triangle> GetLobelFramesApproximatingTriangles()
@@ -38,6 +46,10 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
+        protected abstract ProjectingVolumeFinderBase CreateProjectionVolumeFinder(Triangle lobelMeshTriangle);
+
+        protected abstract IntersectingTriangleFinderBase CreateIntersectingTriangleFinder(Triangle lobelMeshTriangle);
+
         private bool TryFindBestTriangleFromStepBundle
             (OctaTetraApproximationStep step, out Triangle bestTriangle, out IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
         {
@@ -52,11 +64,8 @@ namespace LobelFrames.DataStructures.Algorithms
                 int intersectingTriangleIndex;
                 if (this.TryFindIntersectingMeshTriangleIndex(triangle, step.InitialRecursionPosition, out intersectingTriangleIndex))
                 {
-                    VolumeFinderBase volumeFinder =
-                        new SurfaceProjectingVolumeFinder(this.context, triangle);
-                        //new SelfProjectingVolumeFinder(this.context, triangle);
+                    ProjectingVolumeFinderBase volumeFinder = this.CreateProjectionVolumeFinder(triangle);
                     IEnumerable<int> initialTriangles = Enumerable.Repeat(intersectingTriangleIndex, 1);
-
                     DescreteUVMeshRecursiveTrianglesIterator.Iterate(volumeFinder, this.context.MeshToApproximate, initialTriangles);
 
                     if (volumeFinder.ResultCommonArea.IsZero())
@@ -83,9 +92,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private bool TryFindIntersectingMeshTriangleIndex(Triangle triangle, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
         {
             IEnumerable<int> initialTriangles = this.context.MeshToApproximate.GetNeighbouringTriangleIndices(initialPosition);
-            IntersectingTriangleFinderBase finder =
-                new SurfaceProjectingIntersectingTriangleFinder(this.context, triangle);
-                //new SelfProjectingIntersectingTriangleFinder(this.context, triangle);
+            IntersectingTriangleFinderBase finder = this.CreateIntersectingTriangleFinder(triangle);
             DescreteUVMeshRecursiveTrianglesIterator.Iterate(finder, this.context.MeshToApproximate, initialTriangles);
             intersectingTriangleIndex = finder.IntersectingTriangleIndex;
 

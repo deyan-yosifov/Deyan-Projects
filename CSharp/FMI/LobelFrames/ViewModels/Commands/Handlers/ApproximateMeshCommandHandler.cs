@@ -37,7 +37,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             base.BeginCommand();
             this.surfaceToApproximate = this.Editor.Context.SelectedSurface;
             IDescreteUVMesh meshToApproximate = ((IUVSurface)this.surfaceToApproximate).GetDescreteUVMesh();
-            this.approximator = new UVMeshApproximator(meshToApproximate);
+            this.approximator = new UVMeshApproximator(meshToApproximate, this.Editor.Context.Settings.BezierSettings.AlgorithmType);
             this.approximator.ReportingApproximationProgress += this.Approximator_ReportingApproximationProgress;
             this.approximator.ApproximationEnded += this.Approximator_ApproximationEnded;
             this.Editor.Context.SelectedSurface = null;
