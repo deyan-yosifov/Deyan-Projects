@@ -102,21 +102,6 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public TriangleProjectionContext GetProjectionContext(int triangleIndex)
-        {
-            TriangleProjectionContext projection = this.trianglesProjectionCache[triangleIndex];
-
-            if (projection == null)
-            {
-                UVMeshDescretePosition a, b, c;
-                this.MeshToApproximate.GetTriangleVertices(triangleIndex, out a, out b, out c);
-                projection = new TriangleProjectionContext(this.MeshToApproximate[a], this.MeshToApproximate[b], this.MeshToApproximate[c]);
-                this.trianglesProjectionCache[triangleIndex] = projection;
-            }
-
-            return projection;
-        }
-
         public Triangle CreateTriangle(Point3D aPoint, Point3D bPoint, Point3D cPoint)
         {
             Vertex a = this.GetUniqueVertex(aPoint);
@@ -157,6 +142,40 @@ namespace LobelFrames.DataStructures.Algorithms
                 triangle = null;
                 return false;
             }
+        }
+
+        public void GetLobelMeshProjectionInfo(UVMeshTriangleInfo uvMeshTriangle, TriangleProjectionContext lobelMeshTriangleProjection,
+            out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext)
+        {
+            a = this.MeshToApproximate[uvMeshTriangle.A];
+            b = this.MeshToApproximate[uvMeshTriangle.B];
+            c = this.MeshToApproximate[uvMeshTriangle.C];
+            projectionContext = lobelMeshTriangleProjection;
+        }
+
+        public void GetSurfaceMeshProjectionInfo(UVMeshTriangleInfo uvMeshTriangle, Triangle lobelMeshTriangle,
+           out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext)
+        {
+            a = lobelMeshTriangle.A.Point;
+            b = lobelMeshTriangle.B.Point;
+            c = lobelMeshTriangle.C.Point;
+            projectionContext = this.GetProjectionContext(uvMeshTriangle);
+        }
+
+        private TriangleProjectionContext GetProjectionContext(UVMeshTriangleInfo uvMeshTriangle)
+        {
+            TriangleProjectionContext projection = this.trianglesProjectionCache[uvMeshTriangle.TriangleIndex];
+
+            if (projection == null)
+            {
+                Point3D a = this.MeshToApproximate[uvMeshTriangle.A];
+                Point3D b = this.MeshToApproximate[uvMeshTriangle.B];
+                Point3D c = this.MeshToApproximate[uvMeshTriangle.C];
+                projection = new TriangleProjectionContext(a, b, c);
+                this.trianglesProjectionCache[uvMeshTriangle.TriangleIndex] = projection;
+            }
+
+            return projection;
         }
 
         private Triangle CreateTriangle(Vertex a, Vertex b, Vertex c)

@@ -25,11 +25,8 @@ namespace LobelFrames.DataStructures.Algorithms
                 while (trianglesToIterate.Count > 0)
                 {
                     int triangleIndex = trianglesToIterate.Dequeue();
-                    UVMeshDescretePosition aPosition, bPosition, cPosition;
-                    meshToIterate.GetTriangleVertices(triangleIndex, out aPosition, out bPosition, out cPosition);
-
-                    TriangleIterationResult result =
-                        triangleHandler.HandleNextIterationTriangle(triangleIndex, aPosition, bPosition, cPosition);
+                    UVMeshTriangleInfo triangle = new UVMeshTriangleInfo(triangleIndex, meshToIterate);
+                    TriangleIterationResult result = triangleHandler.HandleNextIterationTriangle(triangle);
 
                     if (result.ShouldEndRecursion)
                     {
@@ -38,9 +35,9 @@ namespace LobelFrames.DataStructures.Algorithms
 
                     if (result.ShouldAddTriangleNeighboursToRecursion)
                     {
-                        foreach (int neighbour in meshToIterate.GetNeighbouringTriangleIndices(aPosition)
-                            .Union(meshToIterate.GetNeighbouringTriangleIndices(bPosition))
-                            .Union(meshToIterate.GetNeighbouringTriangleIndices(cPosition)))
+                        foreach (int neighbour in meshToIterate.GetNeighbouringTriangleIndices(triangle.A)
+                            .Union(meshToIterate.GetNeighbouringTriangleIndices(triangle.B))
+                            .Union(meshToIterate.GetNeighbouringTriangleIndices(triangle.C)))
                         {
                             if (iterationAddedTriangleIndices.Add(neighbour))
                             {

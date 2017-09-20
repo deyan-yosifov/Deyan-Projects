@@ -4,7 +4,7 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal interface IDescreteUVTrianglesIterationHandler
     {
-        TriangleIterationResult HandleNextIterationTriangle(int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition);
+        TriangleIterationResult HandleNextIterationTriangle(UVMeshTriangleInfo uvMeshTriangle);
 
         void EndRecursion();        
     }

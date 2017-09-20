@@ -27,9 +27,9 @@ namespace LobelFrames.DataStructures.Algorithms
         public IEnumerable<Triangle> GetLobelFramesApproximatingTriangles()
         {
             Triangle firstTriangle = this.CalculateFirstTriangle();
-            this.InitializeRecursionForFirstTriangle(firstTriangle);
-
             yield return firstTriangle;
+
+            this.InitializeRecursionForFirstTriangle(firstTriangle);
 
             while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
             {
@@ -89,10 +89,10 @@ namespace LobelFrames.DataStructures.Algorithms
             return bestVolumePerArea < double.MaxValue;
         }
 
-        private bool TryFindIntersectingMeshTriangleIndex(Triangle triangle, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
+        private bool TryFindIntersectingMeshTriangleIndex(Triangle lobelMeshTriangle, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
         {
             IEnumerable<int> initialTriangles = this.context.MeshToApproximate.GetNeighbouringTriangleIndices(initialPosition);
-            IntersectingTriangleFinderBase finder = this.CreateIntersectingTriangleFinder(triangle);
+            IntersectingTriangleFinderBase finder = this.CreateIntersectingTriangleFinder(lobelMeshTriangle);
             DescreteUVMeshRecursiveTrianglesIterator.Iterate(finder, this.context.MeshToApproximate, initialTriangles);
             intersectingTriangleIndex = finder.IntersectingTriangleIndex;
 

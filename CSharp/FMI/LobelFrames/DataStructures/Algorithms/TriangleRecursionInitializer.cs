@@ -36,6 +36,7 @@ namespace LobelFrames.DataStructures.Algorithms
         public bool UpdateRecursionFromPositionAndGetIsInsideProjection(UVMeshDescretePosition positionToCheck)
         {
             Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+            // TODO: Implement capability for projecting in both LobelMesh and SurfaceMesh directions...
             Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
             bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
 

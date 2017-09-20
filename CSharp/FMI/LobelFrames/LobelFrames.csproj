@@ -77,6 +77,7 @@
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshDescretePosition.cs" />
     <Compile Include="DataStructures\Algorithms\ProjectingVolumeFinderBase.cs" />
+    <Compile Include="DataStructures\Algorithms\UVMeshTriangleInfo.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
     <Compile Include="DataStructures\Edge.cs" />
     <Compile Include="DataStructures\EdgesEqualityComparer.cs" />

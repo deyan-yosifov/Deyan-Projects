@@ -7,31 +7,31 @@ namespace LobelFrames.DataStructures.Algorithms
     internal abstract class TriangleIterationHandlerBase : IDescreteUVTrianglesIterationHandler
     {
         private readonly OctaTetraApproximationContext approximationContext;
-        private readonly TriangleProjectionContext projection;
-        private readonly Triangle selfTriangle;
+        private readonly TriangleProjectionContext lobelTriangleProjection;
+        private readonly Triangle lobelMeshTriangle;
         private bool hasRecursionEnded;
 
-        public TriangleIterationHandlerBase(OctaTetraApproximationContext approximationContext, Triangle triangle)
+        public TriangleIterationHandlerBase(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
         {
             this.approximationContext = approximationContext;
             this.hasRecursionEnded = false;
-            this.projection = new TriangleProjectionContext(triangle.A.Point, triangle.B.Point, triangle.C.Point);
-            this.selfTriangle = triangle;
+            this.lobelTriangleProjection = new TriangleProjectionContext(lobelMeshTriangle.A.Point, lobelMeshTriangle.B.Point, lobelMeshTriangle.C.Point);
+            this.lobelMeshTriangle = lobelMeshTriangle;
         }
 
-        protected TriangleProjectionContext SelfProjection
+        protected TriangleProjectionContext LobelTriangleProjection
         {
             get
             {
-                return this.projection;
+                return this.lobelTriangleProjection;
             }
         }
 
-        protected Triangle SelfTriangle
+        protected Triangle LobelMeshTriangle
         {
             get
             {
-                return this.selfTriangle;
+                return this.lobelMeshTriangle;
             }
         }
 
@@ -43,16 +43,14 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        TriangleIterationResult IDescreteUVTrianglesIterationHandler.HandleNextIterationTriangle
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition)
+        TriangleIterationResult IDescreteUVTrianglesIterationHandler.HandleNextIterationTriangle(UVMeshTriangleInfo uvMeshTriangle)
         {
             Guard.ThrowExceptionIfTrue(this.hasRecursionEnded, "this.hasRecursionEnded");
 
-            return this.HandleNextInterationTriangleOverride(triangleIndex, aPosition, bPosition, cPosition);
+            return this.HandleNextInterationTriangleOverride(uvMeshTriangle);
         }
 
-        protected abstract TriangleIterationResult HandleNextInterationTriangleOverride
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition);
+        protected abstract TriangleIterationResult HandleNextInterationTriangleOverride(UVMeshTriangleInfo uvMeshTriangle);
 
 
         void IDescreteUVTrianglesIterationHandler.EndRecursion()

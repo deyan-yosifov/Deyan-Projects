@@ -6,19 +6,15 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal class SurfaceProjectingVolumeFinder : ProjectingVolumeFinderBase
     {
-        public SurfaceProjectingVolumeFinder(OctaTetraApproximationContext approximationContext, Triangle triangle)
-            : base(approximationContext, triangle)
+        public SurfaceProjectingVolumeFinder(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
+            : base(approximationContext, lobelMeshTriangle)
         {
         }
 
-        protected override void GetProjectionInfo
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition, 
+        protected override void GetProjectionInfo(UVMeshTriangleInfo uvMeshTriangle, 
             out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext)
         {
-            a = this.SelfTriangle.A.Point;
-            b = this.SelfTriangle.B.Point;
-            c = this.SelfTriangle.C.Point;
-            projectionContext = this.ApproximationContext.GetProjectionContext(triangleIndex);
+            this.ApproximationContext.GetSurfaceMeshProjectionInfo(uvMeshTriangle, this.LobelMeshTriangle, out a, out b, out c, out projectionContext);
         }
     }
 }

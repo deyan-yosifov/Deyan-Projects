@@ -8,8 +8,8 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal abstract class IntersectingTriangleFinderBase : TriangleIterationHandlerBase
     {
-        public IntersectingTriangleFinderBase(OctaTetraApproximationContext approximationContext, Triangle triangle)
-            : base(approximationContext, triangle)
+        public IntersectingTriangleFinderBase(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
+            : base(approximationContext, lobelMeshTriangle)
         {
             this.IntersectingTriangleIndex = -1;
         }
@@ -20,22 +20,20 @@ namespace LobelFrames.DataStructures.Algorithms
             private set;
         }
 
-        protected abstract void GetProjectionInfo
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition,
+        protected abstract void GetProjectionInfo(UVMeshTriangleInfo uvMeshTriangle,
             out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext);
 
 
-        protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition)
+        protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride(UVMeshTriangleInfo uvMeshTriangle)
         {
             Point3D a, b, c;
             TriangleProjectionContext projectionContext;
-            this.GetProjectionInfo(triangleIndex, aPosition, bPosition, cPosition, out a, out b, out c, out projectionContext);
+            this.GetProjectionInfo(uvMeshTriangle, out a, out b, out c, out projectionContext);
             IEnumerable<ProjectedPoint> intersection = ProjectionIntersections.GetProjectionIntersection(projectionContext, a, b, c);
 
             if (intersection.Any())
             {
-                this.IntersectingTriangleIndex = triangleIndex;
+                this.IntersectingTriangleIndex = uvMeshTriangle.TriangleIndex;
             }
 
             return new TriangleIterationResult(this.IntersectingTriangleIndex > -1, true);

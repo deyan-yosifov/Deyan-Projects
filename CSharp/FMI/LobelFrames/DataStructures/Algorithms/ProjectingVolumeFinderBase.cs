@@ -11,8 +11,8 @@ namespace LobelFrames.DataStructures.Algorithms
         private double totalOrientedVolume;
         private double totalCommonArea;
 
-        public ProjectingVolumeFinderBase(OctaTetraApproximationContext approximationContext, Triangle triangle)
-            : base(approximationContext, triangle)
+        public ProjectingVolumeFinderBase(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
+            : base(approximationContext, lobelMeshTriangle)
         {
             this.verticesFromIntersectingTriangles = new HashSet<UVMeshDescretePosition>();
             this.totalOrientedVolume = 0;
@@ -43,16 +43,14 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        protected abstract void GetProjectionInfo
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition,
+        protected abstract void GetProjectionInfo(UVMeshTriangleInfo uvMeshTriangle,
             out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext);
 
-        protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride
-            (int triangleIndex, UVMeshDescretePosition aPosition, UVMeshDescretePosition bPosition, UVMeshDescretePosition cPosition)
+        protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride(UVMeshTriangleInfo uvMeshTriangle)
         {
             Point3D a, b, c;
             TriangleProjectionContext projectionContext;
-            this.GetProjectionInfo(triangleIndex, aPosition, bPosition, cPosition, out a, out b, out c, out projectionContext);
+            this.GetProjectionInfo(uvMeshTriangle, out a, out b, out c, out projectionContext);
             bool addNeigboursToRecursion = false;
 
             double orientedVolume, commonArea;
@@ -60,9 +58,9 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 this.totalOrientedVolume += orientedVolume;
                 this.totalCommonArea += commonArea;
-                this.verticesFromIntersectingTriangles.Add(aPosition);
-                this.verticesFromIntersectingTriangles.Add(bPosition);
-                this.verticesFromIntersectingTriangles.Add(cPosition);
+                this.verticesFromIntersectingTriangles.Add(uvMeshTriangle.A);
+                this.verticesFromIntersectingTriangles.Add(uvMeshTriangle.B);
+                this.verticesFromIntersectingTriangles.Add(uvMeshTriangle.C);
                 addNeigboursToRecursion = true;
             }
 
