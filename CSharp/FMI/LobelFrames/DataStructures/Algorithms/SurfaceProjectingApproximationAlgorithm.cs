@@ -5,7 +5,7 @@ namespace LobelFrames.DataStructures.Algorithms
     internal class SurfaceProjectingApproximationAlgorithm : OctaTetraMeshApproximationAlgorithm
     {
         public SurfaceProjectingApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide)
-            : base(meshToApproximate, triangleSide)
+            : base(meshToApproximate, triangleSide, false, true)
         {
         }
 

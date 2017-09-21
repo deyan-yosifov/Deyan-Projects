@@ -33,9 +33,9 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             base.Editor.CloseCommandContext();
         }
 
-        public override void HandleCancelInputed()
+        public override void HandleCancelInputed(CancelInputedEventArgs e)
         {
-            base.HandleCancelInputed();
+            base.HandleCancelInputed(e);
             base.Editor.CloseCommandContext();
         }
     }

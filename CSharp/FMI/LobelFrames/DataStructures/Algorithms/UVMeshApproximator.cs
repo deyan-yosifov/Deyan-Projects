@@ -80,7 +80,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.EndApproximation(true);
         }
 
-        private void EndApproximation(bool isCanceled)
+        private void EndApproximation(bool isCancelled)
         {
             Guard.ThrowExceptionIfFalse(this.IsApproximating, "IsApproximating");
             this.isApproximating = false;
@@ -88,13 +88,13 @@ namespace LobelFrames.DataStructures.Algorithms
             this.context.Worker.RunWorkerCompleted -= this.Worker_RunWorkerCompleted;
             this.context.Worker.ProgressChanged -= this.Worker_ProgressChanged;
 
-            if (isCanceled)
+            if (isCancelled)
             {
                 this.context.Worker.CancelAsync();
             }
 
             this.context = null;
-            this.OnApproximationEnded(isCanceled);
+            this.OnApproximationEnded(isCancelled);
         }
 
         public event EventHandler<ApproximationEndedEventArgs> ApproximationEnded;
@@ -129,8 +129,8 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            bool isCanceled = (bool)e.Result == false;
-            this.EndApproximation(isCanceled);
+            bool isCancelled = e.Cancelled || !(this.IsApproximating && true.Equals(e.Result));
+            this.EndApproximation(isCancelled);
         }
     }
 }

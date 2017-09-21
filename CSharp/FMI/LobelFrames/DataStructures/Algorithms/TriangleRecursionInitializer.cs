@@ -1,5 +1,6 @@
 ﻿using Deyo.Core.Common;
 using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry;
 using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
@@ -35,21 +36,52 @@ namespace LobelFrames.DataStructures.Algorithms
 
         public bool UpdateRecursionFromPositionAndGetIsInsideProjection(UVMeshDescretePosition positionToCheck)
         {
-            Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
-            // TODO: Implement capability for projecting in both LobelMesh and SurfaceMesh directions...
-            Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
-            bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
+            bool isInside = false;
 
-            if (isInside)
+            foreach (Point3D barycentricCoordinates in this.CalculateAllPossibleProjectionsBarycentricCoordinates(positionToCheck))
             {
-                this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
-            }
-            else
-            {
-                this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
-            }
+                isInside |= barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
+
+                if (isInside)
+                {
+                    this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
+                }
+                else
+                {
+                    this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
+                }
+            }            
 
             return isInside;
+        }
+
+        private IEnumerable<Point3D> CalculateAllPossibleProjectionsBarycentricCoordinates(UVMeshDescretePosition positionToCheck)
+        {
+            Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+
+            if (this.context.ShouldCoverPointsProjectingToLobelMesh)
+            {
+                Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
+                yield return barycentricCoordinates;
+            }
+
+            if (this.context.ShouldCoverPointsProjectingToSurfaceMesh)
+            {
+                foreach (int triangleIndex in this.context.MeshToApproximate.GetNeighbouringTriangleIndices(positionToCheck))
+                {
+                    TriangleProjectionContext surfaceProjection = this.context.GetProjectionContext(triangleIndex);
+                    IntersectionType intersection = IntersectionsHelper.FindIntersectionTypeBetweenLineAndPlane(
+                        meshPoint, surfaceProjection.ProjectionNormal, this.triangleCenter, this.triangleUnitNormal);
+
+                    if (intersection != IntersectionType.EmptyPointSet)
+                    {
+                        Point3D obliqueProjectedMeshPoint = (intersection == IntersectionType.InfinitePointSet) ? meshPoint :
+                            IntersectionsHelper.IntersectLineAndPlane(meshPoint, surfaceProjection.ProjectionNormal, this.triangleCenter, this.triangleUnitNormal);
+                        Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(obliqueProjectedMeshPoint);
+                        yield return barycentricCoordinates;
+                    }
+                }
+            }
         }
 
         private void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)

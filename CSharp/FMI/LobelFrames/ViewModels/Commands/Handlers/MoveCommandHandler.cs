@@ -107,9 +107,9 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        public override void HandleCancelInputed()
+        public override void HandleCancelInputed(CancelInputedEventArgs e)
         {
-            base.HandleCancelInputed();
+            base.HandleCancelInputed(e);
             this.EndMoveCommand(new Vector3D());
         }
 

@@ -379,9 +379,9 @@ namespace LobelFrames.ViewModels
             this.CommandContext.CommandHandler.HandleParameterInputed(e);
         }
 
-        private void HandleInputManagerCancelInputed(object sender, EventArgs e)
+        private void HandleInputManagerCancelInputed(object sender, CancelInputedEventArgs e)
         {
-            this.CommandContext.CommandHandler.HandleCancelInputed();
+            this.CommandContext.CommandHandler.HandleCancelInputed(e);
         }
 
         private void HandleSurfaceSelected(object sender, SurfaceSelectedEventArgs e)

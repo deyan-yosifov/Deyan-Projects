@@ -152,7 +152,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        public override void HandleCancelInputed()
+        public override void HandleCancelInputed(CancelInputedEventArgs e)
         {
             if (this.Points.Count > 0)
             {

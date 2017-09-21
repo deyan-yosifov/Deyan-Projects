@@ -2,7 +2,7 @@
 
 namespace LobelFrames.ViewModels.Commands
 {
-    public class ParameterInputedEventArgs
+    public class ParameterInputedEventArgs : EventArgs
     {
         private readonly string parameter;
 

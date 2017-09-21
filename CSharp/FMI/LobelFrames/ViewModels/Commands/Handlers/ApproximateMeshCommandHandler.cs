@@ -98,11 +98,12 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        public override void HandleCancelInputed()
+        public override void HandleCancelInputed(CancelInputedEventArgs e)
         {
             if (this.approximator.IsApproximating)
             {
                 this.approximator.CancelApproximation();
+                e.ClearInputValue = false;
             }
             else
             {

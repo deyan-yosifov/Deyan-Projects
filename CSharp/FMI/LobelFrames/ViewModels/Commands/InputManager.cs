@@ -140,7 +140,7 @@ namespace LobelFrames.ViewModels.Commands
         }
 
         public event EventHandler<ParameterInputedEventArgs> ParameterInputed;
-        public event EventHandler CancelInputed;
+        public event EventHandler<CancelInputedEventArgs> CancelInputed;
 
         private void HandleInputSymbol(char symbol)
         {
@@ -204,15 +204,20 @@ namespace LobelFrames.ViewModels.Commands
 
         private void HandleEscapeButtonInput()
         {
-            this.InputValue = string.Empty;
-
             if (this.IsInputingParameterWithKeyboard)
             {
+                this.InputValue = string.Empty;
                 this.isInputingParameterWithKeyboard = false;
             }
             else
             {
-                this.OnCancelInputed();
+                CancelInputedEventArgs e = new CancelInputedEventArgs();
+                this.OnCancelInputed(e);
+
+                if (e.ClearInputValue)
+                {
+                    this.InputValue = string.Empty;
+                }
             }
         }
 
@@ -240,11 +245,11 @@ namespace LobelFrames.ViewModels.Commands
             this.InputLabel = label;
         }
 
-        private void OnCancelInputed()
+        private void OnCancelInputed(CancelInputedEventArgs e)
         {
             if (this.CancelInputed != null)
             {
-                this.CancelInputed(this, new EventArgs());
+                this.CancelInputed(this, e);
             }
         }
 

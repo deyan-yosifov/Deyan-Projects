@@ -137,6 +137,7 @@
     <Compile Include="DataStructures\Triangle.cs" />
     <Compile Include="DataStructures\TriangularMesh.cs" />
     <Compile Include="DataStructures\Vertex.cs" />
+    <Compile Include="ViewModels\Commands\CancelInputedEventArgs.cs" />
     <Compile Include="ViewModels\Commands\CommandContext.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptor.cs" />
     <Compile Include="ViewModels\Commands\CommandDescriptors.cs" />

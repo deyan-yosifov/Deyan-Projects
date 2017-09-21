@@ -135,7 +135,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         }
 
 
-        public virtual void HandleCancelInputed()
+        public virtual void HandleCancelInputed(CancelInputedEventArgs e)
         {
             // Do nothing
         }
