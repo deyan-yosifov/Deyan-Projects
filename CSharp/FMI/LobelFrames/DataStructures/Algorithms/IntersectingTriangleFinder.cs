@@ -6,9 +6,9 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal abstract class IntersectingTriangleFinderBase : TriangleIterationHandlerBase
+    internal class IntersectingTriangleFinder : LobelTriangleIterationHandlerBase
     {
-        public IntersectingTriangleFinderBase(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
+        public IntersectingTriangleFinder(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
             : base(approximationContext, lobelMeshTriangle)
         {
             this.IntersectingTriangleIndex = -1;
@@ -19,10 +19,6 @@ namespace LobelFrames.DataStructures.Algorithms
             get;
             private set;
         }
-
-        protected abstract void GetProjectionInfo(UVMeshTriangleInfo uvMeshTriangle,
-            out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext);
-
 
         protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride(UVMeshTriangleInfo uvMeshTriangle)
         {

@@ -31,7 +31,8 @@ namespace LobelFrames.ViewModels.Settings
             this.algorithmToShortNameAndDescription = new Dictionary<LobelApproximationAlgorithmType,Tuple<string,string>>();
             this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.LobelMeshProjecting, "LMP", "Lobel Mesh Projecting Algorithm. This algorithm searches for minimal volume projected to Lobel Mesh triangles in order to choose the best approximating triangle on the current recursion step.");
             this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.SurfaceMeshProjecting, "SMP", "Surface Mesh Projecting Algorithm. This algorithm searches for minimal volume projected to Surface Mesh triangles in order to choose the best approximating triangle on the current recursion step.");
-            this.algorithmType = new LabeledSliderViewModel<int>("Вид апроксимация:", 1, 0, maxAlgorithmValue, 1);
+            this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.CentroidDistanceMeasuring, "CDM", "Centroid Distance Measuring Algorithm. This algorithm searches for minimal distance measured between the octahedron/tetrahedron centroid and the surface mesh in order to choose the best approximating triangle on the current recursion step.");
+            this.algorithmType = new LabeledSliderViewModel<int>("Вид апроксимация:", 2, 0, maxAlgorithmValue, 1);
             this.algorithmType.TextValueConverter = this.GetAlgorithmTextValue;
             this.algorithmType.LongTextValueConverter = this.GetAlgorithmLongTextValue;
         }

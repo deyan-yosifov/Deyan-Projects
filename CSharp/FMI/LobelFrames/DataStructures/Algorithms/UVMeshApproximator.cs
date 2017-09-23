@@ -45,12 +45,33 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private ILobelMeshApproximatingAlgorithm CreateAlgorithm(double side)
         {
+            OctaTetraApproximationSettings settings = this.CreateAlgorithmSettings();
+
+            return new OctaTetraMeshApproximationAlgorithm(this.meshToApproximate, side, settings);
+        }
+
+        private OctaTetraApproximationSettings CreateAlgorithmSettings()
+        {
             switch (this.algorithmType)
             {
                 case LobelApproximationAlgorithmType.LobelMeshProjecting:
-                    return new LobelMeshProjectingApproximationAlgorithm(this.meshToApproximate, side);
+                    return new OctaTetraApproximationSettings()
+                    {
+                        ProjectionDirection = ApproximationProjectionDirection.ProjectToLobelMesh,
+                        RecursionStrategy = TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours
+                    };
                 case LobelApproximationAlgorithmType.SurfaceMeshProjecting:
-                    return new SurfaceProjectingApproximationAlgorithm(this.meshToApproximate, side);
+                    return new OctaTetraApproximationSettings()
+                    {
+                        ProjectionDirection = ApproximationProjectionDirection.ProjectToSurfaceMesh,
+                        RecursionStrategy = TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours
+                    };
+                case LobelApproximationAlgorithmType.CentroidDistanceMeasuring:
+                    return new OctaTetraApproximationSettings()
+                    {
+                        ProjectionDirection = ApproximationProjectionDirection.ProjectToLobelMesh,
+                        RecursionStrategy = TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes
+                    };
                 default:
                     throw new NotSupportedException(string.Format("Not supported algorithm type: {0}", this.algorithmType));
             }

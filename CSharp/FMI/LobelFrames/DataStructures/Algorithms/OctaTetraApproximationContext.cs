@@ -11,23 +11,22 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly Queue<OctaTetraApproximationStep> recursionQueue;
         private readonly double triangleSide;
         private readonly double tetrahedronHeight;
-        private readonly bool shouldCoverPointsProjectingToLobelMesh;
-        private readonly bool shouldCoverPointsProjectingToSurfaceMesh;
         private readonly bool[,] coveredUVPoints;
+        private readonly ApproximationProjectionDirection projectionDirection;
+        private readonly TriangleRecursionStrategy recursionStrategy;
         private readonly TriangleProjectionContext[] trianglesProjectionCache;
         private readonly UniqueEdgesSet uniqueEdges;
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
         private readonly HashSet<NonEditableTriangle> existingTriangles;
         private int coveredPointsCount;
 
-        public OctaTetraApproximationContext
-            (IDescreteUVMesh meshToApproximate, double triangleSide, bool coverPointsProjectingToLobel, bool coverPointsProjectingToSurface)
+        public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, OctaTetraApproximationSettings settings)
         {
             this.meshToApproximate = meshToApproximate;
             this.triangleSide = triangleSide;
             this.tetrahedronHeight = Math.Sqrt(2.0 / 3) * triangleSide;
-            this.shouldCoverPointsProjectingToLobelMesh = coverPointsProjectingToLobel;
-            this.shouldCoverPointsProjectingToSurfaceMesh = coverPointsProjectingToSurface;
+            this.projectionDirection = settings.ProjectionDirection;
+            this.recursionStrategy = settings.RecursionStrategy;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.trianglesProjectionCache = new TriangleProjectionContext[meshToApproximate.TrianglesCount];
             this.uniqueEdges = new UniqueEdgesSet();
@@ -53,6 +52,22 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
+        public ApproximationProjectionDirection ProjectionDirection
+        {
+            get
+            {
+                return this.projectionDirection;
+            }
+        }
+
+        public TriangleRecursionStrategy RecursionStrategy
+        {
+            get
+            {
+                return this.recursionStrategy;
+            }
+        }
+
         public double TriangleSide
         {
             get
@@ -66,22 +81,6 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.tetrahedronHeight;
-            }
-        }
-
-        public bool ShouldCoverPointsProjectingToLobelMesh
-        {
-            get
-            {
-                return this.shouldCoverPointsProjectingToLobelMesh;
-            }
-        }
-
-        public bool ShouldCoverPointsProjectingToSurfaceMesh
-        {
-            get
-            {
-                return this.shouldCoverPointsProjectingToSurfaceMesh;
             }
         }
 
@@ -165,24 +164,6 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public void GetLobelMeshProjectionInfo(UVMeshTriangleInfo uvMeshTriangle, TriangleProjectionContext lobelMeshTriangleProjection,
-            out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext)
-        {
-            a = this.MeshToApproximate[uvMeshTriangle.A];
-            b = this.MeshToApproximate[uvMeshTriangle.B];
-            c = this.MeshToApproximate[uvMeshTriangle.C];
-            projectionContext = lobelMeshTriangleProjection;
-        }
-
-        public void GetSurfaceMeshProjectionInfo(UVMeshTriangleInfo uvMeshTriangle, Triangle lobelMeshTriangle,
-           out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext)
-        {
-            a = lobelMeshTriangle.A.Point;
-            b = lobelMeshTriangle.B.Point;
-            c = lobelMeshTriangle.C.Point;
-            projectionContext = this.GetProjectionContext(uvMeshTriangle);
-        }
-
         public TriangleProjectionContext GetProjectionContext(int uvMeshTriangleIndex)
         {
             TriangleProjectionContext projection = this.trianglesProjectionCache[uvMeshTriangleIndex];
@@ -196,7 +177,7 @@ namespace LobelFrames.DataStructures.Algorithms
             return projection;
         }
 
-        private TriangleProjectionContext GetProjectionContext(UVMeshTriangleInfo uvMeshTriangle)
+        public TriangleProjectionContext GetProjectionContext(UVMeshTriangleInfo uvMeshTriangle)
         {
             TriangleProjectionContext projection = this.trianglesProjectionCache[uvMeshTriangle.TriangleIndex];
 

@@ -34,6 +34,22 @@ namespace LobelFrames.DataStructures.Algorithms
             this.isDisposed = false;
         }
 
+        private bool ShouldCoverPointsProjectingToLobelMesh
+        {
+            get
+            {
+                return this.context.ProjectionDirection == ApproximationProjectionDirection.ProjectToLobelMesh;
+            }
+        }
+
+        private bool ShouldCoverPointsProjectingToSurfaceMesh
+        {
+            get
+            {
+                return this.context.ProjectionDirection == ApproximationProjectionDirection.ProjectToSurfaceMesh;
+            }
+        }
+
         public bool UpdateRecursionFromPositionAndGetIsInsideProjection(UVMeshDescretePosition positionToCheck)
         {
             bool isInside = false;
@@ -46,10 +62,8 @@ namespace LobelFrames.DataStructures.Algorithms
                 {
                     this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
                 }
-                else
-                {
-                    this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
-                }
+
+                this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
             }            
 
             return isInside;
@@ -59,13 +73,13 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
 
-            if (this.context.ShouldCoverPointsProjectingToLobelMesh)
+            if (this.ShouldCoverPointsProjectingToLobelMesh)
             {
-                Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
-                yield return barycentricCoordinates;
+                Point3D lobelProjectedCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
+                yield return lobelProjectedCoordinates;
             }
 
-            if (this.context.ShouldCoverPointsProjectingToSurfaceMesh)
+            if (this.ShouldCoverPointsProjectingToSurfaceMesh)
             {
                 foreach (int triangleIndex in this.context.MeshToApproximate.GetNeighbouringTriangleIndices(positionToCheck))
                 {
@@ -77,8 +91,8 @@ namespace LobelFrames.DataStructures.Algorithms
                     {
                         Point3D obliqueProjectedMeshPoint = (intersection == IntersectionType.InfinitePointSet) ? meshPoint :
                             IntersectionsHelper.IntersectLineAndPlane(meshPoint, surfaceProjection.ProjectionNormal, this.triangleCenter, this.triangleUnitNormal);
-                        Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(obliqueProjectedMeshPoint);
-                        yield return barycentricCoordinates;
+                        Point3D surfaceProjectedCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(obliqueProjectedMeshPoint);
+                        yield return surfaceProjectedCoordinates;
                     }
                 }
             }
@@ -88,25 +102,21 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             Guard.ThrowExceptionIfTrue(this.isDisposed, "isDisposed");
 
-            for(int sideIndex = 0; sideIndex < 3; sideIndex++)
+            for (int sideIndex = 0; sideIndex < 3; sideIndex++)
             {
                 ComparableRecursionPosition currentPosition = new ComparableRecursionPosition(positionToCheck, barycentricCoordinates, sideIndex);
+                ComparableRecursionPosition? previousPosition = this.sidesRecursionPositions[sideIndex];
 
-                if(currentPosition.BelongsToRecursionSemiplane)
+                if (previousPosition.HasValue)
                 {
-                    ComparableRecursionPosition? previousPosition = this.sidesRecursionPositions[sideIndex];
-
-                    if (previousPosition.HasValue)
-                    {
-                        if (currentPosition.CompareTo(previousPosition.Value) < 0)
-                        {
-                            this.sidesRecursionPositions[sideIndex] = currentPosition;
-                        }
-                    }
-                    else
+                    if (currentPosition.CompareTo(previousPosition.Value) < 0)
                     {
                         this.sidesRecursionPositions[sideIndex] = currentPosition;
                     }
+                }
+                else
+                {
+                    this.sidesRecursionPositions[sideIndex] = currentPosition;
                 }
             }
         }
@@ -131,7 +141,7 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 Triangle[] bundle = this.CreateNonExistingNeigbouringTriangles(sideIndex).ToArray();
 
-                if(bundle.Length > 0)
+                if (bundle.Length > 0)
                 {
                     step = new OctaTetraApproximationStep()
                     {

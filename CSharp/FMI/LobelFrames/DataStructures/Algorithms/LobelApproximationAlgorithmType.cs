@@ -6,5 +6,6 @@ namespace LobelFrames.DataStructures.Algorithms
     {
         LobelMeshProjecting = 0,
         SurfaceMeshProjecting = 1,
+        CentroidDistanceMeasuring = 2,
     }
 }

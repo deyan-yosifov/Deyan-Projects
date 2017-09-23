@@ -1,5 +1,4 @@
 ﻿using Deyo.Core.Mathematics.Algebra;
-using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +6,13 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal abstract class OctaTetraMeshApproximationAlgorithm : ILobelMeshApproximatingAlgorithm
+    internal class OctaTetraMeshApproximationAlgorithm : ILobelMeshApproximatingAlgorithm
     {
         private readonly OctaTetraApproximationContext context;
 
-        public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide, bool projectToLobel, bool projectToSurface)
+        public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide, OctaTetraApproximationSettings settings)
         {
-            this.context = new OctaTetraApproximationContext(meshToApproximate, triangleSide, projectToLobel, projectToSurface);
+            this.context = new OctaTetraApproximationContext(meshToApproximate, triangleSide, settings);
         }
 
         protected OctaTetraApproximationContext Context
@@ -46,12 +45,8 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        protected abstract ProjectingVolumeFinderBase CreateProjectionVolumeFinder(Triangle lobelMeshTriangle);
-
-        protected abstract IntersectingTriangleFinderBase CreateIntersectingTriangleFinder(Triangle lobelMeshTriangle);
-
-        private bool TryFindBestTriangleFromStepBundle
-            (OctaTetraApproximationStep step, out Triangle bestTriangle, out IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
+        private bool TryFindBestTriangleFromStepBundle(OctaTetraApproximationStep step,
+            out Triangle bestTriangle, out IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
         {
             bestTriangle = null;
             verticesFromIntersectingMeshTriangles = null;
@@ -64,35 +59,33 @@ namespace LobelFrames.DataStructures.Algorithms
                 int intersectingTriangleIndex;
                 if (this.TryFindIntersectingMeshTriangleIndex(triangle, step.InitialRecursionPosition, out intersectingTriangleIndex))
                 {
-                    ProjectingVolumeFinderBase volumeFinder = this.CreateProjectionVolumeFinder(triangle);
+                    VolumeProjectionFinder volumeFinder = new VolumeProjectionFinder(this.Context, triangle);
                     IEnumerable<int> initialTriangles = Enumerable.Repeat(intersectingTriangleIndex, 1);
-                    DescreteUVMeshRecursiveTrianglesIterator.Iterate(volumeFinder, this.context.MeshToApproximate, initialTriangles);
+                    DescreteUVMeshRecursiveTrianglesIterator.Iterate(volumeFinder, this.Context.MeshToApproximate, initialTriangles);
 
-                    if (volumeFinder.ResultCommonArea.IsZero())
+                    if (!volumeFinder.ResultCommonArea.IsZero())
                     {
-                        continue;
-                    }
+                        double volumePerArea = volumeFinder.ResultAbsoluteVolume / volumeFinder.ResultCommonArea;
 
-                    double volumePerArea = volumeFinder.ResultAbsoluteVolume / volumeFinder.ResultCommonArea;
-
-                    if (volumePerArea.IsLessThan(bestVolumePerArea))
-                    {
-                        bestTriangle = triangle;
-                        verticesFromIntersectingMeshTriangles = volumeFinder.VerticesFromIntersectingMeshTriangles;
-                        bestAbsoluteOrientedVolume = volumeFinder.ResultAbsoluteVolume;
-                        bestCommonArea = volumeFinder.ResultCommonArea;
-                        bestVolumePerArea = volumePerArea;
+                        if (volumePerArea.IsLessThan(bestVolumePerArea))
+                        {
+                            bestTriangle = triangle;
+                            verticesFromIntersectingMeshTriangles = volumeFinder.VerticesFromIntersectingMeshTriangles;
+                            bestAbsoluteOrientedVolume = volumeFinder.ResultAbsoluteVolume;
+                            bestCommonArea = volumeFinder.ResultCommonArea;
+                            bestVolumePerArea = volumePerArea;
+                        }
                     }
                 }
             }
 
             return bestVolumePerArea < double.MaxValue;
         }
-
+        
         private bool TryFindIntersectingMeshTriangleIndex(Triangle lobelMeshTriangle, UVMeshDescretePosition initialPosition, out int intersectingTriangleIndex)
         {
             IEnumerable<int> initialTriangles = this.context.MeshToApproximate.GetNeighbouringTriangleIndices(initialPosition);
-            IntersectingTriangleFinderBase finder = this.CreateIntersectingTriangleFinder(lobelMeshTriangle);
+            IntersectingTriangleFinder finder = new IntersectingTriangleFinder(this.Context, lobelMeshTriangle);
             DescreteUVMeshRecursiveTrianglesIterator.Iterate(finder, this.context.MeshToApproximate, initialTriangles);
             intersectingTriangleIndex = finder.IntersectingTriangleIndex;
 

@@ -5,13 +5,13 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal abstract class ProjectingVolumeFinderBase : TriangleIterationHandlerBase
+    internal class VolumeProjectionFinder : LobelTriangleIterationHandlerBase
     {
         private readonly HashSet<UVMeshDescretePosition> verticesFromIntersectingTriangles;
         private double totalOrientedVolume;
         private double totalCommonArea;
 
-        public ProjectingVolumeFinderBase(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
+        public VolumeProjectionFinder(OctaTetraApproximationContext approximationContext, Triangle lobelMeshTriangle)
             : base(approximationContext, lobelMeshTriangle)
         {
             this.verticesFromIntersectingTriangles = new HashSet<UVMeshDescretePosition>();
@@ -42,9 +42,6 @@ namespace LobelFrames.DataStructures.Algorithms
                 return this.verticesFromIntersectingTriangles;
             }
         }
-
-        protected abstract void GetProjectionInfo(UVMeshTriangleInfo uvMeshTriangle,
-            out Point3D a, out Point3D b, out Point3D c, out TriangleProjectionContext projectionContext);
 
         protected sealed override TriangleIterationResult HandleNextInterationTriangleOverride(UVMeshTriangleInfo uvMeshTriangle)
         {

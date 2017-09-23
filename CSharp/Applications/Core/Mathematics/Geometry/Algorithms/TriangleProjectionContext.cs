@@ -86,6 +86,21 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             }
         }
 
+        public Point GetVertex(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return this.triangleA;
+                case 1:
+                    return this.triangleB;
+                case 2:
+                    return this.triangleC;
+                default:
+                    throw new IndexOutOfRangeException("Index must be in range between 0 and 2.");
+            }
+        }
+
         public Point3D GetProjectionBarycentricCoordinates(Point3D point)
         {
             Point projection = this.GetProjection(point);
@@ -101,9 +116,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             return isInside;
         }
 
-        public ProjectedPoint GetProjectedPoint(Point3D meshPoint)
+        public ProjectedPoint GetProjectedPoint(Point3D point)
         {
-            Vector3D meshPointDirection = meshPoint - this.localCenter;
+            Vector3D meshPointDirection = point - this.localCenter;
 
             ProjectedPoint projectedPoint = new ProjectedPoint()
             {
@@ -125,9 +140,9 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             return result;
         }
 
-        private Point GetProjection(Point3D meshPoint)
+        private Point GetProjection(Point3D point)
         {
-            Vector3D meshPointDirection = meshPoint - this.localCenter;
+            Vector3D meshPointDirection = point - this.localCenter;
             Point projectedPoint = new Point(
                 Vector3D.DotProduct(meshPointDirection, this.localXAxis),
                 Vector3D.DotProduct(meshPointDirection, this.localYAxis));
