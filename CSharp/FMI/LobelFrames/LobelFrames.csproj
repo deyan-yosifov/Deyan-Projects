@@ -59,11 +59,14 @@
     <Compile Include="DataStructures\Algorithms\DescreteUVMeshRecursiveTrianglesIterator.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
+    <Compile Include="DataStructures\Algorithms\IntersectingOctaTetraVolumesRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\IntersectingTriangleFinder.cs" />
     <Compile Include="DataStructures\Algorithms\LobelApproximationAlgorithmType.cs" />
     <Compile Include="DataStructures\Algorithms\IDescreteUVTrianglesIterationHandler.cs" />
+    <Compile Include="DataStructures\Algorithms\NonExistingNeighboursRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationContext.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationSettings.cs" />
+    <Compile Include="DataStructures\Algorithms\OctaTetraGeometryCalculator.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationStep.cs" />
     <Compile Include="DataStructures\Algorithms\LobelTriangleIterationHandlerBase.cs" />

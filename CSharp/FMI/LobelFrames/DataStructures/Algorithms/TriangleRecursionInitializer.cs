@@ -10,7 +10,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal sealed class TriangleRecursionInitializer : IDisposable
+    internal abstract class TriangleRecursionInitializer : IDisposable
     {
         private readonly Triangle triangle;
         private readonly Vector3D triangleUnitNormal;
@@ -32,6 +32,30 @@ namespace LobelFrames.DataStructures.Algorithms
             this.triangleCenter = this.triangle.A.Point + (1.0 / 3) * ((this.triangle.B.Point - this.triangle.A.Point) + (this.triangle.C.Point - this.triangle.A.Point));
 
             this.isDisposed = false;
+        }
+
+        protected OctaTetraApproximationContext Context
+        {
+            get
+            {
+                return this.context;
+            }
+        }
+
+        protected Vector3D TriangleUnitNormal
+        {
+            get
+            {
+                return this.triangleUnitNormal;
+            }
+        }
+
+        protected Point3D TriangleCenter
+        {
+            get
+            {
+                return this.triangleCenter;
+            }
         }
 
         private bool ShouldCoverPointsProjectingToLobelMesh
@@ -139,7 +163,11 @@ namespace LobelFrames.DataStructures.Algorithms
 
             if (recursionPosition.HasValue)
             {
-                Triangle[] bundle = this.CreateNonExistingNeigbouringTriangles(sideIndex).ToArray();
+                Vertex opositeVertex = this.triangle.GetVertex(sideIndex);
+                Vertex edgeStart = this.triangle.GetVertex((sideIndex + 1) % 3);
+                Vertex edgeEnd = this.triangle.GetVertex((sideIndex + 2) % 3);
+
+                Triangle[] bundle = this.CreateEdgeNextStepNeighbouringTriangles(edgeStart.Point, edgeEnd.Point, opositeVertex.Point).ToArray();
 
                 if (bundle.Length > 0)
                 {
@@ -157,39 +185,7 @@ namespace LobelFrames.DataStructures.Algorithms
             return false;
         }
 
-        private IEnumerable<Triangle> CreateNonExistingNeigbouringTriangles(int sideIndex)
-        {
-            Vertex opositeVertex = this.triangle.GetVertex(sideIndex);
-            Vertex edgeStart = this.triangle.GetVertex((sideIndex + 1) % 3);
-            Vertex edgeEnd = this.triangle.GetVertex((sideIndex + 2) % 3);
-
-            Point3D tetrahedronTop = this.triangleCenter + this.context.TetrahedronHeight * this.triangleUnitNormal;
-            Point3D edgeCenter = edgeStart.Point + 0.5 * (edgeEnd.Point - edgeStart.Point);
-            Point3D octahedronPoint = edgeCenter + (edgeCenter - opositeVertex.Point);
-            Point3D oppositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
-
-            Triangle tetrahedronTriangle;
-            if (!this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, tetrahedronTop, out tetrahedronTriangle))
-            {
-                yield break;
-            }
-
-            Triangle octahedronTriangle;
-            if (!this.context.TryCreateNonExistingTriangle(edgeStart.Point, edgeEnd.Point, octahedronPoint, out octahedronTriangle))
-            {
-                yield break;
-            }
-
-            Triangle oppositeTetrahedronTriangle;
-            if (!this.context.TryCreateNonExistingTriangle(edgeEnd.Point, edgeStart.Point, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
-            {
-                yield break;
-            }
-
-            yield return tetrahedronTriangle;
-            yield return octahedronTriangle;
-            yield return oppositeTetrahedronTriangle;
-        }
+        protected abstract IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex);
 
         void IDisposable.Dispose()
         {

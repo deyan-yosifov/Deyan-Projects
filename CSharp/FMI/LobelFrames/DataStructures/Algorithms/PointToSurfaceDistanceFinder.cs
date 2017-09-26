@@ -19,6 +19,14 @@ namespace LobelFrames.DataStructures.Algorithms
             this.bestSquaredDistance = double.MaxValue;
         }
 
+        public double BestSquaredDistance
+        {
+            get
+            {
+                return this.bestSquaredDistance;
+            }
+        }
+
         protected override TriangleIterationResult HandleNextInterationTriangleOverride(UVMeshTriangleInfo uvMeshTriangle)
         {
             double squaredDistance = this.CalculateSquaredDistanceToTriangle(uvMeshTriangle);

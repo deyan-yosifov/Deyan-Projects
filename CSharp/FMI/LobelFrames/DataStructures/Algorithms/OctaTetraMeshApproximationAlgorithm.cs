@@ -94,7 +94,7 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void InitializeRecursionForBestTriangle(Triangle triangle, IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
         {
-            using (TriangleRecursionInitializer triangleRecursionContext = new TriangleRecursionInitializer(triangle, this.context))
+            using (TriangleRecursionInitializer triangleRecursionContext = this.CreateRecursionInitializer(triangle))
             {
                 foreach (UVMeshDescretePosition positionToCheck in verticesFromIntersectingMeshTriangles)
                 {
@@ -105,7 +105,7 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void InitializeRecursionForFirstTriangle(Triangle firstTriangle)
         {
-            using (TriangleRecursionInitializer triangleRecursionContext = new TriangleRecursionInitializer(firstTriangle, this.context))
+            using (TriangleRecursionInitializer triangleRecursionContext = this.CreateRecursionInitializer(firstTriangle))
             {
                 HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
                 Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
@@ -157,6 +157,19 @@ namespace LobelFrames.DataStructures.Algorithms
             Triangle firstTriangle = this.context.CreateTriangle(a, b, c);
 
             return firstTriangle;
+        }
+
+        private TriangleRecursionInitializer CreateRecursionInitializer(Triangle triangle)
+        {
+            switch (this.Context.RecursionStrategy)
+            {
+                case TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours:
+                    return new NonExistingNeighboursRecursionInitializer(triangle, this.Context);
+                case TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes:
+                    return new IntersectingOctaTetraVolumesRecursionInitializer(triangle, this.Context);
+                default:
+                    throw new NotSupportedException(string.Format("Not supported recursion strategy {0}", this.Context.RecursionStrategy));
+            }
         }
     }
 }
