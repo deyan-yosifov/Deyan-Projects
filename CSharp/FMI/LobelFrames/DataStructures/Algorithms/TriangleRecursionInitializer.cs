@@ -166,8 +166,9 @@ namespace LobelFrames.DataStructures.Algorithms
                 Vertex opositeVertex = this.triangle.GetVertex(sideIndex);
                 Vertex edgeStart = this.triangle.GetVertex((sideIndex + 1) % 3);
                 Vertex edgeEnd = this.triangle.GetVertex((sideIndex + 2) % 3);
+                UVMeshDescretePosition recursionStartPosition = recursionPosition.Value.MeshPosition;
 
-                Triangle[] bundle = this.CreateEdgeNextStepNeighbouringTriangles(edgeStart.Point, edgeEnd.Point, opositeVertex.Point).ToArray();
+                Triangle[] bundle = this.CreateEdgeNextStepNeighbouringTriangles(recursionStartPosition, edgeStart.Point, edgeEnd.Point, opositeVertex.Point).ToArray();
 
                 if (bundle.Length > 0)
                 {
@@ -185,7 +186,7 @@ namespace LobelFrames.DataStructures.Algorithms
             return false;
         }
 
-        protected abstract IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex);
+        protected abstract IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex);
 
         void IDisposable.Dispose()
         {

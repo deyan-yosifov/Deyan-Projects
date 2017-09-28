@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Core.Mathematics.Algebra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Media3D;
@@ -7,28 +8,103 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal class IntersectingOctaTetraVolumesRecursionInitializer : TriangleRecursionInitializer
     {
+        private class OctaTetraVolumeRecursionInfo
+        {
+            public bool IsAppropriateForNextRecursionStep { get; set; }
+            public double PercentDistanceToSurface { get; set; }
+            public Point3D UniqueNeighbouringTriangleVertex { get; set; }
+        }
+
         public IntersectingOctaTetraVolumesRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
             : base(triangle, context)
         {
         }
 
-        protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex)
+        protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex)
         {
             Point3D edgeCenter = edgeStart + 0.5 * (edgeEnd - edgeStart);
-            Point3D coplanarNeighbourCenter = this.TriangleCenter + 2 * (edgeCenter - this.TriangleCenter);
-            Point3D octahedronCenter = coplanarNeighbourCenter + this.Context.OctahedronInscribedSphereRadius * this.TriangleUnitNormal;
-
             Point3D oposite = opositeTriangleVertex + 2 * (edgeCenter - opositeTriangleVertex);
-            Point3D octaTop = oposite + 2 * (octahedronCenter - oposite);
-            Point3D tetraTop = octaTop + 2 * (edgeCenter - octaTop);
 
+            IEnumerable<OctaTetraVolumeRecursionInfo> sortedInfos = 
+                this.CalculateOctaTetraVolumeRecurionInfos(recursionStartPosition, oposite, edgeStart, edgeEnd).
+                Where(info => info.IsAppropriateForNextRecursionStep).OrderBy(info => info.PercentDistanceToSurface);
+
+            bool hasFoundRecursionStep = false;
+
+            foreach (OctaTetraVolumeRecursionInfo recurionInfo in sortedInfos)
+            {
+                hasFoundRecursionStep = true;
+                Triangle triangle = this.VerifyAndCreateNonExistingTriangle(edgeStart, edgeEnd, recurionInfo.UniqueNeighbouringTriangleVertex);
+                yield return triangle;
+            }
+
+            if (hasFoundRecursionStep)
+            {
+                Triangle commonOctaTetraTriangle = this.VerifyAndCreateNonExistingTriangle(edgeStart, edgeEnd, oposite);
+                yield return commonOctaTetraTriangle;
+            }
+        }
+
+        private Triangle VerifyAndCreateNonExistingTriangle(Point3D a, Point3D b, Point3D c)
+        {
+            Triangle triangle;
+            if (!this.Context.TryCreateNonExistingTriangle(a, b, c, out triangle))
+            {
+                throw new InvalidOperationException("Appropriate recursion volumes should not contain existing triangles!");
+            }
+
+            return triangle;
+        }
+
+        private IEnumerable<OctaTetraVolumeRecursionInfo> CalculateOctaTetraVolumeRecurionInfos
+            (UVMeshDescretePosition recursionStartPosition, Point3D oposite, Point3D edgeStart, Point3D edgeEnd)
+        {
+            yield return this.CalculateOctahedronRecursionInfo(recursionStartPosition, oposite, edgeStart, edgeEnd);
+            yield return this.CalculateTetrahedronRecursionInfo(recursionStartPosition, oposite, edgeStart, edgeEnd);
+        }
+
+        private OctaTetraVolumeRecursionInfo CalculateOctahedronRecursionInfo
+            (UVMeshDescretePosition recursionStartPosition, Point3D oposite, Point3D edgeStart, Point3D edgeEnd)
+        {
+            Point3D octaTop = this.TriangleCenter + this.Context.TetrahedronHeight * this.TriangleUnitNormal;
+            Point3D octahedronCenter = oposite + 0.5 * (octaTop - oposite);
+            OctaTetraVolumeRecursionInfo recurionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangleVertex = octaTop };            
             bool hasOctatedronExistingTriangles = this.CheckIfOctaTetraHasExistingTriangles(new Point3D[] { octaTop, oposite },
                 new Point3D[] { edgeStart, edgeEnd, edgeStart + 2 * (octahedronCenter - edgeStart), edgeEnd + 2 * (octahedronCenter - edgeEnd) });
+            
+            if (!hasOctatedronExistingTriangles)
+            {                
+                IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
+                PointToSurfaceDistanceFinder distanceFinder = new PointToSurfaceDistanceFinder(this.Context, octahedronCenter);
+                DescreteUVMeshRecursiveTrianglesIterator.Iterate(distanceFinder, this.Context.MeshToApproximate, initialTriangles);
+                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThanOrEqualTo(this.Context.OctahedronCircumscribedSphereSquaredRadius);
+                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / this.Context.OctahedronInscribedSphereSquaredRadius;
+            }
 
+            return recurionInfo;
+        }
+
+        private OctaTetraVolumeRecursionInfo CalculateTetrahedronRecursionInfo
+            (UVMeshDescretePosition recursionStartPosition, Point3D oposite, Point3D edgeStart, Point3D edgeEnd)
+        {
+            Point3D edgeCenter = edgeStart + 0.5 * (edgeEnd - edgeStart);
+            Point3D triangleCenter = this.TriangleCenter + 2 * (edgeCenter - this.TriangleCenter);
+            Point3D tetraTop = triangleCenter - this.Context.TetrahedronHeight * this.TriangleUnitNormal;
+            Point3D tetrahedronCenter = triangleCenter - this.Context.TetrahedronInscribedSphereRadius * this.TriangleUnitNormal;
+            OctaTetraVolumeRecursionInfo recurionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangleVertex = tetraTop };
             bool hasTetrahedronExistingTriangles = this.CheckIfOctaTetraHasExistingTriangles(Enumerable.Repeat(tetraTop, 1),
                 new Point3D[] { edgeStart, edgeEnd, oposite });
 
-            // TODO: If !has...ExistingTriangles then use PointToSurfaceDistanceFinder to verify that octa/tetra volume is close enough for surface intersection. Choose closest volume if both are close.
+            if (!hasTetrahedronExistingTriangles)
+            {
+                IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
+                PointToSurfaceDistanceFinder distanceFinder = new PointToSurfaceDistanceFinder(this.Context, tetrahedronCenter);
+                DescreteUVMeshRecursiveTrianglesIterator.Iterate(distanceFinder, this.Context.MeshToApproximate, initialTriangles);
+                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThanOrEqualTo(this.Context.OctahedronCircumscribedSphereSquaredRadius);
+                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / this.Context.OctahedronInscribedSphereSquaredRadius;
+            }
+
+            return recurionInfo;
         }
 
         private bool CheckIfOctaTetraHasExistingTriangles(IEnumerable<Point3D> pyramidsTopVertices, Point3D[] pyramidBottomVertices)

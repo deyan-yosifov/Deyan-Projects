@@ -12,9 +12,10 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly double triangleSide;
         private readonly double tetrahedronHeight;
         private readonly double tetrahedronInscribedSphereRadius;
-        private readonly double tetrahedronCircumscribedSphereRadius;
-        private readonly double octahedronInscribedSphereRadius;
-        private readonly double octahedronCircumscribedSphereRadius;
+        private readonly double tetrahedronInscribedSphereSquaredRadius;
+        private readonly double tetrahedronCircumscribedSphereSquaredRadius;
+        private readonly double octahedronInscribedSphereSquaredRadius;
+        private readonly double octahedronCircumscribedSphereSquaredRadius;
         private readonly bool[,] coveredUVPoints;
         private readonly ApproximationProjectionDirection projectionDirection;
         private readonly TriangleRecursionStrategy recursionStrategy;
@@ -29,10 +30,15 @@ namespace LobelFrames.DataStructures.Algorithms
             this.meshToApproximate = meshToApproximate;
             this.triangleSide = triangleSide;
             this.tetrahedronHeight = OctaTetraGeometryCalculator.GetTetrahedronHeight(triangleSide);
-            this.tetrahedronInscribedSphereRadius = OctaTetraGeometryCalculator.GetTetrahedronInscribedSphereRadius(triangleSide);
-            this.tetrahedronCircumscribedSphereRadius = OctaTetraGeometryCalculator.GetTetrahedronCircumscribedSphereRadius(triangleSide);
-            this.octahedronInscribedSphereRadius = OctaTetraGeometryCalculator.GetOctahedronInscribedSphereRadius(triangleSide);
-            this.octahedronCircumscribedSphereRadius = OctaTetraGeometryCalculator.GetOctahedronCircumscribedSphereRadius(triangleSide);
+            double inscribedTetraRadius = OctaTetraGeometryCalculator.GetTetrahedronInscribedSphereRadius(triangleSide);
+            double circumscribedTetraRadius = OctaTetraGeometryCalculator.GetTetrahedronCircumscribedSphereRadius(triangleSide);
+            double inscribedOctaRadius = OctaTetraGeometryCalculator.GetOctahedronInscribedSphereRadius(triangleSide);
+            double circumscribedOctaRadius = OctaTetraGeometryCalculator.GetOctahedronCircumscribedSphereRadius(triangleSide);
+            this.tetrahedronInscribedSphereRadius = inscribedTetraRadius;
+            this.tetrahedronInscribedSphereSquaredRadius = inscribedTetraRadius * inscribedTetraRadius;
+            this.tetrahedronCircumscribedSphereSquaredRadius = circumscribedTetraRadius * circumscribedTetraRadius;
+            this.octahedronInscribedSphereSquaredRadius = inscribedOctaRadius * inscribedOctaRadius;
+            this.octahedronCircumscribedSphereSquaredRadius = circumscribedOctaRadius * circumscribedOctaRadius;
             this.projectionDirection = settings.ProjectionDirection;
             this.recursionStrategy = settings.RecursionStrategy;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
@@ -100,27 +106,35 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public double TetrahedronCircumscribedSphereRadius
+        public double TetrahedronInscribedSphereSquaredRadius
         {
             get
             {
-                return this.tetrahedronCircumscribedSphereRadius;
+                return this.tetrahedronInscribedSphereSquaredRadius;
             }
         }
 
-        public double OctahedronInscribedSphereRadius
+        public double TetrahedronCircumscribedSphereSquaredRadius
         {
             get
             {
-                return this.octahedronInscribedSphereRadius;
+                return this.tetrahedronCircumscribedSphereSquaredRadius;
             }
         }
 
-        public double OctahedronCircumscribedSphereRadius
+        public double OctahedronInscribedSphereSquaredRadius
         {
             get
             {
-                return this.octahedronCircumscribedSphereRadius;
+                return this.octahedronInscribedSphereSquaredRadius;
+            }
+        }
+
+        public double OctahedronCircumscribedSphereSquaredRadius
+        {
+            get
+            {
+                return this.octahedronCircumscribedSphereSquaredRadius;
             }
         }
 

@@ -11,7 +11,7 @@ namespace LobelFrames.DataStructures.Algorithms
         {
         }
 
-        protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex)
+        protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex)
         {
             Point3D tetrahedronTop = this.TriangleCenter + this.Context.TetrahedronHeight * this.TriangleUnitNormal;
             Point3D edgeCenter = edgeStart + 0.5 * (edgeEnd - edgeStart);
