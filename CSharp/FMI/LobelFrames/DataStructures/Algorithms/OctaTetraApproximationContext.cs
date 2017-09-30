@@ -208,19 +208,6 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public TriangleProjectionContext GetProjectionContext(int uvMeshTriangleIndex)
-        {
-            TriangleProjectionContext projection = this.trianglesProjectionCache[uvMeshTriangleIndex];
-
-            if (projection == null)
-            {
-                UVMeshTriangleInfo uvMeshTriangle = new UVMeshTriangleInfo(uvMeshTriangleIndex, this.MeshToApproximate);
-                projection = this.CreateAndCacheProjectionContext(uvMeshTriangle);
-            }
-
-            return projection;
-        }
-
         public TriangleProjectionContext GetProjectionContext(UVMeshTriangleInfo uvMeshTriangle)
         {
             TriangleProjectionContext projection = this.trianglesProjectionCache[uvMeshTriangle.TriangleIndex];
