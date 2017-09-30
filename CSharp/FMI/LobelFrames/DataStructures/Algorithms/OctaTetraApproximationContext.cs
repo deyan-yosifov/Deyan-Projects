@@ -17,7 +17,6 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly double octahedronInscribedSphereSquaredRadius;
         private readonly double octahedronCircumscribedSphereSquaredRadius;
         private readonly bool[,] coveredUVPoints;
-        private readonly ApproximationProjectionDirection projectionDirection;
         private readonly TriangleRecursionStrategy recursionStrategy;
         private readonly TriangleProjectionContext[] trianglesProjectionCache;
         private readonly UniqueEdgesSet uniqueEdges;
@@ -25,7 +24,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly HashSet<NonEditableTriangle> existingTriangles;
         private int coveredPointsCount;
 
-        public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, OctaTetraApproximationSettings settings)
+        public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
         {
             this.meshToApproximate = meshToApproximate;
             this.triangleSide = triangleSide;
@@ -39,8 +38,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.tetrahedronCircumscribedSphereSquaredRadius = circumscribedTetraRadius * circumscribedTetraRadius;
             this.octahedronInscribedSphereSquaredRadius = inscribedOctaRadius * inscribedOctaRadius;
             this.octahedronCircumscribedSphereSquaredRadius = circumscribedOctaRadius * circumscribedOctaRadius;
-            this.projectionDirection = settings.ProjectionDirection;
-            this.recursionStrategy = settings.RecursionStrategy;
+            this.recursionStrategy = strategy;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.trianglesProjectionCache = new TriangleProjectionContext[meshToApproximate.TrianglesCount];
             this.uniqueEdges = new UniqueEdgesSet();
@@ -63,14 +61,6 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.recursionQueue;
-            }
-        }
-
-        public ApproximationProjectionDirection ProjectionDirection
-        {
-            get
-            {
-                return this.projectionDirection;
             }
         }
 

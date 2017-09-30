@@ -58,68 +58,20 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        private bool ShouldCoverPointsProjectingToLobelMesh
-        {
-            get
-            {
-                return this.context.ProjectionDirection == ApproximationProjectionDirection.ProjectToLobelMesh;
-            }
-        }
-
-        private bool ShouldCoverPointsProjectingToSurfaceMesh
-        {
-            get
-            {
-                return this.context.ProjectionDirection == ApproximationProjectionDirection.ProjectToSurfaceMesh;
-            }
-        }
-
         public bool UpdateRecursionFromPositionAndGetIsInsideProjection(UVMeshDescretePosition positionToCheck)
         {
-            bool isInside = false;
+            Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
+            Point3D barycentricCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
+            bool isInside = barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
 
-            foreach (Point3D barycentricCoordinates in this.CalculateAllPossibleProjectionsBarycentricCoordinates(positionToCheck))
+            if (isInside)
             {
-                isInside |= barycentricCoordinates.AreBarycentricCoordinatesInsideTriangle();
+                this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
+            }
 
-                if (isInside)
-                {
-                    this.context.MarkPointAsCovered(positionToCheck.UIndex, positionToCheck.VIndex);
-                }
-
-                this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);
-            }            
+            this.UpdatePositionInitializations(positionToCheck, barycentricCoordinates);          
 
             return isInside;
-        }
-
-        private IEnumerable<Point3D> CalculateAllPossibleProjectionsBarycentricCoordinates(UVMeshDescretePosition positionToCheck)
-        {
-            Point3D meshPoint = this.context.MeshToApproximate[positionToCheck.UIndex, positionToCheck.VIndex];
-
-            if (this.ShouldCoverPointsProjectingToLobelMesh)
-            {
-                Point3D lobelProjectedCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(meshPoint);
-                yield return lobelProjectedCoordinates;
-            }
-
-            if (this.ShouldCoverPointsProjectingToSurfaceMesh)
-            {
-                foreach (int triangleIndex in this.context.MeshToApproximate.GetNeighbouringTriangleIndices(positionToCheck))
-                {
-                    TriangleProjectionContext surfaceProjection = this.context.GetProjectionContext(triangleIndex);
-                    IntersectionType intersection = IntersectionsHelper.FindIntersectionTypeBetweenLineAndPlane(
-                        meshPoint, surfaceProjection.ProjectionNormal, this.triangleCenter, this.triangleUnitNormal);
-
-                    if (intersection != IntersectionType.EmptyPointSet)
-                    {
-                        Point3D obliqueProjectedMeshPoint = (intersection == IntersectionType.InfinitePointSet) ? meshPoint :
-                            IntersectionsHelper.IntersectLineAndPlane(meshPoint, surfaceProjection.ProjectionNormal, this.triangleCenter, this.triangleUnitNormal);
-                        Point3D surfaceProjectedCoordinates = this.projectionContext.GetProjectionBarycentricCoordinates(obliqueProjectedMeshPoint);
-                        yield return surfaceProjectedCoordinates;
-                    }
-                }
-            }
         }
 
         private void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)

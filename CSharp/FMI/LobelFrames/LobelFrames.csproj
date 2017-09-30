@@ -55,7 +55,6 @@
     </ApplicationDefinition>
     <Compile Include="DataStructures\Algorithms\ApproximationEndedEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
-    <Compile Include="DataStructures\Algorithms\ApproximationProjectionDirection.cs" />
     <Compile Include="DataStructures\Algorithms\DescreteUVMeshRecursiveTrianglesIterator.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
@@ -65,7 +64,6 @@
     <Compile Include="DataStructures\Algorithms\IDescreteUVTrianglesIterationHandler.cs" />
     <Compile Include="DataStructures\Algorithms\NonExistingNeighboursRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationContext.cs" />
-    <Compile Include="DataStructures\Algorithms\OctaTetraApproximationSettings.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraGeometryCalculator.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraMeshApproximationAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationStep.cs" />

@@ -10,9 +10,9 @@ namespace LobelFrames.DataStructures.Algorithms
     {
         private readonly OctaTetraApproximationContext context;
 
-        public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide, OctaTetraApproximationSettings settings)
+        public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
         {
-            this.context = new OctaTetraApproximationContext(meshToApproximate, triangleSide, settings);
+            this.context = new OctaTetraApproximationContext(meshToApproximate, triangleSide, strategy);
         }
 
         protected OctaTetraApproximationContext Context

@@ -5,7 +5,6 @@ namespace LobelFrames.DataStructures.Algorithms
     public enum LobelApproximationAlgorithmType
     {
         LobelMeshProjecting = 0,
-        SurfaceMeshProjecting = 1,
-        CentroidDistanceMeasuring = 2,
+        CentroidDistanceMeasuring = 1,
     }
 }
