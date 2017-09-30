@@ -194,7 +194,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex c = this.GetUniqueVertex(cPoint);
 
             NonEditableTriangle triangle = new NonEditableTriangle(a.Point, b.Point, c.Point);
-            bool isExisting = !this.existingTriangles.Contains(triangle);
+            bool isExisting = this.existingTriangles.Contains(triangle);
 
             return isExisting;
         }

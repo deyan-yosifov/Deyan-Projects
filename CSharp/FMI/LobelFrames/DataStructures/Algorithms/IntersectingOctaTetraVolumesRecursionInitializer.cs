@@ -29,17 +29,12 @@ namespace LobelFrames.DataStructures.Algorithms
                 this.CalculateOctaTetraVolumeRecurionInfos(recursionStartPosition, oposite, edgeStart, edgeEnd).
                 Where(info => info.IsAppropriateForNextRecursionStep).OrderBy(info => info.PercentDistanceToSurface);
 
-            bool hasFoundRecursionStep = false;
+            OctaTetraVolumeRecursionInfo recurionInfo = sortedInfos.FirstOrDefault();
 
-            foreach (OctaTetraVolumeRecursionInfo recurionInfo in sortedInfos)
+            if (recurionInfo != null)
             {
-                hasFoundRecursionStep = true;
-                Triangle triangle = this.VerifyAndCreateNonExistingTriangle(edgeStart, edgeEnd, recurionInfo.UniqueNeighbouringTriangleVertex);
+                Triangle triangle = this.VerifyAndCreateNonExistingTriangle(edgeEnd, edgeStart, recurionInfo.UniqueNeighbouringTriangleVertex);
                 yield return triangle;
-            }
-
-            if (hasFoundRecursionStep)
-            {
                 Triangle commonOctaTetraTriangle = this.VerifyAndCreateNonExistingTriangle(edgeStart, edgeEnd, oposite);
                 yield return commonOctaTetraTriangle;
             }
@@ -47,11 +42,14 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private Triangle VerifyAndCreateNonExistingTriangle(Point3D a, Point3D b, Point3D c)
         {
-            Triangle triangle;
-            if (!this.Context.TryCreateNonExistingTriangle(a, b, c, out triangle))
-            {
-                throw new InvalidOperationException("Appropriate recursion volumes should not contain existing triangles!");
-            }
+            // TODO: Uncomment this code to reproduce the issue with creation of existing triangles
+            //Triangle triangle;
+            //if (!this.Context.TryCreateNonExistingTriangle(a, b, c, out triangle))
+            //{
+            //    throw new InvalidOperationException("Appropriate recursion volumes should not contain existing triangles!");
+            //}
+
+            Triangle triangle = this.Context.CreateTriangle(a, b, c);
 
             return triangle;
         }
@@ -100,8 +98,8 @@ namespace LobelFrames.DataStructures.Algorithms
                 IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
                 PointToSurfaceDistanceFinder distanceFinder = new PointToSurfaceDistanceFinder(this.Context, tetrahedronCenter);
                 DescreteUVMeshRecursiveTrianglesIterator.Iterate(distanceFinder, this.Context.MeshToApproximate, initialTriangles);
-                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThanOrEqualTo(this.Context.OctahedronCircumscribedSphereSquaredRadius);
-                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / this.Context.OctahedronInscribedSphereSquaredRadius;
+                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThanOrEqualTo(this.Context.TetrahedronCircumscribedSphereSquaredRadius);
+                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / this.Context.TetrahedronInscribedSphereSquaredRadius;
             }
 
             return recurionInfo;
