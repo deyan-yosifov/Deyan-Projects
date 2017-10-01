@@ -1,4 +1,5 @@
-﻿using Deyo.Core.Mathematics.Algebra;
+﻿using Deyo.Core.Common;
+using Deyo.Core.Mathematics.Algebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace LobelFrames.DataStructures.Algorithms
     internal class OctaTetraMeshApproximationAlgorithm : ILobelMeshApproximatingAlgorithm
     {
         private readonly OctaTetraApproximationContext context;
+        private bool approximationHasAlreadyStarted;
 
         public OctaTetraMeshApproximationAlgorithm(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
         {
@@ -25,6 +27,9 @@ namespace LobelFrames.DataStructures.Algorithms
 
         public IEnumerable<Triangle> GetLobelFramesApproximatingTriangles()
         {
+            Guard.ThrowExceptionIfTrue(this.approximationHasAlreadyStarted, "approximationHasAlreadyStarted");
+            this.approximationHasAlreadyStarted = true;
+
             Triangle firstTriangle = this.CalculateFirstTriangle();
             yield return firstTriangle;
 
