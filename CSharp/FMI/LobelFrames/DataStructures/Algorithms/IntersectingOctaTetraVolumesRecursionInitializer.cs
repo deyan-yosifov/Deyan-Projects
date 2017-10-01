@@ -65,21 +65,16 @@ namespace LobelFrames.DataStructures.Algorithms
             (UVMeshDescretePosition recursionStartPosition, Point3D oposite, Point3D edgeStart, Point3D edgeEnd)
         {
             Point3D octaTop = this.TriangleCenter + this.Context.TetrahedronHeight * this.TriangleUnitNormal;
-            Point3D octahedronCenter = oposite + 0.5 * (octaTop - oposite);
-            OctaTetraVolumeRecursionInfo recurionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangleVertex = octaTop };            
-            bool hasOctatedronExistingTriangles = this.CheckIfOctaTetraHasExistingTriangles(new Point3D[] { octaTop, oposite },
-                new Point3D[] { edgeStart, edgeEnd, edgeStart + 2 * (octahedronCenter - edgeStart), edgeEnd + 2 * (octahedronCenter - edgeEnd) });
-            
-            if (!hasOctatedronExistingTriangles)
-            {                
-                IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
-                PointToSurfaceDistanceFinder distanceFinder = new PointToSurfaceDistanceFinder(this.Context, octahedronCenter);
-                DescreteUVMeshRecursiveTrianglesIterator.Iterate(distanceFinder, this.Context.MeshToApproximate, initialTriangles);
-                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThanOrEqualTo(this.Context.OctahedronCircumscribedSphereSquaredRadius);
-                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / this.Context.OctahedronInscribedSphereSquaredRadius;
-            }
+            Point3D octahedronCenter = oposite + 0.5 * (octaTop - oposite);            
+            IEnumerable<Point3D> pyramidsTopVertices = new Point3D[] { octaTop, oposite };
+            Point3D[] pyramidBottomVertices = 
+                new Point3D[] { edgeStart, edgeEnd, edgeStart + 2 * (octahedronCenter - edgeStart), edgeEnd + 2 * (octahedronCenter - edgeEnd) };
+            double circumscribedRadius = this.Context.OctahedronCircumscribedSphereSquaredRadius;
+            double inscribedRadius = this.Context.OctahedronInscribedSphereSquaredRadius;
+            OctaTetraVolumeRecursionInfo recursionInfo = this.CalculateOctaTetraVolumeRecursionInfo(
+                recursionStartPosition, octaTop, octahedronCenter, pyramidsTopVertices, pyramidBottomVertices, circumscribedRadius, inscribedRadius);
 
-            return recurionInfo;
+            return recursionInfo;
         }
 
         private OctaTetraVolumeRecursionInfo CalculateTetrahedronRecursionInfo
@@ -89,17 +84,35 @@ namespace LobelFrames.DataStructures.Algorithms
             Point3D triangleCenter = this.TriangleCenter + 2 * (edgeCenter - this.TriangleCenter);
             Point3D tetraTop = triangleCenter - this.Context.TetrahedronHeight * this.TriangleUnitNormal;
             Point3D tetrahedronCenter = triangleCenter - this.Context.TetrahedronInscribedSphereRadius * this.TriangleUnitNormal;
-            OctaTetraVolumeRecursionInfo recurionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangleVertex = tetraTop };
-            bool hasTetrahedronExistingTriangles = this.CheckIfOctaTetraHasExistingTriangles(Enumerable.Repeat(tetraTop, 1),
-                new Point3D[] { edgeStart, edgeEnd, oposite });
+            IEnumerable<Point3D> pyramidsTopVertices = Enumerable.Repeat(tetraTop, 1);
+            Point3D[] pyramidBottomVertices = new Point3D[] { edgeStart, edgeEnd, oposite };
+            double circumscribedRadius = this.Context.TetrahedronCircumscribedSphereSquaredRadius;
+            double inscribedRadius = this.Context.TetrahedronInscribedSphereSquaredRadius;
+            OctaTetraVolumeRecursionInfo recursionInfo = this.CalculateOctaTetraVolumeRecursionInfo(
+                recursionStartPosition, tetraTop, tetrahedronCenter, pyramidsTopVertices, pyramidBottomVertices, circumscribedRadius, inscribedRadius);
+
+            return recursionInfo;
+        }
+
+        private OctaTetraVolumeRecursionInfo CalculateOctaTetraVolumeRecursionInfo(
+            UVMeshDescretePosition recursionStartPosition,
+            Point3D uniqueTriangleVertex,
+            Point3D volumeCenter,
+            IEnumerable<Point3D> pyramidsTopVertices,
+            Point3D[] pyramidBottomVertices,
+            double circumscribedSphereSquaredRadius,
+            double inscribedSphereSquaredRadius)
+        {
+            OctaTetraVolumeRecursionInfo recurionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangleVertex = uniqueTriangleVertex };
+            bool hasTetrahedronExistingTriangles = this.CheckIfOctaTetraHasExistingTriangles(pyramidsTopVertices, pyramidBottomVertices);
 
             if (!hasTetrahedronExistingTriangles)
             {
                 IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
-                PointToSurfaceDistanceFinder distanceFinder = new PointToSurfaceDistanceFinder(this.Context, tetrahedronCenter);
+                PointToSurfaceDistanceFinder distanceFinder = new PointToSurfaceDistanceFinder(this.Context, volumeCenter);
                 DescreteUVMeshRecursiveTrianglesIterator.Iterate(distanceFinder, this.Context.MeshToApproximate, initialTriangles);
-                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThanOrEqualTo(this.Context.TetrahedronCircumscribedSphereSquaredRadius);
-                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / this.Context.TetrahedronInscribedSphereSquaredRadius;
+                recurionInfo.IsAppropriateForNextRecursionStep = distanceFinder.BestSquaredDistance.IsLessThan(circumscribedSphereSquaredRadius);
+                recurionInfo.PercentDistanceToSurface = distanceFinder.BestSquaredDistance / inscribedSphereSquaredRadius;
             }
 
             return recurionInfo;
