@@ -140,6 +140,21 @@ namespace Deyo.Core.Mathematics.Geometry.Algorithms
             return result;
         }
 
+        internal Point3D GetVertex3D(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return this.aPoint;
+                case 1:
+                    return this.bPoint;
+                case 2:
+                    return this.cPoint;
+                default:
+                    throw new IndexOutOfRangeException("Index must be in range between 0 and 2.");
+            }
+        }
+
         private Point GetProjection(Point3D point)
         {
             Vector3D meshPointDirection = point - this.localCenter;

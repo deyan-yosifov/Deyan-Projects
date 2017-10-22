@@ -1,4 +1,5 @@
 ﻿using Deyo.Core.Mathematics.Algebra;
+using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +124,70 @@ namespace Deyo.Core.Mathematics.Geometry
             }
         }
 
+        public static bool AreTrianglesIntersecting(TriangleProjectionContext first, TriangleProjectionContext second)
+        {
+            for (int startIndex = 0; startIndex < 3; startIndex++)
+            {
+                int endIndex = (startIndex + 1) % 3;
+
+                Point3D firstStart = first.GetVertex3D(startIndex);
+                Point3D firstEnd = first.GetVertex3D(endIndex);
+                bool isFirstSegmentIntersecting = AreTriangleAndLineSegmentIntersecting(second, firstStart, firstEnd);
+
+                if (isFirstSegmentIntersecting)
+                {
+                    return true;
+                }
+
+                Point3D secondStart = second.GetVertex3D(startIndex);
+                Point3D secondEnd = second.GetVertex3D(endIndex);
+                bool isSecondSegmentIntersecting = AreTriangleAndLineSegmentIntersecting(first, secondStart, secondEnd);
+
+                if (isSecondSegmentIntersecting)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool AreTriangleAndLineSegmentIntersecting(TriangleProjectionContext triangle, Point3D segmentStart, Point3D segmentEnd)
+        {
+            ProjectedPoint start = triangle.GetProjectedPoint(segmentStart);
+            ProjectedPoint end = triangle.GetProjectedPoint(segmentEnd);
+            bool isParallelToPlane = start.Height.IsEqualTo(end.Height);
+            bool areIntersecting = false;
+
+            if (isParallelToPlane)
+            {
+                if (start.Height.IsZero())
+                {
+                    areIntersecting = AreTriangleAndLineSegmentIntersecting(triangle, start.Point, end.Point);
+                }
+            }
+            else
+            {
+                if (start.Height.IsZero())
+                {
+                    areIntersecting = triangle.IsPointProjectionInsideTriangle(start.Point);
+                }
+                else if (end.Height.IsZero())
+                {
+                    areIntersecting = triangle.IsPointProjectionInsideTriangle(end.Point);
+                }
+                else if (start.Height * end.Height < 0)
+                {
+                    double hStart = Math.Abs(start.Height);
+                    double hEnd = Math.Abs(end.Height);
+                    Point intersection = start.Point + (hStart / (hStart + hEnd)) * (end.Point - start.Point);
+                    areIntersecting = triangle.IsPointProjectionInsideTriangle(intersection);
+                }
+            }
+
+            return areIntersecting;
+        }
+
         public static Point3D IntersectLineAndPlane(Point3D linePoint, Vector3D lineVector, Point3D planePoint, Vector3D planeNormal)
         {
             Vector3D connection = planePoint - linePoint;
@@ -149,6 +214,29 @@ namespace Deyo.Core.Mathematics.Geometry
             linePoint = IntersectionsHelper.IntersectLineAndPlane(firstPlanePoint, slope, secondPlanePoint, secondPlaneNormal);
 
             return true;
+        }
+
+        private static bool AreTriangleAndLineSegmentIntersecting(TriangleProjectionContext triangle, Point start, Point end)
+        {
+            if (triangle.IsPointProjectionInsideTriangle(start) || triangle.IsPointProjectionInsideTriangle(end))
+            {
+                return true;
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                Point sideStart = triangle.GetVertex(i);
+                Point sideEnd = triangle.GetVertex((i + 1) % 3);
+
+                bool areIntersecting = AreLineSegmentsIntersecting(start, end, sideStart, sideEnd);
+
+                if (areIntersecting)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
