@@ -6,7 +6,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class IntersectingOctaTetraVolumesRecursionInitializer : TriangleRecursionInitializer
+    internal class ClosestOctaTetraCentroidsRecursionInitializer : TriangleRecursionInitializer
     {
         private class OctaTetraVolumeRecursionInfo
         {
@@ -15,7 +15,7 @@ namespace LobelFrames.DataStructures.Algorithms
             public Point3D UniqueNeighbouringTriangleVertex { get; set; }
         }
 
-        public IntersectingOctaTetraVolumesRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
+        public ClosestOctaTetraCentroidsRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
             : base(triangle, context)
         {
         }

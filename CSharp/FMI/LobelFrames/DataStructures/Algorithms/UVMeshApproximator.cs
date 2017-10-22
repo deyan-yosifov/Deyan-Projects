@@ -57,7 +57,7 @@ namespace LobelFrames.DataStructures.Algorithms
                 case LobelApproximationAlgorithmType.LobelMeshProjecting:
                     return TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours;
                 case LobelApproximationAlgorithmType.CentroidDistanceMeasuring:
-                    return TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes;
+                    return TriangleRecursionStrategy.ChooseDirectionsWithClosestOctaTetraCentroids;
                 default:
                     throw new NotSupportedException(string.Format("Not supported algorithm type: {0}", this.algorithmType));
             }

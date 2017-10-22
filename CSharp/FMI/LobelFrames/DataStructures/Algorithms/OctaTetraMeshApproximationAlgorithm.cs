@@ -170,8 +170,8 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 case TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours:
                     return new NonExistingNeighboursRecursionInitializer(triangle, this.Context);
-                case TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes:
-                    return new IntersectingOctaTetraVolumesRecursionInitializer(triangle, this.Context);
+                case TriangleRecursionStrategy.ChooseDirectionsWithClosestOctaTetraCentroids:
+                    return new ClosestOctaTetraCentroidsRecursionInitializer(triangle, this.Context);
                 default:
                     throw new NotSupportedException(string.Format("Not supported recursion strategy {0}", this.Context.RecursionStrategy));
             }
