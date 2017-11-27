@@ -21,7 +21,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly TriangleProjectionContext[] trianglesProjectionCache;
         private readonly UniqueEdgesSet uniqueEdges;
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
-        private readonly HashSet<NonEditableTriangle> existingTriangles;
+        private readonly HashSet<ComparableTriangle> existingTriangles;
         private int coveredPointsCount;
 
         public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
@@ -44,7 +44,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.uniqueEdges = new UniqueEdgesSet();
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
             this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
-            this.existingTriangles = new HashSet<NonEditableTriangle>();
+            this.existingTriangles = new HashSet<ComparableTriangle>();
             this.coveredPointsCount = 0;
         }
 
@@ -128,14 +128,6 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public bool HasMorePointsToCover
-        {
-            get
-            {
-                return this.coveredPointsCount < this.coveredUVPoints.LongLength;
-            }
-        }
-
         public int ULinesCount
         {
             get
@@ -149,6 +141,22 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.coveredUVPoints.GetLength(1);
+            }
+        }
+
+        public bool ShouldEndRecursionDueToAllPointsCovered
+        {
+            get
+            {
+                return this.recursionStrategy == TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours && this.HasCoveredAllPoints;
+            }
+        }
+
+        private bool HasCoveredAllPoints
+        {
+            get
+            {
+                return this.coveredPointsCount == this.coveredUVPoints.LongLength;
             }
         }
 
@@ -172,7 +180,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex b = this.GetUniqueVertex(bPoint);
             Vertex c = this.GetUniqueVertex(cPoint);
 
-            this.existingTriangles.Add(new NonEditableTriangle(a.Point, b.Point, c.Point));
+            this.existingTriangles.Add(new ComparableTriangle(a.Point, b.Point, c.Point));
 
             return this.CreateTriangle(a, b, c);
         }
@@ -183,7 +191,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex b = this.GetUniqueVertex(bPoint);
             Vertex c = this.GetUniqueVertex(cPoint);
 
-            NonEditableTriangle triangle = new NonEditableTriangle(a.Point, b.Point, c.Point);
+            ComparableTriangle triangle = new ComparableTriangle(a.Point, b.Point, c.Point);
             bool isExisting = this.existingTriangles.Contains(triangle);
 
             return isExisting;
@@ -194,7 +202,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex a = this.GetUniqueVertex(aPoint);
             Vertex b = this.GetUniqueVertex(bPoint);
             Vertex c = this.GetUniqueVertex(cPoint);
-            NonEditableTriangle t = new NonEditableTriangle(a.Point, b.Point, c.Point);
+            ComparableTriangle t = new ComparableTriangle(a.Point, b.Point, c.Point);
 
             if(this.existingTriangles.Add(t))
             {

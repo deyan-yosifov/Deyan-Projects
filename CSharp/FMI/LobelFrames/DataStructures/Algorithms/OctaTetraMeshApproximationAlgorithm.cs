@@ -35,7 +35,7 @@ namespace LobelFrames.DataStructures.Algorithms
 
             this.InitializeRecursionForFirstTriangle(firstTriangle);
 
-            while (this.context.RecursionQueue.Count > 0 && this.context.HasMorePointsToCover)
+            while (this.context.RecursionQueue.Count > 0 && !this.context.ShouldEndRecursionDueToAllPointsCovered)
             {
                 OctaTetraApproximationStep step = this.context.RecursionQueue.Dequeue();
 
@@ -171,7 +171,9 @@ namespace LobelFrames.DataStructures.Algorithms
                 case TriangleRecursionStrategy.ChooseDirectionsWithNonExistingNeighbours:
                     return new NonExistingNeighboursRecursionInitializer(triangle, this.Context);
                 case TriangleRecursionStrategy.ChooseDirectionsWithClosestOctaTetraCentroids:
-                    return new ClosestOctaTetraCentroidsRecursionInitializer(triangle, this.Context);
+                    return new ClosestCentroidsRecursionInitializer(triangle, this.Context);
+                case TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes:
+                    return new ClosestIntersectingVolumesRecursionInitializer(triangle, this.Context);
                 default:
                     throw new NotSupportedException(string.Format("Not supported recursion strategy {0}", this.Context.RecursionStrategy));
             }

@@ -74,6 +74,20 @@ namespace LobelFrames.DataStructures.Algorithms
             return isInside;
         }
 
+        protected Triangle VerifyAndCreateNonExistingTriangle(Point3D a, Point3D b, Point3D c)
+        {
+            // TODO: Uncomment this code to reproduce the issue with creation of existing triangles
+            //Triangle triangle;
+            //if (!this.Context.TryCreateNonExistingTriangle(a, b, c, out triangle))
+            //{
+            //    throw new InvalidOperationException("Appropriate recursion volumes should not contain existing triangles!");
+            //}
+
+            Triangle triangle = this.Context.CreateTriangle(a, b, c);
+
+            return triangle;
+        }
+
         private void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)
         {
             Guard.ThrowExceptionIfTrue(this.isDisposed, "isDisposed");

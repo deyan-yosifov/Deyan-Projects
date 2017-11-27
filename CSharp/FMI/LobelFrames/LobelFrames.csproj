@@ -55,10 +55,12 @@
     </ApplicationDefinition>
     <Compile Include="DataStructures\Algorithms\ApproximationEndedEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
+    <Compile Include="DataStructures\Algorithms\ClosestOctaTetraRecursionInitializerBase.cs" />
     <Compile Include="DataStructures\Algorithms\DescreteUVMeshRecursiveTrianglesIterator.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
-    <Compile Include="DataStructures\Algorithms\ClosestOctaTetraCentroidsRecursionInitializer.cs" />
+    <Compile Include="DataStructures\Algorithms\ClosestCentroidsRecursionInitializer.cs" />
+    <Compile Include="DataStructures\Algorithms\ClosestIntersectingVolumesRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\IntersectingTriangleFinder.cs" />
     <Compile Include="DataStructures\Algorithms\LobelApproximationAlgorithmType.cs" />
     <Compile Include="DataStructures\Algorithms\IDescreteUVTrianglesIterationHandler.cs" />
@@ -76,6 +78,8 @@
     <Compile Include="DataStructures\Algorithms\UVMeshApproximationContext.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshDescretePosition.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshTrianglesIterationHandlerBase.cs" />
+    <Compile Include="DataStructures\Algorithms\VolumeDistanceAndIntersectionFinder.cs" />
+    <Compile Include="DataStructures\Algorithms\VolumeIntersectionFinder.cs" />
     <Compile Include="DataStructures\Algorithms\VolumeProjectionFinder.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshTriangleInfo.cs" />
     <Compile Include="DataStructures\BezierMesh.cs" />
@@ -86,10 +90,11 @@
     <Compile Include="DataStructures\IDescreteUVMesh.cs" />
     <Compile Include="DataStructures\IMeshElementsProvider.cs" />
     <Compile Include="DataStructures\IMeshElementsRelationsProvider.cs" />
+    <Compile Include="DataStructures\LightTriangle.cs" />
     <Compile Include="DataStructures\MeshExtensions.cs" />
     <Compile Include="DataStructures\NonEditableDescreteUVMesh.cs" />
     <Compile Include="DataStructures\NonEditableMesh.cs" />
-    <Compile Include="DataStructures\NonEditableTriangle.cs" />
+    <Compile Include="DataStructures\ComparableTriangle.cs" />
     <Compile Include="DataStructures\PointsEqualityComparer.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\IUVSurface.cs" />

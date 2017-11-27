@@ -5,11 +5,11 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures
 {
-    public struct NonEditableTriangle
+    public struct ComparableTriangle
     {
         private readonly Point3D[] orderedPoints;
 
-        public NonEditableTriangle(Point3D first, Point3D second, Point3D third)
+        public ComparableTriangle(Point3D first, Point3D second, Point3D third)
         {
             IEnumerable<Point3D> unorderedPoints = new Point3D[] { first, second, third };
             this.orderedPoints = unorderedPoints.OrderBy((point) => point.X).ThenBy((point) => point.Y).ThenBy((point) => point.Z).ToArray();
@@ -19,9 +19,9 @@ namespace LobelFrames.DataStructures
         {
             bool result = false;
 
-            if (obj is NonEditableTriangle)
+            if (obj is ComparableTriangle)
             {
-                NonEditableTriangle other = (NonEditableTriangle)obj;
+                ComparableTriangle other = (ComparableTriangle)obj;
 
                  result = this.orderedPoints[0].Equals(other.orderedPoints[0]) &&
                     this.orderedPoints[1].Equals(other.orderedPoints[1]) &&
