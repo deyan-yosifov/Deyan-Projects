@@ -32,8 +32,8 @@
                 <ControlTemplate TargetType="buttons:ImageButton">
                     <Border x:Name="border" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid>
-                            <Image x:Name="buttonImage" Stretch="Fill" />
-                            <Rectangle x:Name="overlay" Stretch="Fill" Fill="#aaffffff" Visibility="Collapsed" />
+                            <Image x:Name="buttonImage" Stretch="Fill" Focusable="False" />
+                            <Rectangle x:Name="overlay" Stretch="Fill" Fill="#aaffffff" Visibility="Collapsed" Focusable="False" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

@@ -46,6 +46,7 @@
                         <deyoContentControls:Toolbar.Resources>
                             <sys:Double x:Key="buttonSize">37</sys:Double>
                             <Style TargetType="buttons:ImageButton">
+                                <Setter Property="Focusable" Value="False" />
                                 <Setter Property="Width" Value="{StaticResource ResourceKey=buttonSize}" />
                                 <Setter Property="Height" Value="{StaticResource ResourceKey=buttonSize}" />
                             </Style>
@@ -217,7 +218,7 @@
                         </Grid.ColumnDefinitions>
                         <buttons:ImageButton Width="15" Height="15" ToolTip="Помощ" ButtonImageSource="/LobelFrames;component/Resources/Help-icon.png"
                             DataContext="{Binding ElementName=surface, Path=CommandDescriptors, ConverterParameter=Help, Converter={StaticResource commandConverter}}" 
-                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" VerticalAlignment="Center"
+                            Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" VerticalAlignment="Center" Focusable="False"
                             Visibility="{Binding IsVisible, Converter={StaticResource visibilityConverter}}" />
                         <TextBlock Grid.Column="1" Margin="10 0 0 0" TextWrapping="Wrap" VerticalAlignment="Center"
                                    DataContext="{Binding ElementName=surface, Path=HintManager}" >
