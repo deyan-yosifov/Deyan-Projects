@@ -3,19 +3,19 @@ using System;
 
 namespace LobelFrames.ViewModels.Settings
 {
-    public abstract class SettingsBase : PopupViewModel
+    public class PopupViewModel : ViewModelBase
     {
-        private string label;
+        private bool isOpen;
 
-        public string Label
+        public bool IsOpen
         {
             get
             {
-                return this.label;
+                return this.isOpen;
             }
             set
             {
-                this.SetProperty(ref this.label, value);
+                this.SetProperty(ref this.isOpen, value);
             }
         }
     }

@@ -9,7 +9,6 @@ namespace LobelFrames.ViewModels.Commands
 {
     public class CommandDescriptors
     {
-        private const string HelpText = @"Това приложение позволява моделирането на повърхнини състоящи се от еднакви равностранни триъгълници, наречени още повърхнини на Лобел.";
         private readonly Dictionary<CommandType, CommandDescriptor> descriptors;
         private readonly SurfaceModelingViewModel viewModel;
         private readonly CommandStateEvaluator stateEvaluator;
@@ -64,7 +63,7 @@ namespace LobelFrames.ViewModels.Commands
 
             this.RegisterCommandDescriptor(CommandType.Test, this.TestAction, false);
 
-            this.RegisterCommandDescriptor(CommandType.Help, this.ShowHelpMessage);
+            this.RegisterCommandDescriptor(CommandType.Help, this.viewModel.ChangeHelpAppearance);
         }
 
         private void RegisterCommandDescriptor(CommandType type, Action commandAction)
@@ -87,11 +86,6 @@ namespace LobelFrames.ViewModels.Commands
                     });
 
             this.descriptors.Add(type, new CommandDescriptor(command) { IsVisible = initialIsVisibleState });
-        }
-
-        private void ShowHelpMessage()
-        {
-            MessageBox.Show(HelpText, "Помощ");
         }
 
         private void TestAction()

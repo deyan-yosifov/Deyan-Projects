@@ -196,6 +196,7 @@
     <Compile Include="ViewModels\Settings\ILobelMeshSettings.cs" />
     <Compile Include="ViewModels\Settings\ILobelSceneSettings.cs" />
     <Compile Include="ViewModels\Settings\LobelSettingsViewModel.cs" />
+    <Compile Include="ViewModels\Settings\PopupViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsBase.cs" />
     <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SurfaceModelingContext.cs" />

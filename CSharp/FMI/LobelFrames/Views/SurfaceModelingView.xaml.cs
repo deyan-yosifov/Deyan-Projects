@@ -24,6 +24,7 @@ namespace LobelFrames.Views
             this.InputManager = this.viewModel.InputManager;
             this.HintManager = this.viewModel.HintManager;
             this.Settings = this.viewModel.SettingsViewModel;
+            this.Help = this.viewModel.HelpViewModel;
             this.DataContext = this.viewModel;
         }
 
@@ -38,6 +39,9 @@ namespace LobelFrames.Views
 
         public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register("Settings",
             typeof(SettingsViewModel), typeof(SurfaceModelingView));
+
+        public static readonly DependencyProperty HelpProperty = DependencyProperty.Register("Help",
+            typeof(PopupViewModel), typeof(SurfaceModelingView));
 
         public CommandDescriptors CommandDescriptors
         {
@@ -61,6 +65,12 @@ namespace LobelFrames.Views
         {
             get { return (SettingsViewModel)GetValue(SettingsProperty); }
             set { SetValue(SettingsProperty, value); }
+        }
+
+        public PopupViewModel Help
+        {
+            get { return (PopupViewModel)GetValue(HelpProperty); }
+            set { SetValue(HelpProperty, value); }
         }
     }
 }

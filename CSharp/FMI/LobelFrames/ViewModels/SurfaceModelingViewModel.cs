@@ -29,6 +29,7 @@ namespace LobelFrames.ViewModels
         private readonly HintManager hintManager;
         private readonly InputManager inputManager;
         private readonly SettingsViewModel settings;
+        private readonly PopupViewModel help;
         private readonly CommandDescriptors commandDescriptors;
         private readonly SceneElementsPool elementsPool;
         private readonly SurfaceModelingContext context;
@@ -42,6 +43,7 @@ namespace LobelFrames.ViewModels
             this.inputManager = new InputManager();
             this.elementsPool = new SceneElementsPool(scene);
             this.settings = new SettingsViewModel();
+            this.help = new PopupViewModel();
             this.context = new SurfaceModelingContext(this.settings, CommandHandlersFactory.CreateCommandHandlers(this, this.elementsPool));
             this.commandDescriptors = new CommandDescriptors(this);
             this.surfacePointerHandler = new SurfaceModelingPointerHandler(this.elementsPool, scene.Editor);
@@ -90,6 +92,14 @@ namespace LobelFrames.ViewModels
             get
             {
                 return this.settings;
+            }
+        }
+
+        public PopupViewModel HelpViewModel
+        {
+            get
+            {
+                return this.help;
             }
         }
 
@@ -160,6 +170,11 @@ namespace LobelFrames.ViewModels
             this.SettingsViewModel.BezierSettingsViewModel.IsOpen = !this.SettingsViewModel.BezierSettingsViewModel.IsOpen;
         }
 
+        public void ChangeHelpAppearance()
+        {
+            this.HelpViewModel.IsOpen = !this.HelpViewModel.IsOpen;
+        }
+
         public void BeforeCommandExecuted(CommandType type)
         {
             if (type != CommandType.Settings)
@@ -175,6 +190,11 @@ namespace LobelFrames.ViewModels
             if (type != CommandType.BezierSettings)
             {
                 this.SettingsViewModel.BezierSettingsViewModel.IsOpen = false;
+            }
+
+            if (type != CommandType.Help)
+            {
+                this.HelpViewModel.IsOpen = false;
             }
         }
 
