@@ -11,27 +11,26 @@ namespace LobelFrames.DataStructures.Algorithms
         {
         }
 
-        protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, Point3D edgeStart, Point3D edgeEnd, Point3D opositeTriangleVertex)
+        protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
-            Point3D tetrahedronTop = this.TriangleCenter + this.Context.TetrahedronHeight * this.TriangleUnitNormal;
-            Point3D edgeCenter = edgeStart + 0.5 * (edgeEnd - edgeStart);
-            Point3D octahedronPoint = edgeCenter + (edgeCenter - opositeTriangleVertex);
-            Point3D oppositeTetrahedronTop = edgeCenter + (edgeCenter - tetrahedronTop);
+            LightTriangle tetrahedronLightTriangle = this.GetTetrahedronTriangle(sideIndex);
+            LightTriangle oppositeLightTriangle = this.GetOppositeNeighbouringTriangle(sideIndex);
+            LightTriangle oppositeTetrahedronLightTriangle = this.GetNeighbouringTetrahedronTriangle(sideIndex);
 
             Triangle tetrahedronTriangle;
-            if (!this.Context.TryCreateNonExistingTriangle(edgeEnd, edgeStart, tetrahedronTop, out tetrahedronTriangle))
+            if (!this.Context.TryCreateNonExistingTriangle(tetrahedronLightTriangle, out tetrahedronTriangle))
             {
                 yield break;
             }
 
             Triangle octahedronTriangle;
-            if (!this.Context.TryCreateNonExistingTriangle(edgeStart, edgeEnd, octahedronPoint, out octahedronTriangle))
+            if (!this.Context.TryCreateNonExistingTriangle(oppositeLightTriangle, out octahedronTriangle))
             {
                 yield break;
             }
 
             Triangle oppositeTetrahedronTriangle;
-            if (!this.Context.TryCreateNonExistingTriangle(edgeEnd, edgeStart, oppositeTetrahedronTop, out oppositeTetrahedronTriangle))
+            if (!this.Context.TryCreateNonExistingTriangle(oppositeTetrahedronLightTriangle, out oppositeTetrahedronTriangle))
             {
                 yield break;
             }

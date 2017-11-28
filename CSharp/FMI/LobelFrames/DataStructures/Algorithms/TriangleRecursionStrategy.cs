@@ -7,5 +7,6 @@ namespace LobelFrames.DataStructures.Algorithms
         ChooseDirectionsWithNonExistingNeighbours,
         ChooseDirectionsWithClosestOctaTetraCentroids,
         ChooseDirectionsWithIntersectingOctaTetraVolumes,
+        ChooseBestTrianglesFromIntersectingOctaTetraVolumesAndConnectThem
     }
 }

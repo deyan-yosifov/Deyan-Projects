@@ -60,6 +60,8 @@ namespace LobelFrames.DataStructures.Algorithms
                     return TriangleRecursionStrategy.ChooseDirectionsWithClosestOctaTetraCentroids;
                 case LobelApproximationAlgorithmType.IntersectingVolumesFinding:
                     return TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes;
+                case LobelApproximationAlgorithmType.IntersectingVolumesConnecting:
+                    return TriangleRecursionStrategy.ChooseBestTrianglesFromIntersectingOctaTetraVolumesAndConnectThem;
                 default:
                     throw new NotSupportedException(string.Format("Not supported algorithm type: {0}", this.algorithmType));
             }

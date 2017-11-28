@@ -32,7 +32,8 @@ namespace LobelFrames.ViewModels.Settings
             this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.LobelMeshProjecting, "LMP", "Lobel Mesh Projecting Algorithm. This algorithm searches for minimal volume projected to Lobel Mesh triangles in order to choose the best approximating triangle on the current recursion step.");
             this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.CentroidDistanceMeasuring, "CDM", "Centroid Distance Measuring Algorithm. This algorithm searches for minimal distance measured between the octahedron/tetrahedron centroid and the surface mesh in order to choose the best approximating triangle on the current recursion step.");
             this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.IntersectingVolumesFinding, "IVF", "Intersecting Volumes Finding Algorithm. This algorithm searches octahedron/tetrahedron volumes that intersect with the surface mesh in order to choose the best approximating triangle on the current recursion step.");
-            this.algorithmType = new LabeledSliderViewModel<int>("Вид апроксимация:", 1, 0, maxAlgorithmValue, 1);
+            this.InitializeAlgorithmNameAndDescription(LobelApproximationAlgorithmType.IntersectingVolumesConnecting, "IVC", "Intersecting Volumes Connecting Algorithm. This algorithm first chooses best approximating triangle for each intersecting octahedron/tetrahedron volume and then connects the neighbouring volumes with their common triangles.");
+            this.algorithmType = new LabeledSliderViewModel<int>("Вид апроксимация:", 3, 0, maxAlgorithmValue, 1);
             this.algorithmType.TextValueConverter = this.GetAlgorithmTextValue;
             this.algorithmType.LongTextValueConverter = this.GetAlgorithmLongTextValue;
         }

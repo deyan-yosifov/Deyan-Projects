@@ -7,5 +7,6 @@ namespace LobelFrames.DataStructures.Algorithms
         LobelMeshProjecting = 0,
         CentroidDistanceMeasuring = 1,
         IntersectingVolumesFinding = 2,
+        IntersectingVolumesConnecting = 3
     }
 }

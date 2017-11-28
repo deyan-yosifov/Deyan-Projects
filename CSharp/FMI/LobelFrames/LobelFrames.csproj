@@ -56,6 +56,7 @@
     <Compile Include="DataStructures\Algorithms\ApproximationEndedEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ClosestOctaTetraRecursionInitializerBase.cs" />
+    <Compile Include="DataStructures\Algorithms\ConnectedVolumesRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\DescreteUVMeshRecursiveTrianglesIterator.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="DataStructures\NonEditableMesh.cs" />
     <Compile Include="DataStructures\ComparableTriangle.cs" />
     <Compile Include="DataStructures\PointsEqualityComparer.cs" />
+    <Compile Include="DataStructures\PolyhedronGeometryInfo.cs" />
     <Compile Include="DataStructures\Surfaces\BezierSurface.cs" />
     <Compile Include="DataStructures\Surfaces\IUVSurface.cs" />
     <Compile Include="DataStructures\Surfaces\MeshPatchFoldingInfo.cs" />

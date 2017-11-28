@@ -12,16 +12,16 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly double triangleSide;
         private readonly double tetrahedronHeight;
         private readonly double tetrahedronInscribedSphereRadius;
-        private readonly double tetrahedronInscribedSphereSquaredRadius;
-        private readonly double tetrahedronCircumscribedSphereSquaredRadius;
-        private readonly double octahedronInscribedSphereSquaredRadius;
-        private readonly double octahedronCircumscribedSphereSquaredRadius;
+        private readonly double tetrahedronCircumscribedSphereRadius;
+        private readonly double octahedronInscribedSphereRadius;
+        private readonly double octahedronCircumscribedSphereRadius;
         private readonly bool[,] coveredUVPoints;
         private readonly TriangleRecursionStrategy recursionStrategy;
         private readonly TriangleProjectionContext[] trianglesProjectionCache;
         private readonly UniqueEdgesSet uniqueEdges;
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
-        private readonly HashSet<ComparableTriangle> existingTriangles;
+        private readonly Dictionary<ComparableTriangle, Triangle> existingTriangles;
+        private readonly HashSet<Triangle> addedTriangles;
         private int coveredPointsCount;
 
         public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
@@ -29,22 +29,18 @@ namespace LobelFrames.DataStructures.Algorithms
             this.meshToApproximate = meshToApproximate;
             this.triangleSide = triangleSide;
             this.tetrahedronHeight = OctaTetraGeometryCalculator.GetTetrahedronHeight(triangleSide);
-            double inscribedTetraRadius = OctaTetraGeometryCalculator.GetTetrahedronInscribedSphereRadius(triangleSide);
-            double circumscribedTetraRadius = OctaTetraGeometryCalculator.GetTetrahedronCircumscribedSphereRadius(triangleSide);
-            double inscribedOctaRadius = OctaTetraGeometryCalculator.GetOctahedronInscribedSphereRadius(triangleSide);
-            double circumscribedOctaRadius = OctaTetraGeometryCalculator.GetOctahedronCircumscribedSphereRadius(triangleSide);
-            this.tetrahedronInscribedSphereRadius = inscribedTetraRadius;
-            this.tetrahedronInscribedSphereSquaredRadius = inscribedTetraRadius * inscribedTetraRadius;
-            this.tetrahedronCircumscribedSphereSquaredRadius = circumscribedTetraRadius * circumscribedTetraRadius;
-            this.octahedronInscribedSphereSquaredRadius = inscribedOctaRadius * inscribedOctaRadius;
-            this.octahedronCircumscribedSphereSquaredRadius = circumscribedOctaRadius * circumscribedOctaRadius;
+            this.tetrahedronInscribedSphereRadius = OctaTetraGeometryCalculator.GetTetrahedronInscribedSphereRadius(triangleSide);
+            this.tetrahedronCircumscribedSphereRadius = OctaTetraGeometryCalculator.GetTetrahedronCircumscribedSphereRadius(triangleSide);
+            this.octahedronInscribedSphereRadius = OctaTetraGeometryCalculator.GetOctahedronInscribedSphereRadius(triangleSide);
+            this.octahedronCircumscribedSphereRadius = OctaTetraGeometryCalculator.GetOctahedronCircumscribedSphereRadius(triangleSide);
             this.recursionStrategy = strategy;
             this.coveredUVPoints = new bool[meshToApproximate.UDevisions + 1, meshToApproximate.VDevisions + 1];
             this.trianglesProjectionCache = new TriangleProjectionContext[meshToApproximate.TrianglesCount];
             this.uniqueEdges = new UniqueEdgesSet();
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
             this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
-            this.existingTriangles = new HashSet<ComparableTriangle>();
+            this.existingTriangles = new Dictionary<ComparableTriangle, Triangle>();
+            this.addedTriangles = new HashSet<Triangle>();
             this.coveredPointsCount = 0;
         }
 
@@ -96,35 +92,27 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public double TetrahedronInscribedSphereSquaredRadius
+        public double TetrahedronCircumscribedSphereRadius
         {
             get
             {
-                return this.tetrahedronInscribedSphereSquaredRadius;
+                return this.tetrahedronCircumscribedSphereRadius;
             }
         }
 
-        public double TetrahedronCircumscribedSphereSquaredRadius
+        public double OctahedronInscribedSphereRadius
         {
             get
             {
-                return this.tetrahedronCircumscribedSphereSquaredRadius;
+                return this.octahedronInscribedSphereRadius;
             }
         }
 
-        public double OctahedronInscribedSphereSquaredRadius
+        public double OctahedronCircumscribedSphereRadius
         {
             get
             {
-                return this.octahedronInscribedSphereSquaredRadius;
-            }
-        }
-
-        public double OctahedronCircumscribedSphereSquaredRadius
-        {
-            get
-            {
-                return this.octahedronCircumscribedSphereSquaredRadius;
+                return this.octahedronCircumscribedSphereRadius;
             }
         }
 
@@ -174,39 +162,60 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public Triangle CreateTriangle(Point3D aPoint, Point3D bPoint, Point3D cPoint)
+        public bool IsTriangleAddedToApproximation(Triangle triangle)
         {
-            Vertex a = this.GetUniqueVertex(aPoint);
-            Vertex b = this.GetUniqueVertex(bPoint);
-            Vertex c = this.GetUniqueVertex(cPoint);
+            bool isAdded = this.addedTriangles.Contains(triangle);
 
-            this.existingTriangles.Add(new ComparableTriangle(a.Point, b.Point, c.Point));
-
-            return this.CreateTriangle(a, b, c);
+            return isAdded;
         }
 
-        public bool IsTriangleExisting(Point3D aPoint, Point3D bPoint, Point3D cPoint)
+        public bool AddTriangleToApproximation(Triangle triangle)
         {
-            Vertex a = this.GetUniqueVertex(aPoint);
-            Vertex b = this.GetUniqueVertex(bPoint);
-            Vertex c = this.GetUniqueVertex(cPoint);
+            bool isAlreadyAdded = this.addedTriangles.Add(triangle);
+
+            return isAlreadyAdded;
+        }
+
+        public Triangle CreateTriangle(LightTriangle t)
+        {
+            Vertex a = this.GetUniqueVertex(t.A);
+            Vertex b = this.GetUniqueVertex(t.B);
+            Vertex c = this.GetUniqueVertex(t.C);
+            ComparableTriangle comparableTriangle = new ComparableTriangle(a.Point, b.Point, c.Point);
+
+            Triangle triangle;
+            if (!this.existingTriangles.TryGetValue(comparableTriangle, out triangle))
+            {
+                triangle = this.CreateTriangle(a, b, c);
+                this.existingTriangles.Add(comparableTriangle, triangle);
+            }
+
+            return triangle;
+        }
+
+        public bool IsTriangleExisting(LightTriangle t)
+        {
+            Vertex a = this.GetUniqueVertex(t.A);
+            Vertex b = this.GetUniqueVertex(t.B);
+            Vertex c = this.GetUniqueVertex(t.C);
 
             ComparableTriangle triangle = new ComparableTriangle(a.Point, b.Point, c.Point);
-            bool isExisting = this.existingTriangles.Contains(triangle);
+            bool isExisting = this.existingTriangles.ContainsKey(triangle);
 
             return isExisting;
         }
 
-        public bool TryCreateNonExistingTriangle(Point3D aPoint, Point3D bPoint, Point3D cPoint, out Triangle triangle)
+        public bool TryCreateNonExistingTriangle(LightTriangle t, out Triangle triangle)
         {
-            Vertex a = this.GetUniqueVertex(aPoint);
-            Vertex b = this.GetUniqueVertex(bPoint);
-            Vertex c = this.GetUniqueVertex(cPoint);
-            ComparableTriangle t = new ComparableTriangle(a.Point, b.Point, c.Point);
+            Vertex a = this.GetUniqueVertex(t.A);
+            Vertex b = this.GetUniqueVertex(t.B);
+            Vertex c = this.GetUniqueVertex(t.C);
+            ComparableTriangle comparableTriangle = new ComparableTriangle(a.Point, b.Point, c.Point);
 
-            if(this.existingTriangles.Add(t))
+            if(!this.existingTriangles.ContainsKey(comparableTriangle))
             {
                 triangle = this.CreateTriangle(a, b, c);
+                this.existingTriangles.Add(comparableTriangle, triangle);
                 return true;
             }
             else

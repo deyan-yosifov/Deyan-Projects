@@ -43,9 +43,14 @@ namespace LobelFrames.DataStructures.Algorithms
                 IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles;
                 if (this.TryFindBestTriangleFromStepBundle(step, out triangle, out verticesFromIntersectingMeshTriangles))
                 {
-                    yield return triangle;
+                    bool isAlreadyAddedToApproximationResult = this.context.IsTriangleAddedToApproximation(triangle);
 
-                    this.InitializeRecursionForBestTriangle(triangle, verticesFromIntersectingMeshTriangles);
+                    if (!isAlreadyAddedToApproximationResult)
+                    {
+                        yield return triangle;
+
+                        this.InitializeRecursionForBestTriangle(triangle, verticesFromIntersectingMeshTriangles);
+                    }
                 }
             }
         }
@@ -159,7 +164,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Point3D midPoint = a + (this.context.TriangleSide * 0.5) * abDirection;
             Point3D c = midPoint + (Math.Sqrt(3) * 0.5 * this.context.TriangleSide) * hDirection;
 
-            Triangle firstTriangle = this.context.CreateTriangle(a, b, c);
+            Triangle firstTriangle = this.context.CreateTriangle(new LightTriangle(a, b, c));
 
             return firstTriangle;
         }
@@ -174,6 +179,8 @@ namespace LobelFrames.DataStructures.Algorithms
                     return new ClosestCentroidsRecursionInitializer(triangle, this.Context);
                 case TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes:
                     return new ClosestIntersectingVolumesRecursionInitializer(triangle, this.Context);
+                case TriangleRecursionStrategy.ChooseBestTrianglesFromIntersectingOctaTetraVolumesAndConnectThem:
+                    return new ConnectedVolumesRecursionInitializer(triangle, this.Context);
                 default:
                     throw new NotSupportedException(string.Format("Not supported recursion strategy {0}", this.Context.RecursionStrategy));
             }
