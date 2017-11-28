@@ -22,6 +22,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
         private readonly Dictionary<ComparableTriangle, Triangle> existingTriangles;
         private readonly HashSet<Triangle> addedTriangles;
+        private readonly Dictionary<Point3D, bool> iteratedPolyhedraCentersToIsIntersectingResult;
         private int coveredPointsCount;
 
         public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
@@ -38,7 +39,9 @@ namespace LobelFrames.DataStructures.Algorithms
             this.trianglesProjectionCache = new TriangleProjectionContext[meshToApproximate.TrianglesCount];
             this.uniqueEdges = new UniqueEdgesSet();
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
-            this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(new PointsEqualityComparer(6));
+            PointsEqualityComparer pointsComparer = new PointsEqualityComparer(6);
+            this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(pointsComparer);
+            this.iteratedPolyhedraCentersToIsIntersectingResult = new Dictionary<Point3D, bool>(pointsComparer);
             this.existingTriangles = new Dictionary<ComparableTriangle, Triangle>();
             this.addedTriangles = new HashSet<Triangle>();
             this.coveredPointsCount = 0;
@@ -162,6 +165,25 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
+        public bool TryGetPolyhedraIterationResult(Point3D center, out bool isAppropriatelyIntersectingTheMesh)
+        {
+            bool isIterated = this.iteratedPolyhedraCentersToIsIntersectingResult.TryGetValue(center, out isAppropriatelyIntersectingTheMesh);
+
+            return isIterated;
+        }
+
+        public bool IsPolyhedronIterated(Point3D center)
+        {
+            bool isIterated = this.iteratedPolyhedraCentersToIsIntersectingResult.ContainsKey(center);
+
+            return isIterated;
+        }
+
+        public void AddPolyhedronToIterated(Point3D center, bool isAppropriatelyIntersectingTheMesh)
+        {
+            this.iteratedPolyhedraCentersToIsIntersectingResult.Add(center, isAppropriatelyIntersectingTheMesh);
+        }
+
         public bool IsTriangleAddedToApproximation(Triangle triangle)
         {
             bool isAdded = this.addedTriangles.Contains(triangle);
@@ -171,9 +193,9 @@ namespace LobelFrames.DataStructures.Algorithms
 
         public bool AddTriangleToApproximation(Triangle triangle)
         {
-            bool isAlreadyAdded = this.addedTriangles.Add(triangle);
+            bool isNewlyAdded = this.addedTriangles.Add(triangle);
 
-            return isAlreadyAdded;
+            return isNewlyAdded;
         }
 
         public Triangle CreateTriangle(LightTriangle t)
@@ -212,7 +234,7 @@ namespace LobelFrames.DataStructures.Algorithms
             Vertex c = this.GetUniqueVertex(t.C);
             ComparableTriangle comparableTriangle = new ComparableTriangle(a.Point, b.Point, c.Point);
 
-            if(!this.existingTriangles.ContainsKey(comparableTriangle))
+            if (!this.existingTriangles.ContainsKey(comparableTriangle))
             {
                 triangle = this.CreateTriangle(a, b, c);
                 this.existingTriangles.Add(comparableTriangle, triangle);
@@ -260,7 +282,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private Vertex GetUniqueVertex(Point3D point)
         {
             Vertex vertex;
-            if(!this.pointToUniqueVertex.TryGetValue(point, out vertex))
+            if (!this.pointToUniqueVertex.TryGetValue(point, out vertex))
             {
                 vertex = new Vertex(point);
                 this.pointToUniqueVertex.Add(point, vertex);

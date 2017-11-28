@@ -5,7 +5,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal abstract class ClosestOctaTetraRecursionInitializerBase : TriangleRecursionInitializer
+    internal abstract class ClosestOctaTetraRecursionInitializerBase : SingleBundlePerSideRecursionInitializer
     {
         private class OctaTetraVolumeRecursionInfo
         {
@@ -22,7 +22,7 @@ namespace LobelFrames.DataStructures.Algorithms
         protected sealed override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
             bool hasAppropriateRecursionInfo = false;
-            IEnumerable<OctaTetraVolumeRecursionInfo> sortedInfos = 
+            IEnumerable<OctaTetraVolumeRecursionInfo> sortedInfos =
                 this.CalculateOctaTetraVolumeRecurionInfos(recursionStartPosition, sideIndex).
                 Where(info => info.IsAppropriateForNextRecursionStep).OrderBy(info => info.DistanceToSurface);
             double closestDistance = double.MaxValue;

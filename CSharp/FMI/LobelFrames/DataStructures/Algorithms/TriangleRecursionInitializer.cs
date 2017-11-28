@@ -92,7 +92,7 @@ namespace LobelFrames.DataStructures.Algorithms
             return isInside;
         }
 
-        protected abstract IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, int sideIndex);
+        protected abstract IEnumerable<Triangle[]> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex);
 
         protected LightTriangle GetNeighbouringTetrahedronTriangle(int sideIndex)
         {
@@ -211,36 +211,36 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             for (int sideIndex = 0; sideIndex < 3; sideIndex++)
             {
-                OctaTetraApproximationStep step;
-                if (this.TryCalculateApproximationStep(sideIndex, out step))
+                IEnumerable<OctaTetraApproximationStep> steps;
+                if (this.TryCalculateApproximationSteps(sideIndex, out steps))
                 {
-                    yield return step;
+                    foreach (OctaTetraApproximationStep step in steps)
+                    {
+                        yield return step;
+                    }
                 }
             }
         }
 
-        private bool TryCalculateApproximationStep(int sideIndex, out OctaTetraApproximationStep step)
+        private bool TryCalculateApproximationSteps(int sideIndex, out IEnumerable<OctaTetraApproximationStep> steps)
         {
             ComparableRecursionPosition? recursionPosition = this.sidesRecursionPositions[sideIndex];
 
             if (recursionPosition.HasValue)
             {
                 UVMeshDescretePosition recursionStartPosition = recursionPosition.Value.MeshPosition;
-                Triangle[] bundle = this.CreateEdgeNextStepNeighbouringTriangles(recursionStartPosition, sideIndex).ToArray();
-
-                if (bundle.Length > 0)
-                {
-                    step = new OctaTetraApproximationStep()
+                steps = this.CreateEdgeNextStepNeighbouringTriangleBundles(recursionStartPosition, sideIndex).
+                    Where(bundle => bundle.Length > 0).
+                    Select(bundle => new OctaTetraApproximationStep()
                     {
-                        InitialRecursionPosition = recursionPosition.Value.MeshPosition,
+                        InitialRecursionPosition = recursionStartPosition,
                         TrianglesBundle = bundle
-                    };
+                    });
 
-                    return true;
-                }
+                return true;
             }
 
-            step = null;
+            steps = null;
             return false;
         }
 

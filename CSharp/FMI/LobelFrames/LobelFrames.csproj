@@ -72,6 +72,7 @@
     <Compile Include="DataStructures\Algorithms\OctaTetraApproximationStep.cs" />
     <Compile Include="DataStructures\Algorithms\LobelTriangleIterationHandlerBase.cs" />
     <Compile Include="DataStructures\Algorithms\PointToSurfaceDistanceFinder.cs" />
+    <Compile Include="DataStructures\Algorithms\SingleBundlePerSideRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleIterationResult.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleRecursionStrategy.cs" />

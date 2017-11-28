@@ -4,7 +4,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class NonExistingNeighboursRecursionInitializer : TriangleRecursionInitializer
+    internal class NonExistingNeighboursRecursionInitializer : SingleBundlePerSideRecursionInitializer
     {
         public NonExistingNeighboursRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
             : base(triangle, context)
