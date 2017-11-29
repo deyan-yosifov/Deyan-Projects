@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Deyo.Core.Mathematics.Algebra;
+using System;
 using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures
@@ -14,6 +15,11 @@ namespace LobelFrames.DataStructures
             this.A = a;
             this.B = b;
             this.C = c;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("A:({0}) B:({1}) C:({2}) G:({3})", A, B, C, ((1.0 / 3) * (A.ToVector() + B.ToVector() + C.ToVector())).ToPoint());
         }
     }
 }

@@ -21,55 +21,90 @@ namespace LobelFrames.DataStructures.Algorithms
             public LightTriangle CommonTriangle { get; private set; }
         }
 
+        private readonly bool hasRelatedPolyhedronCenter;
+        private readonly bool isRecursionForFirstTriangle;
+
+        public ConnectedVolumesRecursionInitializer(Triangle triangle, Point3D relatedPolyhedronCenter, OctaTetraApproximationContext context)
+            : this(triangle, context)
+        {
+            this.hasRelatedPolyhedronCenter = true;
+            this.Context.SetPolyhedronIterationResult(relatedPolyhedronCenter, triangle);
+        }
+
         public ConnectedVolumesRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
             : base(triangle, context)
         {
             Point3D tetrahedronCenter = this.TriangleCenter + this.Context.TetrahedronInscribedSphereRadius * this.TriangleUnitNormal;
             Point3D octahedronCenter = this.TriangleCenter - this.Context.OctahedronInscribedSphereRadius * this.TriangleUnitNormal;
+            bool isTetrahedronIterated = this.Context.IsPolyhedronIterated(tetrahedronCenter);
+            bool isOctahedronIterated = this.Context.IsPolyhedronIterated(octahedronCenter);
+            this.isRecursionForFirstTriangle = !(isTetrahedronIterated || isOctahedronIterated);
 
-            if (!this.Context.IsPolyhedronIterated(tetrahedronCenter))
+            if (this.isRecursionForFirstTriangle)
             {
-                this.Context.AddPolyhedronToIterated(tetrahedronCenter, true);
-            }
-
-            if (!this.Context.IsPolyhedronIterated(octahedronCenter))
-            {
-                this.Context.AddPolyhedronToIterated(octahedronCenter, true);
+                Debug("First triangle when no polyhedron is iterated yet!");
+                this.Context.SetPolyhedronIterationResult(tetrahedronCenter, triangle);
+                this.Context.SetPolyhedronIterationResult(octahedronCenter, triangle);
             }
         }
 
-        protected override IEnumerable<Triangle[]> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
+        protected override IEnumerable<TriangleBundle> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
+            if (!(this.hasRelatedPolyhedronCenter || this.isRecursionForFirstTriangle))
+            {
+                Debug("Recursion stopped because it is comming from connecting triangle:{0} sideIndex:{1}", this.TriangleCenter, sideIndex);
+                yield break;
+            }
+
+            Triangle commonNeighbouringTriangle = this.Context.CreateTriangle(this.GetOppositeNeighbouringTriangle(sideIndex));
+
             foreach (NeighbouringPolyhedronInfo polyhedron in this.EnumerateNeighbouringPolyhedra(sideIndex))
             {
-                bool isAppropriatelyIntersecting;
-                bool isAlreadyIterated = this.Context.TryGetPolyhedraIterationResult(polyhedron.Geometry.Center, out isAppropriatelyIntersecting);
+                Triangle iterationResultTriangle;
+                bool isAlreadyIterated = this.Context.TryGetPolyhedraIterationResult(polyhedron.Geometry.Center, out iterationResultTriangle);
+                Triangle[] bundle;
 
                 if (isAlreadyIterated)
                 {
-                    if (isAppropriatelyIntersecting)
+                    if (iterationResultTriangle != null && !this.Context.IsTriangleAddedToApproximation(commonNeighbouringTriangle))
                     {
-                        yield return new Triangle[] { this.Context.CreateTriangle(polyhedron.CommonTriangle) };
+                        Debug("Connecting triangle added: {0}", polyhedron.CommonTriangle);
+                        Triangle connectionTriangle = this.Context.CreateTriangle(polyhedron.CommonTriangle);
+
+                        if (connectionTriangle != iterationResultTriangle)
+                        {
+                            yield return new TriangleBundle(new Triangle[] { connectionTriangle });
+                        }
                     }
                 }
-                else
+                else if (this.TryGetNeighbouringPolyhedronInitialIterationBundle(polyhedron.Geometry, recursionStartPosition, out bundle))
                 {
-                    IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
-                    TriangleProjectionContext[] octaTetraTriangles =
-                        polyhedron.Geometry.Triangles.Select(triangle => new TriangleProjectionContext(triangle.A, triangle.B, triangle.C)).ToArray();
-                    VolumeDistanceAndIntersectionFinder intersectionFinder =
-                        new VolumeDistanceAndIntersectionFinder(this.Context, polyhedron.Geometry.Center, octaTetraTriangles);
-                    DescreteUVMeshRecursiveTrianglesIterator.Iterate(intersectionFinder, this.Context.MeshToApproximate, initialTriangles);
-                    isAppropriatelyIntersecting = intersectionFinder.HasFoundIntersection &&
-                        intersectionFinder.BestSquaredDistance.IsLessThan(polyhedron.Geometry.SquaredCircumscribedSphereRadius);
-                    this.Context.AddPolyhedronToIterated(polyhedron.Geometry.Center, isAppropriatelyIntersecting);
-
-                    if (isAppropriatelyIntersecting)
-                    {
-                        yield return polyhedron.Geometry.Triangles.Select(t => this.Context.CreateTriangle(t)).ToArray();
-                    }
+                    Debug("Bundle sideIndex:{0} Length:{1}", sideIndex, bundle.Length);
+                    yield return new TriangleBundle(bundle, polyhedron.Geometry.Center);
                 }
             }
+        }
+
+        private void Debug(string text, params object[] parameters)
+        {
+            System.Diagnostics.Debug.WriteLine(text, parameters);
+        }
+
+        private bool TryGetNeighbouringPolyhedronInitialIterationBundle(
+            PolyhedronGeometryInfo polyhedron, UVMeshDescretePosition recursionStartPosition, out Triangle[] bundle)
+        {
+            IEnumerable<int> initialTriangles = this.Context.MeshToApproximate.GetNeighbouringTriangleIndices(recursionStartPosition);
+            TriangleProjectionContext[] octaTetraTriangles =
+                polyhedron.Triangles.Select(triangle => new TriangleProjectionContext(triangle.A, triangle.B, triangle.C)).ToArray();
+            VolumeDistanceAndIntersectionFinder intersectionFinder =
+                new VolumeDistanceAndIntersectionFinder(this.Context, polyhedron.Center, octaTetraTriangles);
+            DescreteUVMeshRecursiveTrianglesIterator.Iterate(intersectionFinder, this.Context.MeshToApproximate, initialTriangles);
+            bool isAppropriatelyIntersecting = intersectionFinder.HasFoundIntersection &&
+                intersectionFinder.BestSquaredDistance.IsLessThan(polyhedron.SquaredCircumscribedSphereRadius);
+            this.Context.AddPolyhedronToIterated(polyhedron.Center);
+            bundle = isAppropriatelyIntersecting ? polyhedron.Triangles.Select(t => this.Context.CreateTriangle(t)).ToArray() : null;
+
+            return isAppropriatelyIntersecting;
         }
 
         private IEnumerable<NeighbouringPolyhedronInfo> EnumerateNeighbouringPolyhedra(int sideIndex)

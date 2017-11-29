@@ -49,7 +49,8 @@ namespace LobelFrames.DataStructures.Algorithms
                     {
                         yield return triangle;
 
-                        this.InitializeRecursionForBestTriangle(triangle, verticesFromIntersectingMeshTriangles);
+                        Point3D? relatedPolyhedronCenter = step.Bundle.HasRelatedPolyhedronCenter ? step.Bundle.RelatedPolyhedronCenter : (Point3D?)null;           
+                        this.InitializeRecursionForBestTriangle(triangle, relatedPolyhedronCenter, verticesFromIntersectingMeshTriangles);
                     }
                 }
             }
@@ -64,7 +65,7 @@ namespace LobelFrames.DataStructures.Algorithms
             double bestCommonArea = -1;
             double bestVolumePerArea = double.MaxValue;
 
-            foreach (Triangle triangle in step.TrianglesBundle)
+            foreach (Triangle triangle in step.Bundle.Triangles)
             {
                 int intersectingTriangleIndex;
                 if (this.TryFindIntersectingMeshTriangleIndex(triangle, step.InitialRecursionPosition, out intersectingTriangleIndex))
@@ -102,9 +103,9 @@ namespace LobelFrames.DataStructures.Algorithms
             return intersectingTriangleIndex > -1;
         }
 
-        private void InitializeRecursionForBestTriangle(Triangle triangle, IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
+        private void InitializeRecursionForBestTriangle(Triangle triangle, Point3D? relatedPolyhedronCenter, IEnumerable<UVMeshDescretePosition> verticesFromIntersectingMeshTriangles)
         {
-            using (TriangleRecursionInitializer triangleRecursionContext = this.CreateRecursionInitializer(triangle))
+            using (TriangleRecursionInitializer triangleRecursionContext = this.CreateRecursionInitializer(triangle, relatedPolyhedronCenter))
             {
                 foreach (UVMeshDescretePosition positionToCheck in verticesFromIntersectingMeshTriangles)
                 {
@@ -115,7 +116,7 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private void InitializeRecursionForFirstTriangle(Triangle firstTriangle)
         {
-            using (TriangleRecursionInitializer triangleRecursionContext = this.CreateRecursionInitializer(firstTriangle))
+            using (TriangleRecursionInitializer triangleRecursionContext = this.CreateRecursionInitializer(firstTriangle, null))
             {
                 HashSet<UVMeshDescretePosition> iterationAddedPositions = new HashSet<UVMeshDescretePosition>();
                 Queue<UVMeshDescretePosition> positionsToIterate = new Queue<UVMeshDescretePosition>();
@@ -169,7 +170,7 @@ namespace LobelFrames.DataStructures.Algorithms
             return firstTriangle;
         }
 
-        private TriangleRecursionInitializer CreateRecursionInitializer(Triangle triangle)
+        private TriangleRecursionInitializer CreateRecursionInitializer(Triangle triangle, Point3D? relatedPolyhedronCenter)
         {
             switch (this.Context.RecursionStrategy)
             {
@@ -180,7 +181,14 @@ namespace LobelFrames.DataStructures.Algorithms
                 case TriangleRecursionStrategy.ChooseDirectionsWithIntersectingOctaTetraVolumes:
                     return new ClosestIntersectingVolumesRecursionInitializer(triangle, this.Context);
                 case TriangleRecursionStrategy.ChooseBestTrianglesFromIntersectingOctaTetraVolumesAndConnectThem:
-                    return new ConnectedVolumesRecursionInitializer(triangle, this.Context);
+                    if (relatedPolyhedronCenter.HasValue)
+                    {
+                        return new ConnectedVolumesRecursionInitializer(triangle, relatedPolyhedronCenter.Value, this.Context);
+                    }
+                    else
+                    {
+                        return new ConnectedVolumesRecursionInitializer(triangle, this.Context);
+                    }
                 default:
                     throw new NotSupportedException(string.Format("Not supported recursion strategy {0}", this.Context.RecursionStrategy));
             }

@@ -22,7 +22,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly Dictionary<Point3D, Vertex> pointToUniqueVertex;
         private readonly Dictionary<ComparableTriangle, Triangle> existingTriangles;
         private readonly HashSet<Triangle> addedTriangles;
-        private readonly Dictionary<Point3D, bool> iteratedPolyhedraCentersToIsIntersectingResult;
+        private readonly Dictionary<Point3D, Triangle> iteratedPolyhedraCentersToTriangleResult;
         private int coveredPointsCount;
 
         public OctaTetraApproximationContext(IDescreteUVMesh meshToApproximate, double triangleSide, TriangleRecursionStrategy strategy)
@@ -41,7 +41,7 @@ namespace LobelFrames.DataStructures.Algorithms
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
             PointsEqualityComparer pointsComparer = new PointsEqualityComparer(6);
             this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(pointsComparer);
-            this.iteratedPolyhedraCentersToIsIntersectingResult = new Dictionary<Point3D, bool>(pointsComparer);
+            this.iteratedPolyhedraCentersToTriangleResult = new Dictionary<Point3D, Triangle>(pointsComparer);
             this.existingTriangles = new Dictionary<ComparableTriangle, Triangle>();
             this.addedTriangles = new HashSet<Triangle>();
             this.coveredPointsCount = 0;
@@ -165,23 +165,28 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        public bool TryGetPolyhedraIterationResult(Point3D center, out bool isAppropriatelyIntersectingTheMesh)
+        public bool TryGetPolyhedraIterationResult(Point3D center, out Triangle triangleResult)
         {
-            bool isIterated = this.iteratedPolyhedraCentersToIsIntersectingResult.TryGetValue(center, out isAppropriatelyIntersectingTheMesh);
+            bool isIterated = this.iteratedPolyhedraCentersToTriangleResult.TryGetValue(center, out triangleResult);
 
             return isIterated;
         }
 
         public bool IsPolyhedronIterated(Point3D center)
         {
-            bool isIterated = this.iteratedPolyhedraCentersToIsIntersectingResult.ContainsKey(center);
+            bool isIterated = this.iteratedPolyhedraCentersToTriangleResult.ContainsKey(center);
 
             return isIterated;
         }
 
-        public void AddPolyhedronToIterated(Point3D center, bool isAppropriatelyIntersectingTheMesh)
+        public void AddPolyhedronToIterated(Point3D center)
         {
-            this.iteratedPolyhedraCentersToIsIntersectingResult.Add(center, isAppropriatelyIntersectingTheMesh);
+            this.iteratedPolyhedraCentersToTriangleResult.Add(center, null);
+        }
+
+        public void SetPolyhedronIterationResult(Point3D center, Triangle result)
+        {
+            this.iteratedPolyhedraCentersToTriangleResult[center] = result;
         }
 
         public bool IsTriangleAddedToApproximation(Triangle triangle)

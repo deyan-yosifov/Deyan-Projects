@@ -92,7 +92,7 @@ namespace LobelFrames.DataStructures.Algorithms
             return isInside;
         }
 
-        protected abstract IEnumerable<Triangle[]> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex);
+        protected abstract IEnumerable<TriangleBundle> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex);
 
         protected LightTriangle GetNeighbouringTetrahedronTriangle(int sideIndex)
         {
@@ -230,11 +230,11 @@ namespace LobelFrames.DataStructures.Algorithms
             {
                 UVMeshDescretePosition recursionStartPosition = recursionPosition.Value.MeshPosition;
                 steps = this.CreateEdgeNextStepNeighbouringTriangleBundles(recursionStartPosition, sideIndex).
-                    Where(bundle => bundle.Length > 0).
+                    Where(bundle => bundle.Triangles.Length > 0).
                     Select(bundle => new OctaTetraApproximationStep()
                     {
                         InitialRecursionPosition = recursionStartPosition,
-                        TrianglesBundle = bundle
+                        Bundle = bundle
                     });
 
                 return true;
