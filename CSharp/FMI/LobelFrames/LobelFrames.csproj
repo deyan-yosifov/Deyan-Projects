@@ -319,6 +319,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="obj\" />
+    <Folder Include="Resources\Help\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Settings-icon.png" />
