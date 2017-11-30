@@ -9,7 +9,11 @@
         <TextBlock Margin="0 5" FontSize="13" Text="{Binding Label}" />
         <StackPanel Orientation="Horizontal" Margin="5 0">
             <Border BorderThickness="0.5" SnapsToDevicePixels="True" BorderBrush="Black" Margin="0">
-                <TextBlock Margin="4 0" MinWidth="23" TextAlignment="Center" Text="{Binding TextValue}" ToolTip="{Binding LongTextValue}" />
+                <TextBlock Margin="4 0" MinWidth="23" TextAlignment="Center" Text="{Binding TextValue}" ToolTipService.ShowDuration="20000">
+                    <TextBlock.ToolTip>
+                        <TextBlock Text="{Binding LongTextValue}" TextWrapping="Wrap" MaxWidth="400" TextAlignment="Justify"/>
+                    </TextBlock.ToolTip>
+                </TextBlock>
             </Border>
             <Slider Value="{Binding Value, Mode=TwoWay}" Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}" TickFrequency="{Binding Step}" IsSnapToTickEnabled="True" Width="100" />
         </StackPanel>
