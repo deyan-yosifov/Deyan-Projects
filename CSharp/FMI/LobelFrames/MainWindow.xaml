@@ -199,15 +199,7 @@
                     </Popup>
                 </Grid>
 
-                <Popup DataContext="{Binding ElementName=surface, Path=Help}" x:Name="helpPopup" IsOpen="{Binding IsOpen}" 
-                        PlacementTarget="{Binding ElementName=surface}" 
-                        Placement="Relative" HorizontalOffset="5" VerticalOffset="5" Opened="HelpPopup_Opened" >
-                    <Border BorderBrush="Black" BorderThickness="2" Background="Red" Padding="5">
-                        <TextBlock TextWrapping="Wrap" Text="Това приложение позволява моделирането на повърхнини състоящи се от еднакви равностранни триъгълници, наречени още повърхнини на Лобел." />
-                    </Border>
-                </Popup>
-                
-                <lobelFrames:SurfaceModelingView Grid.Row="1" x:Name="surface" Unloaded="Surface_Unloaded" />
+                <lobelFrames:SurfaceModelingView Grid.Row="1" x:Name="surface" />
 
                 <Border Grid.Row="2" Background="Transparent" Margin="10 0 5 5">
                     <Grid>

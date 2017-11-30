@@ -2,6 +2,7 @@
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Settings;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,6 +16,7 @@ namespace LobelFrames.Views
     public partial class SurfaceModelingView : UserControl
     {
         private readonly SurfaceModelingViewModel viewModel;
+        private bool isHelpLoaded;
 
         public SurfaceModelingView()
         {
@@ -24,8 +26,7 @@ namespace LobelFrames.Views
             this.InputManager = this.viewModel.InputManager;
             this.HintManager = this.viewModel.HintManager;
             this.Settings = this.viewModel.SettingsViewModel;
-            this.Help = this.viewModel.HelpViewModel;
-            this.DataContext = this.viewModel;
+            this.DataContext = this.viewModel;    
         }
 
         public static readonly DependencyProperty CommandDescriptorsProperty = DependencyProperty.Register("CommandDescriptors",
@@ -39,9 +40,6 @@ namespace LobelFrames.Views
 
         public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register("Settings",
             typeof(SettingsViewModel), typeof(SurfaceModelingView));
-
-        public static readonly DependencyProperty HelpProperty = DependencyProperty.Register("Help",
-            typeof(PopupViewModel), typeof(SurfaceModelingView));
 
         public CommandDescriptors CommandDescriptors
         {
@@ -67,10 +65,15 @@ namespace LobelFrames.Views
             set { SetValue(SettingsProperty, value); }
         }
 
-        public PopupViewModel Help
+        private void HelpBrowser_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            get { return (PopupViewModel)GetValue(HelpProperty); }
-            set { SetValue(HelpProperty, value); }
+            if (this.viewModel.HelpViewModel.IsOpen && !this.isHelpLoaded)
+            {
+                this.isHelpLoaded = true;
+                string currentDirectory = Directory.GetCurrentDirectory();
+                string path = System.IO.Path.Combine(currentDirectory, @"Resources\Help\Diplomna-Deyan Yosifov-M24906.html");
+                this.helpBrowser.Navigate(new Uri(path));
+            }
         }
     }
 }

@@ -4,11 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls3D="clr-namespace:Deyo.Controls.Controls3D;assembly=Deyo.Controls"
+             xmlns:converters="clr-namespace:Deyo.Controls.Common.Converters;assembly=Deyo.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="inverseBoolToVisibilityConverter" />
+    </UserControl.Resources>
     <Grid>
         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="5" Background="AliceBlue">
-            <controls3D:Scene3D x:Name="scene" />
+            <Grid>
+                <controls3D:Scene3D x:Name="scene" Visibility="{Binding HelpViewModel.IsOpen, Converter={StaticResource inverseBoolToVisibilityConverter}}" />
+                <WebBrowser x:Name="helpBrowser" Visibility="{Binding HelpViewModel.IsOpen, Converter={StaticResource boolToVisibilityConverter}}"
+                            IsVisibleChanged="HelpBrowser_IsVisibleChanged" />
+            </Grid>
         </Border>
     </Grid>
 </UserControl>
