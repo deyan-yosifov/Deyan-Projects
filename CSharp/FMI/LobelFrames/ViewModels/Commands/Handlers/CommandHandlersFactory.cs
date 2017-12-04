@@ -14,6 +14,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             yield return new MoveCommandHandler(editor, elementsManager);
             yield return new CutMeshCommandHandler(editor, elementsManager);
             yield return new FoldMeshCommandHandler(editor, elementsManager);
+            yield return new GlueMeshCommandHandler(editor, elementsManager);
             yield return new ApproximateMeshCommandHandler(editor, elementsManager);
         }
     }

@@ -266,21 +266,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
                 this.TryValidateConvexPolygoneCoplanarity(point);
         }
 
-        private bool TryValidateColinearEdgesConnection(PointVisual nextPoint)
-        {
-            Vertex previous = this.Surface.GetVertexFromPointVisual(this.Points.PeekLast());
-            Vertex next = this.Surface.GetVertexFromPointVisual(nextPoint);
-
-            VertexConnectionInfo connectionInfo;
-            if (!this.Surface.MeshEditor.TryConnectVerticesWithColinearEdges(previous, next, out connectionInfo))
-            {
-                this.Editor.ShowHint(Hints.NeighbouringCutPointsShouldBeOnColinearEdges, HintType.Warning);
-                return false;
-            }
-
-            return true;
-        }
-
         private bool TryValidateConvexPolygoneCoplanarity(PointVisual nextPoint)
         {
             if (this.Points.Count == 2)
@@ -302,27 +287,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
         private bool TrySpecifySweepDirectionFromThirdSelectionPoint(PointVisual thirdSelectionPoint)
         {         
             return TryValidatePointIsNotColinearWithPreviousPoints(thirdSelectionPoint, out this.sweepDirectionVector);
-        }
-
-        private bool TryValidatePointIsNotColinearWithPreviousPoints(PointVisual nextPoint)
-        {
-            Vector3D sweep;
-            return this.TryValidatePointIsNotColinearWithPreviousPoints(nextPoint, out sweep);
-        }
-
-        private bool TryValidatePointIsNotColinearWithPreviousPoints(PointVisual nextPoint, out Vector3D sweep)
-        {
-            Vector3D previous = this.Points.PeekLast().Position - this.Points.PeekFromEnd(1).Position;
-            Vector3D next = nextPoint.Position - this.Points.PeekLast().Position;
-            sweep = Vector3D.CrossProduct(previous, next);
-            bool areColinear = sweep.LengthSquared.IsZero();
-
-            if (areColinear)
-            {
-                this.Editor.ShowHint(Hints.NextCutPointCannotBeColinearWithPreviousCutPointsCouple, HintType.Warning);
-            }
-
-            return !areColinear;
         }
 
         private bool TryValidateCoplanarity(PointVisual nextPoint)

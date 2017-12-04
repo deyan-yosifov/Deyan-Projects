@@ -97,16 +97,6 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
         }
 
-        private void EndFoldMeshCommand()
-        {
-            MeshPatchFoldingInfo foldingInfo = this.secondRotationCache == null ?
-                this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache) :
-                this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache, this.secondRotationCache);
-            FoldMeshPatchAction foldAction = new FoldMeshPatchAction(this.Surface, foldingInfo);
-            this.Editor.DoAction(foldAction);
-            this.Editor.CloseCommandContext();
-        }
-
         public override void HandlePointMove(PointEventArgs e)
         {
             if (this.IsShowingPossibleRotatePositions && this.Points.Count == 3)
@@ -220,6 +210,16 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             }
 
             this.Editor.ShowHint(hint, HintType.Info);
+        }
+
+        private void EndFoldMeshCommand()
+        {
+            MeshPatchFoldingInfo foldingInfo = this.secondRotationCache == null ?
+                this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache) :
+                this.Surface.MeshEditor.GetMeshPatchFoldingInfo(this.firstRotationCache, this.secondRotationCache);
+            FoldMeshPatchAction foldAction = new FoldMeshPatchAction(this.Surface, foldingInfo);
+            this.Editor.DoAction(foldAction);
+            this.Editor.CloseCommandContext();
         }
 
         private void HandlePointSelectionChange()

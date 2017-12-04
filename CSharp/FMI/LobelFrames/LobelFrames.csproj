@@ -159,6 +159,7 @@
     <Compile Include="ViewModels\Commands\Handlers\CutMeshCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\FoldMeshCalculator.cs" />
     <Compile Include="ViewModels\Commands\Handlers\FoldMeshCommandHandler.cs" />
+    <Compile Include="ViewModels\Commands\Handlers\GlueMeshCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\ICommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\LobelEditingCommandHandler.cs" />
     <Compile Include="ViewModels\Commands\Handlers\SurfaceEdititingCommandHandler.cs" />

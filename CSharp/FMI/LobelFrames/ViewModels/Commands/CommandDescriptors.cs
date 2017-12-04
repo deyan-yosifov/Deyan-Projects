@@ -54,7 +54,7 @@ namespace LobelFrames.ViewModels.Commands
             this.RegisterCommandDescriptor(CommandType.AddLobelMesh, this.viewModel.AddLobelMesh);
             this.RegisterCommandDescriptor(CommandType.CutMesh, this.viewModel.CutMesh);
             this.RegisterCommandDescriptor(CommandType.FoldMesh, this.viewModel.FoldMesh);
-            this.RegisterCommandDescriptor(CommandType.GlueMesh, null);
+            this.RegisterCommandDescriptor(CommandType.GlueMesh, this.viewModel.GlueMesh);
             this.RegisterCommandDescriptor(CommandType.LobelSettings, this.viewModel.ChangeLobelSettings);
 
             this.RegisterCommandDescriptor(CommandType.AddBezierSurface, this.viewModel.AddBezierSurface);

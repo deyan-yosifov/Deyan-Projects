@@ -238,6 +238,11 @@ namespace LobelFrames.ViewModels
             this.CommandContext.BeginCommand(CommandType.FoldMesh);
         }
 
+        public void GlueMesh()
+        {
+            this.CommandContext.BeginCommand(CommandType.GlueMesh);
+        }
+
         public void AddBezierSurface()
         {
             BezierSurface surface = new BezierSurface(

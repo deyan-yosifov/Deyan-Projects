@@ -16,10 +16,12 @@ namespace LobelFrames.ViewModels.Commands
         public const string OpenLobelScene = "Отвори сцена от файл!";
         public const string SaveLobelScene = "Запиши сцената в предпочитан файлов формат!";
 
+        // Lobel commands common
+        public const string NextPointCannotBeColinearWithPreviousPointsCouple = "Точката не трябва да е колинеарна с предните две точки от селекцията!";
+        public const string NeighbouringPointsShouldBeOnColinearEdges = "Съседните точки трябва да са свързани с колинеарни ръбове!";
+
         // Cut command
         public const string SelectCutPoint = "Избери точка на рязане!";
-        public const string NeighbouringCutPointsShouldBeOnColinearEdges = "Съседните точки на рязане трябва да са свързани с колинеарни ръбове!";
-        public const string NextCutPointCannotBeColinearWithPreviousCutPointsCouple = "Точката не трябва да е колинеарна с предните две точки от селекцията!";
         public const string CutSelectionMustBePlanarPolyline = "Селекцията за рязане трябва да бъде равнинна начупена линия!";
         public const string CutSelectionMustBeConvexPolyline = "Селекцията за рязане трябва да бъде изпъкнала начупена линия!";
         public const string SpecifySemiplaneToCut = "Избери точка от полуравнината на рязане!";
@@ -41,6 +43,13 @@ namespace LobelFrames.ViewModels.Commands
         public const string FoldMeshPatchesCannotIntersect = "Двата региона на огъване не могат да се пресичат взаимно!";
         public const string RotationAxisesCannotBeColinear = "Двете оси на огъване не може да са колинеарни!";
         public const string NoPossibleFoldingPositions = "С текущата селекция няма възможни ъгли на огъване. Сменете селекцията с Escape.";
+
+        // Glue command
+        public const string SelectFirstGluePoint = "Избери първата точка на лепене!";
+        public const string SelectSecondGluePoint = "Избери втората точка на лепене!";
+        public const string SelectGlueDirectionPoint = "Избери точка от полуравнината на новодобавените триъгълници!";
+        public const string InputNumberOfGlueRowsToAddAndPressEnter = "Въведи различен брой на редове с триъгълници или потвърди текущия брой с Enter!";
+        public const string InvalidGlueRowsParameterValue = "Невалиден параметър! Броя на редове с триъгълници трябва да е цяло положително число!";
 
         // Approximate command
         public const string ApproximatingPleaseWait = "Апроксимиране на провърхнината. Моля изчакайте...";
