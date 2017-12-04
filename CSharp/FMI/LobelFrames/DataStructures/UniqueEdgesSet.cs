@@ -18,7 +18,7 @@ namespace LobelFrames.DataStructures
         {
             foreach (Edge initialEdge in initialEdges)
             {
-                this.uniqueEdgesSet.Add(initialEdge, initialEdge);
+                this.uniqueEdgesSet[initialEdge] = initialEdge;
             }
         }
         
@@ -37,6 +37,19 @@ namespace LobelFrames.DataStructures
             }
 
             return edge;
+        }
+
+        public bool TryGetExistingEdge(Vertex a, Vertex b, out Edge edge)
+        {
+            Edge key = new Edge(a, b);
+            bool hasFoundEdge = this.uniqueEdgesSet.TryGetValue(key, out edge);
+
+            return hasFoundEdge;
+        }
+
+        public void AddEdge(Edge edge)
+        {
+            this.uniqueEdgesSet.Add(edge, edge);
         }
 
         public IEnumerator<Edge> GetEnumerator()

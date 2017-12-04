@@ -171,6 +171,7 @@
     <Compile Include="ViewModels\Commands\Hints.cs" />
     <Compile Include="ViewModels\Commands\HintType.cs" />
     <Compile Include="ViewModels\Commands\HintTypeToColorConverter.cs" />
+    <Compile Include="ViewModels\Commands\History\AddMeshPatchAction.cs" />
     <Compile Include="ViewModels\Commands\History\AddSurfaceAction.cs" />
     <Compile Include="ViewModels\Commands\History\ContextUndoableAction.cs" />
     <Compile Include="ViewModels\Commands\History\DeleteSurfaceAction.cs" />

@@ -3,6 +3,7 @@ using Deyo.Core.Common;
 using LobelFrames.DataStructures;
 using LobelFrames.DataStructures.Surfaces;
 using LobelFrames.IteractionHandling;
+using LobelFrames.ViewModels.Commands.History;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -273,9 +274,8 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 
         private void EndGlueMeshCommand()
         {
-            // TODO:
-            //GlueMeshPatchAction glueAction = new GlueMeshPatchAction(this.Surface, foldingInfo);
-            //this.Editor.DoAction(glueAction);
+            AddMeshPatchAction addAction = new AddMeshPatchAction(this.Surface, this.EnumerateGlueTriangles());
+            this.Editor.DoAction(addAction);
             this.Editor.CloseCommandContext();
         }
 
