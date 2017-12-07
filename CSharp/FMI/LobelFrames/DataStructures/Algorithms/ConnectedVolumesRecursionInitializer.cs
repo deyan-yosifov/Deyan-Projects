@@ -42,7 +42,9 @@ namespace LobelFrames.DataStructures.Algorithms
 
             if (this.isRecursionForFirstTriangle)
             {
+#if DEBUG
                 Debug("First triangle when no polyhedron is iterated yet!");
+#endif
                 this.Context.SetPolyhedronIterationResult(tetrahedronCenter, triangle);
                 this.Context.SetPolyhedronIterationResult(octahedronCenter, triangle);
             }
@@ -52,7 +54,9 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             if (!(this.hasRelatedPolyhedronCenter || this.isRecursionForFirstTriangle))
             {
+#if DEBUG
                 Debug("Recursion stopped because it is comming from connecting triangle:{0} sideIndex:{1}", this.TriangleCenter, sideIndex);
+#endif
                 yield break;
             }
 
@@ -68,7 +72,9 @@ namespace LobelFrames.DataStructures.Algorithms
                 {
                     if (iterationResultTriangle != null && !this.Context.IsTriangleAddedToApproximation(commonNeighbouringTriangle))
                     {
+#if DEBUG
                         Debug("Connecting triangle added: {0}", polyhedron.CommonTriangle);
+#endif
                         Triangle connectionTriangle = this.Context.CreateTriangle(polyhedron.CommonTriangle);
 
                         if (connectionTriangle != iterationResultTriangle)
@@ -79,16 +85,19 @@ namespace LobelFrames.DataStructures.Algorithms
                 }
                 else if (this.TryGetNeighbouringPolyhedronInitialIterationBundle(polyhedron.Geometry, recursionStartPosition, out bundle))
                 {
+#if DEBUG
                     Debug("Bundle sideIndex:{0} Length:{1}", sideIndex, bundle.Length);
+#endif
                     yield return new TriangleBundle(bundle, polyhedron.Geometry.Center);
                 }
             }
         }
-
+#if DEBUG
         private void Debug(string text, params object[] parameters)
         {
             System.Diagnostics.Debug.WriteLine(text, parameters);
         }
+#endif
 
         private bool TryGetNeighbouringPolyhedronInitialIterationBundle(
             PolyhedronGeometryInfo polyhedron, UVMeshDescretePosition recursionStartPosition, out Triangle[] bundle)
