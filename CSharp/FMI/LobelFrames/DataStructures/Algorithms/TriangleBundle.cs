@@ -5,7 +5,6 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal class TriangleBundle
     {
-        private static readonly Point3D defaultCenter = new Point3D();
         private readonly Point3D? polyhedronCenter;
         private readonly Triangle[] bundle;
 

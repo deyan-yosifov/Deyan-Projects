@@ -63,6 +63,7 @@
     <Compile Include="DataStructures\Algorithms\ClosestCentroidsRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\ClosestIntersectingVolumesRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\IntersectingTriangleFinder.cs" />
+    <Compile Include="DataStructures\Algorithms\IOctaTetraGeometryContext.cs" />
     <Compile Include="DataStructures\Algorithms\LobelApproximationAlgorithmType.cs" />
     <Compile Include="DataStructures\Algorithms\IDescreteUVTrianglesIterationHandler.cs" />
     <Compile Include="DataStructures\Algorithms\NonExistingNeighboursRecursionInitializer.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="DataStructures\Algorithms\SingleBundlePerSideRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleBundle.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleIterationResult.cs" />
+    <Compile Include="DataStructures\Algorithms\OctaTetraMeshTriangleGeometryHelper.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleRecursionInitializer.cs" />
     <Compile Include="DataStructures\Algorithms\TriangleRecursionStrategy.cs" />
     <Compile Include="DataStructures\Algorithms\UVMeshApproximator.cs" />

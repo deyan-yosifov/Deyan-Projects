@@ -42,7 +42,7 @@ namespace LobelFrames.DataStructures.Algorithms
 
             if (hasAppropriateRecursionInfo)
             {
-                LightTriangle octaTetraBase = this.GetOppositeNeighbouringTriangle(sideIndex);
+                LightTriangle octaTetraBase = this.GeometryHelper.GetOppositeNeighbouringTriangle(sideIndex);
                 Triangle commonOctaTetraTriangle = this.VerifyAndCreateNonExistingTriangle(octaTetraBase);
                 yield return commonOctaTetraTriangle;
             }
@@ -73,8 +73,8 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private OctaTetraVolumeRecursionInfo CalculateOctahedronRecursionInfo(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
-            PolyhedronGeometryInfo octahedron = this.GetNeighbouringOctahedronGeometry(sideIndex);
-            LightTriangle uniqueTriangle = this.GetTetrahedronTriangle(sideIndex);
+            PolyhedronGeometryInfo octahedron = this.GeometryHelper.GetNeighbouringOctahedronGeometry(sideIndex);
+            LightTriangle uniqueTriangle = this.GeometryHelper.GetTetrahedronTriangle(sideIndex);
 
             double distanceToSurface;
             OctaTetraVolumeRecursionInfo recursionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangle = uniqueTriangle };
@@ -86,8 +86,8 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private OctaTetraVolumeRecursionInfo CalculateTetrahedronRecursionInfo(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
-            PolyhedronGeometryInfo tetrahedron = this.GetNeighbouringTetrahedronGeometry(sideIndex);
-            LightTriangle uniqueTriangle = this.GetNeighbouringTetrahedronTriangle(sideIndex);
+            PolyhedronGeometryInfo tetrahedron = this.GeometryHelper.GetNeighbouringTetrahedronGeometry(sideIndex);
+            LightTriangle uniqueTriangle = this.GeometryHelper.GetNeighbouringTetrahedronTriangle(sideIndex);
 
             double distanceToSurface;
             OctaTetraVolumeRecursionInfo recursionInfo = new OctaTetraVolumeRecursionInfo() { UniqueNeighbouringTriangle = uniqueTriangle };

@@ -34,8 +34,8 @@ namespace LobelFrames.DataStructures.Algorithms
         public ConnectedVolumesRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
             : base(triangle, context)
         {
-            Point3D tetrahedronCenter = this.TriangleCenter + this.Context.TetrahedronInscribedSphereRadius * this.TriangleUnitNormal;
-            Point3D octahedronCenter = this.TriangleCenter - this.Context.OctahedronInscribedSphereRadius * this.TriangleUnitNormal;
+            Point3D tetrahedronCenter = this.GeometryHelper.TriangleCenter + this.Context.TetrahedronInscribedSphereRadius * this.GeometryHelper.TriangleUnitNormal;
+            Point3D octahedronCenter = this.GeometryHelper.TriangleCenter - this.Context.OctahedronInscribedSphereRadius * this.GeometryHelper.TriangleUnitNormal;
             bool isTetrahedronIterated = this.Context.IsPolyhedronIterated(tetrahedronCenter);
             bool isOctahedronIterated = this.Context.IsPolyhedronIterated(octahedronCenter);
             this.isRecursionForFirstTriangle = !(isTetrahedronIterated || isOctahedronIterated);
@@ -55,12 +55,12 @@ namespace LobelFrames.DataStructures.Algorithms
             if (!(this.hasRelatedPolyhedronCenter || this.isRecursionForFirstTriangle))
             {
 #if DEBUG
-                Debug("Recursion stopped because it is comming from connecting triangle:{0} sideIndex:{1}", this.TriangleCenter, sideIndex);
+                Debug("Recursion stopped because it is comming from connecting triangle:{0} sideIndex:{1}", this.GeometryHelper.TriangleCenter, sideIndex);
 #endif
                 yield break;
             }
 
-            Triangle commonNeighbouringTriangle = this.Context.CreateTriangle(this.GetOppositeNeighbouringTriangle(sideIndex));
+            Triangle commonNeighbouringTriangle = this.Context.CreateTriangle(this.GeometryHelper.GetOppositeNeighbouringTriangle(sideIndex));
 
             foreach (NeighbouringPolyhedronInfo polyhedron in this.EnumerateNeighbouringPolyhedra(sideIndex))
             {
@@ -118,10 +118,10 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private IEnumerable<NeighbouringPolyhedronInfo> EnumerateNeighbouringPolyhedra(int sideIndex)
         {
-            PolyhedronGeometryInfo tetrahedron = this.GetNeighbouringTetrahedronGeometry(sideIndex);
-            LightTriangle tetrahedronCommonSide = this.GetNeighbouringTetrahedronTriangle(sideIndex);
-            PolyhedronGeometryInfo octahedron = this.GetNeighbouringOctahedronGeometry(sideIndex);
-            LightTriangle octahedronCommonSide = this.GetTetrahedronTriangle(sideIndex);
+            PolyhedronGeometryInfo tetrahedron = this.GeometryHelper.GetNeighbouringTetrahedronGeometry(sideIndex);
+            LightTriangle tetrahedronCommonSide = this.GeometryHelper.GetNeighbouringTetrahedronTriangle(sideIndex);
+            PolyhedronGeometryInfo octahedron = this.GeometryHelper.GetNeighbouringOctahedronGeometry(sideIndex);
+            LightTriangle octahedronCommonSide = this.GeometryHelper.GetTetrahedronTriangle(sideIndex);
 
             yield return new NeighbouringPolyhedronInfo(tetrahedron, tetrahedronCommonSide);
             yield return new NeighbouringPolyhedronInfo(octahedron, octahedronCommonSide);

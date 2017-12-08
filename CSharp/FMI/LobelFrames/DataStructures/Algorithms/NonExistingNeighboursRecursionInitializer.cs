@@ -13,9 +13,9 @@ namespace LobelFrames.DataStructures.Algorithms
 
         protected override IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
-            LightTriangle tetrahedronLightTriangle = this.GetTetrahedronTriangle(sideIndex);
-            LightTriangle oppositeLightTriangle = this.GetOppositeNeighbouringTriangle(sideIndex);
-            LightTriangle oppositeTetrahedronLightTriangle = this.GetNeighbouringTetrahedronTriangle(sideIndex);
+            LightTriangle tetrahedronLightTriangle = this.GeometryHelper.GetTetrahedronTriangle(sideIndex);
+            LightTriangle oppositeLightTriangle = this.GeometryHelper.GetOppositeNeighbouringTriangle(sideIndex);
+            LightTriangle oppositeTetrahedronLightTriangle = this.GeometryHelper.GetNeighbouringTetrahedronTriangle(sideIndex);
 
             Triangle tetrahedronTriangle;
             if (!this.Context.TryCreateNonExistingTriangle(tetrahedronLightTriangle, out tetrahedronTriangle))

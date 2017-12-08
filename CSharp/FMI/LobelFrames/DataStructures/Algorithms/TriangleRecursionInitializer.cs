@@ -13,14 +13,10 @@ namespace LobelFrames.DataStructures.Algorithms
     internal abstract class TriangleRecursionInitializer : IDisposable
     {
         private readonly Triangle triangle;
-        private readonly Vector3D triangleUnitNormal;
-        private readonly Point3D triangleCenter;
-        private readonly Point3D tetrahedronTop;
         private readonly OctaTetraApproximationContext context;
         private readonly TriangleProjectionContext projectionContext;
+        private readonly OctaTetraMeshTriangleGeometryHelper geometryHelper;
         private readonly ComparableRecursionPosition?[] sidesRecursionPositions;
-        private readonly Point3D[] neighbouringOppositeVertices;
-        private readonly Point3D[] neighbouringTetrahedraTops;
         private bool isDisposed;
 
         public TriangleRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
@@ -29,25 +25,8 @@ namespace LobelFrames.DataStructures.Algorithms
             this.triangle = triangle;
             this.context = context;
             this.sidesRecursionPositions = new ComparableRecursionPosition?[3];
+            this.geometryHelper = new OctaTetraMeshTriangleGeometryHelper(triangle.A.Point, triangle.B.Point, triangle.C.Point, this.Context);
             this.projectionContext = new TriangleProjectionContext(triangle.A.Point, triangle.B.Point, triangle.C.Point);
-            Vector3D normal = Vector3D.CrossProduct(this.triangle.B.Point - this.triangle.A.Point, this.triangle.C.Point - this.triangle.A.Point);
-            normal.Normalize();
-            this.triangleUnitNormal = normal;
-            this.triangleCenter = this.triangle.A.Point + (1.0 / 3) * ((this.triangle.B.Point - this.triangle.A.Point) + (this.triangle.C.Point - this.triangle.A.Point));
-            this.tetrahedronTop = this.triangleCenter + this.Context.TetrahedronHeight * this.triangleUnitNormal;
-
-            this.neighbouringOppositeVertices = new Point3D[3];
-            this.neighbouringTetrahedraTops = new Point3D[3];
-
-            for (int sideIndex = 0; sideIndex < 3; sideIndex++)
-            {
-                Vertex opositeVertex = this.triangle.GetVertex(sideIndex);
-                Point3D edgeStart = this.GetEdgeStart(sideIndex);
-                Point3D edgeEnd = this.GetEdgeEnd(sideIndex);
-                Point3D edgeCenter = edgeStart + 0.5 * (edgeEnd - edgeStart);
-                this.neighbouringOppositeVertices[sideIndex] = edgeCenter + (edgeCenter - opositeVertex.Point);
-                this.neighbouringTetrahedraTops[sideIndex] = edgeCenter + (edgeCenter - tetrahedronTop);
-            }
 
             this.isDisposed = false;
         }
@@ -60,19 +39,11 @@ namespace LobelFrames.DataStructures.Algorithms
             }
         }
 
-        protected Vector3D TriangleUnitNormal
+        protected OctaTetraMeshTriangleGeometryHelper GeometryHelper
         {
             get
             {
-                return this.triangleUnitNormal;
-            }
-        }
-
-        protected Point3D TriangleCenter
-        {
-            get
-            {
-                return this.triangleCenter;
+                return this.geometryHelper;
             }
         }
 
@@ -93,69 +64,7 @@ namespace LobelFrames.DataStructures.Algorithms
         }
 
         protected abstract IEnumerable<TriangleBundle> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex);
-
-        protected LightTriangle GetNeighbouringTetrahedronTriangle(int sideIndex)
-        {
-            Point3D top = this.neighbouringTetrahedraTops[sideIndex];
-            Point3D edgeStart = this.GetEdgeStart(sideIndex);
-            Point3D edgeEnd = this.GetEdgeEnd(sideIndex);
-
-            return new LightTriangle(edgeEnd, edgeStart, top);
-        }
-
-        protected LightTriangle GetTetrahedronTriangle(int sideIndex)
-        {
-            Point3D top = this.tetrahedronTop;
-            Point3D edgeStart = this.GetEdgeStart(sideIndex);
-            Point3D edgeEnd = this.GetEdgeEnd(sideIndex);
-
-            return new LightTriangle(edgeEnd, edgeStart, top);
-        }
-
-        protected LightTriangle GetOppositeNeighbouringTriangle(int sideIndex)
-        {
-            Point3D opposite = this.neighbouringOppositeVertices[sideIndex];
-            Point3D edgeStart = this.GetEdgeStart(sideIndex);
-            Point3D edgeEnd = this.GetEdgeEnd(sideIndex);
-
-            return new LightTriangle(edgeStart, edgeEnd, opposite);
-        }
-
-        protected PolyhedronGeometryInfo GetNeighbouringTetrahedronGeometry(int sideIndex)
-        {
-            LightTriangle baseTriangle = this.GetOppositeNeighbouringTriangle(sideIndex);
-            LightTriangle firstSideTriangle = this.GetNeighbouringTetrahedronTriangle(sideIndex);
-            Point3D top = firstSideTriangle.C;
-            LightTriangle secondSideTriangle = new LightTriangle(baseTriangle.A, baseTriangle.C, top);
-            LightTriangle thirdSideTriangle = new LightTriangle(baseTriangle.C, baseTriangle.B, top);
-            LightTriangle[] triangles = { baseTriangle, firstSideTriangle, secondSideTriangle, thirdSideTriangle };
-            Point3D center = ((baseTriangle.A.ToVector() + baseTriangle.B.ToVector() + baseTriangle.C.ToVector() + top.ToVector()) * 0.25).ToPoint();
-
-            return new PolyhedronGeometryInfo(triangles, center, this.Context.TetrahedronCircumscribedSphereRadius, this.Context.TetrahedronInscribedSphereRadius);
-        }
-
-        protected PolyhedronGeometryInfo GetNeighbouringOctahedronGeometry(int sideIndex)
-        {
-            LightTriangle baseTriangle = this.GetOppositeNeighbouringTriangle(sideIndex);
-            Point3D oppositeC = this.tetrahedronTop;
-            Point3D center = oppositeC + 0.5 * (baseTriangle.C - oppositeC);
-            Point3D oppositeA = baseTriangle.A + 2 * (center - baseTriangle.A);
-            Point3D oppositeB = baseTriangle.B + 2 * (center - baseTriangle.B);
-            LightTriangle[] triangles = 
-            {
-                baseTriangle,
-                new LightTriangle(oppositeC, oppositeB, oppositeA),
-                new LightTriangle(oppositeC, baseTriangle.B, baseTriangle.A),
-                new LightTriangle(baseTriangle.C, oppositeB, baseTriangle.A),
-                new LightTriangle(baseTriangle.C, baseTriangle.B, oppositeA),
-                new LightTriangle(oppositeA, oppositeB, baseTriangle.C),
-                new LightTriangle(oppositeA, baseTriangle.B, oppositeC),
-                new LightTriangle(baseTriangle.A, oppositeB, oppositeC)
-            };
-
-            return new PolyhedronGeometryInfo(triangles, center, this.Context.OctahedronCircumscribedSphereRadius, this.Context.OctahedronInscribedSphereRadius);
-        }
-
+              
         protected Triangle VerifyAndCreateNonExistingTriangle(LightTriangle t)
         {
             // TODO: Uncomment this code to reproduce the issue with creation of existing triangles
@@ -168,20 +77,6 @@ namespace LobelFrames.DataStructures.Algorithms
             Triangle triangle = this.Context.CreateTriangle(t);
 
             return triangle;
-        }
-
-        private Point3D GetEdgeStart(int sideIndex)
-        {
-            Vertex edgeStart = this.triangle.GetVertex((sideIndex + 1) % 3);
-
-            return edgeStart.Point;
-        }
-
-        private Point3D GetEdgeEnd(int sideIndex)
-        {
-            Vertex edgeEnd = this.triangle.GetVertex((sideIndex + 2) % 3);
-
-            return edgeEnd.Point;
         }
 
         private void UpdatePositionInitializations(UVMeshDescretePosition positionToCheck, Point3D barycentricCoordinates)

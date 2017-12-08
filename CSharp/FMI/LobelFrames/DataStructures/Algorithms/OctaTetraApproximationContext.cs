@@ -5,7 +5,7 @@ using System.Windows.Media.Media3D;
 
 namespace LobelFrames.DataStructures.Algorithms
 {
-    internal class OctaTetraApproximationContext
+    internal class OctaTetraApproximationContext : IOctaTetraGeometryContext
     {
         private readonly IDescreteUVMesh meshToApproximate;
         private readonly Queue<OctaTetraApproximationStep> recursionQueue;

@@ -65,5 +65,21 @@ namespace LobelFrames.DataStructures
                 return this.inscribedSphereRadius * this.inscribedSphereRadius;
             }
         }
+
+        public bool IsTetrahedron
+        {
+            get
+            {
+                return this.triangles.Length == 4;
+            }
+        }
+
+        public bool IsOctahedron
+        {
+            get
+            {
+                return this.triangles.Length == 8;
+            }
+        }
     }
 }
