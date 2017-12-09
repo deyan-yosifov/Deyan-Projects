@@ -74,6 +74,13 @@ namespace LobelFrames.Views
                 string path = System.IO.Path.Combine(currentDirectory, @"Resources\Help\Diplomna-Deyan Yosifov-M24906.html");
                 this.helpBrowser.Navigate(new Uri(path));
             }
+
+            if (!this.viewModel.HelpViewModel.IsOpen)
+            {
+                this.browserKeyboardFocusIssueWorkaround.IsEnabled = true;
+                this.browserKeyboardFocusIssueWorkaround.Focus();
+                this.browserKeyboardFocusIssueWorkaround.IsEnabled = false;
+            }           
         }
     }
 }

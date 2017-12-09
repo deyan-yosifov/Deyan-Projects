@@ -14,6 +14,7 @@
     <Grid>
         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="5" Background="AliceBlue">
             <Grid>
+                <TextBox x:Name="browserKeyboardFocusIssueWorkaround" Width="0" Height="0" IsEnabled="False" />
                 <controls3D:Scene3D x:Name="scene" Visibility="{Binding HelpViewModel.IsOpen, Converter={StaticResource inverseBoolToVisibilityConverter}}" />
                 <WebBrowser x:Name="helpBrowser" Visibility="{Binding HelpViewModel.IsOpen, Converter={StaticResource boolToVisibilityConverter}}"
                             IsVisibleChanged="HelpBrowser_IsVisibleChanged" />
