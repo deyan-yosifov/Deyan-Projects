@@ -173,6 +173,21 @@ namespace LobelFrames.ViewModels
         public void ChangeHelpAppearance()
         {
             this.HelpViewModel.IsOpen = !this.HelpViewModel.IsOpen;
+
+            if (this.HelpViewModel.IsOpen)
+            {
+                foreach (CommandType command in Enum.GetValues(typeof(CommandType)))
+                {
+                    if (command != CommandType.Help)
+                    {
+                        this.CommandDescriptors[command].IsEnabled = false;
+                    }
+                }
+            }
+            else
+            {
+                this.CommandDescriptors.UpdateCommandStates();
+            }
         }
 
         public void BeforeCommandExecuted(CommandType type)
