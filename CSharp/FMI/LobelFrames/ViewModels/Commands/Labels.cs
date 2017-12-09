@@ -9,7 +9,7 @@ namespace LobelFrames.ViewModels.Commands
     internal static class Labels
     {
         public const string Default = "Въведи параметър:";
-        public const string InputMoveDistance = "Въведи разстояние и/или направление:";
+        public const string InputMoveDistance = "Въведи разстояние:";
         public const string WrongInputMoveDistance = "Грешен параметър - трябва да бъде число!";
         public const string PressEscapeToCancel = "Натисни Escape за излизане";
         public const string PressEscapeToStepBack = "Натисни Escape за стъпка назад";
