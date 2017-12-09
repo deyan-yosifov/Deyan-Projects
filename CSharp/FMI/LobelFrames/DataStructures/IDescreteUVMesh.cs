@@ -12,7 +12,11 @@ namespace LobelFrames.DataStructures
         int UDevisions { get; }
         int VDevisions { get; }
         int TrianglesCount { get; }
-        void GetTriangleVertices(int triangleIndex, out UVMeshDescretePosition aVertex, out UVMeshDescretePosition bVertex, out UVMeshDescretePosition cVertex);
+        void GetTriangleVertices(
+            int triangleIndex, 
+            out UVMeshDescretePosition aVertex, 
+            out UVMeshDescretePosition bVertex, 
+            out UVMeshDescretePosition cVertex);
         IEnumerable<int> GetNeighbouringTriangleIndices(UVMeshDescretePosition meshPosition);
     }
 }
