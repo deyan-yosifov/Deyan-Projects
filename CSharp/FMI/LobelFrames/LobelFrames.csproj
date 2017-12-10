@@ -256,15 +256,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <Resource Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\item0016.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\props017.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\themedata.thmx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -332,50 +323,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="obj\" />
+    <Folder Include="Resources\Help\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Settings-icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\colorschememapping.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\filelist.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image001.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image002.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image003.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image004.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image005.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image006.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image007.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image008.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image009.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image010.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
