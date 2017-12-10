@@ -49,7 +49,7 @@ namespace LobelFrames.ViewModels.Commands
         public const string SelectSecondGluePoint = "Избери втората точка на лепене!";
         public const string SelectGlueDirectionPoint = "Избери точка от полуравнината на новодобавените триъгълници!";
         public const string InputNumberOfGlueRowsToAddAndPressEnter = "Въведи различен брой на редове с триъгълници или потвърди текущия брой с Enter!";
-        public const string InvalidGlueRowsParameterValue = "Невалиден параметър! Броя на редове с триъгълници трябва да е цяло положително число!";
+        public const string InvalidGlueRowsParameterValue = "Невалиден параметър! Броят на редове с триъгълници трябва да е цяло положително число!";
 
         // Approximate command
         public const string ApproximatingPleaseWait = "Апроксимиране на провърхнината. Моля изчакайте...";
