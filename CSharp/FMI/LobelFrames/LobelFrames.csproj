@@ -256,6 +256,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\themedata.thmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -323,10 +326,317 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="obj\" />
-    <Folder Include="Resources\Help\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Settings-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\colorschememapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\filelist.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\header.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image002.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image003.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image004.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image005.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image006.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image007.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image008.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image009.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image010.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image011.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image012.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image013.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image014.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image015.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image016.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image017.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image018.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image019.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image020.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image021.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image022.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image023.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image024.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image025.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image026.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image027.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image028.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image029.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image030.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image031.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image032.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image033.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image034.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image035.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image036.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image037.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image038.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image039.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image040.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image041.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image042.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image043.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image044.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image045.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image046.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image047.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image048.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image049.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image050.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image051.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image052.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image053.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image054.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image055.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image056.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image057.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image058.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image059.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image060.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image061.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image062.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image063.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image064.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image065.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image066.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image067.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image068.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image069.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image070.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image071.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image072.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image073.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image074.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image075.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image076.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image077.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image078.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image079.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image080.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image081.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image082.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image083.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image084.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image085.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image086.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image087.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image088.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image089.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image090.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image091.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image092.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image093.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image094.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image095.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\image096.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\item0001.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Help\Diplomna-Deyan Yosifov-M24906_files\props002.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
