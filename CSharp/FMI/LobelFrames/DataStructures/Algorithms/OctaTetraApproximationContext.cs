@@ -16,6 +16,7 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly double octahedronInscribedSphereRadius;
         private readonly double octahedronCircumscribedSphereRadius;
         private readonly bool[,] coveredUVPoints;
+        private readonly PointsEqualityComparer pointsComparer;
         private readonly TriangleRecursionStrategy recursionStrategy;
         private readonly TriangleProjectionContext[] trianglesProjectionCache;
         private readonly UniqueEdgesSet uniqueEdges;
@@ -39,9 +40,9 @@ namespace LobelFrames.DataStructures.Algorithms
             this.trianglesProjectionCache = new TriangleProjectionContext[meshToApproximate.TrianglesCount];
             this.uniqueEdges = new UniqueEdgesSet();
             this.recursionQueue = new Queue<OctaTetraApproximationStep>();
-            PointsEqualityComparer pointsComparer = new PointsEqualityComparer(6);
-            this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(pointsComparer);
-            this.iteratedPolyhedraCentersToTriangleResult = new Dictionary<Point3D, Triangle>(pointsComparer);
+            this.pointsComparer = new PointsEqualityComparer(6);
+            this.pointToUniqueVertex = new Dictionary<Point3D, Vertex>(this.pointsComparer);
+            this.iteratedPolyhedraCentersToTriangleResult = new Dictionary<Point3D, Triangle>(this.pointsComparer);
             this.existingTriangles = new Dictionary<ComparableTriangle, Triangle>();
             this.addedTriangles = new HashSet<Triangle>();
             this.coveredPointsCount = 0;
@@ -201,6 +202,21 @@ namespace LobelFrames.DataStructures.Algorithms
             bool isNewlyAdded = this.addedTriangles.Add(triangle);
 
             return isNewlyAdded;
+        }
+
+        public IEnumerable<Triangle> GetAddedTriangles()
+        {
+            foreach (Triangle triangle in this.addedTriangles)
+            {
+                yield return triangle;
+            }
+        }
+
+        public bool ArePointsEqual(Point3D a, Point3D b)
+        {
+            bool areEqual = this.pointsComparer.Equals(a, b);
+
+            return areEqual;
         }
 
         public Triangle CreateTriangle(LightTriangle t)

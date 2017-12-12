@@ -1,4 +1,5 @@
-﻿using Deyo.Core.Mathematics.Algebra;
+﻿using Deyo.Core.Common;
+using Deyo.Core.Mathematics.Algebra;
 using Deyo.Core.Mathematics.Geometry.Algorithms;
 using System;
 using System.Collections.Generic;
@@ -9,95 +10,75 @@ namespace LobelFrames.DataStructures.Algorithms
 {
     internal class ConnectedVolumesRecursionInitializer : TriangleRecursionInitializer
     {
-        private class NeighbouringPolyhedronInfo
-        {
-            public NeighbouringPolyhedronInfo(PolyhedronGeometryInfo geometry, LightTriangle commonTriangle)
-            {
-                this.Geometry = geometry;
-                this.CommonTriangle = commonTriangle;
-            }
-
-            public PolyhedronGeometryInfo Geometry { get; private set; }
-            public LightTriangle CommonTriangle { get; private set; }
-        }
-
-        private readonly bool hasRelatedPolyhedronCenter;
-        private readonly bool isRecursionForFirstTriangle;
+        private readonly bool hasRelatedTetrahedronCenter;
+        private readonly bool hasRelatedOctahedronCenter;
+        private readonly Point3D tetrahedronCenter;
+        private readonly Point3D octahedronCenter;
 
         public ConnectedVolumesRecursionInitializer(Triangle triangle, Point3D relatedPolyhedronCenter, OctaTetraApproximationContext context)
             : this(triangle, context)
         {
-            this.hasRelatedPolyhedronCenter = true;
+            this.hasRelatedTetrahedronCenter = this.Context.ArePointsEqual(this.tetrahedronCenter, relatedPolyhedronCenter);
+            this.hasRelatedOctahedronCenter = this.Context.ArePointsEqual(this.octahedronCenter, relatedPolyhedronCenter);
+            Guard.ThrowExceptionIfFalse(this.hasRelatedTetrahedronCenter || this.hasRelatedOctahedronCenter, "hasRelatedOctaTetraCenter");
             this.Context.SetPolyhedronIterationResult(relatedPolyhedronCenter, triangle);
         }
 
         public ConnectedVolumesRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
             : base(triangle, context)
         {
-            Point3D tetrahedronCenter = this.GeometryHelper.TriangleCenter + this.Context.TetrahedronInscribedSphereRadius * this.GeometryHelper.TriangleUnitNormal;
-            Point3D octahedronCenter = this.GeometryHelper.TriangleCenter - this.Context.OctahedronInscribedSphereRadius * this.GeometryHelper.TriangleUnitNormal;
+            this.tetrahedronCenter = this.GeometryHelper.GetTetrahedronCenter();
+            this.octahedronCenter = this.GeometryHelper.GetOctahedronCenter();
             bool isTetrahedronIterated = this.Context.IsPolyhedronIterated(tetrahedronCenter);
             bool isOctahedronIterated = this.Context.IsPolyhedronIterated(octahedronCenter);
-            this.isRecursionForFirstTriangle = !(isTetrahedronIterated || isOctahedronIterated);
+            bool isRecursionForFirstTriangle = !(isTetrahedronIterated || isOctahedronIterated);
 
-            if (this.isRecursionForFirstTriangle)
+            if (isRecursionForFirstTriangle)
             {
-#if DEBUG
-                Debug("First triangle when no polyhedron is iterated yet!");
-#endif
                 this.Context.SetPolyhedronIterationResult(tetrahedronCenter, triangle);
                 this.Context.SetPolyhedronIterationResult(octahedronCenter, triangle);
+                this.hasRelatedTetrahedronCenter = true;
+                this.hasRelatedOctahedronCenter = true;
             }
         }
 
         protected override IEnumerable<TriangleBundle> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
-            if (!(this.hasRelatedPolyhedronCenter || this.isRecursionForFirstTriangle))
+            if (!(this.hasRelatedTetrahedronCenter || this.hasRelatedOctahedronCenter))
             {
-#if DEBUG
-                Debug("Recursion stopped because it is comming from connecting triangle:{0} sideIndex:{1}", this.GeometryHelper.TriangleCenter, sideIndex);
-#endif
                 yield break;
             }
 
-            Triangle commonNeighbouringTriangle = this.Context.CreateTriangle(this.GeometryHelper.GetOppositeNeighbouringTriangle(sideIndex));
+            bool hasFoundConnection = false;
 
-            foreach (NeighbouringPolyhedronInfo polyhedron in this.EnumerateNeighbouringPolyhedra(sideIndex))
+            foreach (PolyhedronGeometryInfo neighbour in this.EnumeratePolyhedraNeighbours(sideIndex))
             {
-                Triangle iterationResultTriangle;
-                bool isAlreadyIterated = this.Context.TryGetPolyhedraIterationResult(polyhedron.Geometry.Center, out iterationResultTriangle);
-                Triangle[] bundle;
-
-                if (isAlreadyIterated)
+                Triangle iterationResult;
+                if (this.Context.TryGetPolyhedraIterationResult(neighbour.Center, out iterationResult))
                 {
-                    if (iterationResultTriangle != null && !this.Context.IsTriangleAddedToApproximation(commonNeighbouringTriangle))
+                    if (!hasFoundConnection)
                     {
-#if DEBUG
-                        Debug("Connecting triangle added: {0}", polyhedron.CommonTriangle);
-#endif
-                        Triangle connectionTriangle = this.Context.CreateTriangle(polyhedron.CommonTriangle);
+                        LightTriangle connection;
+                        hasFoundConnection = this.TryFindConnection(iterationResult, sideIndex, out connection);
 
-                        if (connectionTriangle != iterationResultTriangle)
+                        if (hasFoundConnection)
                         {
-                            yield return new TriangleBundle(new Triangle[] { connectionTriangle });
+                            //yield return new TriangleBundle(new Triangle[] { this.Context.CreateTriangle(connection) });
                         }
                     }
                 }
-                else if (this.TryGetNeighbouringPolyhedronInitialIterationBundle(polyhedron.Geometry, recursionStartPosition, out bundle))
+                else
                 {
-#if DEBUG
-                    Debug("Bundle sideIndex:{0} Length:{1}", sideIndex, bundle.Length);
-#endif
-                    yield return new TriangleBundle(bundle, polyhedron.Geometry.Center);
+                    this.Context.AddPolyhedronToIterated(neighbour.Center);
+
+                    Triangle[] bundle;
+                    if (this.TryGetNeighbouringPolyhedronInitialIterationBundle(neighbour, recursionStartPosition, out bundle))
+                    {
+                        yield return new TriangleBundle(bundle, neighbour.Center);
+                    }
                 }
             }
         }
-#if DEBUG
-        private void Debug(string text, params object[] parameters)
-        {
-            System.Diagnostics.Debug.WriteLine(text, parameters);
-        }
-#endif
 
         private bool TryGetNeighbouringPolyhedronInitialIterationBundle(
             PolyhedronGeometryInfo polyhedron, UVMeshDescretePosition recursionStartPosition, out Triangle[] bundle)
@@ -110,21 +91,99 @@ namespace LobelFrames.DataStructures.Algorithms
             DescreteUVMeshRecursiveTrianglesIterator.Iterate(intersectionFinder, this.Context.MeshToApproximate, initialTriangles);
             bool isAppropriatelyIntersecting = intersectionFinder.HasFoundIntersection &&
                 intersectionFinder.BestSquaredDistance.IsLessThan(polyhedron.SquaredCircumscribedSphereRadius);
-            this.Context.AddPolyhedronToIterated(polyhedron.Center);
             bundle = isAppropriatelyIntersecting ? polyhedron.Triangles.Select(t => this.Context.CreateTriangle(t)).ToArray() : null;
 
             return isAppropriatelyIntersecting;
         }
 
-        private IEnumerable<NeighbouringPolyhedronInfo> EnumerateNeighbouringPolyhedra(int sideIndex)
+        private IEnumerable<PolyhedronGeometryInfo> EnumeratePolyhedraNeighbours(int sideIndex)
         {
-            PolyhedronGeometryInfo tetrahedron = this.GeometryHelper.GetNeighbouringTetrahedronGeometry(sideIndex);
-            LightTriangle tetrahedronCommonSide = this.GeometryHelper.GetNeighbouringTetrahedronTriangle(sideIndex);
-            PolyhedronGeometryInfo octahedron = this.GeometryHelper.GetNeighbouringOctahedronGeometry(sideIndex);
-            LightTriangle octahedronCommonSide = this.GeometryHelper.GetTetrahedronTriangle(sideIndex);
+            if (this.hasRelatedTetrahedronCenter)
+            {
+                foreach (PolyhedronGeometryInfo octahedronNeighbour in this.EnumerateTetrahedronOctahedraNeighbours(sideIndex))
+                {
+                    yield return octahedronNeighbour;
+                }
+            }
 
-            yield return new NeighbouringPolyhedronInfo(tetrahedron, tetrahedronCommonSide);
-            yield return new NeighbouringPolyhedronInfo(octahedron, octahedronCommonSide);
+            if (this.hasRelatedOctahedronCenter)
+            {
+                foreach (PolyhedronGeometryInfo tetrahedronNeighbour in this.EnumerateOctahedronTetrahedraNeighbours(sideIndex))
+                {
+                    yield return tetrahedronNeighbour;
+                }
+            }
+        }
+
+        private IEnumerable<PolyhedronGeometryInfo> EnumerateOctahedronTetrahedraNeighbours(int sideIndex)
+        {
+            foreach (PolyhedronGeometryInfo tetrahedron in this.EnumerateHalfOctahedronNonIteratedTetrahedraNeighbours(this.GeometryHelper, sideIndex))
+            {
+                yield return tetrahedron;
+            }
+
+            int oppositeIndex = sideIndex == 0 ? 0 : (sideIndex == 1 ? 2 : 1);
+            LightTriangle t = this.GeometryHelper.GetOctahedronOppositeBaseTriangle();
+            OctaTetraMeshTriangleGeometryHelper oppositeHelper = new OctaTetraMeshTriangleGeometryHelper(t.A, t.B, t.C, this.Context);
+
+            foreach (PolyhedronGeometryInfo tetrahedron in this.EnumerateHalfOctahedronNonIteratedTetrahedraNeighbours(oppositeHelper, oppositeIndex))
+            {
+                yield return tetrahedron;
+            }
+        }
+
+        private IEnumerable<PolyhedronGeometryInfo> EnumerateHalfOctahedronNonIteratedTetrahedraNeighbours(OctaTetraMeshTriangleGeometryHelper octaTetraMeshTriangleGeometryHelper, int sideIndex)
+        {
+            if (sideIndex == 0)
+            {
+                PolyhedronGeometryInfo tetrahedron = this.GeometryHelper.GetTetrahedronGeometry();
+                yield return tetrahedron;
+            }
+
+            Point3D neighbouringCenter = this.GeometryHelper.GetNeighbouringTetrahedronCenter(sideIndex);
+            PolyhedronGeometryInfo neighbouringtetrahedron = this.GeometryHelper.GetNeighbouringTetrahedronGeometry(sideIndex);
+            yield return neighbouringtetrahedron;
+        }
+
+        private IEnumerable<PolyhedronGeometryInfo> EnumerateTetrahedronOctahedraNeighbours(int sideIndex)
+        {
+            if (sideIndex == 0)
+            {
+                PolyhedronGeometryInfo octahedron = this.GeometryHelper.GetOctahedronGeometry();
+                yield return octahedron;
+            }
+
+            Point3D neighbouringCenter = this.GeometryHelper.GetNeighbouringOctahedronCenter(sideIndex);
+            PolyhedronGeometryInfo neighbouringOctahedron = this.GeometryHelper.GetNeighbouringOctahedronGeometry(sideIndex);
+            yield return neighbouringOctahedron;
+        }
+
+        private bool TryFindConnection(Triangle iterationResult, int sideIndex, out LightTriangle connection)
+        {
+            if (iterationResult != null)
+            {
+                foreach (LightTriangle potentialConnection in this.EnumerateSideNeighbouringTriangles(sideIndex))
+                {
+                    foreach (Vertex vertex in iterationResult.Vertices)
+                    {
+                        if (this.Context.ArePointsEqual(vertex.Point, potentialConnection.C))
+                        {
+                            connection = potentialConnection;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            connection = default(LightTriangle);
+            return false;
+        }
+
+        private IEnumerable<LightTriangle> EnumerateSideNeighbouringTriangles(int sideIndex)
+        {
+            yield return this.GeometryHelper.GetNeighbouringTetrahedronTriangle(sideIndex);
+            yield return this.GeometryHelper.GetOppositeNeighbouringTriangle(sideIndex);
+            yield return this.GeometryHelper.GetTetrahedronTriangle(sideIndex);
         }
     }
 }

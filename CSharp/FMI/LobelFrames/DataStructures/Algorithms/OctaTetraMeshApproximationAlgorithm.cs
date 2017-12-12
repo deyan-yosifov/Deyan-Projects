@@ -47,13 +47,86 @@ namespace LobelFrames.DataStructures.Algorithms
 
                     if (!isAlreadyAddedToApproximationResult)
                     {
-                        yield return triangle;
+                        yield return triangle;                        
+                    }
 
-                        Point3D? relatedPolyhedronCenter = step.Bundle.HasRelatedPolyhedronCenter ? step.Bundle.RelatedPolyhedronCenter : (Point3D?)null;           
-                        this.InitializeRecursionForBestTriangle(triangle, relatedPolyhedronCenter, verticesFromIntersectingMeshTriangles);
+                    Point3D? relatedPolyhedronCenter = step.Bundle.HasRelatedPolyhedronCenter ? step.Bundle.RelatedPolyhedronCenter : (Point3D?)null;
+                    this.InitializeRecursionForBestTriangle(triangle, relatedPolyhedronCenter, verticesFromIntersectingMeshTriangles);
+                }
+            }
+
+            foreach (Triangle triangle in this.CreateConnectingTriangles())
+            {
+                yield return triangle;
+            }
+        }
+
+        private IEnumerable<Triangle> CreateConnectingTriangles()
+        {
+            if (this.Context.RecursionStrategy == TriangleRecursionStrategy.ChooseBestTrianglesFromIntersectingOctaTetraVolumesAndConnectThem)
+            {
+                Triangle[] initiallyAddedTriangles = this.Context.GetAddedTriangles().ToArray();
+                Dictionary<Edge, int> edgesToTrianglesCount = new Dictionary<Edge, int>();
+                HashSet<Vertex> initiallyAddedVertices = new HashSet<Vertex>();
+
+                foreach (Triangle initial in initiallyAddedTriangles)
+                {
+                    foreach (Vertex vertex in initial.Vertices)
+                    {
+                        initiallyAddedVertices.Add(vertex);
+                    }
+
+                    foreach (Edge edge in initial.Edges)
+                    {
+                        int count;
+                        if (edgesToTrianglesCount.TryGetValue(edge, out count))
+                        {
+                            edgesToTrianglesCount[edge] = count + 1;
+                        }
+                        else
+                        {
+                            edgesToTrianglesCount.Add(edge, 1);
+                        }
+                    }
+                }                
+
+                foreach (Triangle initial in initiallyAddedTriangles)
+                {
+                    OctaTetraMeshTriangleGeometryHelper geometryHelper = 
+                        new OctaTetraMeshTriangleGeometryHelper(initial.A.Point, initial.B.Point, initial.C.Point, this.Context);
+
+                    foreach (Triangle connection in geometryHelper.EnumerateNeighbouringTriangles()
+                        .Select(lt => this.Context.CreateTriangle(lt))
+                        .Where(triangle => initiallyAddedVertices.Contains(triangle.C) && !this.Context.IsTriangleAddedToApproximation(triangle)))
+                    {
+                        foreach (Edge edge in connection.Edges)
+                        {
+                            int count;
+                            if (edgesToTrianglesCount.TryGetValue(edge, out count) && count > 1)
+                            {
+                                continue;
+                            }
+                        }
+                        
+                        //yield return connection;
+                        this.Context.AddTriangleToApproximation(connection);
+                        foreach (Edge edge in connection.Edges)
+                        {
+                            int count;
+                            if (edgesToTrianglesCount.TryGetValue(edge, out count))
+                            {
+                                edgesToTrianglesCount[edge] = count + 1;
+                            }
+                            else
+                            {
+                                edgesToTrianglesCount.Add(edge, 1);
+                            }
+                        }
                     }
                 }
             }
+
+            yield break;
         }
 
         private bool TryFindBestTriangleFromStepBundle(OctaTetraApproximationStep step,

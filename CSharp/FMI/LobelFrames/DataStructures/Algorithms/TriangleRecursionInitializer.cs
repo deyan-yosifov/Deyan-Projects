@@ -17,11 +17,12 @@ namespace LobelFrames.DataStructures.Algorithms
         private readonly TriangleProjectionContext projectionContext;
         private readonly OctaTetraMeshTriangleGeometryHelper geometryHelper;
         private readonly ComparableRecursionPosition?[] sidesRecursionPositions;
+        private readonly bool isNewlyAddedToApproximation;
         private bool isDisposed;
 
         public TriangleRecursionInitializer(Triangle triangle, OctaTetraApproximationContext context)
         {
-            context.AddTriangleToApproximation(triangle);
+            this.isNewlyAddedToApproximation = context.AddTriangleToApproximation(triangle);
             this.triangle = triangle;
             this.context = context;
             this.sidesRecursionPositions = new ComparableRecursionPosition?[3];
@@ -36,6 +37,14 @@ namespace LobelFrames.DataStructures.Algorithms
             get
             {
                 return this.context;
+            }
+        }
+
+        protected bool IsTriangleNewlyAddedToApproximation
+        {
+            get
+            {
+                return this.isNewlyAddedToApproximation;
             }
         }
 

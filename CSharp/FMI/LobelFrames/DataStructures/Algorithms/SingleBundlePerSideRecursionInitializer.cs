@@ -13,7 +13,10 @@ namespace LobelFrames.DataStructures.Algorithms
 
         protected sealed override IEnumerable<TriangleBundle> CreateEdgeNextStepNeighbouringTriangleBundles(UVMeshDescretePosition recursionStartPosition, int sideIndex)
         {
-            yield return new TriangleBundle(this.CreateEdgeNextStepNeighbouringTriangles(recursionStartPosition, sideIndex).ToArray());
+            if (this.IsTriangleNewlyAddedToApproximation)
+            {
+                yield return new TriangleBundle(this.CreateEdgeNextStepNeighbouringTriangles(recursionStartPosition, sideIndex).ToArray());
+            }
         }
 
         protected abstract IEnumerable<Triangle> CreateEdgeNextStepNeighbouringTriangles(UVMeshDescretePosition recursionStartPosition, int sideIndex);
