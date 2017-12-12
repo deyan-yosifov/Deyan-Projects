@@ -57,6 +57,7 @@
     <Compile Include="DataStructures\Algorithms\ApproximationProgressEventArgs.cs" />
     <Compile Include="DataStructures\Algorithms\ClosestOctaTetraRecursionInitializerBase.cs" />
     <Compile Include="DataStructures\Algorithms\ConnectedVolumesRecursionInitializer.cs" />
+    <Compile Include="DataStructures\Algorithms\ConnectingTrianglesCreator.cs" />
     <Compile Include="DataStructures\Algorithms\DescreteUVMeshRecursiveTrianglesIterator.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximatingAlgorithm.cs" />
     <Compile Include="DataStructures\Algorithms\ILobelMeshApproximator.cs" />

@@ -49,33 +49,14 @@ namespace LobelFrames.DataStructures.Algorithms
                 yield break;
             }
 
-            bool hasFoundConnection = false;
-
-            foreach (PolyhedronGeometryInfo neighbour in this.EnumeratePolyhedraNeighbours(sideIndex))
+            foreach (PolyhedronGeometryInfo neighbour in this.EnumerateNonIteratedPolyhedraNeighbours(sideIndex))
             {
-                Triangle iterationResult;
-                if (this.Context.TryGetPolyhedraIterationResult(neighbour.Center, out iterationResult))
-                {
-                    if (!hasFoundConnection)
-                    {
-                        LightTriangle connection;
-                        hasFoundConnection = this.TryFindConnection(iterationResult, sideIndex, out connection);
+                this.Context.AddPolyhedronToIterated(neighbour.Center);
 
-                        if (hasFoundConnection)
-                        {
-                            //yield return new TriangleBundle(new Triangle[] { this.Context.CreateTriangle(connection) });
-                        }
-                    }
-                }
-                else
+                Triangle[] bundle;
+                if (this.TryGetNeighbouringPolyhedronInitialIterationBundle(neighbour, recursionStartPosition, out bundle))
                 {
-                    this.Context.AddPolyhedronToIterated(neighbour.Center);
-
-                    Triangle[] bundle;
-                    if (this.TryGetNeighbouringPolyhedronInitialIterationBundle(neighbour, recursionStartPosition, out bundle))
-                    {
-                        yield return new TriangleBundle(bundle, neighbour.Center);
-                    }
+                    yield return new TriangleBundle(bundle, neighbour.Center);
                 }
             }
         }
@@ -96,11 +77,11 @@ namespace LobelFrames.DataStructures.Algorithms
             return isAppropriatelyIntersecting;
         }
 
-        private IEnumerable<PolyhedronGeometryInfo> EnumeratePolyhedraNeighbours(int sideIndex)
+        private IEnumerable<PolyhedronGeometryInfo> EnumerateNonIteratedPolyhedraNeighbours(int sideIndex)
         {
             if (this.hasRelatedTetrahedronCenter)
             {
-                foreach (PolyhedronGeometryInfo octahedronNeighbour in this.EnumerateTetrahedronOctahedraNeighbours(sideIndex))
+                foreach (PolyhedronGeometryInfo octahedronNeighbour in this.EnumerateNonIteratedTetrahedronOctahedraNeighbours(sideIndex))
                 {
                     yield return octahedronNeighbour;
                 }
@@ -108,14 +89,14 @@ namespace LobelFrames.DataStructures.Algorithms
 
             if (this.hasRelatedOctahedronCenter)
             {
-                foreach (PolyhedronGeometryInfo tetrahedronNeighbour in this.EnumerateOctahedronTetrahedraNeighbours(sideIndex))
+                foreach (PolyhedronGeometryInfo tetrahedronNeighbour in this.EnumerateNonIteratedOctahedronTetrahedraNeighbours(sideIndex))
                 {
                     yield return tetrahedronNeighbour;
                 }
             }
         }
 
-        private IEnumerable<PolyhedronGeometryInfo> EnumerateOctahedronTetrahedraNeighbours(int sideIndex)
+        private IEnumerable<PolyhedronGeometryInfo> EnumerateNonIteratedOctahedronTetrahedraNeighbours(int sideIndex)
         {
             foreach (PolyhedronGeometryInfo tetrahedron in this.EnumerateHalfOctahedronNonIteratedTetrahedraNeighbours(this.GeometryHelper, sideIndex))
             {
@@ -134,56 +115,36 @@ namespace LobelFrames.DataStructures.Algorithms
 
         private IEnumerable<PolyhedronGeometryInfo> EnumerateHalfOctahedronNonIteratedTetrahedraNeighbours(OctaTetraMeshTriangleGeometryHelper octaTetraMeshTriangleGeometryHelper, int sideIndex)
         {
-            if (sideIndex == 0)
+            if (sideIndex == 0 && !this.Context.IsPolyhedronIterated(this.tetrahedronCenter))
             {
                 PolyhedronGeometryInfo tetrahedron = this.GeometryHelper.GetTetrahedronGeometry();
                 yield return tetrahedron;
             }
 
             Point3D neighbouringCenter = this.GeometryHelper.GetNeighbouringTetrahedronCenter(sideIndex);
-            PolyhedronGeometryInfo neighbouringtetrahedron = this.GeometryHelper.GetNeighbouringTetrahedronGeometry(sideIndex);
-            yield return neighbouringtetrahedron;
+
+            if (!this.Context.IsPolyhedronIterated(neighbouringCenter))
+            {
+                PolyhedronGeometryInfo neighbouringtetrahedron = this.GeometryHelper.GetNeighbouringTetrahedronGeometry(sideIndex);
+                yield return neighbouringtetrahedron;
+            }
         }
 
-        private IEnumerable<PolyhedronGeometryInfo> EnumerateTetrahedronOctahedraNeighbours(int sideIndex)
+        private IEnumerable<PolyhedronGeometryInfo> EnumerateNonIteratedTetrahedronOctahedraNeighbours(int sideIndex)
         {
-            if (sideIndex == 0)
+            if (sideIndex == 0 && !this.Context.IsPolyhedronIterated(this.octahedronCenter))
             {
                 PolyhedronGeometryInfo octahedron = this.GeometryHelper.GetOctahedronGeometry();
                 yield return octahedron;
             }
 
             Point3D neighbouringCenter = this.GeometryHelper.GetNeighbouringOctahedronCenter(sideIndex);
-            PolyhedronGeometryInfo neighbouringOctahedron = this.GeometryHelper.GetNeighbouringOctahedronGeometry(sideIndex);
-            yield return neighbouringOctahedron;
-        }
 
-        private bool TryFindConnection(Triangle iterationResult, int sideIndex, out LightTriangle connection)
-        {
-            if (iterationResult != null)
+            if (!this.Context.IsPolyhedronIterated(neighbouringCenter))
             {
-                foreach (LightTriangle potentialConnection in this.EnumerateSideNeighbouringTriangles(sideIndex))
-                {
-                    foreach (Vertex vertex in iterationResult.Vertices)
-                    {
-                        if (this.Context.ArePointsEqual(vertex.Point, potentialConnection.C))
-                        {
-                            connection = potentialConnection;
-                            return true;
-                        }
-                    }
-                }
+                PolyhedronGeometryInfo neighbouringOctahedron = this.GeometryHelper.GetNeighbouringOctahedronGeometry(sideIndex);
+                yield return neighbouringOctahedron;
             }
-
-            connection = default(LightTriangle);
-            return false;
-        }
-
-        private IEnumerable<LightTriangle> EnumerateSideNeighbouringTriangles(int sideIndex)
-        {
-            yield return this.GeometryHelper.GetNeighbouringTetrahedronTriangle(sideIndex);
-            yield return this.GeometryHelper.GetOppositeNeighbouringTriangle(sideIndex);
-            yield return this.GeometryHelper.GetTetrahedronTriangle(sideIndex);
         }
     }
 }
