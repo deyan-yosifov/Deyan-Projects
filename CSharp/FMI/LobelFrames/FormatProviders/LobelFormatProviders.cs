@@ -2,6 +2,7 @@
 using LobelFrames.FormatProviders.ObjFormat;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace LobelFrames.FormatProviders
@@ -44,6 +45,14 @@ namespace LobelFrames.FormatProviders
         public static bool TryGetFormatProvider(string extension, out LobelSceneFormatProviderBase provider)
         {
             return LobelFormatProviders.registeredProviders.TryGetValue(extension, out provider);
+        }
+
+        public static string GetFullPath(string relativeFilePath)
+        {
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string path = Path.Combine(currentDirectory, relativeFilePath);
+
+            return path;
         }
     }
 }

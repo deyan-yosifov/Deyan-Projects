@@ -1,4 +1,5 @@
-﻿using LobelFrames.ViewModels;
+﻿using LobelFrames.FormatProviders;
+using LobelFrames.ViewModels;
 using LobelFrames.ViewModels.Commands;
 using LobelFrames.ViewModels.Settings;
 using System;
@@ -70,8 +71,7 @@ namespace LobelFrames.Views
             if (this.viewModel.HelpViewModel.IsOpen && !this.isHelpLoaded)
             {
                 this.isHelpLoaded = true;
-                string currentDirectory = Directory.GetCurrentDirectory();
-                string path = System.IO.Path.Combine(currentDirectory, @"Resources\Help\Diplomna-Deyan Yosifov-M24906.html");
+                string path = LobelFormatProviders.GetFullPath(@"Resources\Help\Diplomna-Deyan Yosifov-M24906.html");
                 this.helpBrowser.Navigate(new Uri(path));
             }
 

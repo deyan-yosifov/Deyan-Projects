@@ -12,6 +12,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
 {
     public class ApproximateMeshCommandHandler : CommandHandlerBase
     {
+        private const double InitialTriangleSide = 2;
         private double currentLobelSide;
         private IteractiveSurface surfaceToApproximate;
         private ILobelMeshApproximator approximator;
@@ -44,7 +45,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             this.approximatedTriangles = new List<Triangle>();
             this.renderedEdges = new HashSet<Edge>();
 
-            string initialLabel = Labels.GetDecimalNumberValue(this.Editor.Context.Settings.LobelSettings.MeshTriangleSide);
+            string initialLabel = Labels.GetDecimalNumberValue(InitialTriangleSide);
             this.Editor.InputManager.Start(Labels.PressEscapeToCancel, initialLabel, false);
             this.Editor.ShowHint(Hints.StartApproximation, HintType.Info);
         }

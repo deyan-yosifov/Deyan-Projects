@@ -27,6 +27,7 @@ namespace LobelFrames.ViewModels.Commands.Handlers
             base.Editor.ShowHint(Hints.OpenLobelScene, HintType.Info);
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = LobelFormatProviders.DialogsFilter;
+            dialog.InitialDirectory = LobelFormatProviders.GetFullPath(@"Resources\Sample files\");
 
             if (dialog.ShowDialog() == true)
             {
