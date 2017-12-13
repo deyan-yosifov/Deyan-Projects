@@ -16,8 +16,9 @@ namespace LobelFrames.Views
     /// </summary>
     public partial class SurfaceModelingView : UserControl
     {
+        private const string HelpSourceRelativePath = @"Resources\Help\Diplomna-Deyan Yosifov-M24906.html";
+        private const string HelpSourceHtmlEscapedName = "Diplomna-Deyan%20Yosifov-M24906.html";
         private readonly SurfaceModelingViewModel viewModel;
-        private bool isHelpLoaded;
 
         public SurfaceModelingView()
         {
@@ -68,14 +69,17 @@ namespace LobelFrames.Views
 
         private void HelpBrowser_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (this.viewModel.HelpViewModel.IsOpen && !this.isHelpLoaded)
+            if (this.viewModel.HelpViewModel.IsOpen)
             {
-                this.isHelpLoaded = true;
-                string path = LobelFormatProviders.GetFullPath(@"Resources\Help\Diplomna-Deyan Yosifov-M24906.html");
-                this.helpBrowser.Navigate(new Uri(path));
-            }
+                string currentPath = this.helpBrowser.Source != null ? this.helpBrowser.Source.AbsolutePath : string.Empty;
 
-            if (!this.viewModel.HelpViewModel.IsOpen)
+                if (!currentPath.Contains(HelpSourceHtmlEscapedName))
+                {
+                    string path = LobelFormatProviders.GetFullPath(HelpSourceRelativePath);
+                    this.helpBrowser.Navigate(new Uri(path));
+                }
+            }
+            else
             {
                 this.browserKeyboardFocusIssueWorkaround.IsEnabled = true;
                 this.browserKeyboardFocusIssueWorkaround.Focus();
