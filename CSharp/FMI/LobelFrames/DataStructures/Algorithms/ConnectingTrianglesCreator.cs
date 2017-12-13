@@ -8,7 +8,7 @@ namespace LobelFrames.DataStructures.Algorithms
     internal class ConnectingTrianglesCreator
     {
         private readonly OctaTetraApproximationContext context;
-        private readonly Triangle[] initiallyAddedTriangles;
+        private readonly IEnumerable<Triangle> initiallyAddedTriangles;
         private readonly HashSet<Vertex> initiallyAddedVertices;
         private readonly Dictionary<Edge, int> edgesToTrianglesCount;
         private bool hasStartedConnections;
@@ -17,7 +17,7 @@ namespace LobelFrames.DataStructures.Algorithms
         {
             Guard.ThrowExceptionIfNotEqual(context.RecursionStrategy, TriangleRecursionStrategy.ChooseBestTrianglesFromIntersectingOctaTetraVolumesAndConnectThem, "RecursionStrategy");
             this.context = context;
-            this.initiallyAddedTriangles = this.context.GetAddedTriangles().ToArray();
+            this.initiallyAddedTriangles = this.context.GetAddedTriangles();
             this.edgesToTrianglesCount = new Dictionary<Edge, int>();
             this.initiallyAddedVertices = new HashSet<Vertex>();
 
@@ -35,40 +35,65 @@ namespace LobelFrames.DataStructures.Algorithms
         public IEnumerable<Triangle> CreateConnectingTriangles()
         {
             Guard.ThrowExceptionIfTrue(this.hasStartedConnections, "hasStartedConnection");
-            this.hasStartedConnections = true;          
+            this.hasStartedConnections = true;
 
-            foreach (Triangle initialTriangle in initiallyAddedTriangles)
+            Queue<Triangle> trianglesToConnect = new Queue<Triangle>(this.initiallyAddedTriangles);
+
+            while (trianglesToConnect.Count > 0)
             {
-                OctaTetraMeshTriangleGeometryHelper geometryHelper =
-                    new OctaTetraMeshTriangleGeometryHelper(initialTriangle.A.Point, initialTriangle.B.Point, initialTriangle.C.Point, this.context);
+                Triangle triangle = trianglesToConnect.Dequeue();
+                OctaTetraMeshTriangleGeometryHelper geometryHelper = 
+                    new OctaTetraMeshTriangleGeometryHelper(triangle.A.Point, triangle.B.Point, triangle.C.Point, this.context);
 
                 foreach (LightTriangle neighbour in geometryHelper.EnumerateNeighbouringTriangles())
                 {
-                    Triangle connection = this.context.CreateTriangle(neighbour);
-                    bool isEndingWithExistingVertex = this.initiallyAddedVertices.Contains(connection.C);
-                    bool isAddedToApproximation = this.context.IsTriangleAddedToApproximation(connection);
-                    bool hasEdgeWithMultipleTriangles = connection.Edges.Any(e => this.IsMappedWithMoreThanOneTriangle(e));
-
-                    if (isEndingWithExistingVertex && !isAddedToApproximation && !hasEdgeWithMultipleTriangles)
+                    Triangle connection;
+                    if (this.TryGetAppropriateConnectionFromNeighbour(neighbour, out connection))
                     {
                         this.context.AddTriangleToApproximation(connection);
                         this.MapTriangleAndEdges(connection);
-                        //System.Threading.Thread.Sleep(3000);
+                        trianglesToConnect.Enqueue(connection);
                         yield return connection;
                     }
                 }
             }
         }
 
-        private bool IsMappedWithMoreThanOneTriangle(Edge edge)
+        private bool TryGetAppropriateConnectionFromNeighbour(LightTriangle neighbour, out Triangle connection)
+        {
+            connection = this.context.CreateTriangle(neighbour);
+            bool hasNewVertex = connection.Vertices.Any(v => !this.initiallyAddedVertices.Contains(v));
+            bool isAddedToApproximation = this.context.IsTriangleAddedToApproximation(connection);
+            bool hasEdgeWithMultipleTriangles = connection.Edges.Any(e => this.GetNeighbouringTrianglesCount(e) > 2);
+            OctaTetraMeshTriangleGeometryHelper connectionGeometryHelper =
+                new OctaTetraMeshTriangleGeometryHelper(neighbour.A, neighbour.B, neighbour.C, this.context);
+            int tetrahedronExistingNeighbours = connectionGeometryHelper.GetTetrahedronGeometry().Triangles
+                .Select(t => this.context.CreateTriangle(t)).Count(t => this.context.IsTriangleAddedToApproximation(t));
+            int octahedronExistingNeighbours = connectionGeometryHelper.GetOctahedronGeometry().Triangles
+                .Select(t => this.context.CreateTriangle(t)).Count(t => this.context.IsTriangleAddedToApproximation(t));
+            bool isClosingTetrahedron = tetrahedronExistingNeighbours == 3;
+            bool isClosingOctahedron = octahedronExistingNeighbours == 7;
+            bool isOctahedronOpositeExisting = this.context.IsTriangleAddedToApproximation(
+                this.context.CreateTriangle(connectionGeometryHelper.GetOctahedronOppositeBaseTriangle()));
+
+            bool isAppropriate = !hasNewVertex &&
+                        !isAddedToApproximation &&
+                        !hasEdgeWithMultipleTriangles &&
+                        !isClosingTetrahedron &&
+                        !isClosingOctahedron &&
+                        !isOctahedronOpositeExisting;
+            return isAppropriate;
+        }
+
+        private int GetNeighbouringTrianglesCount(Edge edge)
         {
             int count;
-            if (edgesToTrianglesCount.TryGetValue(edge, out count) && count > 1)
+            if (!edgesToTrianglesCount.TryGetValue(edge, out count))
             {
-                return true;
+                count = 0;
             }
 
-            return false;
+            return count;
         }
 
         private void MapTriangleAndEdges(Triangle triangle)
