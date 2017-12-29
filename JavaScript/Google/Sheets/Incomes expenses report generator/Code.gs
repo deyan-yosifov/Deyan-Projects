@@ -1,6 +1,7 @@
 var oneHourMilliseconds = 60 * 60 * 1000;
 var oneDayMilliseconds = 24 * oneHourMilliseconds;
 var monthNames = ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'];
+var shouldGenerateWeekReports = false;
 
 function getNextDate(date) {
   var nextDate = new Date(date.getTime() + oneDayMilliseconds);
@@ -337,6 +338,10 @@ function getWeekStatisticTableStart(weekIndex){
 };
 
 function generateWeekTable(week, weekIndex, valuesStart, valuesEnd){
+	if (!shouldGenerateWeekReports) {
+		return;
+	}		
+	
     var tableStart = getWeekStatisticTableStart(weekIndex);
     var tableHeader = week.start.getDate() + "-" + week.end.getDate() + " " + getMonthAndYear(week.start);
     
@@ -607,16 +612,21 @@ function setupMonthReportSheet(){
  * https://developers.google.com/apps-script/service_spreadsheet
  */
 function onOpen() {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();  
   var entries = [
     {
       name : "Генерирай месечен репорт",
       functionName : "setupMonthReportSheet"
     },
+  ];
+  
+  if (shouldGenerateWeekReports) {
+	entries[1] =
     {
       name : "Настрой седмични статистики",
       functionName : "setupWeekStatistics"
-    },
-  ];
+    };
+  }
+  
   spreadsheet.addMenu(reportConstants.appName, entries);
 };
