@@ -538,17 +538,17 @@ function promptWeekStatisticChanges(monthDate){
 function promptReportSheetMonthAndYear(){
 	var currentDate = new Date();
 	var year = currentDate.getFullYear();
-	var monthIndex = currentDate.getMonth();
-    var day = currentDate.getDate();
-  
-    if (day > 20) {
-        monthIndex++;
-      
-        if (monthIndex > 11) {
-           monthIndex = 0;
-           year++;
-        }
-    }
+	var monthIndex = currentDate.getMonth();	
+	var day = currentDate.getDate();
+	
+	if (day > 20) {
+		monthIndex++;
+
+		if (monthIndex > 11) {
+			monthIndex = 0;
+			year++;
+		}
+	}
 	
 	var html = '<select id="monthSelect">';
 	for (var i = 0; i < monthNames.length; i+=1){
